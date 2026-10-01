@@ -1,3 +1,13 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# 导出产物
+build/
+
+# 冒烟测试的临时输出
+.smoke_out.txt
+.smoke_err.txt
+
+# 截图产物（capture_screens.gd 生成，用于肉眼确认布局）
+.screens/

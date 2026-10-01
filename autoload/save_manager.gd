@@ -1,0 +1,100 @@
+extends Node
+## 存档 + 设置。autoload 名：Save
+##
+## 用法：
+##   Save.data["level"] = 3
+##   Save.save_data()
+##   Save.load_data()
+##   Save.save_settings({"master": 0.8, "fullscreen": true})
+##
+## user:// 的真实路径：%APPDATA%\Godot\app_userdata\<项目名>\
+
+const SAVE_PATH := "user://save.json"
+const SETTINGS_PATH := "user://settings.cfg"
+
+## 没有历史设置时的默认窗口尺寸
+const DEFAULT_RESOLUTION_SIZE := Vector2i(1920, 1080)
+
+## 想存什么就往这里塞，save_data() 会整体序列化
+var data: Dictionary = {}
+## 设置项的内存副本，设置菜单读写它
+var settings: Dictionary = {}
+
+# ---------- 存档 ----------
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+func save_data() -> void:
+	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if f == null:
+		push_error("Save: 打不开存档文件 " + SAVE_PATH)
+		return
+	f.store_string(JSON.stringify(data, "\t"))
+
+func load_data() -> Dictionary:
+	if not has_save():
+		data = {}
+		return data
+	var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if f == null:
+		data = {}
+		return data
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	data = parsed if parsed is Dictionary else {}
+	return data
+
+func clear_save() -> void:
+	data = {}
+	if FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+
+# ---------- 设置 ----------
+
+## 用 ConfigFile 而不是 JSON：自带类型，改设置更省事
+func save_settings(values: Dictionary) -> void:
+	settings.merge(values, true)
+	var cfg := ConfigFile.new()
+	for key: String in settings:
+		cfg.set_value("settings", key, settings[key])
+	var err := cfg.save(SETTINGS_PATH)
+	if err != OK:
+		push_error("Save: 设置写入失败，错误码 %d" % err)
+
+func load_settings() -> Dictionary:
+	var cfg := ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) != OK:
+		settings = {}
+		return settings
+	var out: Dictionary = {}
+	for key: String in cfg.get_section_keys("settings"):
+		out[key] = cfg.get_value("settings", key)
+	settings = out
+	return settings
+
+func get_setting(key: String, fallback: Variant) -> Variant:
+	return settings.get(key, fallback)
+
+# ---------- 套用显示设置 ----------
+
+## 主菜单启动时调用一次。音频设置在 AudioManager._ready() 里自己套。
+func apply_display_settings() -> void:
+	var fullscreen := bool(get_setting("fullscreen", false))
+	set_fullscreen(fullscreen)
+	if not fullscreen:
+		var stored: Variant = get_setting("resolution_size", DEFAULT_RESOLUTION_SIZE)
+		apply_resolution(stored if stored is Vector2i else DEFAULT_RESOLUTION_SIZE)
+
+func set_fullscreen(on: bool) -> void:
+	DisplayServer.window_set_mode(
+		DisplayServer.WINDOW_MODE_FULLSCREEN if on else DisplayServer.WINDOW_MODE_WINDOWED)
+
+## 只在窗口模式下有意义；全屏时会被忽略（否则退出全屏尺寸会错）
+func apply_resolution(size: Vector2i) -> void:
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+		return
+	DisplayServer.window_set_size(size)
+	var screen := DisplayServer.window_get_current_screen()
+	var screen_size := DisplayServer.screen_get_size(screen)
+	var origin := DisplayServer.screen_get_position(screen)
+	DisplayServer.window_set_position(origin + (screen_size - size) / 2)

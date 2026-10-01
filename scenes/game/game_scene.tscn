@@ -1,0 +1,80 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/game/game_scene.gd" id="1_game_scene"]
+[ext_resource type="Script" path="res://scenes/game/landmarks.gd" id="2_landmarks"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="3_pause_menu"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_phantom_camera_host"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="5_phantom_camera_2d"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(56, 56)
+
+[node name="GameScene" type="Node2D"]
+script = ExtResource("1_game_scene")
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.109804, 0.121569, 0.164706, 1)
+
+[node name="Landmarks" type="Node2D" parent="."]
+script = ExtResource("2_landmarks")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+
+[node name="Body" type="Polygon2D" parent="Player"]
+polygon = PackedVector2Array(-28, -28, 28, -28, 28, 28, -28, 28)
+color = Color(0.960784, 0.784314, 0.352941, 1)
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+process_callback = 0
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("4_phantom_camera_host")
+
+[node name="PhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+process_priority = -1
+script = ExtResource("5_phantom_camera_2d")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../Player")
+zoom = Vector2(1.5, 1.5)
+follow_damping = true
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 28.0
+offset_right = 720.0
+offset_bottom = 104.0
+theme_override_font_sizes/font_size = 56
+text = "分数 0"
+
+[node name="HintLabel" type="Label" parent="HUD"]
+modulate = Color(1, 1, 1, 0.5)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -76.0
+offset_right = -48.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "WASD 移动 · J 攻击（加分 + 顿帧 + 音效） · ESC 暂停 · R 重开"
+
+[node name="PauseMenu" parent="." instance=ExtResource("3_pause_menu")]
