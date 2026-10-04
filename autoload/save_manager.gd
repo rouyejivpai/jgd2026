@@ -22,6 +22,46 @@ var settings: Dictionary = {}
 
 # ---------- 存档 ----------
 
+## 「已经自动弹过介绍的关卡」——FR-TUT-03 要求的是**每关首次进入时**弹出，
+## 不是每次进关都弹。
+##
+## 【为什么放在这里】`play_scene` 每次进关都会重建，而"看过没有"必须
+## **跨关卡、跨"返回主菜单再进来"**存活，所以只能放在全局单例上。
+##
+## 【会话内 + 尽量落盘】`user://` 在本环境不可写（见开发进度第 13 轮），
+## 所以先用 `_intro_seen` 保证**同一次运行内**语义正确；
+## 同时写进 `data` 并调 `save_data()`，在可写环境（玩家自己的机器）里能持久化。
+## 也就是说：正常环境下"首次"是**每台机器一次**，本环境退化为**每次运行一次**。
+var _intro_seen: Dictionary = {}
+
+
+## 这一关是否已经自动弹过介绍
+func has_seen_intro(level_id: String) -> bool:
+	if level_id.is_empty():
+		return false
+	if _intro_seen.has(level_id):
+		return true
+	return (data.get("intro_seen", []) as Array).has(level_id)
+
+
+## 记下"这一关的介绍已弹过"
+func mark_intro_seen(level_id: String) -> void:
+	if level_id.is_empty():
+		return
+	_intro_seen[level_id] = true
+	var arr: Array = data.get("intro_seen", [])
+	if not arr.has(level_id):
+		arr.append(level_id)
+		data["intro_seen"] = arr
+		save_data()          # 可写环境下持久化；不可写时静默失败（已有降级）
+
+
+## 清掉记录（重置全部存档时用，也是测试的清理入口）
+func clear_intro_seen() -> void:
+	_intro_seen.clear()
+	data.erase("intro_seen")
+
+
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 

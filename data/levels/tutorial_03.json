@@ -1,0 +1,48 @@
+{
+  "id": "tutorial_03",
+  "name": "第三关 · 信号与协同",
+  "order": 3,
+  "map": {
+    "width": 7,
+    "height": 7,
+    "tiles": [
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
+  "beacon_quota": 6,
+  "signal_count": 3,
+  "time_limit": 0,
+  "units": [
+    { "team": "ally", "type": "standard_attack", "pos": [1, 5], "overrides": {} },
+    { "team": "ally", "type": "ice", "pos": [1, 6], "overrides": {} },
+    { "team": "enemy", "type": "basic_enemy", "pos": [5, 0], "overrides": { "range": 2 } }
+  ],
+  "win": {
+    "logic": "any",
+    "conditions": [
+      { "type": "annihilate" }
+    ]
+  },
+  "lose": {
+    "logic": "any",
+    "conditions": [
+      { "type": "all_allies_dead" }
+    ]
+  },
+  "intro": {
+    "title": "第三关 · 信号与协同",
+    "tips": [
+      "你现在有两个单位，可以用「信号」让它们互相配合",
+      "冰寒人工生命命中后会把敌人减速 50%，适合先手",
+      "信号初始都是「关」，需要由某个单位的指令把它打开，另一个单位才能读到"
+    ]
+  },
+  "tags": ["tutorial"],
+  "extra": {}
+}

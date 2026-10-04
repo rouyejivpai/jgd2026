@@ -1,0 +1,45 @@
+{
+  "id": "tutorial_01",
+  "name": "第一关 · 初识信标",
+  "order": 1,
+  "map": {
+    "width": 7,
+    "height": 7,
+    "tiles": [
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 2],
+      [0, 0, 0, 0, 0, 0, 2],
+      [0, 0, 0, 0, 0, 0, 2],
+      [0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
+  "units": [
+    { "team": "ally", "type": "standard", "pos": [1, 1], "overrides": {} }
+  ],
+  "beacon_quota": 4,
+  "signal_count": 1,
+  "time_limit": 0,
+  "win": {
+    "logic": "any",
+    "conditions": [
+      { "type": "reach_position", "area": [[6, 3], [6, 4], [6, 5]] }
+    ]
+  },
+  "lose": {
+    "logic": "any",
+    "conditions": [
+      { "type": "all_allies_dead" }
+    ]
+  },
+  "intro": {
+    "title": "第一关 · 初识信标",
+    "tips": [
+      "点工具条上的「信标」按钮进入信标模式，在空地上放下信标",
+      "点击场上的人工生命，为它写一条「沿着信标移动」的指令",
+      "本关没有敌人。放两个信标：先向右到最右边，再向下穿过高亮区域"
+    ]
+  },
+  "tags": ["tutorial"]
+}

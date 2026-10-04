@@ -10,16 +10,14 @@ config_version=5
 
 [application]
 
-config/name="jgd2026"
-config/description="Godot 4.7.2 / 2D / GDScript game jam 启动模板"
+config/name="人工神灵"
+config/description="实时战术解谜：给单位写「如果 / 则」指令，点开始后它们按指令自行行动"
 run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-; 顺序有约束：AudioManager._ready() 要读 Save 的设置，
-; 所以 Save 必须排在 Audio 前面。EventBus 无依赖但习惯放第一个。
 EventBus="*res://autoload/event_bus.gd"
 Save="*res://autoload/save_manager.gd"
 Game="*res://autoload/game_state.gd"
@@ -31,8 +29,8 @@ PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_came
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/window_width_override=1280
-window/size/window_height_override=720
+window/size/window_width_override=1600
+window/size/window_height_override=900
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
@@ -111,3 +109,12 @@ restart={
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":4,"pressure":0.0,"pressed":false,"script":null)
 ]
 }
+
+[layer_names]
+
+2d_physics/layer_1="unit_body"
+2d_physics/layer_2="obstacle"
+2d_physics/layer_3="bullet_ally"
+2d_physics/layer_4="bullet_enemy"
+2d_physics/layer_5="hurtbox_ally"
+2d_physics/layer_6="hurtbox_enemy"

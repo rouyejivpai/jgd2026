@@ -6,6 +6,14 @@ extends CanvasLayer
 
 const MAIN_MENU := "res://scenes/ui/main_menu.tscn"
 
+## 【为什么要发信号而不是自己跳场景】本菜单是被**玩法场景**实例化的，
+## 而"重置关卡"在玩法场景里有明确语义（调 session.reset()，保留玩家的指令与信标）。
+## 菜单自己调 SceneLoader.reload() 会**丢掉关卡 id**（玩法场景是带 id 实例化出来的，
+## 重载场景拿不回来）。所以由玩法场景决定行为，菜单只负责表达意图。
+signal resume_requested
+signal restart_requested
+signal main_menu_requested
+
 @onready var _settings: Control = $SettingsMenu
 @onready var _resume: Button = $Center/VBox/ResumeButton
 
@@ -39,6 +47,7 @@ func open() -> void:
 func close() -> void:
 	visible = false
 	get_tree().paused = false
+	resume_requested.emit()
 
 func is_open() -> bool:
 	return visible
@@ -53,8 +62,13 @@ func _on_settings_closed() -> void:
 
 func _on_restart() -> void:
 	close()
-	SceneLoader.reload()
+	restart_requested.emit()
+	# 没有监听者时才退回模板的整场景重载（玩法场景已接入监听，正常不会走到这里）
+	if restart_requested.get_connections().is_empty():
+		SceneLoader.reload()
 
 func _on_main_menu() -> void:
 	close()
-	SceneLoader.goto(MAIN_MENU)
+	main_menu_requested.emit()
+	if main_menu_requested.get_connections().is_empty():
+		SceneLoader.goto(MAIN_MENU)

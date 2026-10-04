@@ -1,0 +1,44 @@
+{
+  "id": "tutorial_02",
+  "name": "第二关 · 开火与停火",
+  "order": 2,
+  "map": {
+    "width": 14,
+    "height": 3,
+    "tiles": [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
+  "beacon_quota": 4,
+  "signal_count": 3,
+  "time_limit": 0,
+  "units": [
+    { "team": "ally", "type": "standard_attack", "pos": [1, 1], "overrides": {} },
+    { "team": "enemy", "type": "basic_enemy", "pos": [11, 1], "overrides": { "range": 2 } }
+  ],
+  "win": {
+    "logic": "any",
+    "conditions": [
+      { "type": "annihilate" }
+    ]
+  },
+  "lose": {
+    "logic": "any",
+    "conditions": [
+      { "type": "all_allies_dead" }
+    ]
+  },
+  "intro": {
+    "title": "第二关 · 开火与停火",
+    "tips": [
+      "敌人射程很短（2），但你的单位射程是 3——保持距离就能安全输出",
+      "写一条「视野内出现敌人 → 开火」的指令，再配合「沿着信标移动」接近",
+      "工具条右上角的「视野」开关会把可见范围画成圆圈：绿圈是我方、橙圈是敌方",
+      "别忘了本关需要全歼敌人才能通关"
+    ]
+  },
+  "tags": ["tutorial"],
+  "extra": {}
+}
