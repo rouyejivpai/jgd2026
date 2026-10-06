@@ -13,6 +13,13 @@ extends Control
 const LEVEL_SELECT_SCENE := "res://src/ui/level_select.tscn"
 const EDITOR_SCENE := "res://src/editor/editor_scene.tscn"
 
+const StoryPlayerScript := preload("res://src/ui/story_player.gd")
+
+## 剧情播放器（懒创建：不点「剧情」就不建，省得主菜单多挂一个全屏遮罩）
+var _story: Control = null
+## 数据有问题时用来把原因说清楚（比"点了没反应"好）
+var _notice: Label = null
+
 @onready var _continue: Button = $Center/VBox/ContinueButton
 @onready var _settings: Control = $SettingsMenu
 
@@ -45,6 +52,8 @@ func _ready() -> void:
 	var start := _make_start_button()
 	box.add_child(start)
 	box.move_child(start, anchor)
+	var story_btn := _make_story_button()
+	box.add_child(story_btn)
 	var editor_btn := _make_editor_button()
 	box.add_child(editor_btn)
 	box.move_child(editor_btn, anchor + 1)
@@ -101,6 +110,56 @@ func _make_start_button() -> Button:
 
 ## 关卡编辑器入口。详设 10 的 2.1 明确要求"主菜单新增关卡编辑器入口"。
 ## 尺寸与既有按钮一致（56 高）—— 我第一版随手写了 48，被布局用例报出来了。
+## 「剧情」（D-25）：策划案 v2 3.7 的剧情播放器入口，暂定放主菜单
+func _make_story_button() -> Button:
+	var b := Button.new()
+	b.name = "StoryEntryButton"
+	b.text = "剧情"
+	b.custom_minimum_size = Vector2(360, 56)
+	b.pressed.connect(_on_open_story)
+	return b
+
+
+func _on_open_story() -> void:
+	if _story == null:
+		_story = StoryPlayerScript.new()
+		add_child(_story)
+		_story.connect("closed", _on_story_closed)
+	var errs: Array = _story.call("load_story", StoryPlayerScript.DEFAULT_STORY)
+	if not errs.is_empty():
+		_show_notice("剧情数据有问题：%s" % str(errs))
+		return
+	if not bool(_story.call("open_player")):
+		_show_notice("剧情里还没有内容（%s）" % StoryPlayerScript.DEFAULT_STORY)
+		return
+	_hide_notice()
+
+
+func _on_story_closed() -> void:
+	var b := $Center/VBox.get_node_or_null("StoryEntryButton")
+	if b != null:
+		(b as Button).grab_focus()
+
+
+## 在主菜单按钮下方显示一行提示（只用于"点了没成功"这种需要解释的情况）
+func _show_notice(text: String) -> void:
+	if _notice == null:
+		_notice = Label.new()
+		_notice.name = "MenuNotice"
+		_notice.add_theme_font_size_override("font_size", 16)
+		_notice.add_theme_color_override("font_color", Color(0.98, 0.78, 0.45))
+		_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_notice.custom_minimum_size = Vector2(360, 0)
+		$Center/VBox.add_child(_notice)
+	_notice.text = text
+	_notice.visible = true
+
+
+func _hide_notice() -> void:
+	if _notice != null:
+		_notice.visible = false
+
+
 func _make_editor_button() -> Button:
 	var b := Button.new()
 	b.name = "EditorEntryButton"

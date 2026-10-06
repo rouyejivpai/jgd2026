@@ -22,6 +22,7 @@ var _run_started_msec := 0
 
 const GAME_SCENE := "res://scenes/game/game_scene.tscn"
 const MAIN_MENU := "res://scenes/ui/main_menu.tscn"
+const StoryPlayerScript := preload("res://src/ui/story_player.gd")
 const PAUSE_MENU := "res://scenes/ui/pause_menu.tscn"
 
 ## 【为什么用 preload 而不是 class_name】
@@ -73,7 +74,7 @@ var _completed: Array[String] = []
 const EXPECTED_CHECKS: Array[String] = [
 	"autoloads", "collision_layers", "audio_buses", "input_actions", "signal_bus",
 	"game_helpers", "scene_loop", "phantom_camera", "main_menu", "layout", "pause_menu",
-	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "v2_ui", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
+	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "v2_ui", "story", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
 ]
 
 func _ready() -> void:
@@ -163,6 +164,7 @@ func _run() -> void:
 	await _check_editor_labels()
 	await _check_editor_open_level()
 	await _check_v2_ui()
+	await _check_story()
 	await _check_new_level()
 	await _check_loader_errors_and_badge()
 	await _check_rule_copy()
@@ -580,16 +582,20 @@ func _check_layout() -> void:
 	# 【注意】模板的「继续/新游戏」指向 WASD 平台跳跃示例场景，本作已把它们
 	# **隐藏**（用户点进去会一脸懵）。所以这里按「可见按钮」断言，
 	# 既锁住本作的入口，也不会因为模板节点还在就误报。
-	_ok(buttons.size() == 6, "主菜单有 6 个按钮（模板 4 + 开始游戏 + 关卡编辑器），实际 %d" % buttons.size())
+	# D-25 加了「剧情」入口 → 7 个（模板 4 + 开始游戏 + 关卡编辑器 + 剧情）
+	_ok(buttons.size() == 7,
+		"主菜单有 7 个按钮（模板 4 + 开始游戏 + 关卡编辑器 + 剧情），实际 %d" % buttons.size())
 
 	var visible_names: Array = []
 	for b: Button in buttons:
 		if b.visible:
 			visible_names.append(str(b.name))
-	_ok(visible_names.size() == 4,
-		"**可见入口 4 个**（开始游戏/关卡编辑器/设置/退出），实际 %s" % str(visible_names))
+	_ok(visible_names.size() == 5,
+		"**可见入口 5 个**（开始游戏/关卡编辑器/剧情/设置/退出），实际 %s" % str(visible_names))
 	_ok(visible_names.has("GodEntryButton"), "可见入口里有「开始游戏」")
 	_ok(visible_names.has("EditorEntryButton"), "**可见入口里有「关卡编辑器」**（详设 10 的 2.1）")
+	_ok(visible_names.has("StoryEntryButton"),
+		"**可见入口里有「剧情」**（D-25，策划案 v2 3.7）")
 	# 尺寸与既有按钮一致（我第一版随手写了 48 高，被布局用例报出来）
 	var ed := vbox.get_node_or_null("EditorEntryButton") as Button
 	_ok(ed != null and is_equal_approx(ed.custom_minimum_size.y, 56.0),
@@ -3240,6 +3246,91 @@ func _check_nav_queue() -> void:
 			break
 	_ok(idle_ok, "切换完成后 SceneLoader 回到空闲（后续导航还能用）")
 	_done("nav_queue")
+
+
+## 剧情播放器（D-25，策划案 v2 3.7）
+##
+## 钉住三件事：① 官方剧本能载入、段落字段齐全；② 打开/推进/跳过/自动关闭的行为；
+## ③ **坏数据会被拒绝**（否则以后换剧本时一个笔误就静默变成空剧情）。
+func _check_story() -> void:
+	print("\n-- 剧情播放器（策划案 v2 3.7 / D-25）--")
+
+	var sp: Control = StoryPlayerScript.new()
+	add_child(sp)
+	await get_tree().process_frame
+
+	# ---------- 官方剧本 ----------
+	var errs: Array = sp.call("load_story", StoryPlayerScript.DEFAULT_STORY)
+	_ok(errs.is_empty(), "**剧本数据能载入**（错误 %s）" % str(errs))
+	var n := int(sp.call("segment_count"))
+	_ok(n >= 2, "剧本有 %d 段" % n)
+	_ok(not bool(sp.call("is_open")), "载入后**不会自动弹**（由入口决定什么时候播）")
+
+	# ---------- 打开与首段 ----------
+	_ok(bool(sp.call("open_player")), "**能打开播放器**")
+	_ok(bool(sp.call("is_open")), "打开后 is_open 为真")
+	_ok(int(sp.call("current_index")) == 0, "从第 1 段开始")
+	_ok(not str(sp.call("current_text")).is_empty(), "第 1 段有文本")
+	_ok(not str(sp.call("current_speaker")).is_empty(),
+		"第 1 段有说话人（%s）" % str(sp.call("current_speaker")))
+
+	# ---------- 布局：左立绘 + 下文本框（策划案 3.7 的原话）----------
+	_ok(sp.find_child("StoryPortrait", true, false) != null,
+		"**左侧有立绘位**（剧本没给图时是占位色块）")
+	_ok(sp.find_child("StoryPortraitName", true, false) != null, "立绘位下带角色名")
+	_ok(sp.find_child("StoryTextBox", true, false) != null, "**下方有文本框**")
+	_ok(sp.find_child("StorySpeaker", true, false) != null, "文本框上方有角色名称")
+	_ok(sp.find_child("StorySkipButton", true, false) != null, "有「跳过」按钮")
+	_ok(sp.find_child("StoryProgress", true, false) != null, "有进度指示")
+
+	# ---------- 推进到最后 → 自动关闭并发信号 ----------
+	var closed_hits := [0]
+	sp.connect("closed", func() -> void: closed_hits[0] += 1)
+	for _i in n:
+		sp.call("advance")
+		await get_tree().process_frame
+	_ok(not bool(sp.call("is_open")), "**推进到最后一段后自动关闭**")
+	_ok(int(closed_hits[0]) >= 1, "关闭时发出 closed 信号（%d 次）" % int(closed_hits[0]))
+
+	# ---------- 跳过 ----------
+	_ok(bool(sp.call("open_player")), "能再次打开")
+	sp.call("skip_all")
+	_ok(not bool(sp.call("is_open")), "**「跳过」会立刻关闭**（剧情是弱引导，不该拦住玩家）")
+
+	# ---------- 坏数据必须被拒绝 ----------
+	var missing: Array = sp.call("load_story", "res://data/story/__nope.json")
+	_ok(not missing.is_empty(), "文件不存在时报错（%s）" % str(missing))
+	var bp := "D:/jgd2026/_shots/__bad_story.json"
+	var bad := {"id": "bad", "title": "坏剧本",
+		"segments": [{"speaker": "某人", "text": "有文本"}, {"speaker": "某人"}]}
+	_ok(bool(_write_probe(bp, JSON.stringify(bad))), "把坏剧本写到项目外的临时文件")
+	var berrs: Array = sp.call("load_story", bp)
+	_ok(not berrs.is_empty(), "**缺 text 的段落会被拒绝**（%s）" % str(berrs))
+	_ok(int(sp.call("segment_count")) == n,
+		"载入失败**不会污染**已有的剧本（仍是 %d 段）" % int(sp.call("segment_count")))
+	sp.queue_free()
+	await get_tree().process_frame
+
+	# ---------- 主菜单入口 ----------
+	var mm: Node = load(MAIN_MENU).instantiate()
+	add_child(mm)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var sb := mm.find_child("StoryEntryButton", true, false) as Button
+	_ok(sb != null, "**主菜单有「剧情」入口**（D-25，入口暂定主菜单）")
+	if sb != null:
+		_ok(str(sb.text) == "剧情", "按钮文案是「%s」" % str(sb.text))
+		sb.emit_signal("pressed")
+		await get_tree().process_frame
+		var sp2 = mm.get("_story")
+		_ok(sp2 != null, "点过之后主菜单里有了播放器实例")
+		if sp2 != null:
+			_ok(bool(sp2.call("is_open")), "**点「剧情」会打开播放器**")
+			sp2.call("skip_all")
+			await get_tree().process_frame
+	mm.queue_free()
+	await get_tree().process_frame
+	_done("story")
 
 
 ## 策划案 v2 带出来的界面项：

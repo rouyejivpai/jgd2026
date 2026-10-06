@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "id": "chapter_01",
+  "title": "第一章 · 序",
+  "note": "【占位剧本】结构与字段就是最终结构：正文等策划给稿后替换文本即可，不需要改代码。portrait 目前是占位色块的名字；将来把立绘放进 res://assets/portraits/ 后，把 portrait 写成图片路径（如 res://assets/portraits/alchemist.png）就会自动显示图片。",
+  "segments": [
+    {
+      "speaker": "炼金术士",
+      "portrait": "alchemist",
+      "text": "（占位）她盯着培养槽里那具刚成形的躯体，第一次意识到：它会照着指令动，却还不懂为什么。"
+    },
+    {
+      "speaker": "炼金术士",
+      "portrait": "alchemist",
+      "text": "（占位）「那就先让它动得再准一些。」她把手按在玻璃上，槽里的液体开始泛光。"
+    },
+    {
+      "speaker": "人工生命",
+      "portrait": "homunculus",
+      "text": "（占位）它没有回答。它只是抬起手，重复了一遍刚才被写进它脑中的那串条件与行为。"
+    },
+    {
+      "speaker": "炼金术士",
+      "portrait": "alchemist",
+      "text": "（占位）真正的问题从来不是「它会不会动」，而是「它什么时候会自己想」。"
+    }
+  ]
+}
