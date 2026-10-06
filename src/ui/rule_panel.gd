@@ -58,6 +58,12 @@ var _drop_at := -1
 var _hint: Label = null
 var _hint_timer := 0.0
 const HINT_SECONDS := 3.0
+
+## 【D-23】策划案 v2 3.3.2：「每条指令至多有一个行为和 2 个条件」。
+## 我们**只提示、不硬禁** —— D-20 已把「多条件折叠显示」定为 MVP 功能，
+## 硬禁等于推翻已确认决策并删掉已实现的功能。等策划确认后再决定是否收紧。
+const RULE_ACT_LIMIT := 1
+const RULE_COND_LIMIT := 2
 ## 可以把指令复制过去的**其它我方单位**（由玩法场景提供）。
 ## 【为什么由外部给】面板只认识"正在编辑的那个单位"，
 ## 而"本关还有哪些我方单位"是关卡会话的知识。
@@ -574,6 +580,24 @@ func _build_rule_row(index: int, rule) -> Control:
 
 	col.add_child(split)
 	_split_refs[index] = {"conds": left, "acts": right}
+
+	# 【D-23】超过策划案建议时的**提示**（不是禁止）
+	var n_conds := (rule.get("conditions") as Array).size()
+	var n_acts := (rule.get("actions") as Array).size()
+	if n_conds > RULE_COND_LIMIT or n_acts > RULE_ACT_LIMIT:
+		var warn := Label.new()
+		warn.name = "LimitWarn_%d" % index
+		var bits: Array[String] = []
+		if n_acts > RULE_ACT_LIMIT:
+			bits.append("行为 %d 个（建议 ≤ %d）" % [n_acts, RULE_ACT_LIMIT])
+		if n_conds > RULE_COND_LIMIT:
+			bits.append("条件 %d 个（建议 ≤ %d）" % [n_conds, RULE_COND_LIMIT])
+		warn.text = "⚠ 超出策划案建议：%s（仍可保存与运行）" % "、".join(bits)
+		warn.add_theme_font_size_override("font_size", 16)
+		warn.add_theme_color_override("font_color", Color(0.96, 0.82, 0.45))
+		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		col.add_child(warn)
+
 	return row
 
 

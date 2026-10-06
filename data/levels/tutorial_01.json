@@ -16,7 +16,8 @@
     ]
   },
   "units": [
-    { "team": "ally", "type": "standard", "pos": [1, 1], "overrides": {} }
+    { "team": "ally", "type": "standard", "pos": [1, 1], "overrides": {} },
+    { "team": "enemy", "type": "basic_enemy", "pos": [4, 1], "overrides": { "range": 2 } }
   ],
   "beacon_quota": 4,
   "signal_count": 1,
@@ -38,7 +39,8 @@
     "tips": [
       "点工具条上的「信标」按钮进入信标模式，在空地上放下信标",
       "点击场上的人工生命，为它写一条「沿着信标移动」的指令",
-      "本关没有敌人。放两个信标：先向右到最右边，再向下穿过高亮区域"
+      "右上角有一个敌人，射程 2 格：点工具条的「视野」就能看到它的范围",
+      "别从它旁边过。安全走法：沿最左边向下，再沿最下面向右，最后沿最右边向上穿过高亮区域"
     ]
   },
   "tags": ["tutorial"]

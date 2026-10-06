@@ -248,6 +248,18 @@ func validate(known_unit_types: Array = []) -> Array[String]:
 		if not (ov is Dictionary):
 			errors.append("%s.overrides: 期望对象" % path)
 
+		# 【buff 接口预留】(D-28)：允许单位条目带 `buffs`（字符串数组）。
+		# 只校验形状、不解释含义 —— 现在没有任何 buff 生效，
+		# 提前定义取值集合只会给后续设计添约束。
+		if e.has("buffs"):
+			var bv = e["buffs"]
+			if not (bv is Array):
+				errors.append("%s.buffs: 期望数组" % path)
+			else:
+				for bi in (bv as Array).size():
+					if not ((bv as Array)[bi] is String):
+						errors.append("%s.buffs[%d]: 期望字符串" % [path, bi])
+
 	# --- 胜负条件 ---
 	errors.append_array(_validate_condition_group("win", win, WIN_TYPES, size))
 	errors.append_array(_validate_condition_group("lose", lose, LOSE_TYPES, size))

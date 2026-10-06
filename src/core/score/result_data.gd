@@ -17,6 +17,8 @@ var computed := false
 
 var complexity_cost := UNCOMPUTED
 var beacon_cost := UNCOMPUTED
+## 第 4 项「所用人数」的成本（D-24，策划案 v2 3.6）
+var unit_cost := UNCOMPUTED
 var time_cost := UNCOMPUTED
 var total_score := UNCOMPUTED
 
@@ -24,6 +26,8 @@ var total_score := UNCOMPUTED
 var condition_count := 0
 var action_count := 0
 var beacon_count := 0
+## 上场我方单位数（第 4 项的原始量）
+var unit_count := 0
 var elapsed_time := 0.0
 
 ## 该关历史最佳（含本次，如果刷新了）
@@ -38,11 +42,13 @@ func to_dict() -> Dictionary:
 		"computed": computed,
 		"complexity_cost": complexity_cost,
 		"beacon_cost": beacon_cost,
+		"unit_cost": unit_cost,
 		"time_cost": time_cost,
 		"total_score": total_score,
 		"condition_count": condition_count,
 		"action_count": action_count,
 		"beacon_count": beacon_count,
+		"unit_count": unit_count,
 		"elapsed_time": elapsed_time,
 		"best_score": best_score,
 		"is_new_record": is_new_record,
@@ -53,5 +59,6 @@ func to_dict() -> Dictionary:
 func summary() -> String:
 	if not computed:
 		return "未计分"
-	return "总分 %.1f（指令 %.1f + 信标 %.1f + 时间 %.1f）" % [
-		total_score, complexity_cost, beacon_cost, time_cost]
+	# 【顺序按策划案 v2 3.6】所用人数 → 指令复杂度 → Cost 消耗 → 所用时间
+	return "总分 %.1f（人数 %.1f + 指令 %.1f + 信标 %.1f + 时间 %.1f）" % [
+		total_score, unit_cost, complexity_cost, beacon_cost, time_cost]

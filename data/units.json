@@ -20,6 +20,19 @@
       "vision_radius": 0,
       "on_hit_status": ""
     },
+    "sniper": {
+      "name": "远射人工生命",
+      "max_hp": 30,
+      "move_speed": 2.0,
+      "can_attack": true,
+      "range": 10,
+      "damage": 50,
+      "attack_interval": 2.0,
+      "projectile_speed": 12.0,
+      "projectile_radius": 0.3,
+      "vision_radius": 0,
+      "on_hit_status": ""
+    },
     "ice": {
       "name": "冰寒人工生命",
       "max_hp": 30,
@@ -40,6 +53,19 @@
       "can_attack": true,
       "range": 5,
       "damage": 10,
+      "attack_interval": 1.0,
+      "projectile_speed": 12.0,
+      "projectile_radius": 0.3,
+      "vision_radius": 0,
+      "on_hit_status": ""
+    },
+    "elite_enemy": {
+      "name": "强力高级敌人",
+      "max_hp": 300,
+      "move_speed": 4.0,
+      "can_attack": true,
+      "range": 5,
+      "damage": 50,
       "attack_interval": 1.0,
       "projectile_speed": 12.0,
       "projectile_radius": 0.3,

@@ -73,7 +73,7 @@ var _completed: Array[String] = []
 const EXPECTED_CHECKS: Array[String] = [
 	"autoloads", "collision_layers", "audio_buses", "input_actions", "signal_bus",
 	"game_helpers", "scene_loop", "phantom_camera", "main_menu", "layout", "pause_menu",
-	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
+	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "v2_ui", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
 ]
 
 func _ready() -> void:
@@ -162,6 +162,7 @@ func _run() -> void:
 	await _check_editor_ui()
 	await _check_editor_labels()
 	await _check_editor_open_level()
+	await _check_v2_ui()
 	await _check_new_level()
 	await _check_loader_errors_and_badge()
 	await _check_rule_copy()
@@ -2017,7 +2018,9 @@ func _check_level() -> void:
 		return
 	_ok(ids[0] == "tutorial_01" and ids[2] == "tutorial_03", "关卡顺序来自 manifest（%s）" % str(ids))
 
-	# ================= 第一关：7×7、无敌人、到达终点 =================
+	# ================= 第一关：7×7、有 1 个射程 2 的敌人、到达终点 =================
+	# 【D-30】策划案 v2 的第 5 章给第一关写了敌人（「标准-基础1级敌人（攻击范围2）」），
+	# 教学点因此从"只用信标走位"变成"躲开敌人射程走到终点"（v2 4.1.2 的「趋利避害」）。
 	var r1: Dictionary = loader.load_level("tutorial_01", known)
 	_ok(bool(r1["ok"]), "tutorial_01 载入通过（错误 %s）" % str(r1["errors"]))
 	if bool(r1["ok"]):
@@ -2028,7 +2031,14 @@ func _check_level() -> void:
 		_ok(lv1.signal_count == 1, "信号数 1（第一关不教信号，留一个占位）")
 		_ok(is_equal_approx(lv1.time_limit, 0.0), "不限时")
 		_ok(lv1.ally_entries().size() == 1, "我方 1 个单位")
-		_ok(lv1.enemy_entries().size() == 0, "**第一关没有敌人**（D-02）")
+		_ok(lv1.enemy_entries().size() == 1,
+		"**第一关有 1 个敌人**（D-30，按策划案 v2 第 5 章；原 D-02「不放敌人」已作废）")
+		if lv1.enemy_entries().size() == 1:
+			var e1: Dictionary = lv1.enemy_entries()[0]
+			_ok(str(e1.get("type")) == "basic_enemy",
+				"第一关的敌人是基础1级敌人（实际 %s）" % str(e1.get("type")))
+			_ok(is_equal_approx(float((e1.get("overrides") as Dictionary).get("range", -1.0)), 2.0),
+				"**第一关敌人射程覆盖为 2**（按策划案，实际 %s）" % str(e1.get("overrides")))
 		_ok(lv1.win_conditions().size() == 1
 			and str((lv1.win_conditions()[0] as Dictionary).get("type", "")) == "reach_position",
 			"胜利条件为 reach_position")
@@ -2165,7 +2175,8 @@ func _check_session() -> void:
 	var s_err: Array = session.call("setup", self, lv1, clock, stats)
 	_ok(s_err.is_empty(), "会话装配成功（错误 %s）" % str(s_err))
 	_ok(session.get("state") == LevelSessionScript.State.BUILD, "初始状态为编制期")
-	_ok((session.get("units") as Array).size() == 1, "场上 1 个单位（第一关无敌人）")
+	# D-30 之后第一关有 1 我方 + 1 敌方
+	_ok((session.get("units") as Array).size() == 2, "场上 2 个单位（1 我方 + 1 敌方）")
 	_ok(session.get("map").call("goal_cells").size() == 3,
 		"第一关目标区是右下角 3 格（实际 %d）" % session.get("map").call("goal_cells").size())
 	_ok(session.get("map").call("wall_count") >= 1, "第一关有墙（路线需要绕行）")
@@ -2397,23 +2408,45 @@ func _check_score() -> void:
 	_ok(int(st.call("complexity_elements")) == 3, "复杂度元素数 = 条件 + 行为 = 3")
 	u1.queue_free()
 
+	# 【D-24】第 4 项「所用人数」的口径：**只数我方**，敌方不算
+	var ally_p: Node2D = UnitActorScript.new()
+	ally_p.call("setup", UnitActorScript.TEAM_ALLY, Vector2(1.5, 1.5),
+		{"max_hp": 100.0, "move_speed": 3.0})
+	ally_p.set("rules", [])
+	var enemy_p: Node2D = UnitActorScript.new()
+	enemy_p.call("setup", UnitActorScript.TEAM_ENEMY, Vector2(2.5, 2.5),
+		{"max_hp": 100.0, "move_speed": 3.0})
+	enemy_p.set("rules", [])
+	var st_u = stats_script.snapshot([ally_p, enemy_p], 0, 0.0)
+	_ok(int(st_u.get("unit_count")) == 1,
+		"**所用人数只数我方**（1 我方 + 1 敌方 → %d）" % int(st_u.get("unit_count")))
+	ally_p.free()
+	enemy_p.free()
+
 	# ================= 计分公式（C1=10, C2=10, C3=1）=================
-	var coef := {"complexity": 10.0, "beacon": 10.0, "time": 1.0}
+	# D-24：第 4 项「所用人数」的系数（策划案 v2 3.6 共四项）
+	var coef := {"complexity": 10.0, "beacon": 10.0, "time": 1.0, "units": 10.0}
 	var st2 = stats_script.snapshot([], 2, 12.5)
 	st2.set("condition_count", 2)
 	st2.set("action_count", 1)
+	st2.set("unit_count", 3)      # 3 个我方单位 → 第 4 项 = 30
 	var rd = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, -1.0)
 	_ok(bool(rd.get("computed")), "胜利时算分")
 	_ok(is_equal_approx(float(rd.get("complexity_cost")), 30.0),
 		"指令复杂度 = (1 行为 + 2 条件) × 10 = 30（实际 %.1f）" % float(rd.get("complexity_cost")))
 	_ok(is_equal_approx(float(rd.get("beacon_cost")), 20.0),
 		"信标成本 = 2 × 10 = 20（实际 %.1f）" % float(rd.get("beacon_cost")))
+	_ok(is_equal_approx(float(rd.get("unit_cost")), 30.0),
+		"**所用人数 = 3 × 10 = 30**（实际 %.1f）" % float(rd.get("unit_cost")))
 	_ok(is_equal_approx(float(rd.get("time_cost")), 12.5),
 		"时间成本 = 12.5 × 1 = 12.5（实际 %.1f）" % float(rd.get("time_cost")))
-	_ok(is_equal_approx(float(rd.get("total_score")), 62.5),
-		"总分 = 30 + 20 + 12.5 = 62.5（实际 %.1f）" % float(rd.get("total_score")))
+	_ok(is_equal_approx(float(rd.get("total_score")), 92.5),
+		"**总分 = 30（人数）+ 30（指令）+ 20（信标）+ 12.5（时间）= 92.5**（实际 %.1f）"
+		% float(rd.get("total_score")))
 	_ok(bool(rd.get("is_new_record")), "首次通关即刷新记录")
-	_ok(str(rd.call("summary")).contains("62.5"), "摘要里带总分（%s）" % str(rd.call("summary")))
+	_ok(str(rd.call("summary")).contains("92.5"), "摘要里带总分（%s）" % str(rd.call("summary")))
+	_ok(str(rd.call("summary")).contains("人数"),
+		"**摘要里也带上「人数」这一项**（%s）" % str(rd.call("summary")))
 
 	# **失败不算分**（FR-SCORE-06），且要与"得 0 分"区分开
 	var rd_lose = scorer.compute("tutorial_01", scorer.VERDICT_LOSE, st2, coef, 10.0)
@@ -2428,13 +2461,13 @@ func _check_score() -> void:
 		"系数缺失时用兜底 C1=10（实际 %.1f）" % float(rd_def.get("complexity_cost")))
 
 	# 最佳记录：**分越低越好**（详设 08 的 4.4「取最低」）。
-	# 我第一版把这两条写反了 —— 62.5 比 100 好、比 50 差。
+	# 我第一版把这两条写反了 —— 分越低越好：92.5 比 100 好、比 50 差。
 	var rd_worse = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, 50.0)
 	_ok(not bool(rd_worse.get("is_new_record")),
-		"本次 62.5 比记录 50.0 差 → 不刷新")
+		"本次 92.5 比记录 50.0 差 → 不刷新")
 	var rd_better = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, 100.0)
 	_ok(bool(rd_better.get("is_new_record")),
-		"本次 62.5 比记录 100.0 好 → 刷新（分越低越好）")
+		"本次 92.5 比记录 100.0 好 → 刷新（分越低越好）")
 
 	# ================= 同样统计量 → 得分可复现（倍速不影响，FR-FLOW-06）=================
 	var a = scorer.compute("x", scorer.VERDICT_WIN, st2, coef, -1.0)
@@ -2447,12 +2480,12 @@ func _check_score() -> void:
 	_ok(scorer.best_of(fake_save, "tutorial_01") < 0.0, "没有记录时返回负值")
 	var rd1 = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, -1.0)
 	_ok(bool(scorer.apply_best(fake_save, "tutorial_01", rd1)), "首次写入记录成功")
-	_ok(is_equal_approx(scorer.best_of(fake_save, "tutorial_01"), 62.5),
-		"读回的记录是 62.5（实际 %.1f）" % scorer.best_of(fake_save, "tutorial_01"))
-	var rd2 = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, 62.5)
+	_ok(is_equal_approx(scorer.best_of(fake_save, "tutorial_01"), 92.5),
+		"**读回的记录是 92.5**（实际 %.1f）" % scorer.best_of(fake_save, "tutorial_01"))
+	var rd2 = scorer.compute("tutorial_01", scorer.VERDICT_WIN, st2, coef, 50.0)
 	rd2.set("total_score", 200.0)
 	_ok(not bool(scorer.apply_best(fake_save, "tutorial_01", rd2)), "更差的成绩不写入")
-	_ok(is_equal_approx(scorer.best_of(fake_save, "tutorial_01"), 62.5), "记录保持不变")
+	_ok(is_equal_approx(scorer.best_of(fake_save, "tutorial_01"), 92.5), "记录保持不变")
 	_ok(not bool(scorer.apply_best(fake_save, "tutorial_01", rd_lose)), "失败的结算不写记录")
 	_ok(scorer.best_of(null, "x") < 0.0, "没有存档时安全返回")
 	_ok(not bool(scorer.apply_best(null, "x", rd1)), "没有存档时安全跳过")
@@ -2484,8 +2517,36 @@ func _check_result_ui() -> void:
 	await get_tree().process_frame
 	_ok(bool(rs.call("is_showing")), "show_result 后显示")
 	_ok(str(rs.call("title_text")) == "胜利！", "标题为「胜利！」（实际「%s」）" % str(rs.call("title_text")))
-	_ok(str(rs.call("total_text")).contains("62.5"),
-		"总分显示 62.5（实际「%s」）" % str(rs.call("total_text")))
+	# 【不写死数字】这里验的是"口径一致"：**界面总分 == 四行分项之和**。
+	# 写死一个数只能证明"这一天是对的"；写口径一致，以后谁改了一项忘了另一项都会红。
+	var shown_total := str(rs.call("total_text"))
+	var row_sum := 0.0
+	var row_names: Array = []
+	for row in rs.get("_rows").get_children():
+		var vals: Array = []
+		for ch in (row as Node).get_children():
+			if ch is Label:
+				var ltxt := str((ch as Label).text)
+				if ltxt.is_valid_float():
+					vals.append(float(ltxt))
+				else:
+					row_names.append(ltxt)
+		if not vals.is_empty():
+			row_sum += float(vals[vals.size() - 1])
+	_ok(shown_total.contains("%.1f" % row_sum),
+		"**界面总分 == 四行分项之和**（界面「%s」，行和 %.1f）" % [shown_total, row_sum])
+	_ok(row_names.size() == 4,
+		"结算页正好 4 行分项（实际 %d：%s）" % [row_names.size(), str(row_names)])
+	# 【D-24】结算页必须把第 4 项也列出来（只算不显示等于玩家看不懂）
+	var row_texts: Array = []
+	for row in rs.get("_rows").get_children():
+		for c in (row as Node).get_children():
+			if c is Label:
+				row_texts.append(str((c as Label).text))
+	_ok(row_texts.has("所用人数"),
+		"**结算页列出第 4 项「所用人数」**（%s）" % str(row_texts))
+	_ok(str(rs.get("_detail").text).contains("我方单位"),
+		"**明细里带上我方单位数**（%s）" % str(rs.get("_detail").text))
 
 	# 出口按钮齐全，且"下一关"可按需隐藏
 	var btns := rs.get_node_or_null("Center/Panel/Column/Buttons")
@@ -2560,7 +2621,8 @@ func _check_result_ui() -> void:
 	_ok(bool(ps_dlg.call("is_showing")), "**首次进关卡自动弹介绍**（FR-TUT-03）")
 	_ok(str(ps_dlg.call("title_text")) == "第一关 · 初识信标",
 		"介绍标题来自关卡数据（实际「%s」）" % str(ps_dlg.call("title_text")))
-	_ok(int(ps_dlg.call("tip_count")) == 3, "介绍里有 3 条提示")
+	_ok(int(ps_dlg.call("tip_count")) == 4,
+		"介绍里有 4 条提示（D-30 加了一条讲敌人射程）")
 	ps_dlg.call("press_ok")
 	await get_tree().process_frame
 	_ok(not bool(ps_dlg.call("is_showing")), "关掉介绍后可以正常编制")
@@ -2642,6 +2704,8 @@ func _check_result_ui() -> void:
 	_ok(rd_scene != null, "结算时产出了 ResultData")
 	if rd_scene != null:
 		_ok(bool(rd_scene.get("computed")), "**通关后确实算了分**")
+		_ok(int(rd_scene.get("unit_count")) >= 1,
+			"**真实游玩时「所用人数」数到了单位**（%d）" % int(rd_scene.get("unit_count")))
 		var total := float(rd_scene.get("total_score"))
 		print("   [diag] 第一关结算：总分 %.1f（指令 %.1f + 信标 %.1f + 时间 %.1f），用法 %.2f 秒，记录 %s" % [
 			total, float(rd_scene.get("complexity_cost")), float(rd_scene.get("beacon_cost")),
@@ -2717,7 +2781,11 @@ func _check_full_playthrough() -> void:
 	var ps = get_tree().current_scene
 	_ok(ps != null and ps.has_method("load_level_id"), "点关卡按钮后进入了玩法场景")
 	_ok(str(ps.get("level_id")) == "tutorial_01", "进的就是第一关")
-	var verdict := await _play_level_to_end(ps, [Vector2i(6, 1), Vector2i(5, 6)], true, false)
+	# 【路线必须绕开敌人射程】敌人 (4,1) 射程 2 覆盖了右上与上排中段，
+	# 老路线「(6,1) → (5,6)」会从它旁边穿过（实测会掉血）。
+	# 安全路线：沿最左列下到底 → 沿最下行到右 → 沿最右列向上穿过终点高亮区。
+	var verdict := await _play_level_to_end(ps,
+		[Vector2i(1, 6), Vector2i(6, 6), Vector2i(6, 2)], true, false)
 	_ok(verdict == 1, "**第一关在完整流程里通关**（verdict=%d）" % verdict)
 	var rs = ps.get("result_screen")
 	_ok(rs != null and bool(rs.call("is_showing")), "结算界面自动弹出")
@@ -3172,6 +3240,120 @@ func _check_nav_queue() -> void:
 			break
 	_ok(idle_ok, "切换完成后 SceneLoader 回到空闲（后续导航还能用）")
 	_done("nav_queue")
+
+
+## 策划案 v2 带出来的界面项：
+## · T4/D-33「清空」＝重置 + 清除我方单位（可逆）
+## · T7/D-29「提示」按钮点击计数（到阈值如实说明「推荐阵型」尚未实现）
+## · T3/D-23 指令超过「1 行为 + 2 条件」时的**提示**（不硬禁）
+func _check_v2_ui() -> void:
+	print("\n-- 策划案 v2 的界面项：清空 / 提示计数 / 指令超限提示 --")
+
+	# ================= T4：「清空」按钮（D-33）=================
+	Save.clear_intro_seen()
+	var ps = PlaySceneScript.instantiate()
+	ps.call("load_level_id", "tutorial_01")
+	add_child(ps)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var dlg0: Control = ps.get("intro_dialog")
+	if dlg0 != null and bool(dlg0.call("is_showing")):
+		dlg0.call("press_ok")          # 关掉首次介绍，免得挡着
+		await get_tree().process_frame
+
+	var tb = ps.get("toolbar")
+	_ok(tb != null, "玩法场景里有工具条")
+	var btns: Dictionary = tb.get("_buttons") if tb != null else {}
+	var btn_clear: Button = btns.get("clear")
+	_ok(btn_clear != null, "**工具条上有「清空」按钮**（D-33，策划案 v2 3.2）")
+	if btn_clear != null:
+		_ok(str(btn_clear.text) == "清空", "按钮文案是「%s」" % str(btn_clear.text))
+		_ok(int(ps.call("ally_alive_count")) == 1, "清空前我方 1 个单位存活")
+		btn_clear.emit_signal("pressed")      # 走真实按钮
+		await get_tree().process_frame
+		_ok(int(ps.call("ally_alive_count")) == 0,
+			"**点「清空」后我方单位全部退场**（实际 %d）" % int(ps.call("ally_alive_count")))
+		var bn := ps.find_child("Banner", true, false) as Label
+		_ok(bn != null and str(bn.text).contains("清空"),
+			"横幅说明发生了什么（%s）" % (str(bn.text) if bn != null else "无横幅"))
+		_ok(bn != null and str(bn.text).contains("重置"),
+			"**横幅告诉玩家按「重置」可恢复**（%s）" % (str(bn.text) if bn != null else "无"))
+		# 可逆：按「重置」把单位放回来
+		var btn_reset: Button = btns.get("reset")
+		_ok(btn_reset != null, "工具条上有「重置」按钮")
+		if btn_reset != null:
+			btn_reset.emit_signal("pressed")
+			await get_tree().process_frame
+			_ok(int(ps.call("ally_alive_count")) == 1,
+				"**按「重置」后我方单位恢复**（清空是可逆的）")
+
+	# ================= T7：「提示」点击计数（D-29）=================
+	var btn_intro: Button = btns.get("intro")
+	_ok(btn_intro != null, "工具条上有「关卡介绍」（＝策划案的「提示」）按钮")
+	if btn_intro != null:
+		_ok(int(ps.get("_hint_clicks")) == 0, "提示点击计数初始为 0")
+		btn_intro.emit_signal("pressed")
+		await get_tree().process_frame
+		_ok(int(ps.get("_hint_clicks")) == 1, "点一次计数变 1")
+		btn_intro.emit_signal("pressed")
+		btn_intro.emit_signal("pressed")
+		await get_tree().process_frame
+		_ok(int(ps.get("_hint_clicks")) == 3,
+			"点三次计数变 3（实际 %d）" % int(ps.get("_hint_clicks")))
+		var bn2 := ps.find_child("Banner", true, false) as Label
+		_ok(bn2 != null and str(bn2.text).contains("推荐阵型"),
+			"**到阈值时如实说明「推荐阵型 / 一键过关」尚未实现**（%s）"
+			% (str(bn2.text) if bn2 != null else "无横幅"))
+	ps.queue_free()
+	await get_tree().process_frame
+
+	# ================= T3：指令超限提示（D-23）=================
+	var rp: Control = RulePanelScript.new()
+	add_child(rp)
+	await get_tree().process_frame
+	var ua: Node2D = UnitActorScript.new()
+	add_child(ua)
+	ua.call("setup", UnitActorScript.TEAM_ALLY, Vector2(1.5, 1.5),
+		{"max_hp": 100.0, "move_speed": 3.0})
+	ua.set_physics_process(false)
+	# 1 行为 + 3 条件 → 超限（策划案建议 ≤2 条件）
+	ua.set("rules", [RuleEngineScript.make_rule(
+		[_cond_self_hp(RuleConditionScript.OP_LT, 50.0),
+			_cond_self_hp(RuleConditionScript.OP_LT, 70.0),
+			_cond_self_hp(RuleConditionScript.OP_LT, 90.0)],
+		[_act_move([1])], 0)])
+	rp.call("open_for", ua)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var warn := rp.find_child("LimitWarn_0", true, false) as Label
+	_ok(warn != null, "**3 个条件时出现超限提示**（策划案建议 ≤2）")
+	if warn != null:
+		_ok(str(warn.text).contains("条件 3 个"),
+			"提示里写明超出了什么（%s）" % str(warn.text))
+		_ok(str(warn.text).contains("仍可保存与运行"),
+			"**提示里说明没有硬禁**（%s）" % str(warn.text))
+	# 合规的指令不该出现提示
+	ua.set("rules", [RuleEngineScript.make_rule(
+		[_cond_self_hp(RuleConditionScript.OP_LT, 50.0)], [_act_move([1])], 0)])
+	rp.call("refresh")
+	await get_tree().process_frame
+	_ok(rp.find_child("LimitWarn_0", true, false) == null,
+		"1 行为 + 1 条件（合规）时**不出现提示**")
+	# 超限的指令**仍然能跑**（这正是"只提示不硬禁"的意思）
+	ua.set("rules", [RuleEngineScript.make_rule(
+		[_cond_self_hp(RuleConditionScript.OP_LT, 50.0),
+			_cond_self_hp(RuleConditionScript.OP_LT, 70.0),
+			_cond_self_hp(RuleConditionScript.OP_LT, 90.0)],
+		[_act_move([1])], 0)])
+	_ok((ua.get("rules") as Array).size() == 1
+			and ((ua.get("rules") as Array)[0].get("conditions") as Array).size() == 3,
+		"**超限的指令依然被保留**（条件 %d 个）"
+		% ((ua.get("rules") as Array)[0].get("conditions") as Array).size())
+	rp.call("close")
+	ua.queue_free()
+	rp.queue_free()
+	await get_tree().process_frame
+	_done("v2_ui")
 
 
 ## 编辑器：**打开某一关**（左上角按钮 + 关卡列表）与**未保存确认**。
@@ -4161,8 +4343,10 @@ func _check_editor_ui() -> void:
 		_ok(uf.has(key2), "单位面板有字段 %s（%s）" % [key2, str(uf)])
 	# 类型下拉的候选项来自 units.json
 	var type_ob: Node = insp.find_field("type")
-	_ok(type_ob is OptionButton and (type_ob as OptionButton).item_count == 4,
-		"单位类型下拉有 4 种（来自 units.json）")
+	# 【数字随数据走】D-32 把单位表从 4 种补到 6 种（新增远射人工生命、强力高级敌人），
+	# 所以这条从 4 改成 6。写死数字本身是故意的：数据表变了就应该有人来确认一次。
+	_ok(type_ob is OptionButton and (type_ob as OptionButton).item_count == 6,
+		"单位类型下拉有 6 种（来自 units.json，D-32 后）")
 
 	# ================= 点地图真的改数据 + 可撤销 =================
 	ed.call("press_tool", EditorSessionScript.TOOL_PAINT_WALL)
@@ -5018,9 +5202,11 @@ func _check_vision() -> void:
 	add_child(tb)
 	await get_tree().process_frame
 	_ok(bool(tb.call("is_vision_visible")), "**视野辅助显示默认开启**（FR-TUT-04）")
-	# 开关不能在 BUTTON_ORDER 里（详设 1.3 规定了工具条那 6 个按钮及顺序）
-	_ok(ToolbarScript.BUTTON_ORDER.size() == 7,
-		"工具条主按钮仍是详设规定的 7 个（含倍速）（实际 %d）" % ToolbarScript.BUTTON_ORDER.size())
+	# 开关不能在 BUTTON_ORDER 里（详设 1.3 规定了工具条按钮及顺序；
+	# D-33 之后是 8 个：「清空」加在「重置」之后）
+	_ok(ToolbarScript.BUTTON_ORDER.size() == 8,
+		"工具条主按钮 8 个（含 D-33 的「清空」）（实际 %d）"
+			% ToolbarScript.BUTTON_ORDER.size())
 	_ok(tb.find_child("VisionToggle", true, false) != null,
 		"视野开关是右侧独立控件，不在主按钮序列里")
 	# 程序化设置 + 信号
@@ -5467,7 +5653,10 @@ func _check_editor() -> void:
 	_ok((after.call("validate", ["standard"]) as Array).is_empty(),
 		"读回的关卡通过 validate（说明能进编制期）")
 	# 用真实关卡再验一遍（覆盖面更广：有 intro/tags/多条件）
-	var real_lv = LevelLoaderScript.new().call("load_level", "tutorial_01", ["standard"])
+	# 【已知类型表要与关卡内容匹配】原来只传 ["standard"]，D-30 给第一关加了敌人之后
+	# 就报"单位类型 basic_enemy 不存在于 units.json" —— 是**测试的参数过时**，不是数据错。
+	var real_lv = LevelLoaderScript.new().call("load_level", "tutorial_01",
+		["standard", "basic_enemy"])
 	_ok(bool((real_lv as Dictionary).get("ok")), "真实第一关能载入")
 	var real_text: String = (real_lv as Dictionary).get("level").call("to_json_string")
 	_write_probe("D:/jgd2026/_shots/__roundtrip_real.json", real_text)
@@ -5663,7 +5852,8 @@ func _check_hud() -> void:
 	await get_tree().process_frame
 
 	var order: Array = tb.call("button_ids_in_order")
-	_ok(order.size() == 7, "有 7 个按钮（含信标开关），实际 %d" % order.size())
+	# D-33 之后是 8 个：「清空」加在「重置」之后
+	_ok(order.size() == 8, "有 8 个按钮（含信标开关与清空），实际 %d" % order.size())
 	_ok(str(order) == str(ToolbarScript.BUTTON_ORDER),
 		"**按钮从左到右顺序固定**：%s" % str(order))
 	_ok(tb.call("button_text", ToolbarScript.BTN_EXIT) == "退出", "退出按钮文本")
@@ -5752,7 +5942,8 @@ func _check_hud() -> void:
 	var virtual_w := float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920))
 	_ok(map_px > virtual_w * 0.4 and map_px < virtual_w * 1.0,
 		"地图占屏宽度合理（%.0f px / 屏宽 %.0f）" % [map_px, virtual_w])
-	_ok((ps.get("session").get("units") as Array).size() == 1, "第一关载入 1 个单位")
+	_ok((ps.get("session").get("units") as Array).size() == 2,
+		"第一关载入 2 个单位（D-30 后含 1 个敌人）")
 	_ok(int(ps.get("session").get("state")) == LevelSessionScript.State.BUILD, "初始为编制期")
 
 	# ============ 抽屉展开时，地图必须完整落在「可见区」内 ============
@@ -5859,11 +6050,70 @@ func _check_data() -> void:
 	_ok(errs.is_empty(), "units.json + scoring.json 载入无错误（%s）" % str(errs))
 	_ok(bool(dl.call("is_loaded")), "载入状态为已就绪")
 
-	# --- 四种单位齐全（D-16）---
+	# --- 单位表齐全（D-32 后为 6 种：新增远射人工生命、强力高级敌人）---
 	var ids: Array = dl.call("unit_type_ids")
-	_ok(ids.size() == 4, "共 4 种单位（实际 %d：%s）" % [ids.size(), str(ids)])
+	# 【数字写死是故意的】单位表变了就应该有人来确认一次；
+	# D-32 按策划案 3.5 补录了「远射人工生命」与「强力高级敌人」，故 4 → 6。
+	_ok(ids.size() == 6, "共 6 种单位（实际 %d：%s）" % [ids.size(), str(ids)])
 	for t in ["standard", "standard_attack", "ice", "basic_enemy"]:
 		_ok(bool(dl.call("has_unit_type", t)), "存在单位类型 %s" % t)
+
+	# ---- 【D-32】补录的两个单位：数值必须与策划案 3.5 逐项一致 ----
+	# 注意 `get_unit_stats` 返回的是 `{stats, errors}`，不是数值本身（本工程踩过一次）。
+	var sniper: Dictionary = (dl.call("get_unit_stats", "sniper") as Dictionary).get("stats", {})
+	_ok(is_equal_approx(float(sniper.get("max_hp", 0)), 30.0)
+			and is_equal_approx(float(sniper.get("move_speed", 0)), 2.0)
+			and is_equal_approx(float(sniper.get("range", 0)), 10.0)
+			and is_equal_approx(float(sniper.get("damage", 0)), 50.0)
+			and is_equal_approx(float(sniper.get("attack_interval", 0)), 2.0),
+		"**远射人工生命**数值＝策划案（30 / 速度2 / 射程10 / 伤害50 / 攻速0.5）")
+	var elite: Dictionary = (dl.call("get_unit_stats", "elite_enemy") as Dictionary).get("stats", {})
+	_ok(is_equal_approx(float(elite.get("max_hp", 0)), 300.0)
+			and is_equal_approx(float(elite.get("move_speed", 0)), 4.0)
+			and is_equal_approx(float(elite.get("range", 0)), 5.0)
+			and is_equal_approx(float(elite.get("damage", 0)), 50.0),
+		"**强力高级敌人**数值＝策划案（300 / 速度4 / 射程5 / 伤害50）")
+	var ice_s: Dictionary = (dl.call("get_unit_stats", "ice") as Dictionary).get("stats", {})
+	_ok(str(ice_s.get("on_hit_status")) == "slowed"
+			and str(sniper.get("on_hit_status")) == "",
+		"**远射与冰寒的唯一差别是减速**（ice=%s / sniper=%s）"
+		% [str(ice_s.get("on_hit_status")), str(sniper.get("on_hit_status"))])
+
+	# ---- 【D-28】buff 接口：只校验形状，不解释含义 ----
+	var lv_buff := {
+		"id": "__buff_probe", "name": "buff 探测", "order": 99,
+		"map": {"width": 3, "height": 3, "tiles": [[0, 0, 0], [0, 0, 0], [0, 0, 0]]},
+		"units": [{"team": "ally", "type": "standard", "pos": [1, 1],
+			"overrides": {}, "buffs": ["__probe"]}],
+		"beacon_quota": 1, "signal_count": 0, "time_limit": 0,
+		"win": {"logic": "any", "conditions": [{"type": "annihilate"}]},
+		"lose": {"logic": "any", "conditions": [{"type": "all_allies_dead"}]},
+		"intro": {"title": "buff 探测", "tips": []}, "tags": [], "extra": {},
+	}
+	var lv_b = LevelDataScript.from_dict(lv_buff)
+	_ok((lv_b.call("validate", []) as Array).is_empty(),
+		"**带 buffs 的单位条目通过校验**（%s）" % str(lv_b.call("validate", [])))
+	var bad_b1: Dictionary = lv_buff.duplicate(true)
+	(bad_b1["units"] as Array)[0]["buffs"] = "不是数组"
+	_ok(_has_error(LevelDataScript.from_dict(bad_b1).validate([]), "buffs"),
+		"**buffs 不是数组时报错**")
+	var bad_b2: Dictionary = lv_buff.duplicate(true)
+	(bad_b2["units"] as Array)[0]["buffs"] = [123]
+	_ok(_has_error(LevelDataScript.from_dict(bad_b2).validate([]), "buffs"),
+		"**buffs 元素不是字符串时报错**")
+	# 编辑器载入后必须原样保留（否则一存盘就把预留字段吃掉）
+	var es_b: RefCounted = EditorSessionScript.new()
+	es_b.call("setup", lv_b, "res://data/levels/__buff_probe.json")
+	# 【别再犯】`session.level_data` 是 **LevelData 对象**（RefCounted），不是字典；
+	# 写成 `as Dictionary` 会 `Invalid cast` 直接中断用例（本轮实测）。
+	# 对象也有 `get()`，与字典用法一致，**不要强转**。
+	var lv_obj = es_b.get("level_data")
+	var kept: Array = ((lv_obj.get("units") as Array)[0] as Dictionary).get("buffs", [])
+	_ok(kept == ["__probe"], "**编辑器原样保留 buffs**（%s）" % str(kept))
+	# UnitActor 必须有**真实属性** —— `Object.set()` 对不存在的属性是静默失败
+	var ua_b: Node2D = UnitActorScript.new()
+	_ok(ua_b.get("buffs") != null, "UnitActor 有真实的 buffs 属性（预留接口不是空话）")
+	ua_b.free()
 
 	# --- 逐个核对关键数值（与策划案一致）---
 	var s_std: Dictionary = dl.call("base_unit_stats", "standard")

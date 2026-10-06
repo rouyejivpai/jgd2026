@@ -36,6 +36,9 @@ const OPTIONAL_UNIT_FIELDS := {
 	"projectile_radius": {"default": 0.3, "type": "number", "op": "gt", "value": 0.0},
 	"vision_radius": {"default": 0.0, "type": "number", "op": "ge", "value": 0.0},
 	"on_hit_status": {"default": "", "type": "string"},
+	# 【buff 接口预留】(D-28)：只约定"是一个字符串数组"，**不解释含义**。
+	# 目的是让后续版本加 buff 时**不用再改数据结构**（改数据就能开工）。
+	"buffs": {"default": [], "type": "array"},
 }
 
 ## 必填数值字段的取值约束：op 同 optional 字段
@@ -171,9 +174,21 @@ func _validate_unit(type_id: String, e: Dictionary, errs: Array[String]) -> void
 		if not e.has(f):
 			continue
 		var ospec: Dictionary = OPTIONAL_UNIT_FIELDS[f]
-		if str(ospec["type"]) == "number":
+		var otype := str(ospec["type"])
+		if otype == "number":
 			_check_number_op(e[f], "%s.%s" % [path, f], str(ospec["op"]),
 				float(ospec["value"]), errs)
+		elif otype == "array":
+			# 【buff 接口预留】只校验形状：是数组、且元素都是字符串。
+			# **故意不校验取值** —— 现在没有任何 buff 生效，收窄取值只会过早限制后续设计。
+			if not (e[f] is Array):
+				errs.append("%s.%s: 期望 array，实际 %s" % [path, f, _type_of(e[f])])
+			else:
+				var arr: Array = e[f]
+				for ai in arr.size():
+					if not (arr[ai] is String):
+						errs.append("%s.%s[%d]: 期望 string，实际 %s"
+							% [path, f, ai, _type_of(arr[ai])])
 		else:
 			if not (e[f] is String):
 				errs.append("%s.%s: 期望 string，实际 %s" % [path, f, _type_of(e[f])])
@@ -259,6 +274,14 @@ func _load_scoring() -> Array[String]:
 		_check_number_op(d[key], "scoring.json: %s" % key, "ge", 0.0, errs)
 		if d[key] is float or d[key] is int:
 			out[key] = float(d[key])
+
+	# 【第 4 项系数是"可选"的】(D-24) 只加进必填列表的话，
+	# 任何一份旧的 scoring.json 都会因为"少一个键"整表加载失败 ——
+	# 那是把"数据升级"变成"启动即报错"。缺省时由 Scorer 的兜底值接管（10.0）。
+	if d.has("units"):
+		_check_number_op(d["units"], "scoring.json: units", "ge", 0.0, errs)
+		if d["units"] is float or d["units"] is int:
+			out["units"] = float(d["units"])
 
 	if not errs.is_empty():
 		return errs

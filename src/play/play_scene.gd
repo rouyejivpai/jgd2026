@@ -10,6 +10,9 @@ extends Node2D
 ## 【相机】2D 正交，直接把逻辑坐标（格）× TILE_PX 当世界坐标；
 ## 地图居中显示。不做跟随 —— 地图最大 20×20，一屏能看全。
 
+# 【阵营常量】用专门的纯数据脚本（`types.gd`），不要写死 0/1，
+# 也不要 preload `unit_actor.gd`（会成环，本轮在 statistics.gd 上踩过）。
+const TeamScript := preload("res://src/core/types.gd")
 const GameClockScript := preload("res://src/core/time/game_clock.gd")
 const BattleMapScript := preload("res://src/core/map/battle_map.gd")
 const BeaconLayerScript := preload("res://src/core/map/beacon_layer.gd")
@@ -500,10 +503,15 @@ func _on_toolbar_button(id: String) -> void:
 		ToolbarScript.BTN_INTRO:
 			# 玩家显式点的「关卡介绍」：**强制打开**（不受"首次"限制）
 			_show_level_intro(true)
+			# 【D-29】策划案 v2 3.2 的「提示」按钮：多次点击后会转成「推荐阵型 → 一键过关」。
+			# 本阶段只做**点击计数**，到阈值时如实告诉玩家该功能还没做 ——
+			# 比"什么都不做"诚实，也比"假装有"强。
+			_hint_clicks += 1
+			if _hint_clicks >= HINT_TO_RECOMMEND:
+				_show_banner("已点提示 %d 次：「推荐阵型 / 一键过关」尚未实现（策划案 v2 3.2）"
+					% _hint_clicks, Color(0.95, 0.85, 0.55), 2.5)
 		ToolbarScript.BTN_HELP:
 			_show_help()
-		ToolbarScript.BTN_HELP:
-			_show_banner("机制说明面板在 M5-8 落地", Color(0.9, 0.9, 0.6))
 		ToolbarScript.BTN_BEACON:
 			# 模式开关本身由工具条负责；这里只给玩家反馈
 			var on: bool = toolbar != null and bool(toolbar.get("beacon_mode"))
@@ -513,6 +521,8 @@ func _on_toolbar_button(id: String) -> void:
 			_do_start()
 		ToolbarScript.BTN_RESET:
 			_do_reset()
+		ToolbarScript.BTN_CLEAR:
+			_do_clear()
 		ToolbarScript.BTN_SPEED:
 			pass    # 速度变化由 speed_changed 信号处理
 
@@ -536,6 +546,52 @@ func _do_start() -> void:
 		return
 	if bool(session.call("start")):
 		_show_banner("推演开始", Color(0.7, 1.0, 0.7), 1.0)
+
+
+## 「提示」按钮的点击次数（D-29：策划案说多次点击后会变成「推荐阵型」）
+var _hint_clicks := 0
+## 点到这个次数就该出现「推荐阵型」了（策划案没给具体次数，取 3）
+const HINT_TO_RECOMMEND := 3
+
+
+## 「清空」（D-33，策划案 v2 3.2）：「清除所有我方单位，回到关卡开始」。
+##
+## 【实现 = 重置 + 让我方单位退场】先走「重置」回到开局（时钟、位置、血量、信号都回初始），
+## 再让每个我方单位走**真实的退场路径** `die()`（它会从战斗状态里注销、关掉受击盒、换外观）。
+## 这样不需要另写一套"移除单位"，也不会留下半死不活的对象。
+##
+## 【为什么横幅要写"按重置可恢复"】预置单位模型下清空后场上没有我方单位，
+## 玩家如果不知道能恢复，会以为关卡坏了（`LevelSession.reset()` 会复活单位，确实能恢复）。
+func _do_clear() -> void:
+	if session == null:
+		return
+	session.call("reset")
+	var removed := 0
+	for u in (session.get("units") as Array):
+		if u == null:
+			continue
+		if int(u.get("team")) != TeamScript.TEAM_ALLY:
+			continue
+		if bool(u.get("is_dead")):
+			continue
+		u.call("die")
+		removed += 1
+	_show_banner("已清空我方单位 %d 个（按「重置」可恢复）" % removed,
+		Color(1.0, 0.78, 0.55), 2.5)
+	_refresh_invalid_badge()
+
+
+## 场上还活着的我方单位数（清空用例与 HUD 都用它，避免各自写一套口径）
+func ally_alive_count() -> int:
+	if session == null:
+		return 0
+	var n := 0
+	for u in (session.get("units") as Array):
+		if u == null:
+			continue
+		if int(u.get("team")) == TeamScript.TEAM_ALLY and not bool(u.get("is_dead")):
+			n += 1
+	return n
 
 
 func _do_reset() -> void:

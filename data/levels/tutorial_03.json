@@ -21,7 +21,7 @@
   "units": [
     { "team": "ally", "type": "standard_attack", "pos": [1, 5], "overrides": {} },
     { "team": "ally", "type": "ice", "pos": [1, 6], "overrides": {} },
-    { "team": "enemy", "type": "basic_enemy", "pos": [5, 0], "overrides": { "range": 2 } }
+    { "team": "enemy", "type": "basic_enemy", "pos": [5, 0], "overrides": { "range": 7 } }
   ],
   "win": {
     "logic": "any",

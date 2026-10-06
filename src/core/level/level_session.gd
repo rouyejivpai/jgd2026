@@ -140,6 +140,8 @@ func setup(p_host: Node, p_level, p_clock, p_stats: Dictionary) -> Array[String]
 		unit.call("setup", team, pos, stats)
 		unit.set("type_id", type_id)
 		unit.set("overrides", e.get("overrides", {}))
+		# 【buff 接口预留】(D-28)：原样搬运，不做任何解释或校验（校验在 LevelData 里做过了）
+		unit.set("buffs", (e.get("buffs", []) as Array).duplicate())
 		unit.set("battle_map", map)
 		unit.set("battle_state", battle_state)
 		# 单位由**本会话**按 tick 驱动，关掉引擎的自动物理，避免重复推进

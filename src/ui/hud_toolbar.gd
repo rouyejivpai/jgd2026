@@ -2,8 +2,8 @@ class_name HudToolbar
 extends PanelContainer
 ## 详细设计：[docs/design/10-主界面与HUD.md](../../docs/design/10-主界面与HUD.md) 1.3 / 4.2
 ##
-## 顶部工具条：**六个按钮，从左到右固定顺序**
-## 退出 / 关卡介绍 / 机制说明 / 开始 / 重置 / 倍速
+## 顶部工具条：**从左到右固定顺序**
+## 退出 / 关卡介绍 / 机制说明 / 信标 / 开始 / 重置 / 清空 / 倍速
 ##
 ## 【为什么用代码搭而不是手写 .tscn】按钮顺序、禁用规则、速度挡位都是
 ## 「可断言的行为」，用代码搭就能被 headless 测试逐条验证；.tscn 手写则
@@ -19,12 +19,15 @@ const BTN_HELP := "help"
 const BTN_BEACON := "beacon"
 const BTN_START := "start"
 const BTN_RESET := "reset"
+## 「清空」（D-33，策划案 v2 3.2：「清除所有我方单位，回到关卡开始」）
+const BTN_CLEAR := "clear"
 const BTN_SPEED := "speed"
 
 ## 固定顺序（验收要求「从左到右」）。
 ## 「信标」按钮按详设 10 的 4.2 放在「机制说明」之后、「开始」之前 ——
 ## 它是编制期的操作开关，紧挨着开始按钮更顺手。
-const BUTTON_ORDER := [BTN_EXIT, BTN_INTRO, BTN_HELP, BTN_BEACON, BTN_START, BTN_RESET, BTN_SPEED]
+const BUTTON_ORDER := [BTN_EXIT, BTN_INTRO, BTN_HELP, BTN_BEACON, BTN_START, BTN_RESET,
+	BTN_CLEAR, BTN_SPEED]
 
 const LABELS := {
 	BTN_EXIT: "退出",
@@ -33,6 +36,7 @@ const LABELS := {
 	BTN_BEACON: "信标",
 	BTN_START: "开始",
 	BTN_RESET: "重置",
+	BTN_CLEAR: "清空",
 	BTN_SPEED: "倍速",
 }
 

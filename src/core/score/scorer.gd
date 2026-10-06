@@ -13,7 +13,8 @@ const VERDICT_WIN := 1
 const VERDICT_LOSE := 2
 
 ## 缺省系数（`scoring.json` 读不到时的兜底，与 D-14 一致）
-const DEFAULT_COEFFICIENTS := {"complexity": 10.0, "beacon": 10.0, "time": 1.0}
+const DEFAULT_COEFFICIENTS := {"complexity": 10.0, "beacon": 10.0, "time": 1.0,
+	"units": 10.0}
 
 
 ## 计算结算数据。
@@ -39,19 +40,22 @@ static func compute(level_id: String, verdict: int, stats, coefficients: Diction
 	var c1 := _coef(coefficients, "complexity")
 	var c2 := _coef(coefficients, "beacon")
 	var c3 := _coef(coefficients, "time")
+	var c4 := _coef(coefficients, "units")
 
 	rd.computed = true
 	if stats != null:
 		rd.condition_count = int(stats.get("condition_count"))
 		rd.action_count = int(stats.get("action_count"))
 		rd.beacon_count = int(stats.get("beacon_count"))
+		rd.unit_count = int(stats.get("unit_count"))
 		rd.elapsed_time = float(stats.get("elapsed_time"))
 
-	# 复杂度 = (行为数 + 条件数) × C1；信标 = 个数 × C2；时间 = 秒数 × C3
+	# 策划案 v2 3.6 的四项：所用人数 × C4、复杂度 × C1、Cost 消耗（＝信标数）× C2、时间 × C3
 	rd.complexity_cost = float(rd.action_count + rd.condition_count) * c1
 	rd.beacon_cost = float(rd.beacon_count) * c2
+	rd.unit_cost = float(rd.unit_count) * c4
 	rd.time_cost = rd.elapsed_time * c3
-	rd.total_score = rd.complexity_cost + rd.beacon_cost + rd.time_cost
+	rd.total_score = (rd.complexity_cost + rd.beacon_cost + rd.unit_cost + rd.time_cost)
 
 	# 最佳记录：首次通关即写入；之后只在更优时更新
 	if best_before < 0.0 or rd.total_score < best_before:

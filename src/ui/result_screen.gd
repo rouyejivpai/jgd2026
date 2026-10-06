@@ -159,9 +159,10 @@ func show_result(rd) -> void:
 		_detail.text = "提示：失败时不计算得分、也不写入最佳记录。"
 	else:
 		_total.text = "总分 %.1f" % float(rd.get("total_score"))
-		_detail.text = "明细：条件 %d 个 · 行为 %d 个 · 信标 %d 个 · 用时 %.1f 秒" % [
+		_detail.text = "明细：条件 %d 个 · 行为 %d 个 · 信标 %d 个 · 我方单位 %d 个 · 用时 %.1f 秒" % [
 			int(rd.get("condition_count")), int(rd.get("action_count")),
-			int(rd.get("beacon_count")), float(rd.get("elapsed_time"))]
+			int(rd.get("beacon_count")), int(rd.get("unit_count")),
+			float(rd.get("elapsed_time"))]
 		var best := float(rd.get("best_score"))
 		if bool(rd.get("is_new_record")):
 			_record.text = "新纪录！历史最佳 %.1f" % best
@@ -186,7 +187,9 @@ func show_result(rd) -> void:
 func _rebuild_rows(rd) -> void:
 	for c in _rows.get_children():
 		c.queue_free()
+	# 【顺序按策划案 v2 3.6】所用人数 / 指令复杂度 / Cost 消耗（＝信标）/ 所用时间
 	var items := [
+		["所用人数", float(rd.get("unit_cost"))],
 		["指令复杂度", float(rd.get("complexity_cost"))],
 		["信标成本", float(rd.get("beacon_cost"))],
 		["时间成本", float(rd.get("time_cost"))],
