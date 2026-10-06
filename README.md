@@ -13,8 +13,8 @@
 
 | 验收 | 规模 | 命令 |
 |---|---|---|
-| 端到端冒烟 | **1123 项断言**，约 20 秒 | `res://tools/smoke_test.tscn`（无窗口） |
-| 视觉回归 | **17 张截图 + 282 项像素断言** | `res://tools/capture_screens.tscn` + `tools/check_shots.py` |
+| 端到端冒烟 | **1219 项断言**，约 20 秒 | `res://tools/smoke_test.tscn`（无窗口） |
+| 视觉回归 | **18 张截图 + 303 项像素断言** | `res://tools/capture_screens.tscn` + `tools/check_shots.py` |
 
 逐项证据见 [`docs/验收证据.md`](docs/验收证据.md)，开发过程与踩坑记录见 [`docs/开发进度.md`](docs/开发进度.md)。
 
