@@ -40,6 +40,9 @@ var _walls_root: Node2D = null
 ## 已放置的信标：索引(1 起) → 瓦片 Vector2i。
 ## 由信标层写入（M1-5）；单位移动时通过 beacon_logic_position() 读目标。
 var _beacons: Dictionary = {}
+## 【D-22】每个单位**自己的**信标序列：owner(entity_id) → Array[Vector2i]，顺序即该单位的序号。
+## `_beacons` 仍是"全局有序表"（配额与计分按它算），这一份只回答"这个单位的第 N 个信标在哪"。
+var _owned_beacons: Dictionary = {}
 
 
 func _ready() -> void:
@@ -225,17 +228,78 @@ func goal_cells() -> Array[Vector2i]:
 ## 覆盖式设置信标放置表。索引从 1 开始（与玩家看到的序号一致）。
 ## placements 是瓦片坐标数组，第 1 个元素的索引是 1。
 func set_beacons(placements: Array) -> void:
+	# 不给归属时一律按"无主"处理（编辑器与部分用例走这条路）
+	var owners: Array = []
+	for _i in placements.size():
+		owners.append(0)
+	set_beacons_owned(placements, owners)
+
+
+## 覆盖式设置（带归属）。placements 与 owners 等长，owners[i] 是第 i 个信标归属的单位 entity_id（0＝无主）
+func set_beacons_owned(placements: Array, owners: Array) -> void:
 	_beacons.clear()
+	_owned_beacons.clear()
 	for i in placements.size():
 		var t = placements[i]
+		var tile := Vector2i.ZERO
 		if t is Vector2i:
-			_beacons[i + 1] = t
+			tile = t
 		elif t is Vector2:
-			_beacons[i + 1] = Vector2i(int(round((t as Vector2).x)), int(round((t as Vector2).y)))
+			tile = Vector2i(int(round((t as Vector2).x)), int(round((t as Vector2).y)))
+		else:
+			continue
+		_beacons[i + 1] = tile
+		var owner := int(owners[i]) if i < owners.size() else 0
+		if owner > 0:
+			if not _owned_beacons.has(owner):
+				_owned_beacons[owner] = []
+			(_owned_beacons[owner] as Array).append(tile)
+
+
+## 某单位自己的信标序列（顺序即它的序号）
+func owned_beacons(owner_id: int) -> Array:
+	var arr = _owned_beacons.get(owner_id, [])
+	return (arr as Array) if arr is Array else []
+
+
+func owned_beacon_count(owner_id: int) -> int:
+	return owned_beacons(owner_id).size()
+
+
+## 【兼容开关】整张图是否"没有任何信标带归属"。
+##
+## 是 → 说明数据来自编辑器直接 `set_beacons()` 或旧版本：按**全局序号**解析（旧行为）。
+## 否 → 场上已经有"某单位的信标"这回事了：**严格按单位自己的序列**解析，不共用。
+##
+## 【为什么不能只看"传进来的 owner<=0"】那样写的话，测试用无主信标、
+## 单位却传自己的 entity_id（>0），就会判成"它没有信标"→ 单位原地不动。
+func beacons_are_unowned() -> bool:
+	return _owned_beacons.is_empty()
+
+
+## 某单位的第 ordinal 个信标（1 起）是否还在
+func has_beacon_for(owner_id: int, ordinal: int) -> bool:
+	if beacons_are_unowned() or owner_id <= 0:
+		return has_beacon(ordinal)
+	var arr := owned_beacons(owner_id)
+	return ordinal >= 1 and ordinal <= arr.size()
+
+
+## 【D-22 的核心】某单位的第 ordinal 个信标的逻辑坐标。
+## 单位的「沿着信标移动」引用的是**自己**的序号，不再共用全局序号。
+func beacon_logic_position_for(owner_id: int, ordinal: int) -> Variant:
+	if beacons_are_unowned() or owner_id <= 0:
+		return beacon_logic_position(ordinal)
+	var arr := owned_beacons(owner_id)
+	if ordinal < 1 or ordinal > arr.size():
+		return null
+	var t: Vector2i = arr[ordinal - 1]
+	return tile_to_logic(t.x, t.y)
 
 
 func clear_beacons() -> void:
 	_beacons.clear()
+	_owned_beacons.clear()
 
 
 func has_beacon(index: int) -> bool:

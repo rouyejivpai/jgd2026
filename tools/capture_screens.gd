@@ -25,6 +25,7 @@ const OUT_DEFAULT := "D:/jgd2026/_shots"
 const TILE_PX := 64.0
 
 ## 给单位直接写规则用（截图脚本要制造"子弹在飞"的那一帧）
+const StoryPlayerScript := preload("res://src/ui/story_player.gd")
 const RuleEngineScript := preload("res://src/core/rule/rule_engine.gd")
 const RuleActionScript := preload("res://src/core/rule/action.gd")
 
@@ -180,6 +181,17 @@ func _run() -> void:
 	await _shot("16_editor_new_level", ed)
 
 	# ---- 17. 编辑器的「打开关卡」列表（用户要求：列表项显示关卡名称）----
+	# ---- 18. 剧情播放器（D-25，策划案 v2 3.7）----
+	var story: Control = StoryPlayerScript.new()
+	add_child(story)
+	story.call("load_story", StoryPlayerScript.DEFAULT_STORY)
+	story.call("open_player")
+	await _settle(10)
+	await _shot("18_story_player", story)
+	story.call("skip_all")
+	story.queue_free()
+	await _settle(6)
+
 	ed.call("_do_open_level_menu")
 	await _settle(14)
 	await _shot("17_editor_open_level", ed)
@@ -392,6 +404,11 @@ func _shot(shot_name: String, scene = null) -> void:
 			if esess != null:
 				meta["editor_map"] = {"w": int(esess.call("map_width")),
 					"h": int(esess.call("map_height"))}
+		# 剧情播放器（D-25）：拍它时 scene 就是播放器自己
+		if scene.has_method("segment_count"):
+			meta["story_showing"] = bool(scene.call("is_open"))
+			meta["story_segments"] = int(scene.call("segment_count"))
+			meta["story_rect"] = _rect_arr(scene.call("panel_rect"))
 		var insp = scene.get("inspector")
 		if insp != null:
 			# 【期望值由数据算出来】"该不该有秒数控件"取决于关卡里有没有
@@ -587,10 +604,24 @@ func _beacon_tiles(scene) -> Array:
 	var bl = scene.get("beacon_layer")
 	if bl == null:
 		return out
+	# 【D-22】信标按归属单位着色，所以元数据要带上 owner 与**渲染器实际用的颜色**，
+	# 像素断言才能按颜色采样（而不是按写死的青色）。
+	var rend = scene.get("renderer")
 	for i in range(1, int(bl.call("count")) + 1):
 		var t = bl.call("at", i)      # at() 是 1 起的序号
-		if t != null:
-			out.append([int((t as Vector2i).x), int((t as Vector2i).y)])
+		if t == null:
+			continue
+		var owner := int(bl.call("owner_at", i))
+		var col: Array = [0.35, 0.80, 1.00]
+		if rend != null and rend.has_method("beacon_face_color"):
+			var c: Color = rend.call("beacon_face_color", owner)
+			col = [c.r, c.g, c.b]
+		out.append({
+			"tile": [int((t as Vector2i).x), int((t as Vector2i).y)],
+			"owner": owner,
+			"ordinal": int(bl.call("owner_ordinal", i)),
+			"color": col,
+		})
 	return out
 
 

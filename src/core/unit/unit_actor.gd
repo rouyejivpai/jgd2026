@@ -292,6 +292,14 @@ func current_beacon_target() -> Variant:
 	if battle_map == null:
 		return null
 	var idx := int(beacon_sequence[beacon_cursor])
+	# 【D-22】先按"**本单位自己的**信标"解析：序号是它在自己序列里的第几个。
+	# 只有无主信标（owner<=0，编辑器与部分用例）才回落到全局序号。
+	if battle_map.has_method("beacon_logic_position_for"):
+		if battle_map.has_method("has_beacon_for") \
+				and not bool(battle_map.call("has_beacon_for", entity_id, idx)):
+			return null
+		var p_own = battle_map.call("beacon_logic_position_for", entity_id, idx)
+		return (p_own as Vector2) if p_own is Vector2 else null
 	if battle_map.has_method("has_beacon") and not bool(battle_map.call("has_beacon", idx)):
 		return null
 	if battle_map.has_method("beacon_logic_position"):

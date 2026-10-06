@@ -18,8 +18,11 @@ extends RefCounted
 ## （同时发 EventBus.beacon_changed 供 UI 订阅）
 signal changed(count: int, quota: int)
 
-## 信标列表：第 i 个元素的序号是 i+1
+## 信标列表：第 i 个元素的序号是 i+1（**全局序号**，配额与计分按它算）
 var placements: Array[Vector2i] = []
+## 【D-22】与 placements 等长的**归属**数组：第 i 个信标归哪个单位（entity_id），0＝无主。
+## 用它回答"这个单位自己的信标是哪些、分别是它的第几个"。
+var owners: Array[int] = []
 
 ## 本关配额（可放信标总数）
 var quota := 0
@@ -33,13 +36,19 @@ func setup(map, beacon_quota: int) -> void:
 	battle_map = map
 	quota = maxi(beacon_quota, 0)
 	placements.clear()
+	owners.clear()
 	push_to_map()
 	_emit_changed()
 
 
 ## 把当前信标同步到地图（地图是单位移动时读取的权威来源）
 func push_to_map() -> void:
-	if battle_map != null and battle_map.has_method("set_beacons"):
+	if battle_map == null:
+		return
+	# 优先走带归属的接口（D-22）；老接口保留兼容
+	if battle_map.has_method("set_beacons_owned"):
+		battle_map.call("set_beacons_owned", placements, owners)
+	elif battle_map.has_method("set_beacons"):
 		battle_map.call("set_beacons", placements)
 
 
@@ -89,9 +98,10 @@ func at(index: int) -> Variant:
 # 编辑
 # ---------------------------------------------------------------------------
 
-## 放一个信标。成功返回它的序号（1 起），失败返回 0。
+## 放一个信标。成功返回它的**全局序号**（1 起），失败返回 0。
 ## 失败原因：配额已满 / 格子不可放 / 地图未绑定。
-func add_beacon(tile: Vector2i) -> int:
+## `owner` 是归属单位（D-22）：0 表示无主（编辑器/旧用例）。
+func add_beacon(tile: Vector2i, owner: int = 0) -> int:
 	if battle_map == null:
 		return 0
 	if is_full():
@@ -99,9 +109,61 @@ func add_beacon(tile: Vector2i) -> int:
 	if not can_place(tile):
 		return 0
 	placements.append(tile)
+	owners.append(owner)
 	push_to_map()
 	_emit_changed()
 	return placements.size()
+
+
+# ---------------------------------------------------------------------------
+# 归属查询（D-22：每个单位有自己的信标，不可公用）
+# ---------------------------------------------------------------------------
+
+## 第 index 个信标（1 起）归谁；0＝无主
+func owner_at(index: int) -> int:
+	if index < 1 or index > owners.size():
+		return 0
+	return owners[index - 1]
+
+
+## 某单位已放的信标数
+func count_of(owner: int) -> int:
+	var n := 0
+	for o in owners:
+		if o == owner:
+			n += 1
+	return n
+
+
+## 某单位自己的信标（按它的序号排列）
+func beacons_of(owner: int) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for i in placements.size():
+		if owners[i] == owner:
+			out.append(placements[i])
+	return out
+
+
+## 第 index 个信标（1 起）是**它归属单位的第几个**；无主时返回全局序号
+func owner_ordinal(index: int) -> int:
+	if index < 1 or index > placements.size():
+		return 0
+	var owner := owners[index - 1]
+	if owner <= 0:
+		return index
+	var k := 0
+	for i in range(0, index):
+		if owners[i] == owner:
+			k += 1
+	return k
+
+
+## 某单位最后一个信标的**全局序号**（右键撤回用）；没有则返回 0
+func last_index_of(owner: int) -> int:
+	for i in range(placements.size() - 1, -1, -1):
+		if owners[i] == owner:
+			return i + 1
+	return 0
 
 
 ## 撤回第 index 个信标（1 起）。成功返回 true。
@@ -110,6 +172,7 @@ func remove_at(index: int) -> bool:
 	if index < 1 or index > placements.size():
 		return false
 	placements.remove_at(index - 1)
+	owners.remove_at(index - 1)
 	push_to_map()
 	_emit_changed()
 	return true
@@ -126,6 +189,7 @@ func remove_tile(tile: Vector2i) -> bool:
 ## 全部撤回（重置关卡时用；玩家的信标要保留，所以重置不调它）
 func clear() -> void:
 	placements.clear()
+	owners.clear()
 	push_to_map()
 	_emit_changed()
 

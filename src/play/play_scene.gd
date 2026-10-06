@@ -330,6 +330,9 @@ func _click_at(world_pos: Vector2) -> void:
 			rule_panel.call("set_sibling_units", _ally_units())
 			session.call("refresh_invalid_reasons")     # 打开时先算一遍，别让旧标记留着
 			rule_panel.call("open_for", u)
+			# 【D-22】打开后按"这个单位自己的信标数"刷新候选（open_for 之后才知道是谁）
+			rule_panel.call("set_context",
+				int(beacon_layer.call("count_of", int(u.get("entity_id")))), _signal_count())
 			_apply_camera_offset()
 		return
 	# 点空地：关掉抽屉（详设 09 的 4.1「点地图空白关闭」）
@@ -360,22 +363,64 @@ func _unit_at_world(world_pos: Vector2) -> Node2D:
 ## 【为什么把坐标当参数】原来的写法内部直接读 `get_global_mouse_position()`，
 ## 于是 headless 测试无法构造「点在合法格上」的场景 —— 只能测到「点无效位置被拒」
 ## 这一半。坐标作为参数传入后，放置逻辑可以被完整验证（M5 实测）。
+## 【D-22】放下的信标该归谁：
+## · 指令面板开着 → 归正在编辑的那个单位（"先选单位再放它自己的信标"）
+## · 否则只有 1 个存活我方 → 归它（没有歧义，省一步点击）
+## · 否则 → -1，拒绝放置并提示（不可公用，猜错归属比拒绝更糟）
+func _beacon_owner() -> int:
+	if rule_panel != null and bool(rule_panel.call("is_open")):
+		var u = rule_panel.call("current_unit")
+		if u != null:
+			return int(u.get("entity_id"))
+	if session == null:
+		return -1
+	var allies: Array = []
+	for u2 in (session.get("units") as Array):
+		if u2 == null:
+			continue
+		if int(u2.get("team")) == TeamScript.TEAM_ALLY and not bool(u2.get("is_dead")):
+			allies.append(u2)
+	if allies.size() == 1:
+		return int((allies[0] as Node).get("entity_id"))
+	return -1
+
+
+## 指令面板的"可选信标数"：**该单位自己的**信标（D-22），没有归属时退回全局
+func _beacon_count_for_owner() -> int:
+	var owner := _beacon_owner()
+	if owner > 0:
+		return int(beacon_layer.call("count_of", owner))
+	return int(beacon_layer.call("count"))
+
+
 func try_place_beacon_at(world_pos: Vector2) -> int:
 	# 只有编制期能放信标（推演期信标不可改）
 	if session == null or bool(session.call("is_running")):
 		return 0
+	var owner := _beacon_owner()
+	if owner < 0:
+		_show_banner("先点一个单位，再放它自己的信标", Color(1.0, 0.85, 0.5), 1.2)
+		return 0
 	var tile: Vector2i = session.get("map").call("world_to_tile", world_pos)
 	if not bool(beacon_layer.call("can_place", tile)):
 		return 0
-	var idx: int = int(beacon_layer.call("add_beacon", tile))
+	var idx: int = int(beacon_layer.call("add_beacon", tile, owner))
 	if idx > 0:
-		_show_banner("信标 %d" % idx, Color(0.6, 0.9, 1.0), 0.7)
+		var ordinal: int = int(beacon_layer.call("owner_ordinal", idx))
+		_show_banner("信标 %d" % ordinal, Color(0.6, 0.9, 1.0), 0.7)
 	return idx
 
 
 func _undo_last_beacon() -> void:
 	if session != null and bool(session.call("is_running")):
 		return
+	# 【D-22】右键撤回"当前归属单位自己的最后一个信标"；没有归属时退回全局最后一个
+	var owner := _beacon_owner()
+	if owner > 0:
+		var gi: int = int(beacon_layer.call("last_index_of", owner))
+		if gi > 0:
+			beacon_layer.call("remove_at", gi)
+			return
 	var n: int = int(beacon_layer.call("count"))
 	if n <= 0:
 		return
@@ -450,7 +495,8 @@ func _on_beacons_changed(used, quota) -> void:
 	# 【信标数变了要同步给指令面板】条件里的「信标」下拉是按实际放置数生成的，
 	# 信标是玩家动态放的（详设 09 的 3.2 明确要求每次重建候选项）。
 	if rule_panel != null:
-		rule_panel.call("set_context", int(used), _signal_count())
+		# 【D-22】候选列表按"当前编辑单位自己的信标"给，不是全局总数
+		rule_panel.call("set_context", _beacon_count_for_owner(), _signal_count())
 	# 信标数变了 → 引用了不存在信标的指令要立刻标黄（详设 09 的 4.5：
 	# 编制期信标变动时主动重算，而不是等推演期求值才发现）
 	_refresh_invalid_badge()

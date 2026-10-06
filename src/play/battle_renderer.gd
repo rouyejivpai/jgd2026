@@ -226,6 +226,23 @@ func _draw_frame(w: int, h: int) -> void:
 	draw_rect(Rect2(full.end.x - t, full.position.y, t, full.size.y), COLOR_BORDER, true)
 
 
+## 信标颜色：无主（编辑器/旧数据）用原来的青色；有主则按单位 id 取一个稳定色相。
+## 同色相之间靠明度差也能区分（最多同时几个单位，够用）。
+func _beacon_color(owner: int) -> Color:
+	if owner <= 0:
+		return COLOR_BEACON
+	var h := float((owner * 47) % 360) / 360.0
+	return Color.from_hsv(h, 0.55, 0.95)
+
+
+## 对外报出"某归属的信标用的是什么颜色"。
+##
+## 截图元数据要按**这个**颜色去采样，而不是自己再写一份配色公式 ——
+## 两份公式一旦漂移，就会出现"信标颜色不对"的假失败（D-22 让颜色按单位变化后尤其危险）。
+func beacon_face_color(owner: int) -> Color:
+	return _beacon_color(owner)
+
+
 ## 绘制信标：圆点 + 序号（序号就是规则里引用的编号，必须看得见）
 func _draw_beacons() -> void:
 	if beacon_layer == null:
@@ -241,9 +258,15 @@ func _draw_beacons() -> void:
 			continue
 		var tile: Vector2i = tp
 		var centre := tile_centre(tile.x, tile.y)
-		draw_circle(centre, BEACON_R * TILE_PX, COLOR_BEACON)
-		draw_arc(centre, BEACON_R * TILE_PX, 0.0, TAU, 32, COLOR_BEACON_EDGE, 3.0, true)
-		var label := str(idx)
+		# 【D-22】按归属单位着色：多单位时"各自的 1 号"会同时出现，
+		# 只靠数字区分不了，必须颜色也分得开。
+		var owner: int = int(beacon_layer.call("owner_at", idx))
+		var face := _beacon_color(owner)
+		draw_circle(centre, BEACON_R * TILE_PX, face)
+		draw_arc(centre, BEACON_R * TILE_PX, 0.0, TAU, 32,
+			face.lightened(0.55), 3.0, true)
+		# 号码用**该单位自己的序号**（规则里引用的就是它）
+		var label := str(int(beacon_layer.call("owner_ordinal", idx)))
 		var fs := 30
 		var tw := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs)
 		draw_string(font, centre + Vector2(-tw.x * 0.5, tw.y * 0.34), label,

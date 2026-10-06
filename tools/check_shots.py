@@ -102,6 +102,7 @@ def check_shot(img: Image.Image, meta: dict, verbose: bool, other: dict) -> None
     # 所以直接把共享量提到开头，让后面任何位置都能安全使用。
     tile_px = meta.get("tile_px", 64.0)
     modal_up = (bool(ui.get("intro_showing")) or bool(ui.get("result_showing"))
+                or bool(meta.get("story_showing"))
                 or bool(ui.get("help_showing")) or bool(ui.get("pause_showing")))
     # 抽屉展开时它盖住的那块区域不能做颜色断言（否则会把抽屉底色当成瓦片颜色）
     occl_x = dr[0] + dr[2] if drawer_open else -1e9
@@ -524,15 +525,52 @@ def check_shot(img: Image.Image, meta: dict, verbose: bool, other: dict) -> None
 
 
     # 信标：在中心周围一圈里找信标底色（避开中心的序号数字）
-    for tile in (meta.get("beacons") or []):
+    #
+    # 【D-22 之后颜色按归属单位变化】所以期望色取**元数据里渲染器报出的颜色**，
+    # 不是写死的青色；旧的纯瓦片格式仍兼容（回落到 C_BEACON）。
+    for entry in (meta.get("beacons") or []):
+        if isinstance(entry, dict):
+            tile = entry.get("tile")
+            want = tuple(entry.get("color") or C_BEACON)
+            owner = int(entry.get("owner", 0) or 0)
+            ordinal = int(entry.get("ordinal", 1) or 1)
+        else:
+            tile, want, owner, ordinal = entry, C_BEACON, 0, 1
+        if tile is None:
+            continue
         sx, sy = to_screen(tile, meta)
         if occluded(sx, sy) or on_vision_ring(tile):
             continue
         pts = sample_ring(img, sx, sy, tile_px * meta.get("zoom", 1.0) * 0.13)
-        hit = sum(1 for p in pts if near(p, C_BEACON, 0.10))
+        hit = sum(1 for p in pts if near(p, want, 0.16))
         if verbose:
-            print(f"    [标定] 信标{tile} 屏幕({sx},{sy}) 环上命中 {hit}/{len(pts)} 采样={[tuple(round(c,2) for c in p) for p in pts[:3]]}")
-        ok(hit >= 2, f"{name}: **信标{tile} 画在瓦片中心**（环上 {hit}/{len(pts)} 点匹配信标色）")
+            print(f"    [标定] 信标{tile}(归属{owner}) 屏幕({sx},{sy}) 环上命中 {hit}/{len(pts)} 期望色={tuple(round(c,2) for c in want)}")
+        ok(hit >= 2,
+           f"{name}: **信标{tile} 画在瓦片中心**（环上 {hit}/{len(pts)} 点匹配它归属单位的颜色）")
+        if owner > 0:
+            ok(ordinal >= 1,
+               f"{name}: 信标{tile} 的序号是**该单位自己的第 {ordinal} 个**（D-22 不可公用）")
+
+    # 剧情播放器（D-25）
+    if "story" in name:
+        ok(bool(meta.get("story_showing")), f"{name}: 该图应当正在显示剧情播放器")
+        ok(int(meta.get("story_segments", 0)) >= 2,
+           f"{name}: 剧本至少 2 段（实际 {meta.get('story_segments')}）")
+        # 【两种格式都认】capture 那边用 `_rect_arr()` 输出 **[x, y, w, h]**；
+        # 我第一版按字典读（sr.get("x")）直接 AttributeError 把整个检查器打断了。
+        sr = meta.get("story_rect")
+        if isinstance(sr, dict):
+            rx, ry = float(sr.get("x", 0)), float(sr.get("y", 0))
+            rw, rh = float(sr.get("w", 0)), float(sr.get("h", 0))
+        elif isinstance(sr, (list, tuple)) and len(sr) >= 4:
+            rx, ry, rw, rh = (float(v) for v in sr[:4])
+        else:
+            rx = ry = rw = rh = 0.0
+        if rw > 0 and rh > 0:
+            ok(0 <= rx <= 600 and 0 <= ry <= 400,
+               f"{name}: 剧情面板留了边距（x={rx:.0f}, y={ry:.0f}）")
+            ok(rw > 1000 and rh > 500,
+               f"{name}: 剧情面板够大（{rw:.0f}x{rh:.0f}）")
 
     for tile in (meta.get("goals") or []):
         sx, sy = to_screen(tile, meta)

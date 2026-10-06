@@ -74,7 +74,7 @@ var _completed: Array[String] = []
 const EXPECTED_CHECKS: Array[String] = [
 	"autoloads", "collision_layers", "audio_buses", "input_actions", "signal_bus",
 	"game_helpers", "scene_loop", "phantom_camera", "main_menu", "layout", "pause_menu",
-	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "v2_ui", "story", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
+	"types", "clock", "map", "state", "beacons", "rule", "unit", "combat", "level", "editor", "session", "rule_panel", "type_change", "nav_queue", "dyn_calls", "split_layout", "hud", "score", "result_ui", "conditions_ui", "help_ui", "help_consistency", "editor_ui", "editor_labels", "open_level", "v2_ui", "story", "beacon_owner", "req_gaps", "loader_badge", "new_level", "rule_copy", "reorder", "vision", "three_levels", "playthrough", "level_files_untouched", "harness_selfcheck", "no_stubs", "data",
 ]
 
 func _ready() -> void:
@@ -165,6 +165,7 @@ func _run() -> void:
 	await _check_editor_open_level()
 	await _check_v2_ui()
 	await _check_story()
+	await _check_beacon_owner()
 	await _check_new_level()
 	await _check_loader_errors_and_badge()
 	await _check_rule_copy()
@@ -3246,6 +3247,131 @@ func _check_nav_queue() -> void:
 			break
 	_ok(idle_ok, "切换完成后 SceneLoader 回到空闲（后续导航还能用）")
 	_done("nav_queue")
+
+
+## 信标 per-unit（D-22）：每个单位有自己的信标、不可公用。
+##
+## 【为什么必须单独一条】原来那批信标用例走的都是"无主"路径（直接 set_beacons），
+## 它们只能证明"没有回归"，**证明不了"归属真的生效"**。
+## 这条用一个"全局第 1 个 ≠ 我的第 1 个"的构造把语义钉死。
+func _check_beacon_owner() -> void:
+	print("\n-- 信标归属（D-22：每个单位自己的信标，不可公用）--")
+
+	var bm: Node = BattleMapScript.new()
+	add_child(bm)
+	var grid := {"width": 6, "height": 6, "tiles": []}
+	for _r in 6:
+		grid["tiles"].append([0, 0, 0, 0, 0, 0])
+	_ok((bm.call("load_from", grid) as Array).is_empty(), "6×6 空地地图装配成功")
+	var layer: RefCounted = BeaconLayerScript.new()
+	layer.call("setup", bm, 8)
+
+	# 【关键构造】先放 B 的信标，再放 A 的：
+	# 全局第 1 个属于 B，而 A 自己的第 1 个是全局第 2 个。
+	var b_tile := Vector2i(5, 5)
+	var a1 := Vector2i(0, 0)
+	var a2 := Vector2i(1, 0)
+	_ok(int(layer.call("add_beacon", b_tile, 20)) == 1, "B(20) 的第 1 个信标 = 全局第 1 个")
+	_ok(int(layer.call("add_beacon", a1, 10)) == 2, "A(10) 的第 1 个信标 = 全局第 2 个")
+	_ok(int(layer.call("add_beacon", a2, 10)) == 3, "A(10) 的第 2 个信标 = 全局第 3 个")
+
+	# 全局口径（配额与计分按它算）不变
+	_ok(int(layer.call("count")) == 3, "全局计数仍是 3（配额/计分口径不变）")
+	_ok(int(layer.call("count_of", 10)) == 2, "**A 自己有 2 个**")
+	_ok(int(layer.call("count_of", 20)) == 1, "**B 自己有 1 个**")
+	_ok(int(layer.call("count_of", 99)) == 0, "没放过信标的单位是 0 个")
+
+	# 归属与"它是这个单位的第几个"
+	_ok(int(layer.call("owner_at", 1)) == 20 and int(layer.call("owner_at", 2)) == 10,
+		"逐个数归属正确（1→B, 2→A）")
+	_ok(int(layer.call("owner_ordinal", 2)) == 1,
+		"**全局第 2 个 = A 自己的第 1 个**（实际 %d）" % int(layer.call("owner_ordinal", 2)))
+	_ok(int(layer.call("owner_ordinal", 3)) == 2, "全局第 3 个 = A 自己的第 2 个")
+	_ok(int(layer.call("owner_ordinal", 1)) == 1, "全局第 1 个 = B 自己的第 1 个")
+	_ok(int(layer.call("last_index_of", 10)) == 3, "A 最后一个信标的全局序号是 3")
+	_ok(int(layer.call("last_index_of", 20)) == 1, "B 最后一个信标的全局序号是 1")
+	var a_tiles: Array = layer.call("beacons_of", 10)
+	_ok(a_tiles == [a1, a2], "beacons_of(A) 按它自己的顺序（%s）" % str(a_tiles))
+
+	# ---- 核心断言：单位解析到的是**自己的**第 N 个，而不是全局第 N 个 ----
+	var pos_a1: Variant = bm.call("beacon_logic_position_for", 10, 1)
+	var expected: Vector2 = bm.call("tile_to_logic", a1.x, a1.y)
+	_ok(pos_a1 != null and (pos_a1 as Vector2).is_equal_approx(expected),
+		"**A 的第 1 个信标解析到 (0,0) 而不是全局第 1 个 (5,5)**（实际 %s）" % str(pos_a1))
+	var pos_b1: Variant = bm.call("beacon_logic_position_for", 20, 1)
+	_ok(pos_b1 != null and (pos_b1 as Vector2).is_equal_approx(
+			bm.call("tile_to_logic", b_tile.x, b_tile.y)),
+		"B 的第 1 个信标解析到它自己那个 (5,5)")
+	# 不可公用：A 只有 2 个，引用第 3 个必须无效
+	_ok(not bool(bm.call("has_beacon_for", 10, 3)),
+		"**A 引用自己的第 3 个信标 → 无效**（它只有 2 个）")
+	_ok(bool(bm.call("has_beacon", 3)), "（对照）全局第 3 个信标确实存在 —— 不可公用就体现在这里")
+	_ok(not bool(bm.call("has_beacon_for", 99, 1)), "从没放过信标的单位引用第 1 个也无效")
+
+	# 撤回中间一个：全局序号重排，但各单位的"第几个"不受别人影响
+	_ok(bool(layer.call("remove_at", 1)), "撤回全局第 1 个（B 的那个）")
+	_ok(int(layer.call("count_of", 20)) == 0 and int(layer.call("count_of", 10)) == 2,
+		"B 归零，**A 的 2 个不受影响**（%d / %d）"
+		% [int(layer.call("count_of", 20)), int(layer.call("count_of", 10))])
+	_ok(int(layer.call("owner_ordinal", 1)) == 1 and int(layer.call("owner_ordinal", 2)) == 2,
+		"撤回别人之后，A 的序号仍是 1、2")
+	layer.call("clear")
+	_ok(int(layer.call("count")) == 0 and int(layer.call("count_of", 10)) == 0,
+		"clear() 之后归属也一起清空")
+	bm.free()
+	await get_tree().process_frame
+
+	# ---- 与玩法场景的接线：没选单位不能放；选了就归它 ----
+	Save.clear_intro_seen()
+	var ps = PlaySceneScript.instantiate()
+	ps.call("load_level_id", "tutorial_03")      # 两个我方单位
+	add_child(ps)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var dlg1: Control = ps.get("intro_dialog")
+	if dlg1 != null and bool(dlg1.call("is_showing")):
+		dlg1.call("press_ok")
+		await get_tree().process_frame
+	var lay2: RefCounted = ps.get("beacon_layer")
+	var units2: Array = ps.get("session").get("units")
+	var allies2: Array = []
+	for u in units2:
+		if u != null and int(u.get("team")) == UnitActorScript.TEAM_ALLY:
+			allies2.append(u)
+	_ok(allies2.size() == 2, "第三关有 2 个我方单位（%d）" % allies2.size())
+
+	# 两个单位且没打开任何指令面板 → 归属不明，**拒绝放置并提示**
+	var r0: int = int(ps.call("try_place_beacon_at", Vector2(0.5 * 64.0, 5.5 * 64.0)))
+	_ok(r0 == 0, "**没选单位时拒绝放置**（避免猜错归属，实际返回 %d）" % r0)
+	_ok(int(lay2.call("count")) == 0, "拒绝后场上仍然没有信标")
+	var bn := ps.find_child("Banner", true, false) as Label
+	_ok(bn != null and str(bn.text).contains("先点一个单位"),
+		"**并且明确提示要先选单位**（%s）" % (str(bn.text) if bn != null else "无横幅"))
+
+	# 为某个单位打开指令面板 → 放下的信标归它
+	var rp: Control = ps.get("rule_panel")
+	var ice_unit: Node = allies2[1]
+	var ice_id := int(ice_unit.get("entity_id"))
+	rp.call("open_for", ice_unit)
+	await get_tree().process_frame
+	var r1: int = int(ps.call("try_place_beacon_at", Vector2(0.5 * 64.0, 5.5 * 64.0)))
+	_ok(r1 == 1, "打开某单位的指令面板后能放置（返回 %d）" % r1)
+	_ok(int(lay2.call("owner_at", 1)) == ice_id,
+		"**放下的信标归正在编辑的那个单位**（owner=%d，期望 %d）"
+		% [int(lay2.call("owner_at", 1)), ice_id])
+	_ok(int(lay2.call("owner_ordinal", 1)) == 1, "它是这个单位的第 1 个信标")
+	# 再放一个：同一个单位的第 2 个
+	ps.call("try_place_beacon_at", Vector2(1.5 * 64.0, 5.5 * 64.0))
+	_ok(int(lay2.call("count_of", ice_id)) == 2, "**该单位自己有 2 个**")
+	# 右键撤回：撤的是**当前单位自己的最后一个**，不动别人的
+	rp.call("close")
+	await get_tree().process_frame
+	ps.call("_undo_last_beacon")
+	_ok(int(lay2.call("count_of", ice_id)) == 1,
+		"右键撤回当前单位自己的最后一个（剩 %d）" % int(lay2.call("count_of", ice_id)))
+	ps.queue_free()
+	await get_tree().process_frame
+	_done("beacon_owner")
 
 
 ## 剧情播放器（D-25，策划案 v2 3.7）
