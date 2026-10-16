@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "id": "M01",
+      "label": "底字字节与已确认源素材一致",
+      "pass": true,
+      "result": "c42b1f797e3dcadf27b917b947ce1fd9340ea120085109f47d93fc6876e7fd98"
+    },
+    {
+      "id": "M02",
+      "label": "扫光遮罩 alpha 与底字逐像素一致",
+      "pass": true,
+      "result": "0 差异像素"
+    },
+    {
+      "id": "M03",
+      "label": "108 帧全部可解码且尺寸正确",
+      "pass": true,
+      "result": "108 帧，580×149"
+    },
+    {
+      "id": "M04",
+      "label": "扫光不溢出原字形 alpha",
+      "pass": true,
+      "result": "0 溢出像素"
+    },
+    {
+      "id": "M05",
+      "label": "第 0 帧完全透明",
+      "pass": true,
+      "result": "0 非透明像素"
+    },
+    {
+      "id": "M06",
+      "label": "交付图层回贴与已确认最亮帧像素对照",
+      "pass": true,
+      "result": "{\"max\":0,\"over2\":0}"
+    },
+    {
+      "id": "M07",
+      "label": "静止态图层透明、标题坐标未变",
+      "pass": true,
+      "result": "原坐标，t=0 光效隐藏"
+    },
+    {
+      "id": "M08",
+      "label": "光晕尺寸与偏移合同匹配",
+      "pass": true,
+      "result": "660×229，offset (-40,-40)"
+    }
+  ]
+}

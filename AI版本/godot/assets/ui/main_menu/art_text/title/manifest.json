@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "screen": "main_menu",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "_comment": "R6 / 10 §1.5 独立资源交付；现行 apply_ui_manifest.py 的 KINDS 尚不支持 art_text，因此未替换现行主菜单 manifest 或运行时布局。程序方 P8 接入本合同。",
+  "elements": [
+    {
+      "id": "game_title_art",
+      "kind": "art_text",
+      "rect": [
+        148,
+        261,
+        580,
+        149
+      ],
+      "layers": [
+        {
+          "id": "base",
+          "file": "base.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mix"
+        },
+        {
+          "id": "glow",
+          "file": "glow.png",
+          "offset": [
+            -40,
+            -40
+          ],
+          "size": [
+            660,
+            229
+          ],
+          "blend": "screen"
+        },
+        {
+          "id": "sweep_mask",
+          "file": "sweep_mask.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mask"
+        }
+      ],
+      "frames": {
+        "role": "sweep_overlay",
+        "files": [
+          "sweep_frames/0000.png",
+          "sweep_frames/0001.png",
+          "sweep_frames/0002.png",
+          "sweep_frames/0003.png",
+          "sweep_frames/0004.png",
+          "sweep_frames/0005.png",
+          "sweep_frames/0006.png",
+          "sweep_frames/0007.png",
+          "sweep_frames/0008.png",
+          "sweep_frames/0009.png",
+          "sweep_frames/0010.png",
+          "sweep_frames/0011.png",
+          "sweep_frames/0012.png",
+          "sweep_frames/0013.png",
+          "sweep_frames/0014.png",
+          "sweep_frames/0015.png",
+          "sweep_frames/0016.png",
+          "sweep_frames/0017.png",
+          "sweep_frames/0018.png",
+          "sweep_frames/0019.png",
+          "sweep_frames/0020.png",
+          "sweep_frames/0021.png",
+          "sweep_frames/0022.png",
+          "sweep_frames/0023.png",
+          "sweep_frames/0024.png",
+          "sweep_frames/0025.png",
+          "sweep_frames/0026.png",
+          "sweep_frames/0027.png",
+          "sweep_frames/0028.png",
+          "sweep_frames/0029.png",
+          "sweep_frames/0030.png",
+          "sweep_frames/0031.png",
+          "sweep_frames/0032.png",
+          "sweep_frames/0033.png",
+          "sweep_frames/0034.png",
+          "sweep_frames/0035.png",
+          "sweep_frames/0036.png",
+          "sweep_frames/0037.png",
+          "sweep_frames/0038.png",
+          "sweep_frames/0039.png",
+          "sweep_frames/0040.png",
+          "sweep_frames/0041.png",
+          "sweep_frames/0042.png",
+          "sweep_frames/0043.png",
+          "sweep_frames/0044.png",
+          "sweep_frames/0045.png",
+          "sweep_frames/0046.png",
+          "sweep_frames/0047.png",
+          "sweep_frames/0048.png",
+          "sweep_frames/0049.png",
+          "sweep_frames/0050.png",
+          "sweep_frames/0051.png",
+          "sweep_frames/0052.png",
+          "sweep_frames/0053.png",
+          "sweep_frames/0054.png",
+          "sweep_frames/0055.png",
+          "sweep_frames/0056.png",
+          "sweep_frames/0057.png",
+          "sweep_frames/0058.png",
+          "sweep_frames/0059.png",
+          "sweep_frames/0060.png",
+          "sweep_frames/0061.png",
+          "sweep_frames/0062.png",
+          "sweep_frames/0063.png",
+          "sweep_frames/0064.png",
+          "sweep_frames/0065.png",
+          "sweep_frames/0066.png",
+          "sweep_frames/0067.png",
+          "sweep_frames/0068.png",
+          "sweep_frames/0069.png",
+          "sweep_frames/0070.png",
+          "sweep_frames/0071.png",
+          "sweep_frames/0072.png",
+          "sweep_frames/0073.png",
+          "sweep_frames/0074.png",
+          "sweep_frames/0075.png",
+          "sweep_frames/0076.png",
+          "sweep_frames/0077.png",
+          "sweep_frames/0078.png",
+          "sweep_frames/0079.png",
+          "sweep_frames/0080.png",
+          "sweep_frames/0081.png",
+          "sweep_frames/0082.png",
+          "sweep_frames/0083.png",
+          "sweep_frames/0084.png",
+          "sweep_frames/0085.png",
+          "sweep_frames/0086.png",
+          "sweep_frames/0087.png",
+          "sweep_frames/0088.png",
+          "sweep_frames/0089.png",
+          "sweep_frames/0090.png",
+          "sweep_frames/0091.png",
+          "sweep_frames/0092.png",
+          "sweep_frames/0093.png",
+          "sweep_frames/0094.png",
+          "sweep_frames/0095.png",
+          "sweep_frames/0096.png",
+          "sweep_frames/0097.png",
+          "sweep_frames/0098.png",
+          "sweep_frames/0099.png",
+          "sweep_frames/0100.png",
+          "sweep_frames/0101.png",
+          "sweep_frames/0102.png",
+          "sweep_frames/0103.png",
+          "sweep_frames/0104.png",
+          "sweep_frames/0105.png",
+          "sweep_frames/0106.png",
+          "sweep_frames/0107.png"
+        ],
+        "fps": 30,
+        "count": 108,
+        "duration": 3.6,
+        "offset": [
+          0,
+          0
+        ],
+        "size": [
+          580,
+          149
+        ],
+        "blend": "mix",
+        "alpha_baked": true
+      },
+      "motion": {
+        "duration": 3.6,
+        "loop": true,
+        "glow_peak_opacity": 0.95,
+        "envelope": "sin(pi * phase / duration)^2",
+        "sweep_direction": "left_to_right",
+        "sweep_center_start": -130,
+        "sweep_center_end": 710,
+        "sweep_half_width": 110,
+        "sweep_opacity": "sqrt(envelope)",
+        "sweep_gradient": [
+          [
+            0,
+            "#FFBC4100"
+          ],
+          [
+            0.32,
+            "#FFBE487A"
+          ],
+          [
+            0.5,
+            "#FFCE6DEB"
+          ],
+          [
+            0.68,
+            "#FFBE487A"
+          ],
+          [
+            1,
+            "#FFBC4100"
+          ]
+        ],
+        "disabled_phase": 0
+      }
+    }
+  ]
+}

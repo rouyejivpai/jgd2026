@@ -1,0 +1,71 @@
+{
+  "fonts": {
+    "NotoSerifSC": "assets/fonts/NotoSerifSC-Regular.otf",
+    "NotoSerifSC-Bold": "assets/fonts/NotoSerifSC-Bold.otf",
+    "Cinzel": "assets/fonts/Cinzel-Regular.ttf"
+  },
+  "bindings": {
+    "subtitle": {
+      "key": null,
+      "sample": "ARTIFICIAL DIVINITY",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "btn_start": {
+      "key": "ui.menu_start",
+      "sample": "开始",
+      "align": "center",
+      "font_file": "NotoSerifSC-Bold.otf"
+    },
+    "btn_settings": {
+      "key": "ui.menu_settings",
+      "sample": "设置",
+      "align": "center",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "btn_quit": {
+      "key": "ui.menu_quit",
+      "sample": "退出",
+      "align": "center",
+      "font_file": "NotoSerifSC-Regular.otf"
+    }
+  },
+  "error_bindings": {
+    "subtitle": {
+      "key": null,
+      "sample": "ARTIFICIAL DIVINITY",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "btn_start": {
+      "key": "ui.menu_start",
+      "sample": "开始",
+      "align": "center",
+      "font_file": "NotoSerifSC-Bold.otf"
+    },
+    "btn_settings": {
+      "key": "ui.menu_settings",
+      "sample": "设置",
+      "align": "center",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "btn_quit": {
+      "key": "ui.menu_quit",
+      "sample": "退出",
+      "align": "center",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "error_text": {
+      "key": "ui.data_error",
+      "sample": "数据加载出错，请查看日志（user://logs）",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    }
+  },
+  "reference_states": {
+    "btn_start": "hover"
+  },
+  "error_states": {
+    "btn_start": "disabled"
+  }
+}

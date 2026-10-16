@@ -1,0 +1,137 @@
+{
+ "_doc": "实机核对（ui_geom_check 文字 + ui_border_check 金边逐行扫描）后的修正：rect = 框体 [dx, dy, dw, dh]；nudge = 文字平移 [dx, dy]；size_adjust = 字号增减（设计像素）",
+ "det_c1_label": {
+  "nudge": [
+   -1,
+   1
+  ]
+ },
+ "det_c2_label": {
+  "nudge": [
+   -2,
+   1
+  ]
+ },
+ "det_note": {
+  "nudge": [
+   0,
+   -1
+  ]
+ },
+ "det_stat_value_0": {
+  "nudge": [
+   0,
+   2
+  ]
+ },
+ "det_stat_value_1": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "det_stat_value_3": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "det_stat_value_4": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "beacon_mode_loop": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "beacon_mode_auto": {
+  "nudge": [
+   -2,
+   1
+  ]
+ },
+ "beacon_done": {
+  "nudge": [
+   0,
+   2
+  ]
+ },
+ "det_add": {
+  "nudge": [
+   -1,
+   0
+  ]
+ },
+ "det_row2": {
+  "rect": [
+   0,
+   -2,
+   0,
+   5
+  ]
+ },
+ "det_remove": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "det_delete": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "det_p2": {
+  "nudge": [
+   0,
+   1
+  ]
+ },
+ "det_row1": {
+  "rect": [
+   0,
+   -2,
+   0,
+   5
+  ]
+ },
+ "det_c1_narrow": {
+  "rect": [
+   0,
+   0,
+   6,
+   0
+  ]
+ },
+ "det_cparam": {
+  "rect": [
+   -4,
+   0,
+   4,
+   0
+  ]
+ },
+ "det_track": {
+  "rect": [
+   0,
+   -2
+  ]
+ },
+ "det_thumb": {
+  "rect": [
+   0,
+   -2
+  ]
+ },
+ "det_override": {
+  "rect": [
+   2,
+   0
+  ]
+ }
+}

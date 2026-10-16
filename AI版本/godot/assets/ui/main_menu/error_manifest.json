@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "screen": "main_menu_error",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "bg",
+      "kind": "image",
+      "file": "slices/bg.png",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ]
+    },
+    {
+      "id": "game_title_art",
+      "kind": "image",
+      "file": "slices/game_title_art.png",
+      "rect": [
+        148,
+        261,
+        580,
+        149
+      ]
+    },
+    {
+      "id": "subtitle",
+      "kind": "text_style",
+      "rect": [
+        164,
+        452,
+        600,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        600,
+        44
+      ],
+      "font": {
+        "family": "Cinzel",
+        "size": 22,
+        "color": "#B8AA8E"
+      }
+    },
+    {
+      "id": "btn_start",
+      "kind": "button",
+      "rect": [
+        148,
+        560,
+        500,
+        116
+      ],
+      "states": {
+        "normal": "slices/btn_start_normal.png",
+        "hover": "slices/btn_start_hover.png",
+        "pressed": "slices/btn_start_pressed.png",
+        "disabled": "slices/btn_start_disabled.png"
+      },
+      "text_rect": [
+        64,
+        22,
+        372,
+        72
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 30,
+        "color": "#8D7E8F"
+      },
+      "ninepatch": [
+        64,
+        32,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "btn_settings",
+      "kind": "button",
+      "rect": [
+        148,
+        702,
+        500,
+        116
+      ],
+      "states": {
+        "normal": "slices/btn_settings_normal.png",
+        "hover": "slices/btn_settings_hover.png",
+        "pressed": "slices/btn_settings_pressed.png",
+        "disabled": "slices/btn_settings_disabled.png"
+      },
+      "text_rect": [
+        64,
+        22,
+        372,
+        72
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 30,
+        "color": "#E8DCC4"
+      },
+      "ninepatch": [
+        64,
+        32,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "btn_quit",
+      "kind": "button",
+      "rect": [
+        148,
+        844,
+        500,
+        116
+      ],
+      "states": {
+        "normal": "slices/btn_quit_normal.png",
+        "hover": "slices/btn_quit_hover.png",
+        "pressed": "slices/btn_quit_pressed.png",
+        "disabled": "slices/btn_quit_disabled.png"
+      },
+      "text_rect": [
+        64,
+        22,
+        372,
+        72
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 30,
+        "color": "#E8DCC4"
+      },
+      "ninepatch": [
+        64,
+        32,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "error_bar",
+      "kind": "image",
+      "file": "slices/error_bar.png",
+      "rect": [
+        0,
+        1016,
+        1920,
+        64
+      ]
+    },
+    {
+      "id": "error_text",
+      "kind": "text_style",
+      "rect": [
+        40,
+        1024,
+        1840,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        1840,
+        48
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 24,
+        "color": "#E8DCC4"
+      }
+    }
+  ]
+}

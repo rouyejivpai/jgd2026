@@ -1,0 +1,1184 @@
+{
+  "version": 1,
+  "canonical": "ui_01",
+  "canvas": [
+    1672,
+    941
+  ],
+  "font": "res://assets/fonts/NotoSerifSC-Regular.otf",
+  "assets": {
+    "quest": {
+      "file": "slices/quest.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        25,
+        25,
+        360,
+        125
+      ],
+      "placement": [
+        45,
+        36,
+        325,
+        95
+      ],
+      "sha256": "62c2bc96a8eb97ee4df4635f47ec38715562021e42027d0dbb00d2874a77a063",
+      "text_free": true
+    },
+    "timer": {
+      "file": "slices/timer.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        680,
+        15,
+        320,
+        125
+      ],
+      "placement": [
+        702,
+        26,
+        277,
+        102
+      ],
+      "sha256": "38a98279aaa2456dbbe2e56290b82a0e5e4363cf231197f18e2379601dd73169",
+      "text_free": true
+    },
+    "retry": {
+      "file": "slices/retry.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1167,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1184,
+        44,
+        67,
+        74
+      ],
+      "sha256": "e435b765b931b00fb7b8764512d15cf18fbe714966988178a68ba24eb8028bff",
+      "text_free": true
+    },
+    "speed1": {
+      "file": "slices/speed1.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1245,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1255,
+        44,
+        67,
+        74
+      ],
+      "sha256": "6ecf9f1250390907db28c822b83e385728dbb56700b39cfe9b1278f8e3fe6b39",
+      "text_free": true
+    },
+    "speed2": {
+      "file": "slices/speed2.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1323,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1326,
+        44,
+        67,
+        74
+      ],
+      "sha256": "96b7d7808f3fffadd0508c7c7b7cf184be47ff60cb5e6db20123141c573e9f4b",
+      "text_free": true
+    },
+    "pause": {
+      "file": "slices/pause.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1401,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1397,
+        44,
+        67,
+        74
+      ],
+      "sha256": "c91b301a8d6b9c536f6e6ac80e93e3b32147e9271d8a7e872b7c89f5d46bdd9f",
+      "text_free": true
+    },
+    "settings": {
+      "file": "slices/settings.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1479,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1468,
+        44,
+        67,
+        74
+      ],
+      "sha256": "e0c24b53e2e98735d1008b357d0625f5187da9f449e9413eea09ece054b5629c",
+      "text_free": true
+    },
+    "exit": {
+      "file": "slices/exit.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1557,
+        30,
+        80,
+        96
+      ],
+      "placement": [
+        1539,
+        44,
+        67,
+        74
+      ],
+      "sha256": "0fc566fb5ae98def1a117f4283cda04b0f4ca857d01146443e21ce2c578a2e8f",
+      "text_free": true
+    },
+    "task": {
+      "file": "slices/p6_task_clean.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1368,
+        124,
+        145,
+        62
+      ],
+      "placement": [
+        1407,
+        118,
+        112,
+        46
+      ],
+      "sha256": "fefdc485c046c93a812f9d9de354fc160f3ac27baf2fa03f76686e31f284c398",
+      "text_free": true
+    },
+    "mechanics": {
+      "file": "slices/mechanics.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1507,
+        124,
+        145,
+        62
+      ],
+      "placement": [
+        1525,
+        118,
+        112,
+        46
+      ],
+      "sha256": "b06d5f874464e4a0d23825e408931ce1d3ae319ca2ff00a03656b06088bf7086",
+      "text_free": true
+    },
+    "budget": {
+      "file": "slices/budget.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        15,
+        789,
+        339,
+        136
+      ],
+      "placement": [
+        24,
+        809,
+        274,
+        101
+      ],
+      "sha256": "9d2ce74868a565bcf3ef6dd66fc8d102eb4aa8e0cd2bc0fc559f12c1029a0b38",
+      "text_free": true
+    },
+    "start": {
+      "file": "slices/p6_start_clean.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1315,
+        793,
+        352,
+        136
+      ],
+      "placement": [
+        1354,
+        805,
+        298,
+        111
+      ],
+      "sha256": "42edc58cd68a95516ec10cb42b585a987c71caa17beddee714e6c8d7a9d5f91b",
+      "text_free": true
+    },
+    "clear": {
+      "file": "slices/p6_clear_clean.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1329,
+        732,
+        169,
+        70
+      ],
+      "placement": [
+        1366,
+        751,
+        128,
+        53
+      ],
+      "sha256": "c5a074f17acfb1ea16329c0e4d9201177592a70176b898c52ffa612348c777af",
+      "text_free": true
+    },
+    "hint": {
+      "file": "slices/hint.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1492,
+        732,
+        170,
+        70
+      ],
+      "placement": [
+        1502,
+        751,
+        136,
+        53
+      ],
+      "sha256": "94f459bc3fc0b272f9293a3160fc11fb178bdd56ee0ce027d1ed64096e7ca05a",
+      "text_free": true
+    },
+    "card_swift": {
+      "file": "slices/card_swift.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        366,
+        707,
+        188,
+        217
+      ],
+      "placement": [
+        369,
+        731,
+        168,
+        185
+      ],
+      "sha256": "ded07654fd56d3fb1c3ba56a5c8d33819768a4bbb76e405de06ebe7394ee1a0e",
+      "text_free": true
+    },
+    "card_striker": {
+      "file": "slices/card_striker.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        554,
+        707,
+        188,
+        217
+      ],
+      "placement": [
+        560,
+        731,
+        168,
+        185
+      ],
+      "sha256": "cc9279e2dc681e66aa09a283fd3b6373ba4978e208bf29d8c625097a86aa358c",
+      "text_free": true
+    },
+    "card_bulwark": {
+      "file": "slices/card_bulwark.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        742,
+        707,
+        188,
+        217
+      ],
+      "placement": [
+        751,
+        731,
+        168,
+        185
+      ],
+      "sha256": "0bc7397382b2ea76d60253b7509b949d31bb312a6b8b71e4efafa5e1236a4e40",
+      "text_free": true
+    },
+    "card_spitter": {
+      "file": "slices/card_spitter.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        930,
+        707,
+        188,
+        217
+      ],
+      "placement": [
+        942,
+        731,
+        168,
+        185
+      ],
+      "sha256": "566b6d3d07e71486658835882b0bee0a3333a297e99927b949e6fc63f32c2e30",
+      "text_free": true
+    },
+    "card_locked": {
+      "file": "slices/card_locked.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        1118,
+        707,
+        188,
+        217
+      ],
+      "placement": [
+        1133,
+        731,
+        168,
+        185
+      ],
+      "sha256": "249ef5a674963ad64822ca3aff96e8bfab844bc42f747265fef91a2053601f13",
+      "text_free": true
+    },
+    "cost_icon": {
+      "file": "slices/cost_icon.png",
+      "source": "tools/_raw/p3/unified_ui/hud_alpha.png",
+      "source_rect": [
+        380,
+        868,
+        51,
+        51
+      ],
+      "placement": null,
+      "sha256": "8980459a87bc085d1740e593b55ef2238248f04e743bd7289daa388cb1463ac7",
+      "text_free": true
+    },
+    "modal_panel": {
+      "file": "slices/modal_panel.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        359,
+        103,
+        956,
+        724
+      ],
+      "placement": [
+        369,
+        107,
+        934,
+        731
+      ],
+      "sha256": "5a1d55d602e159302797ebdd6e32d46d6f72f81b96507d8bc826f8911fd40a0d",
+      "text_free": true,
+      "nine_patch_margins": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    "command_panel": {
+      "file": "slices/command_panel.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        18,
+        124,
+        336,
+        225
+      ],
+      "placement": null,
+      "sha256": "18bae74d7338759d6366a5f6f828875b2439683759cc777ecea6316b29e470da",
+      "text_free": true,
+      "nine_patch_margins": [
+        44,
+        44,
+        44,
+        44
+      ]
+    },
+    "button_delete": {
+      "file": "slices/button_delete.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        21,
+        377,
+        190,
+        88
+      ],
+      "placement": null,
+      "sha256": "7a6a3b0d681ddeff82af771bc5f91e11968a68a311f5f62484e6a8d3138115e7",
+      "text_free": true
+    },
+    "button_add": {
+      "file": "slices/button_add.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        14,
+        480,
+        343,
+        91
+      ],
+      "placement": null,
+      "sha256": "76f8b43d0ac7b681ebf1b25cbfd813f386348b87082630fc8473a74a25f72b3d",
+      "text_free": true
+    },
+    "dropdown": {
+      "file": "slices/dropdown.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        23,
+        584,
+        323,
+        77
+      ],
+      "placement": null,
+      "sha256": "87839c46eeef5216d4608fc5b67ab9ee22c8074f1713d6f50f19ef06bc02b20c",
+      "text_free": true
+    },
+    "stats_panel": {
+      "file": "slices/stats_panel.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        1319,
+        171,
+        337,
+        110
+      ],
+      "placement": null,
+      "sha256": "bf67c7789500566c3b8e74442e1dcd99ad3be773a9bc7ac9a695b2ca33277651",
+      "text_free": true
+    },
+    "scrollbar": {
+      "file": "slices/scrollbar.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        1446,
+        300,
+        55,
+        309
+      ],
+      "placement": null,
+      "sha256": "148381afb10e720a7a6e73c8a80280f05b137b560858b43dfdde79377e0fd8f1",
+      "text_free": true,
+      "role": "完整造型参考；交互滚动使用 scroll_track + scroll_thumb 分离素材"
+    },
+    "scroll_thumb": {
+      "file": "slices/scroll_thumb.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        1463,
+        341,
+        17,
+        66
+      ],
+      "placement": null,
+      "sha256": "d36669904abfe1954ce291133d6db0eb97fd866fb8400206200f9e48d1da2f81",
+      "text_free": true
+    },
+    "scroll_track": {
+      "file": "slices/scroll_track.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        1462,
+        415,
+        22,
+        146
+      ],
+      "placement": null,
+      "sha256": "268328f4fc818b8fd5a40fce91d4cd6600ade21d3706a16191f8092c3da49551",
+      "text_free": true
+    },
+    "drag_handle": {
+      "file": "slices/drag_handle.png",
+      "source": "tools/_raw/p3/unified_ui/modal_alpha.png",
+      "source_rect": [
+        1527,
+        403,
+        64,
+        91
+      ],
+      "placement": null,
+      "sha256": "2d1ac6545dcdde7a6ca6f1c01c0977adffafb8a231144667076e4a4c2f609e18",
+      "text_free": true
+    },
+    "p6_beacon_badge": {
+      "file": "slices/p6_beacon_badge.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        48,
+        48
+      ],
+      "placement": null,
+      "sha256": "9f538be1b917407e30a1b6dc3dd3f657176e17404f7945d38c9e36ca600810fc",
+      "text_free": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ]
+    },
+    "p6_button_cancel": {
+      "file": "slices/p6_button_cancel.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        123,
+        47
+      ],
+      "placement": null,
+      "sha256": "bea24a2f1f03952e544b5a330253b9d22f23ec9405335aae68261d192350026a",
+      "text_free": true
+    },
+    "p6_button_close_outline": {
+      "file": "slices/p6_button_close_outline.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        108,
+        40
+      ],
+      "placement": null,
+      "sha256": "3472ce28fbccded0265b5ed1d3f44b35bd8327e965e9c5c170499c46899161ca",
+      "text_free": true
+    },
+    "p6_button_place": {
+      "file": "slices/p6_button_place.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        127,
+        47
+      ],
+      "placement": null,
+      "sha256": "d083c6814bdac13cd545a9d0b3dccfbb5e4fa05a7f83aece5af270fa8c89b311",
+      "text_free": true
+    },
+    "p6_button_remove": {
+      "file": "slices/p6_button_remove.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        108,
+        49
+      ],
+      "placement": null,
+      "sha256": "87d49891e447912f60d3dda75ffd766ac6e0fcf13ca63e206a4ebc3dda297551",
+      "text_free": true
+    },
+    "p6_button_result_purple": {
+      "file": "slices/p6_button_result_purple.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        240,
+        72
+      ],
+      "placement": null,
+      "sha256": "d215c714fb32dccd14829f38a7c7a440584393dcd870f4272e64d5954c3cd234",
+      "text_free": true,
+      "nine_patch_margins": [
+        34,
+        16,
+        34,
+        16
+      ]
+    },
+    "p6_button_result_teal": {
+      "file": "slices/p6_button_result_teal.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        240,
+        72
+      ],
+      "placement": null,
+      "sha256": "4e862f8fa615b4cadbd4b7358be6ae7a0a6d6e65664677d0c4f3033e5f512afa",
+      "text_free": true,
+      "nine_patch_margins": [
+        34,
+        16,
+        34,
+        16
+      ]
+    },
+    "p6_clear_clean": {
+      "file": "slices/p6_clear_clean.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        169,
+        70
+      ],
+      "placement": null,
+      "sha256": "c5a074f17acfb1ea16329c0e4d9201177592a70176b898c52ffa612348c777af",
+      "text_free": true
+    },
+    "p6_close_gem": {
+      "file": "slices/p6_close_gem.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        16,
+        20
+      ],
+      "placement": null,
+      "sha256": "33a56c1e0fc8470dcec5cea064d45ebbdd889185738911943d6214dabad70bdb",
+      "text_free": true
+    },
+    "p6_crescent_moon": {
+      "file": "slices/p6_crescent_moon.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        35,
+        46
+      ],
+      "placement": null,
+      "sha256": "6c3df01cd046225293f98b4a29076b601790b02cbe976ec66ac4a524df3e03fe",
+      "text_free": true
+    },
+    "p6_defeat_compass": {
+      "file": "slices/p6_defeat_compass.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        280,
+        280
+      ],
+      "placement": null,
+      "sha256": "47f93f505715a5d44bec9b1a44d0caabb5a2281df63204b5b212df244a640784",
+      "text_free": true
+    },
+    "p6_defeat_divider": {
+      "file": "slices/p6_defeat_divider.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        710,
+        16
+      ],
+      "placement": null,
+      "sha256": "bd70fa8cdd94d9afe8957e9b32324900d180c4cfd05ab5f3840478e963a2d45e",
+      "text_free": true
+    },
+    "p6_footer_tab": {
+      "file": "slices/p6_footer_tab.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        260,
+        38
+      ],
+      "placement": null,
+      "sha256": "3fd15fb3e6a8f59449c5c5c731ec54c25c018c5fbb07d2802eeb4cc9df3a930b",
+      "text_free": true,
+      "nine_patch_margins": [
+        42,
+        15,
+        42,
+        7
+      ]
+    },
+    "p6_hp_bar_gold_frame": {
+      "file": "slices/p6_hp_bar_gold_frame.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        64,
+        8
+      ],
+      "placement": null,
+      "sha256": "aa1950b2194d3e217157ad03f9a172cbeb3e1f0f2b6a3a9904210037dde88f93",
+      "text_free": true,
+      "nine_patch_margins": [
+        5,
+        2,
+        5,
+        2
+      ]
+    },
+    "p6_placement_blocked_bubble": {
+      "file": "slices/p6_placement_blocked_bubble.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        249,
+        50
+      ],
+      "placement": null,
+      "sha256": "d773d45a8e1af619dfc3d70f3904d1229a4a9ec693d45a519426d618a3d6d8d3",
+      "text_free": true,
+      "nine_patch_margins": [
+        14,
+        12,
+        14,
+        12
+      ]
+    },
+    "p6_scroll_arrow_down": {
+      "file": "slices/p6_scroll_arrow_down.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        20,
+        14
+      ],
+      "placement": null,
+      "sha256": "97e6534e52d427ad8851ebf483dd8aa174637625a3a40185c1fe395059bb4d33",
+      "text_free": true
+    },
+    "p6_scroll_arrow_up": {
+      "file": "slices/p6_scroll_arrow_up.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        20,
+        14
+      ],
+      "placement": null,
+      "sha256": "ad52057781f817c711723e9c0ec10c4f5d18cf639e9c3d7eec4f16fb4455e00b",
+      "text_free": true
+    },
+    "p6_start_clean": {
+      "file": "slices/p6_start_clean.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        352,
+        136
+      ],
+      "placement": null,
+      "sha256": "42edc58cd68a95516ec10cb42b585a987c71caa17beddee714e6c8d7a9d5f91b",
+      "text_free": true
+    },
+    "p6_task_clean": {
+      "file": "slices/p6_task_clean.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        145,
+        62
+      ],
+      "placement": null,
+      "sha256": "fefdc485c046c93a812f9d9de354fc160f3ac27baf2fa03f76686e31f284c398",
+      "text_free": true
+    },
+    "p6_victory_sigil": {
+      "file": "slices/p6_victory_sigil.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        240,
+        240
+      ],
+      "placement": null,
+      "sha256": "bf7541403f2bfa02b453fba0761ad721d974ebb8ac3526b1f22c87fa08cbb342",
+      "text_free": true
+    },
+    "p6_victory_title_lines": {
+      "file": "slices/p6_victory_title_lines.png",
+      "source": "generated for docs/P6_MISSING_ASSETS.md",
+      "source_rect": [
+        0,
+        0,
+        660,
+        22
+      ],
+      "placement": null,
+      "sha256": "706db744e61e92e77abf96bf70eac4359b43c5f6971c51c3275ff23385944c1e",
+      "text_free": true
+    },
+    "p6_chapter_title_line": {
+      "file": "slices/p6_chapter_title_line.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "d9502f98567c8590c1bc58eb4195f6ca566f1aa066eeef3faa415960561e3ab7",
+      "text_free": true
+    },
+    "p6_chapter_title_plaque": {
+      "file": "slices/p6_chapter_title_plaque.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 1,1)",
+      "source_rect": [
+        13,
+        175,
+        424,
+        109
+      ],
+      "placement": null,
+      "sha256": "3c34e7ff7052c48d0b04cfdd10669dd75d8381a929c48ce1670c89c0b2959c11",
+      "text_free": true
+    },
+    "p6_chapter_panel_top_ornament": {
+      "file": "slices/p6_chapter_panel_top_ornament.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "75bf2a8e669f7afacdb7ea8652dc5961987ad975dc1513a0f6b9da7e7bda6d3d",
+      "text_free": true
+    },
+    "p6_chapter_panel_bottom_ornament": {
+      "file": "slices/p6_chapter_panel_bottom_ornament.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "2b130fa85697852ef1288a54a90c4e7cb01f3c0435ccfb38f4c55912d1ea0315",
+      "text_free": true
+    },
+    "p6_chapter_separator_diamond": {
+      "file": "slices/p6_chapter_separator_diamond.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 2,2)",
+      "source_rect": [
+        478,
+        638,
+        372,
+        41
+      ],
+      "placement": null,
+      "sha256": "2a82c54d4c9e71e755c80514ee7a7bcd6d4d714dfee8315482aa1946239c9015",
+      "text_free": true
+    },
+    "p6_chapter_enter_teal": {
+      "file": "slices/p6_chapter_enter_teal.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "a56118a77d20940d3aedf5a2aec10140ac78421c8f3347dfe1d09fd5edae9192",
+      "text_free": true
+    },
+    "p6_chapter_enter_disabled": {
+      "file": "slices/p6_chapter_enter_disabled.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 1,3)",
+      "source_rect": [
+        897,
+        183,
+        422,
+        103
+      ],
+      "placement": null,
+      "sha256": "3316b31aed9cc5c50389eeb041ef9a54c7f364277f25200e517077098679ed01",
+      "text_free": true
+    },
+    "p6_chapter_story_dropdown": {
+      "file": "slices/p6_chapter_story_dropdown.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "5845f583034181ae0165a44780228b714a84526a5df48565e5ff74a9ffc8d124",
+      "text_free": true
+    },
+    "p6_chapter_replay": {
+      "file": "slices/p6_chapter_replay.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 1,4)",
+      "source_rect": [
+        1378,
+        175,
+        352,
+        109
+      ],
+      "placement": null,
+      "sha256": "a5060c16fd77694bf9e0e38334e73727ecbd334f1c1f3d38f271d01a60ab8f4e",
+      "text_free": true
+    },
+    "p6_chapter_nameplate": {
+      "file": "slices/p6_chapter_nameplate.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "b18be61790cfd7821fa3bc9a2fe25a7f52f3aacd0de2517642feffc856325db5",
+      "text_free": true
+    },
+    "p6_chapter_node_locked": {
+      "file": "slices/p6_chapter_node_locked.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "0656962ebd5c1b873228de7519eb9371437962e2ee065cd5493626a0aa56d6df",
+      "text_free": true
+    },
+    "p6_chapter_node_challengeable": {
+      "file": "slices/p6_chapter_node_challengeable.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "c01468bfc2040e576d9eefdf463ec7bc59ffe5b084dc772e417d19603e59b611",
+      "text_free": true
+    },
+    "p6_chapter_node_completed": {
+      "file": "slices/p6_chapter_node_completed.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "aaf4e98faa20fdef56bd1c55d815af0fcf1d24218cb82d7358e487196601d5ac",
+      "text_free": true
+    },
+    "p6_chapter_node_selected": {
+      "file": "slices/p6_chapter_node_selected.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "0e7e5b09895ae8a439f2fb2d07b12117366bb17af11e5481738870a346775365",
+      "text_free": true
+    },
+    "p6_chapter_node_boss": {
+      "file": "slices/p6_chapter_node_boss.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "13964f4e38453011c167b217272b00213204f5a34c864faa357514c0fc777f02",
+      "text_free": true
+    },
+    "p6_chapter_node_lock_marker": {
+      "file": "slices/p6_chapter_node_lock_marker.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "1c5f8f862396f122afc94892afaa8d474212785bb4854c4c6c47f1c0b231059d",
+      "text_free": true
+    },
+    "p6_chapter_node_check_marker": {
+      "file": "slices/p6_chapter_node_check_marker.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "a33cdae74e00a0ddaa02f24521025d9d5f9bc45257da5c91cc329be066ca85e1",
+      "text_free": true
+    },
+    "p6_chapter_link_diamond": {
+      "file": "slices/p6_chapter_link_diamond.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "462a68b82838706980a4c59e8c56bc882a9e137d401fbfe0242031c73e9934d4",
+      "text_free": true
+    },
+    "p6_chapter_scroll_rail": {
+      "file": "slices/p6_chapter_scroll_rail.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 2,1)",
+      "source_rect": [
+        28,
+        630,
+        396,
+        54
+      ],
+      "placement": null,
+      "sha256": "59fe43c61c0c905397a36406549c10135ba80154ab6c95335fea8e64a6ed644e",
+      "text_free": true
+    },
+    "p6_chapter_scroll_thumb": {
+      "file": "slices/p6_chapter_scroll_thumb.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "af7b85f45f5c1fdc3c74521c8096c4f284a0830f9b843c199a4f8f7a82888b85",
+      "text_free": true
+    },
+    "p6_chapter_placeholder_plaque": {
+      "file": "slices/p6_chapter_placeholder_plaque.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "31798a5d203b1b8f6aa2db4bb1b2451a2f70101d2d2feeec950a12d9f62ca8fc",
+      "text_free": true
+    },
+    "p6_chapter_astrolabe": {
+      "file": "slices/p6_chapter_astrolabe.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "cabeabb98a4456520a32f8f15e36f2711385874706f842170d32b08f53388492",
+      "text_free": true
+    },
+    "rake": {
+      "file": "../chapter/nodes/rake.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "e001d771684635c12946c502e1d6912d586c45f3072a520071ceb67e6e8b24f7",
+      "text_free": true
+    },
+    "grid": {
+      "file": "../chapter/nodes/grid.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "c8ac58024c2c114dafd60ee81f20a4bcea1baea8eef725eb7c38fa8fea2d6ba3",
+      "text_free": true
+    },
+    "shield": {
+      "file": "../chapter/nodes/shield.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "f5db3fa8f9983995337004548dce975c3804b94d66d0922bef8d37d5a4bc3e6a",
+      "text_free": true
+    },
+    "crosshair": {
+      "file": "../chapter/nodes/crosshair.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "ce0003d703841d32492324fbcd406bd6a254f3778b8d800c05f8b176ec73612e",
+      "text_free": true
+    },
+    "flower": {
+      "file": "../chapter/nodes/flower.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "87d7647bd834b02b50ee96099d4b376b8d1c4f471d89ffe400f7729c79e1b63d",
+      "text_free": true
+    },
+    "wolf_head": {
+      "file": "../chapter/nodes/wolf_head.png",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)",
+      "source_rect": null,
+      "placement": null,
+      "sha256": "e372a68bdbb45c03adaf9b950db775a9aca228540935d5b835d5b0d6c97342b0",
+      "text_free": true
+    },
+    "p6_chapter_title_moon_badge": {
+      "source_rect": null,
+      "placement": null,
+      "text_free": true,
+      "file": "slices/p6_chapter_title_moon_badge.png",
+      "sha256": "ced4073e6dde8d07b090b1a6c75b08a57f4d3ea6b5654c86bcc343b701aee268",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)"
+    },
+    "p6_chapter_button_back_red": {
+      "file": "slices/p6_chapter_button_back_red.png",
+      "source": "ImageGen transparent atlas: exec-24621f77-cbeb-4981-8cca-1287eaed5cc9.png (cell 1,2)",
+      "source_rect": [
+        474,
+        173,
+        384,
+        112
+      ],
+      "placement": null,
+      "sha256": "f4dfdc0b0c82c5f501d77687b5ab39abbe9a4065604045f1ab3d38194310c66f",
+      "text_free": true
+    },
+    "p6_chapter_button_settings_purple": {
+      "source_rect": null,
+      "placement": null,
+      "text_free": true,
+      "file": "slices/p6_chapter_button_settings_purple.png",
+      "sha256": "96e1c43505f18fbf0ef3ce091716aa61442988225c1beb41c257954f2d19703f",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)"
+    },
+    "p6_chapter_corner_gem": {
+      "source_rect": null,
+      "placement": null,
+      "text_free": true,
+      "file": "slices/p6_chapter_corner_gem.png",
+      "sha256": "7bfcd923d9a50eb2f708f89cdcd21ac2ebe2acf40ee731c80d5a6fddf06e6041",
+      "source": "ImageGen transparent sprite atlas crop (chapter-map style reference)"
+    }
+  },
+  "layers": {
+    "battlefield": 0,
+    "edge_backing": 10,
+    "hud": 20,
+    "modal_scrim": 100,
+    "modal": 101
+  },
+  "modal": {
+    "rect": [
+      369,
+      107,
+      934,
+      731
+    ],
+    "header": [
+      405,
+      133,
+      862,
+      113
+    ],
+    "stats": [
+      401,
+      257,
+      870,
+      54
+    ],
+    "scroll": [
+      388,
+      320,
+      899,
+      435
+    ],
+    "footer": [
+      405,
+      756,
+      862,
+      68
+    ],
+    "scroll_only_commands": true
+  },
+  "operator": {
+    "all": "∧",
+    "any": "∨",
+    "placement": "between-condition-one-and-condition-two",
+    "mapping": {
+      "∧": "SimTypes.ConditionMode.ALL",
+      "∨": "SimTypes.ConditionMode.ANY"
+    }
+  },
+  "notes": [
+    "原生整图→无字透明提取→原生像素裁切→同一坐标回拼；无字提取存在绘图工具重采样，不声称原整图像素无损抠取。",
+    "布局以 ui_01 为唯一基准；各页面不独立摆放公共 HUD。",
+    "切片与回拼预览已交付；未修改 Godot 运行场景或逻辑。"
+  ],
+  "implementation": {
+    "font_from_project": "project.godot theme/custom_font",
+    "shared_hud": "所有局内页面复用相同 asset 和 placement；固定出场只替换五卡槽内容",
+    "scale": "按 canvas 等比缩放，不为各状态重排",
+    "text": "所有切片无字；预览文字由项目内字体渲染",
+    "scroll": "只滚动指令区；标题、属性、底部固定；viewport裁切下方内容",
+    "input": "全屏遮罩拦截其他HUD点击；详情窗z=101，遮罩z=100，HUDz=20",
+    "status": "资产和回拼预览交付；未接入Godot运行场景"
+  },
+  "text_alignment": {
+    "reference": "pixel_review/text_anchors.json",
+    "implementation": "pixel_text.js",
+    "comparison": "pixel_review/index.html",
+    "position_tolerance_px": 1,
+    "glyph_size_tolerance": {
+      "height": 1.5,
+      "width": 3
+    },
+    "font": "NotoSerifSC-Regular.otf",
+    "warp_glyphs": false
+  }
+}

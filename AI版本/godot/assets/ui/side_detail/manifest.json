@@ -1,0 +1,2168 @@
+{
+ "schema_version": 1,
+ "screen": "side_detail",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "_comment": "由 tools/make_side_manifest.py 生成（批准整图 design.png + 图生图透明组件 + calibration.json），勿手改。",
+ "elements": [
+  {
+   "id": "det_panel",
+   "kind": "ninepatch",
+   "rect": [
+    1264,
+    0,
+    653,
+    1074
+   ],
+   "file": "slices/panel.png",
+   "ninepatch": [
+    48,
+    48,
+    48,
+    48
+   ]
+  },
+  {
+   "id": "det_portrait_ring",
+   "kind": "image",
+   "rect": [
+    1288,
+    37,
+    134,
+    132
+   ],
+   "file": "slices/portrait_ring.png"
+  },
+  {
+   "id": "det_portrait",
+   "kind": "flatbox",
+   "rect": [
+    1298,
+    46,
+    114,
+    114
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_remove",
+   "kind": "button",
+   "rect": [
+    1675,
+    22,
+    107,
+    52
+   ],
+   "states": {
+    "normal": "slices/btn_dark.png",
+    "hover": {
+     "file": "slices/btn_dark.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_dark.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_dark.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    14,
+    14
+   ],
+   "text_rect": [
+    12,
+    11,
+    84,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#E8E2E2"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1708.0,
+     39.0,
+     42.0,
+     21.0
+    ],
+    "ref_text": "移除"
+   }
+  },
+  {
+   "id": "det_close",
+   "kind": "button",
+   "rect": [
+    1788,
+    23,
+    107,
+    51
+   ],
+   "states": {
+    "normal": "slices/btn_red_large.png",
+    "hover": {
+     "file": "slices/btn_red_large.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_red_large.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_red_large.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    14,
+    14
+   ],
+   "text_rect": [
+    12,
+    9,
+    84,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#F7F1EE"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1821.0,
+     39.0,
+     42.0,
+     21.0
+    ],
+    "ref_text": "关闭"
+   }
+  },
+  {
+   "id": "det_stats",
+   "kind": "ninepatch",
+   "rect": [
+    1279,
+    207,
+    637,
+    107
+   ],
+   "file": "slices/stats.png",
+   "ninepatch": [
+    32,
+    32,
+    32,
+    32
+   ]
+  },
+  {
+   "id": "det_stat_icon_0",
+   "kind": "flatbox",
+   "rect": [
+    1308,
+    227,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_icon_1",
+   "kind": "flatbox",
+   "rect": [
+    1504,
+    227,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_icon_2",
+   "kind": "flatbox",
+   "rect": [
+    1700,
+    227,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_icon_3",
+   "kind": "flatbox",
+   "rect": [
+    1308,
+    271,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_icon_4",
+   "kind": "flatbox",
+   "rect": [
+    1504,
+    271,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_icon_5",
+   "kind": "flatbox",
+   "rect": [
+    1700,
+    271,
+    22,
+    22
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_scroll",
+   "kind": "flatbox",
+   "rect": [
+    1290,
+    344,
+    584,
+    568
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_track",
+   "kind": "ninepatch",
+   "rect": [
+    1882,
+    350,
+    8,
+    552
+   ],
+   "file": "slices/track.png",
+   "ninepatch": [
+    0,
+    6,
+    0,
+    6
+   ]
+  },
+  {
+   "id": "det_thumb",
+   "kind": "ninepatch",
+   "rect": [
+    1882,
+    352,
+    8,
+    150
+   ],
+   "file": "slices/thumb.png",
+   "ninepatch": [
+    0,
+    6,
+    0,
+    6
+   ]
+  },
+  {
+   "id": "det_row1",
+   "kind": "ninepatch",
+   "rect": [
+    1286,
+    338,
+    592,
+    259
+   ],
+   "file": "slices/card.png",
+   "ninepatch": [
+    36,
+    36,
+    36,
+    36
+   ]
+  },
+  {
+   "id": "det_row2",
+   "kind": "ninepatch",
+   "rect": [
+    1286,
+    594,
+    592,
+    259
+   ],
+   "file": "slices/card.png",
+   "ninepatch": [
+    36,
+    36,
+    36,
+    36
+   ]
+  },
+  {
+   "id": "det_handle",
+   "kind": "image",
+   "rect": [
+    1309,
+    367,
+    18,
+    28
+   ],
+   "file": "slices/handle.png"
+  },
+  {
+   "id": "det_override",
+   "kind": "toggle",
+   "rect": [
+    1474,
+    363,
+    35,
+    34
+   ],
+   "states": {
+    "off": "slices/check_off.png",
+    "on": "slices/check_on.png"
+   }
+  },
+  {
+   "id": "det_delete",
+   "kind": "button",
+   "rect": [
+    1765,
+    355,
+    96,
+    49
+   ],
+   "states": {
+    "normal": "slices/btn_red.png",
+    "hover": {
+     "file": "slices/btn_red.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_red.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_red.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    14,
+    14
+   ],
+   "text_rect": [
+    13,
+    10,
+    70,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#EDE1E0"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1792.0,
+     370.0,
+     42.0,
+     21.0
+    ],
+    "ref_text": "删除"
+   }
+  },
+  {
+   "id": "det_action",
+   "kind": "button",
+   "rect": [
+    1360,
+    411,
+    218,
+    47
+   ],
+   "states": {
+    "normal": "slices/dropdown.png",
+    "hover": {
+     "file": "slices/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    15,
+    9,
+    166,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CEC6CB"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1375.0,
+     426.0,
+     98.0,
+     19.0
+    ],
+    "ref_text": "沿我的信标"
+   }
+  },
+  {
+   "id": "det_p1",
+   "kind": "button",
+   "rect": [
+    1583,
+    411,
+    145,
+    47
+   ],
+   "states": {
+    "normal": "slices/dropdown.png",
+    "hover": {
+     "file": "slices/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    15,
+    9,
+    94,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CDC4CE"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1598.0,
+     426.0,
+     59.0,
+     19.0
+    ],
+    "ref_text": "沿路径"
+   }
+  },
+  {
+   "id": "det_p2",
+   "kind": "button",
+   "rect": [
+    1733,
+    411,
+    128,
+    47
+   ],
+   "states": {
+    "normal": "slices/dropdown.png",
+    "hover": {
+     "file": "slices/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    16,
+    9,
+    76,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D3CFD0"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1749.0,
+     428.0,
+     8.0,
+     16.0
+    ],
+    "ref_text": "1"
+   }
+  },
+  {
+   "id": "det_c1",
+   "kind": "button",
+   "rect": [
+    1377,
+    466,
+    427,
+    45
+   ],
+   "states": {
+    "normal": "slices/dropdown_wide.png",
+    "hover": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    16,
+    8,
+    370,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D8D0D0"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1393.0,
+     480.0,
+     39.0,
+     20.0
+    ],
+    "ref_text": "始终"
+   }
+  },
+  {
+   "id": "det_c1_narrow",
+   "kind": "button",
+   "rect": [
+    1377,
+    722,
+    306,
+    45
+   ],
+   "states": {
+    "normal": "slices/dropdown_wide.png",
+    "hover": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    19,
+    8,
+    250,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D1C9D3"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1396.0,
+     736.0,
+     80,
+     20
+    ],
+    "ref_text": "目标距离"
+   }
+  },
+  {
+   "id": "det_cparam",
+   "kind": "button",
+   "rect": [
+    1686,
+    722,
+    116,
+    45
+   ],
+   "states": {
+    "normal": "slices/dropdown.png",
+    "hover": {
+     "file": "slices/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    16,
+    8,
+    66,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C2B9BE"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1702.0,
+     738.5,
+     28,
+     15
+    ],
+    "ref_text": "< 3"
+   }
+  },
+  {
+   "id": "det_c2",
+   "kind": "button",
+   "rect": [
+    1377,
+    536,
+    427,
+    45
+   ],
+   "states": {
+    "normal": "slices/dropdown_wide.png",
+    "hover": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown_wide.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    16,
+    9,
+    370,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C6C0C4"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1393.0,
+     551.0,
+     18.0,
+     19.0
+    ],
+    "ref_text": "无"
+   }
+  },
+  {
+   "id": "det_logic_line_l",
+   "kind": "flatbox",
+   "rect": [
+    1380,
+    528,
+    174,
+    1
+   ],
+   "style": {
+    "bg": "#6E6670"
+   }
+  },
+  {
+   "id": "det_logic_line_r",
+   "kind": "flatbox",
+   "rect": [
+    1606,
+    528,
+    196,
+    1
+   ],
+   "style": {
+    "bg": "#6E6670"
+   }
+  },
+  {
+   "id": "det_logic",
+   "kind": "button",
+   "rect": [
+    1560,
+    516,
+    40,
+    24
+   ],
+   "flat_states": {
+    "normal": {
+     "bg": "#00000000",
+     "border": "",
+     "border_width": 0,
+     "radius": 0
+    },
+    "hover": {
+     "bg": "#00000000",
+     "border": "",
+     "border_width": 0,
+     "radius": 0
+    },
+    "pressed": {
+     "bg": "#00000000",
+     "border": "",
+     "border_width": 0,
+     "radius": 0
+    },
+    "disabled": {
+     "bg": "#00000000",
+     "border": "",
+     "border_width": 0,
+     "radius": 0
+    }
+   },
+   "text_rect": [
+    5,
+    -2,
+    30,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#B1A4A9"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1567.0,
+     522.0,
+     26.0,
+     18.0
+    ],
+    "ref_text": "∧"
+   }
+  },
+  {
+   "id": "det_footer_line",
+   "kind": "flatbox",
+   "rect": [
+    1290,
+    918,
+    604,
+    1
+   ],
+   "style": {
+    "bg": "#A77630"
+   }
+  },
+  {
+   "id": "det_add",
+   "kind": "button",
+   "rect": [
+    1295,
+    926,
+    294,
+    59
+   ],
+   "states": {
+    "normal": "slices/btn_teal.png",
+    "hover": {
+     "file": "slices/btn_teal.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_teal.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_teal.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    18,
+    14,
+    18,
+    14
+   ],
+   "text_rect": [
+    22,
+    12,
+    250,
+    35
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#F4E280"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1383.0,
+     945.0,
+     121.0,
+     23.0
+    ],
+    "ref_text": "＋ 添加指令"
+   }
+  },
+  {
+   "id": "det_beacon_btn",
+   "kind": "button",
+   "rect": [
+    1598,
+    925,
+    297,
+    61
+   ],
+   "states": {
+    "normal": "slices/btn_purple.png",
+    "hover": {
+     "file": "slices/btn_purple.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_purple.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_purple.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    18,
+    14,
+    18,
+    14
+   ],
+   "text_rect": [
+    24,
+    13,
+    250,
+    35
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#F9DD7D"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1723.0,
+     945.0,
+     47.0,
+     24.0
+    ],
+    "ref_text": "信标"
+   }
+  },
+  {
+   "id": "det_wait_box",
+   "kind": "button",
+   "rect": [
+    1733,
+    411,
+    128,
+    47
+   ],
+   "states": {
+    "normal": "slices/dropdown.png",
+    "hover": {
+     "file": "slices/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/dropdown.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    14,
+    14,
+    40,
+    14
+   ],
+   "text_rect": [
+    16,
+    9,
+    76,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D3CFD0"
+   },
+   "align": "left"
+  },
+  {
+   "id": "beacon_bar",
+   "kind": "ninepatch",
+   "rect": [
+    417,
+    838,
+    846,
+    224
+   ],
+   "file": "slices/bar.png",
+   "ninepatch": [
+    36,
+    36,
+    36,
+    36
+   ]
+  },
+  {
+   "id": "beacon_mode_once",
+   "kind": "button",
+   "rect": [
+    460,
+    952,
+    174,
+    60
+   ],
+   "states": {
+    "normal": "slices/mode_off.png",
+    "hover": {
+     "file": "slices/mode_off.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": "slices/mode_on.png",
+    "disabled": "slices/mode_auto.png"
+   },
+   "ninepatch": [
+    16,
+    14,
+    16,
+    14
+   ],
+   "text_rect": [
+    18,
+    14,
+    140,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#EED669"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     515.0,
+     973.0,
+     65.0,
+     21.0
+    ],
+    "ref_text": "沿路径"
+   }
+  },
+  {
+   "id": "beacon_mode_loop",
+   "kind": "button",
+   "rect": [
+    641,
+    952,
+    173,
+    59
+   ],
+   "states": {
+    "normal": "slices/mode_off.png",
+    "hover": {
+     "file": "slices/mode_off.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": "slices/mode_on.png",
+    "disabled": "slices/mode_auto.png"
+   },
+   "ninepatch": [
+    16,
+    14,
+    16,
+    14
+   ],
+   "text_rect": [
+    16,
+    14,
+    140,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#F9DE6F"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     704.0,
+     972.0,
+     45.0,
+     22.0
+    ],
+    "ref_text": "循环"
+   }
+  },
+  {
+   "id": "beacon_mode_pingpong",
+   "kind": "button",
+   "rect": [
+    820,
+    953,
+    172,
+    58
+   ],
+   "states": {
+    "normal": "slices/mode_off.png",
+    "hover": {
+     "file": "slices/mode_off.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": "slices/mode_on.png",
+    "disabled": "slices/mode_auto.png"
+   },
+   "ninepatch": [
+    16,
+    14,
+    16,
+    14
+   ],
+   "text_rect": [
+    15,
+    13,
+    140,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#F7DE70"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     883.0,
+     973.0,
+     44.0,
+     21.0
+    ],
+    "ref_text": "往返"
+   }
+  },
+  {
+   "id": "beacon_mode_auto",
+   "kind": "button",
+   "rect": [
+    998,
+    953,
+    172,
+    58
+   ],
+   "states": {
+    "normal": "slices/mode_off.png",
+    "hover": {
+     "file": "slices/mode_off.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": "slices/mode_on.png",
+    "disabled": "slices/mode_auto.png"
+   },
+   "ninepatch": [
+    16,
+    14,
+    16,
+    14
+   ],
+   "text_rect": [
+    14,
+    15,
+    140,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 20,
+    "color": "#EED565"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1045.0,
+     973.0,
+     79.0,
+     20.0
+    ],
+    "ref_text": "自动寻路"
+   }
+  },
+  {
+   "id": "beacon_done",
+   "kind": "button",
+   "rect": [
+    1079,
+    865,
+    158,
+    56
+   ],
+   "states": {
+    "normal": "slices/btn_done.png",
+    "hover": {
+     "file": "slices/btn_done.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "slices/btn_done.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "slices/btn_done.png",
+     "modulate": "#8C8490"
+    }
+   },
+   "ninepatch": [
+    16,
+    14,
+    16,
+    14
+   ],
+   "text_rect": [
+    18,
+    13,
+    120,
+    33
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#FBE485"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1135.0,
+     883.0,
+     45.0,
+     23.0
+    ],
+    "ref_text": "完成"
+   }
+  },
+  {
+   "id": "det_title",
+   "kind": "text_style",
+   "rect": [
+    1434,
+    73,
+    236,
+    53
+   ],
+   "text_rect": [
+    0,
+    0,
+    236,
+    53
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 36,
+    "color": "#FCDF6E"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1434.0,
+     83.0,
+     215.0,
+     35.0
+    ],
+    "ref_text": "基础攻击形态"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_cost",
+   "kind": "text_style",
+   "rect": [
+    1435,
+    181,
+    300,
+    24
+   ],
+   "text_rect": [
+    0,
+    0,
+    300,
+    24
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 16,
+    "color": "#847980"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1435.0,
+     186.0,
+     113.0,
+     16.0
+    ],
+    "ref_text": "形态 3 ＋ 指令 0"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_note",
+   "kind": "text_style",
+   "rect": [
+    1294,
+    314,
+    580,
+    24
+   ],
+   "text_rect": [
+    0,
+    0,
+    580,
+    24
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 16,
+    "color": "#7E757D"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1294.0,
+     319.0,
+     447.0,
+     17.0
+    ],
+    "ref_text": "越靠上，优先级越高；勾选「覆盖」的指令条件成立时优先接管"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_0",
+   "kind": "text_style",
+   "rect": [
+    1341,
+    223,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CAC4C6"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1341.0,
+     229.0,
+     39.0,
+     20.0
+    ],
+    "ref_text": "生命"
+   }
+  },
+  {
+   "id": "det_stat_value_0",
+   "kind": "text_style",
+   "rect": [
+    1393,
+    225,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#E3C36D"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1393.0,
+     232.0,
+     49.0,
+     19.0
+    ],
+    "ref_text": "80/80"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_1",
+   "kind": "text_style",
+   "rect": [
+    1538,
+    224,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CEC6CC"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1538.0,
+     230.0,
+     38.0,
+     19.0
+    ],
+    "ref_text": "攻击"
+   }
+  },
+  {
+   "id": "det_stat_value_1",
+   "kind": "text_style",
+   "rect": [
+    1591,
+    224,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#E1C770"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1591.0,
+     232.0,
+     18.0,
+     16.0
+    ],
+    "ref_text": "12"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_2",
+   "kind": "text_style",
+   "rect": [
+    1733,
+    224,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CBC2C4"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1733.0,
+     230.0,
+     39.0,
+     19.0
+    ],
+    "ref_text": "攻速"
+   }
+  },
+  {
+   "id": "det_stat_value_2",
+   "kind": "text_style",
+   "rect": [
+    1786,
+    224,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#DCC062"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1786.0,
+     233.0,
+     7.0,
+     15.0
+    ],
+    "ref_text": "1"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_3",
+   "kind": "text_style",
+   "rect": [
+    1341,
+    268,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C6BFC5"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1341.0,
+     274.0,
+     38.0,
+     19.0
+    ],
+    "ref_text": "移速"
+   }
+  },
+  {
+   "id": "det_stat_value_3",
+   "kind": "text_style",
+   "rect": [
+    1393,
+    268,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#E1B962"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1393.0,
+     276.0,
+     9.0,
+     16.0
+    ],
+    "ref_text": "3"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_4",
+   "kind": "text_style",
+   "rect": [
+    1538,
+    268,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C9C1C6"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1538.0,
+     274.0,
+     38.0,
+     19.0
+    ],
+    "ref_text": "视野"
+   }
+  },
+  {
+   "id": "det_stat_value_4",
+   "kind": "text_style",
+   "rect": [
+    1589,
+    268,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D8B361"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1589.0,
+     276.0,
+     10.0,
+     16.0
+    ],
+    "ref_text": "8"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_stat_name_5",
+   "kind": "text_style",
+   "rect": [
+    1734,
+    267,
+    50,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    50,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CAC1C5"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1734.0,
+     273.0,
+     38.0,
+     20.0
+    ],
+    "ref_text": "射程"
+   }
+  },
+  {
+   "id": "det_stat_value_5",
+   "kind": "text_style",
+   "rect": [
+    1784,
+    267,
+    100,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    100,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#CFAC63"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1784.0,
+     276.0,
+     10.0,
+     15.0
+    ],
+    "ref_text": "4"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_prio",
+   "kind": "text_style",
+   "rect": [
+    1340,
+    363,
+    124,
+    35
+   ],
+   "text_rect": [
+    0,
+    0,
+    124,
+    35
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#FAE06E"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1340.0,
+     370.0,
+     92.0,
+     24.0
+    ],
+    "ref_text": "优先级 1"
+   }
+  },
+  {
+   "id": "det_override_label",
+   "kind": "text_style",
+   "rect": [
+    1515,
+    367,
+    70,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    70,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#B7B0AF"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1515.0,
+     373.0,
+     38.0,
+     19.0
+    ],
+    "ref_text": "覆盖"
+   }
+  },
+  {
+   "id": "det_act_label",
+   "kind": "text_style",
+   "rect": [
+    1306,
+    420,
+    52,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    52,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C6BEC5"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1306.0,
+     426.0,
+     39.0,
+     19.0
+    ],
+    "ref_text": "行为"
+   }
+  },
+  {
+   "id": "det_c1_label",
+   "kind": "text_style",
+   "rect": [
+    1306,
+    476,
+    70,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    70,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C8C2C5"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1307.0,
+     481.0,
+     57.0,
+     19.0
+    ],
+    "ref_text": "条件一"
+   }
+  },
+  {
+   "id": "det_c2_label",
+   "kind": "text_style",
+   "rect": [
+    1304,
+    545,
+    70,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    70,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C8C0C1"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1306.0,
+     550.0,
+     58.0,
+     20.0
+    ],
+    "ref_text": "条件二"
+   }
+  },
+  {
+   "id": "det_beacons",
+   "kind": "text_style",
+   "rect": [
+    1375,
+    1006,
+    440,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    440,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C2BABC"
+   },
+   "align": "center",
+   "data": {
+    "ref_ink": [
+     1509.0,
+     1012.0,
+     172.0,
+     20.0
+    ],
+    "ref_text": "信标：2 个 · 沿路径"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "beacon_bar_title",
+   "kind": "text_style",
+   "rect": [
+    464,
+    873,
+    600,
+    38
+   ],
+   "text_rect": [
+    0,
+    0,
+    600,
+    38
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 26,
+    "color": "#F9E16A"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     464.0,
+     879.0,
+     346.0,
+     26.0
+    ],
+    "ref_text": "信标模式 · 1 号  基础攻击形态"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "beacon_bar_hint",
+   "kind": "text_style",
+   "rect": [
+    464,
+    914,
+    752,
+    27
+   ],
+   "text_rect": [
+    0,
+    0,
+    752,
+    27
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#AEA4AB"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     464.0,
+     919.0,
+     491.0,
+     20.0
+    ],
+    "ref_text": "左键点击地块放置信标，右键撤销最后一个；按 1–5 切换单位"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "det_cunit",
+   "kind": "text_style",
+   "rect": [
+    1809,
+    730,
+    40,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    40,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#D0C7CA"
+   },
+   "align": "left",
+   "data": {
+    "ref_ink": [
+     1809.0,
+     736.0,
+     20,
+     20
+    ],
+    "ref_text": "格"
+   }
+  },
+  {
+   "id": "det_wait_label",
+   "kind": "text_style",
+   "rect": [
+    1594,
+    420,
+    132,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    132,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C8C2C5"
+   },
+   "align": "left"
+  },
+  {
+   "id": "det_wait_unit",
+   "kind": "text_style",
+   "rect": [
+    1864,
+    420,
+    40,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    40,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C8C2C5"
+   },
+   "align": "left"
+  },
+  {
+   "id": "det_desc",
+   "kind": "text_style",
+   "rect": [
+    1435,
+    128,
+    404,
+    52
+   ],
+   "text_rect": [
+    0,
+    0,
+    404,
+    52
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B6ABB0"
+   },
+   "align": "left",
+   "overflow": "manual",
+   "data": {
+    "ref_ink_line1": [
+     1435.0,
+     133.0,
+     382.0,
+     19.0
+    ]
+   }
+  },
+  {
+   "id": "det_pick",
+   "kind": "flatbox",
+   "rect": [
+    1290,
+    344,
+    584,
+    38
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "data": {
+    "_note": "「添加指令」行为列表（批准整图 ui_15，在详情弹窗中部显示）：行高 / 行距 / 颜色取自整图（1920 坐标行高 44、行距 54）",
+    "row_h": 44,
+    "row_gap": 10,
+    "border_width": 1.5,
+    "colors": {
+     "attack": [
+      "#2B153A",
+      "#DAC9B3"
+     ],
+     "chase_attack": [
+      "#043059",
+      "#C4C6AE"
+     ],
+     "chase": [
+      "#25265D",
+      "#998F9B"
+     ],
+     "retreat": [
+      "#752F32",
+      "#F8BC91"
+     ],
+     "idle": [
+      "#3C253D",
+      "#E0C2A6"
+     ],
+     "follow_beacons": [
+      "#043059",
+      "#C4C6AE"
+     ],
+     "wait": [
+      "#3C253D",
+      "#E0C2A6"
+     ],
+     "follow_route": [
+      "#25265D",
+      "#998F9B"
+     ],
+     "cancel": [
+      "#55121D",
+      "#E07070"
+     ]
+    },
+    "icons": {
+     "attack": "ui/icons/act_attack.svg",
+     "chase_attack": "ui/icons/act_chase_attack.svg",
+     "chase": "ui/icons/act_chase.svg",
+     "retreat": "ui/icons/act_retreat.svg",
+     "idle": "ui/icons/act_idle.svg",
+     "follow_route": "ui/icons/act_route.svg",
+     "follow_beacons": "ui/icons/act_follow_beacons.png",
+     "wait": "ui/icons/act_wait.png",
+     "cancel": "ui/icons/act_cancel.png"
+    }
+   }
+  }
+ ]
+}

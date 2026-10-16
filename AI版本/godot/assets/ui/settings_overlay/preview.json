@@ -1,0 +1,123 @@
+{
+  "fonts": {
+    "NotoSerifSC": "assets/fonts/NotoSerifSC-Regular.otf",
+    "NotoSerifSC-Bold": "assets/fonts/NotoSerifSC-Bold.otf",
+    "Cinzel": "assets/fonts/Cinzel-Regular.ttf"
+  },
+  "bindings": {
+    "title": {
+      "key": "ui.menu_settings",
+      "sample": "设置",
+      "align": "left",
+      "font_file": "NotoSerifSC-Bold.otf"
+    },
+    "btn_close": {
+      "key": "ui.settings_close",
+      "sample": "关闭",
+      "align": "center",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "section_audio": {
+      "key": "ui.settings_section_audio",
+      "sample": "声音",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "label_master": {
+      "key": "ui.settings_master",
+      "sample": "主音量",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "pct_master": {
+      "key": null,
+      "sample": "100%",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "label_music": {
+      "key": "ui.settings_music",
+      "sample": "音乐",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "pct_music": {
+      "key": null,
+      "sample": "80%",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "label_sfx": {
+      "key": "ui.settings_sfx",
+      "sample": "音效",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "pct_sfx": {
+      "key": null,
+      "sample": "85%",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "section_display": {
+      "key": "ui.settings_section_display",
+      "sample": "显示",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "label_fullscreen": {
+      "key": "ui.settings_fullscreen",
+      "sample": "全屏",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "label_target_lines": {
+      "key": "ui.settings_target_lines",
+      "sample": "显示目标连线",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "label_font_scale": {
+      "key": "ui.settings_font_scale",
+      "sample": "字体大小",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "font_scale_value": {
+      "key": "ui.settings_font_scale_option",
+      "sample": "100%",
+      "align": "left",
+      "font_file": "Cinzel-Regular.ttf"
+    },
+    "section_debug": {
+      "key": "ui.settings_section_debug",
+      "sample": "调试",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "label_sim_log": {
+      "key": "ui.settings_sim_log",
+      "sample": "记录模拟日志（调试用）",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    },
+    "log_hint": {
+      "key": "ui.settings_log_hint",
+      "sample": "日志位置：user://logs/",
+      "align": "left",
+      "font_file": "NotoSerifSC-Regular.otf"
+    }
+  },
+  "reference_states": {
+    "toggle_fullscreen": "off",
+    "toggle_target_lines": "on",
+    "toggle_sim_log": "off"
+  },
+  "sample_values": {
+    "master": 1.0,
+    "music": 0.8,
+    "sfx": 0.85,
+    "font_scale": 1.0
+  },
+  "reference_context": "../main_menu/design.png"
+}
