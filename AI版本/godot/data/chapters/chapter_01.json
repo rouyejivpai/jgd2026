@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "_comment": "07 §10.1 / 10 §3.1 第一章章节地图（P6：R3 宽图 2172×724 按高 1080 等比 = 3240×1080）。1–8 为现有关卡（编号不变）；node_09–node_25 为「未开放」占位节点（placeholder，恒锁定，不得有 level / boss / story_on_unlock），坐标与区域为临时值，24 关归属等编辑器阶段。节点以 id 索引（关卡节点 id 缺省 = level）；links 填节点 id。map = R3 低噪宽图；关卡 1–6 的坐标由批准整图 ui_22 与宽图配准换算，7 / 8 与占位 9 / 10 由 ui_26（首领）以关卡 5 / 6 为锚点配准（ui_26 整图构图比宽图紧凑，取两锚点平均偏移）、占位 16–25 由 ui_25（横移末端）按局部地标（矿架 / 小穹顶 / 粉穹顶）分段配准，占位 11–15 为临时坐标（从 10 分出的下方支线，终点 15）。解锁 = 存在一条已完成的前驱连线；没有前驱的节点按 progression.json initial_levels 解锁。",
+  "id": "chapter_01",
+  "title": "腐土平原",
+  "map": "res://assets/ui/chapter/map_chapter_01_low_noise.png",
+  "map_size": [3240, 1080],
+  "regions": [
+    {"id": "bone_farm", "title": "枯骨农田"},
+    {"id": "wailing_wall", "title": "哭墙"},
+    {"id": "hound_den", "title": "猎犬巢"},
+    {"id": "transit_node", "title": "转运点"},
+    {"id": "bone_greenhouse", "title": "骨花温室"}
+  ],
+  "nodes": [
+    { "level": "level_01", "region": "bone_farm", "pos": [177, 756], "links": ["level_02"], "node_art": "rake"},
+    { "level": "level_02", "region": "bone_farm", "pos": [365, 614], "links": ["level_03"], "node_art": "rake"},
+    { "level": "level_03", "region": "wailing_wall", "pos": [579, 704], "links": ["level_04"], "node_art": "grid"},
+    { "level": "level_04", "region": "hound_den", "pos": [769, 565], "links": ["level_05"], "node_art": "wolf_head"},
+    { "level": "level_05", "region": "hound_den", "pos": [953, 654], "links": ["level_06"], "node_art": "wolf_head"},
+    { "level": "level_06", "region": "wailing_wall", "pos": [1102, 485], "links": ["level_07"], "node_art": "grid"},
+    { "level": "level_07", "region": "transit_node", "pos": [1353, 592], "links": ["level_08"], "node_art": "crosshair"},
+    { "level": "level_08", "region": "bone_greenhouse", "pos": [1553, 288], "links": ["node_09"], "boss": true, "node_art": "flower"},
+    { "id": "node_09", "placeholder": true, "title_key": "ui.node_placeholder", "region": "transit_node", "pos": [1830, 498], "links": ["node_10"], "node_art": "crosshair"},
+    { "id": "node_10", "placeholder": true, "title_key": "ui.node_placeholder", "region": "transit_node", "pos": [1960, 673], "links": ["node_11", "node_16"], "node_art": "crosshair"},
+    { "id": "node_11", "placeholder": true, "title_key": "ui.node_placeholder", "region": "transit_node", "pos": [2110, 830], "links": ["node_12"], "node_art": "crosshair"},
+    { "id": "node_12", "placeholder": true, "title_key": "ui.node_placeholder", "region": "transit_node", "pos": [2290, 880], "links": ["node_13"], "node_art": "crosshair"},
+    { "id": "node_13", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_greenhouse", "pos": [2480, 830], "links": ["node_14"], "node_art": "flower"},
+    { "id": "node_14", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_greenhouse", "pos": [2660, 880], "links": ["node_15"], "node_art": "flower"},
+    { "id": "node_15", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_greenhouse", "pos": [2850, 830], "links": [], "node_art": "flower"},
+    { "id": "node_16", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_greenhouse", "pos": [2217, 347], "links": ["node_17"], "node_art": "flower"},
+    { "id": "node_17", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_farm", "pos": [2316, 466], "links": ["node_18"], "node_art": "rake"},
+    { "id": "node_18", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_farm", "pos": [2403, 607], "links": ["node_19"], "node_art": "rake"},
+    { "id": "node_19", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_farm", "pos": [2581, 660], "links": ["node_20"], "node_art": "rake"},
+    { "id": "node_20", "placeholder": true, "title_key": "ui.node_placeholder", "region": "bone_farm", "pos": [2680, 549], "links": ["node_21"], "node_art": "rake"},
+    { "id": "node_21", "placeholder": true, "title_key": "ui.node_placeholder", "region": "wailing_wall", "pos": [2773, 402], "links": ["node_22"], "node_art": "grid"},
+    { "id": "node_22", "placeholder": true, "title_key": "ui.node_placeholder", "region": "wailing_wall", "pos": [2869, 345], "links": ["node_23"], "node_art": "grid"},
+    { "id": "node_23", "placeholder": true, "title_key": "ui.node_placeholder", "region": "wailing_wall", "pos": [2970, 433], "links": ["node_24"], "node_art": "grid"},
+    { "id": "node_24", "placeholder": true, "title_key": "ui.node_placeholder", "region": "wailing_wall", "pos": [3074, 591], "links": ["node_25"], "node_art": "grid"},
+    { "id": "node_25", "placeholder": true, "title_key": "ui.node_placeholder", "region": "hound_den", "pos": [3166, 699], "links": [], "node_art": "wolf_head"}
+  ]
+}

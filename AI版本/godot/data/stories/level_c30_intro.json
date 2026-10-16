@@ -1,0 +1,20 @@
+{
+  "id": "level_c30_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "骨花温室最深处。她把整片温室的根都连在自己身上。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "她每隔几秒会亮起一种颜色，两秒后放招。红：离她太近会被花粉环炸到；黄：离她太远会被钟声定住。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "用「Boss 信号为 红 / 黄 时」写好应对。她的血过半时，战斗会停下来——到时候再看新的规矩。"
+    }
+  ]
+}

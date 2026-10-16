@@ -1,0 +1,416 @@
+{
+  "grid": {
+    "width": 21,
+    "height": 13,
+    "blocked": [
+      [
+        11,
+        0
+      ],
+      [
+        11,
+        1
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        11,
+        3
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        11,
+        8
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        11,
+        10
+      ],
+      [
+        11,
+        11
+      ],
+      [
+        11,
+        12
+      ]
+    ],
+    "tiles": {
+      "hazard": [
+        [
+          8,
+          0
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          8,
+          5
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          8,
+          11
+        ],
+        [
+          8,
+          12
+        ]
+      ],
+      "shrine": [
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      5,
+      2,
+      8
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 8,
+    "available_forms": [
+      "bulwark",
+      "striker",
+      "swift"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_status_lesson": "回流",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "M1",
+      "unit": "marrow_hulk",
+      "faction": "enemy",
+      "pos": [
+        13,
+        6
+      ],
+      "display_name": "髓块",
+      "overrides": {
+        "vision": 9,
+        "attack": 18,
+        "max_hp": 150
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        }
+      ],
+      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的分裂体。"
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        13,
+        8
+      ],
+      "display_name": "护卫",
+      "overrides": {
+        "max_hp": 120
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              6
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              3,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "2"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          6
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "髓块打中谁，谁就易伤，护卫跟着集火。绿色三角是净化台：我方站上去立刻清掉异常，敌人站上去没用。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态穿过腐地走到缺口前 (10,6) 让敌人看见，退回净化台 (3,6) 站住，到位后才开始还手（「在信标 2 且射程内有敌人 → 攻击」）；基础形态在台后输出。约 27 秒。",
+    "expected_fail": [
+      "同样打法但没有净化台：承伤形态一直带着易伤，先倒下，基础形态随后被打死。",
+      "退回部署区、不站净化台：同上。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "净化台只作用于我方（评审未定，本版按 traits.json）；敌人站上去不清状态。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_03.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b090b8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 9364,
+  "schema_version": 1,
+  "_design_comment": "第一次让玩家**被自己的机制打**（髓块是咒术师的镜像），并给出反制手段（净化台）。「退回去清状态」这个动作本身有代价。",
+  "_teach_role": "机制：易伤反制 + 净化台",
+  "briefing": {
+    "mechanic_hint": "诱敌要过腐地，回来时站上净化台——之后扛伤的人一直站在台上打，每次刚被标上易伤就被清掉。"
+  },
+  "region": "grey_thorn",
+  "region_cn": "灰棘林",
+  "id": "level_c12",
+  "index": 112,
+  "title": "回流",
+  "subtitle": "被自己的机制打一次",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [
+      "hexer"
+    ],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c13"
+  },
+  "_review_20261012": [
+    "危险区改为整列 x=8；敌人改为髓块（命中易伤）+ 护卫；净化台定为仅我方生效；推荐解改为「踩腐地诱敌 → 回净化台站住还手」；阵容 2 人、预算 8、信标计费。"
+  ],
+  "display_index": 12,
+  "summary": "被自己的机制打一次",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "诱敌要过腐地，回来时站上净化台——之后扛伤的人一直站在台上打，每次刚被标上易伤就被清掉。",
+    "髓块打中谁，谁就易伤，护卫跟着集火。绿色三角是净化台：我方站上去立刻清掉异常，敌人站上去没用。",
+    "承伤形态穿过腐地走到缺口前 (10,6) 让敌人看见，退回净化台 (3,6) 站住，到位后才开始还手（「在信标 2 且射程内有敌人 → 攻击」）；基础形态在台后输出。约 27 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。诱敌要过腐地，回来时站上净化台——之后扛伤的人一直站在台上打，每次刚被标上易伤就被清掉。",
+    "default": "诱敌要过腐地，回来时站上净化台——之后扛伤的人一直站在台上打，每次刚被标上易伤就被清掉。"
+  },
+  "bgm": "region_grey_thorn"
+}

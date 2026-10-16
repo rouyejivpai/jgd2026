@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "_design_comment": "新写的关。把麻痹和「后排保护」这个新问题放在一起。用圣钟城废墟的生态（哭墙守卫 + 咒缚祭司）。",
+  "region": "holy_bell",
+  "id": "level_c17",
+  "index": 117,
+  "title": "钟下",
+  "subtitle": "较复杂战斗：钟声范围内的定身",
+  "biome": "wailing_wall",
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_06.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#a8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "bgm": "region_holy_bell",
+  "seed": 7527,
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        9,
+        10
+      ]
+    ],
+    "tiles": {
+      "hazard": [
+        [
+          7,
+          0
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          7,
+          10
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      2,
+      3,
+      4,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 12,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "lancer",
+      "hexer",
+      "binder"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_teach": "收束：较复杂战斗",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池",
+    "_ui_note": [
+      "去掉形态 swift：原型 HUD 只有 5 个出场卡位"
+    ]
+  },
+  "initial_units": [
+    {
+      "id": "P1",
+      "unit": "hex_priest",
+      "faction": "enemy",
+      "pos": [
+        12,
+        7
+      ],
+      "display_name": "咒缚祭司·上",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "站着不动，攻击 6 格内最远的分裂体，命中麻痹 3 秒。",
+      "overrides": {
+        "max_hp": 80
+      }
+    },
+    {
+      "id": "P2",
+      "unit": "hex_priest",
+      "faction": "enemy",
+      "pos": [
+        12,
+        3
+      ],
+      "display_name": "咒缚祭司·下",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "同上。",
+      "overrides": {
+        "max_hp": 80
+      }
+    },
+    {
+      "id": "W1",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        10,
+        5
+      ],
+      "display_name": "钟下守卫",
+      "overrides": {
+        "vision": 7,
+        "max_hp": 130
+      },
+      "public_rule_text": "锁定首个进入 7 格视野的分裂体并追击。"
+    }
+  ],
+  "routes": {},
+  "new_concept": "status_effect",
+  "concept_tags": [
+    "status_effect",
+    "钟下"
+  ],
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp",
+      "first_seen"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "objectives": {
+    "objective_text": "两个咒缚祭司专打你最远的人，被打中就麻痹。它们射程 6——远射射程 8。拆掉两个祭司就赢。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "P1",
+          "P2"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+  },
+  "hint_tiers": [
+    {
+      "tier": 0,
+      "text": "咒缚祭司射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。"
+    },
+    {
+      "tier": 1,
+      "text": "守卫视野 7，看见谁就追谁；它要穿过腐地才能碰到你。"
+    },
+    {
+      "tier": 2,
+      "text": "远射按「血量最低」先打祭司（80 血）而不是守卫（130 血）。"
+    }
+  ],
+  "fail_feedback": {
+    "default": "推荐：缚锁者先定住一个祭司，趁那 3 秒让远射打掉另一个。",
+    "lose_all_dead": "全员倒下了。先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          4,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          4,
+          7
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              5,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          3,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c18"
+  },
+  "_rewards_note": "",
+  "verification": {
+    "expected_win": "远射在 (4,7) 离上祭司 8 格、在祭司射程外，按「血量最低」先点祭司；守卫追过腐地带着易伤撞上承伤形态，基础形态和承伤形态集火守卫；射程内没人后，远射沿信标挪到 (5,4)，离下祭司 7 格，收掉它。",
+    "expected_fail": [],
+    "alternatives": [
+      "直接强攻（三人一起压过腐地）也可能赢——评审已指出，这里不强行堵死。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "region_cn": "圣钟城废墟",
+  "_teach_role": "收束：较复杂战斗",
+  "_review_20261012": [
+    "重做：腐地整列 x=7；两名咒缚祭司（80 血）+ 一名守卫（130 血、视野 7）；胜利条件改为拆掉两个祭司；推荐解「远射射程差 + 守卫过腐地」；信标计费。"
+  ],
+  "display_index": 17,
+  "summary": "较复杂战斗：钟声范围内的定身",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:warden",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "咒缚祭司射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。",
+    "守卫视野 7，看见谁就追谁；它要穿过腐地才能碰到你。",
+    "远射按「血量最低」先打祭司（80 血）而不是守卫（130 血）。",
+    "先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+  ]
+}

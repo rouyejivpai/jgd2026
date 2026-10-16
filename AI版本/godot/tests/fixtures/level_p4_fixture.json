@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "_comment": "P4 机制测试关（不进游戏）：07 §7 modifiers、§9 overrides、escort 护送与 reach_zone 胜利。由 tests/unit/test_modifiers_objectives.gd 读取。",
+  "id": "level_p4_fixture",
+  "index": 99,
+  "title": "测试：护送",
+  "subtitle": "P4 机制测试",
+  "biome": "bone_farm",
+  "scene": { "backdrop": "res://assets/backgrounds/level_01.png", "ground": "", "ground_tint": "#3e3631", "playfield_rect": null },
+  "bgm": "battle_01",
+  "seed": 99,
+  "grid": { "width": 10, "height": 6, "blocked": [] },
+  "deploy_zone": { "rect": [0, 0, 1, 2] },
+  "roster": { "mode": "free", "budget": 6, "available_forms": ["striker"], "max_units": 2, "min_units": 1, "fixed_slots": [] },
+  "modifiers": [
+    { "target": "form:striker", "stat": "attack", "mul": 1.5, "add": 0 },
+    { "target": "faction:enemy", "stat": "max_hp", "mul": 1, "add": 20 },
+    { "target": "spawn:E1", "stat": "move_speed", "mul": 2, "add": 0 }
+  ],
+  "initial_units": [
+    { "id": "E1", "unit": "swift", "faction": "ally", "pos": [1, 4], "display_name": "伤员",
+      "rules": [ { "conditions": [], "action": { "type": "follow_route", "route_id": "escort_path", "loop": false } } ] },
+    { "id": "R1", "unit": "raider", "faction": "enemy", "pos": [8, 1], "overrides": { "vision": 2 }, "counts_for_annihilate": true }
+  ],
+  "routes": { "escort_path": { "name": "护送路线", "points": [[1, 4], [9, 4]] } },
+  "allowed": { "conditions": ["always", "enemy_in_range"], "selectors": ["nearest"], "actions": ["attack", "idle"] },
+  "objectives": {
+    "objective_text": "护送伤员抵达右侧",
+    "win": [ { "id": "win_escort", "type": "escort", "target": "E1", "cells": [[9, 4]] } ],
+    "lose": [ { "id": "lose_escort_dead", "type": "unit_dead", "target": "E1" }, { "id": "lose_all_dead", "type": "all_allies_dead" } ]
+  },
+  "briefing": { "mechanic_hint": "测试关" },
+  "hints": ["一", "二", "三", "四"],
+  "fail_feedback": { "lose_escort_dead": "伤员倒下。", "lose_all_dead": "全部倒下。", "default": "失败。" },
+  "recommended": { "units": [ { "form": "striker", "pos": [1, 1], "beacons": [], "rules": [ { "conditions": [], "action": { "type": "idle" } } ] } ] },
+  "rewards": { "unlock_forms": [], "unlock_presets": [], "unlock_conditions": [], "unlock_selectors": [], "unlock_actions": [], "unlock_level": "" },
+  "verification": { "expected_win": "护送对象沿路线抵达 (9,4)。", "expected_fail": "护送对象死亡。", "alternatives": "", "risks": "" }
+}

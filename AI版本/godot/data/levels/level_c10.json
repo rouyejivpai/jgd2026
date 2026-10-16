@@ -1,0 +1,412 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        0,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        9,
+        4
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        10,
+        4
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        8
+      ],
+      [
+        12,
+        4
+      ],
+      [
+        12,
+        8
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        16,
+        8
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      14,
+      9,
+      16,
+      10
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 8,
+    "available_forms": [
+      "striker",
+      "swift",
+      "lancer"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "别让它跑",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "PRIEST",
+      "unit": "priest",
+      "faction": "enemy",
+      "pos": [
+        9,
+        6
+      ],
+      "display_name": "逃亡祭司",
+      "overrides": {
+        "move_speed": 0.8,
+        "attack": 6,
+        "max_hp": 90
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "priest_lane"
+          }
+        }
+      ],
+      "public_rule_text": "沿中廊往左上出口逃。有分裂体进入 5 格射程会停下来攻击它（伤害很低）。"
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        2,
+        9
+      ],
+      "display_name": "守门护卫",
+      "overrides": {
+        "vision": 4
+      },
+      "public_rule_text": "守在出口旁，只看得见 4 格内。锁定首个看见的分裂体并追击。"
+    }
+  ],
+  "routes": {
+    "priest_lane": {
+      "name": "祭司逃离线",
+      "points": [
+        [
+          9,
+          6
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          0,
+          10
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          16,
+          9
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              7,
+              10
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "祭司正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "PRIEST"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_escaped",
+        "type": "reach_zone",
+        "target": "PRIEST",
+        "cells": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            1,
+            10
+          ]
+        ]
+      },
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "远射形态先沿上廊走到 (7,10)（约 5 秒），从那里隔墙能打到整条中廊和出口；按「血量最低」点祭司，约 13 秒击杀。",
+    "expected_fail": [
+      "原地不动：祭司走出射程后逃脱。",
+      "边走边打（射程内有敌人就停下来打）：开局就停在原地打，祭司走远后才追，祭司剩 10 血逃脱。",
+      "信标放到出口旁 (3,10)：进入守门护卫的视野，被追咬致死。"
+    ],
+    "alternatives": [
+      "到位后选「最近」也能赢（这张图里祭司始终比护卫近）。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_02.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8b090",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8285,
+  "schema_version": 1,
+  "_design_comment": "阻截任务：第一次让「赶路」比「打人」重要。",
+  "_teach_role": "任务类型：阻截",
+  "briefing": {
+    "mechanic_hint": "时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。"
+  },
+  "region": "withered_farm",
+  "region_cn": "枯骨农田",
+  "id": "level_c10",
+  "index": 110,
+  "title": "别让它跑",
+  "subtitle": "阻截：它到出口就输",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c11"
+  },
+  "_review_20261012": [
+    "补上祭司逃离路线（原 priest_lane 不存在，祭司不动）；出口改到左上（与评审描述一致）；去掉挡路的后卫，守门护卫视野 9→4；信标计费。"
+  ],
+  "display_index": 10,
+  "summary": "阻截：它到出口就输",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。",
+    "祭司正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
+    "远射形态先沿上廊走到 (7,10)（约 5 秒），从那里隔墙能打到整条中廊和出口；按「血量最低」点祭司，约 13 秒击杀。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_escaped": "目标跑到出口了。时间要花在赶路上——先到能盯住它的位置。",
+    "lose_all_dead": "全员倒下了。时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。",
+    "default": "时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。"
+  },
+  "bgm": "region_withered_farm"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "level_03_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "哭墙。墙上的石像仍在等待一个三百年前就停止的回答。" },
+    { "speaker": "doll", "illustration": "doll", "text": "守卫只看得见六格。它们会咬住第一个出现的东西。" },
+    { "speaker": "doll", "illustration": "doll", "text": "那就先让它们看见我想让它们看见的。" }
+  ]
+}

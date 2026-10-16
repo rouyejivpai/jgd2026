@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "screen": "settings_overlay",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "mask",
+      "kind": "image",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/mask.png"
+    },
+    {
+      "id": "panel_settings",
+      "kind": "ninepatch",
+      "rect": [
+        460,
+        104,
+        1000,
+        872
+      ],
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/panel.png",
+      "theme_type": "settings_overlay__panel_settings"
+    },
+    {
+      "id": "title",
+      "kind": "text_style",
+      "rect": [
+        516,
+        140,
+        640,
+        68
+      ],
+      "text_rect": [
+        0,
+        0,
+        640,
+        68
+      ],
+      "align": "left",
+      "key": "ui.menu_settings",
+      "theme_type": "settings_overlay__title"
+    },
+    {
+      "id": "btn_close",
+      "kind": "button",
+      "rect": [
+        1279,
+        143,
+        122,
+        58
+      ],
+      "text_rect": [
+        17,
+        9,
+        88,
+        40
+      ],
+      "align": "center",
+      "key": "ui.settings_close",
+      "ninepatch": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "states": {
+        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
+        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
+        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
+        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+      },
+      "theme_type": "settings_overlay__btn_close"
+    },
+    {
+      "id": "separator_header",
+      "kind": "image",
+      "rect": [
+        516,
+        226,
+        889,
+        1
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/separator_header.png"
+    },
+    {
+      "id": "section_audio",
+      "kind": "text_style",
+      "rect": [
+        516,
+        242,
+        480,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        480,
+        44
+      ],
+      "align": "left",
+      "key": "ui.settings_section_audio",
+      "theme_type": "settings_overlay__section_audio"
+    },
+    {
+      "id": "label_master",
+      "kind": "text_style",
+      "rect": [
+        532,
+        296,
+        320,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        320,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_master",
+      "theme_type": "settings_overlay__label_master"
+    },
+    {
+      "id": "slider_master_track",
+      "kind": "ninepatch",
+      "rect": [
+        886,
+        317,
+        383,
+        10
+      ],
+      "ninepatch": [
+        5,
+        4,
+        5,
+        4
+      ],
+      "file": "res://assets/ui/common/slider_track.png",
+      "theme_type": "settings_overlay__slider_master_track"
+    },
+    {
+      "id": "slider_master_fill",
+      "kind": "ninepatch",
+      "rect": [
+        888,
+        319,
+        381,
+        6
+      ],
+      "ninepatch": [
+        3,
+        2,
+        3,
+        2
+      ],
+      "file": "res://assets/ui/common/slider_fill.png",
+      "theme_type": "settings_overlay__slider_master_fill"
+    },
+    {
+      "id": "slider_master_grabber",
+      "kind": "icon",
+      "rect": [
+        1257,
+        311,
+        23,
+        23
+      ],
+      "file": "res://assets/ui/common/slider_grabber_normal.png"
+    },
+    {
+      "id": "pct_master",
+      "kind": "text_style",
+      "rect": [
+        1300,
+        296,
+        112,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        112,
+        48
+      ],
+      "align": "left",
+      "theme_type": "settings_overlay__pct_master"
+    },
+    {
+      "id": "label_music",
+      "kind": "text_style",
+      "rect": [
+        532,
+        350,
+        320,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        320,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_music",
+      "theme_type": "settings_overlay__label_music"
+    },
+    {
+      "id": "slider_music_track",
+      "kind": "ninepatch",
+      "rect": [
+        886,
+        371,
+        383,
+        10
+      ],
+      "ninepatch": [
+        5,
+        4,
+        5,
+        4
+      ],
+      "file": "res://assets/ui/common/slider_track.png",
+      "theme_type": "settings_overlay__slider_music_track"
+    },
+    {
+      "id": "slider_music_fill",
+      "kind": "ninepatch",
+      "rect": [
+        888,
+        373,
+        304,
+        6
+      ],
+      "ninepatch": [
+        3,
+        2,
+        3,
+        2
+      ],
+      "file": "res://assets/ui/common/slider_fill.png",
+      "theme_type": "settings_overlay__slider_music_fill"
+    },
+    {
+      "id": "slider_music_grabber",
+      "kind": "icon",
+      "rect": [
+        1180,
+        365,
+        23,
+        23
+      ],
+      "file": "res://assets/ui/common/slider_grabber_normal.png"
+    },
+    {
+      "id": "pct_music",
+      "kind": "text_style",
+      "rect": [
+        1300,
+        350,
+        112,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        112,
+        48
+      ],
+      "align": "left",
+      "theme_type": "settings_overlay__pct_music"
+    },
+    {
+      "id": "label_sfx",
+      "kind": "text_style",
+      "rect": [
+        532,
+        404,
+        320,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        320,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_sfx",
+      "theme_type": "settings_overlay__label_sfx"
+    },
+    {
+      "id": "slider_sfx_track",
+      "kind": "ninepatch",
+      "rect": [
+        886,
+        425,
+        383,
+        10
+      ],
+      "ninepatch": [
+        5,
+        4,
+        5,
+        4
+      ],
+      "file": "res://assets/ui/common/slider_track.png",
+      "theme_type": "settings_overlay__slider_sfx_track"
+    },
+    {
+      "id": "slider_sfx_fill",
+      "kind": "ninepatch",
+      "rect": [
+        888,
+        427,
+        323,
+        6
+      ],
+      "ninepatch": [
+        3,
+        2,
+        3,
+        2
+      ],
+      "file": "res://assets/ui/common/slider_fill.png",
+      "theme_type": "settings_overlay__slider_sfx_fill"
+    },
+    {
+      "id": "slider_sfx_grabber",
+      "kind": "icon",
+      "rect": [
+        1199,
+        419,
+        23,
+        23
+      ],
+      "file": "res://assets/ui/common/slider_grabber_normal.png"
+    },
+    {
+      "id": "pct_sfx",
+      "kind": "text_style",
+      "rect": [
+        1300,
+        404,
+        112,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        112,
+        48
+      ],
+      "align": "left",
+      "theme_type": "settings_overlay__pct_sfx"
+    },
+    {
+      "id": "section_display",
+      "kind": "text_style",
+      "rect": [
+        516,
+        474,
+        480,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        480,
+        44
+      ],
+      "align": "left",
+      "key": "ui.settings_section_display",
+      "theme_type": "settings_overlay__section_display"
+    },
+    {
+      "id": "label_fullscreen",
+      "kind": "text_style",
+      "rect": [
+        532,
+        522,
+        450,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        450,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_fullscreen",
+      "theme_type": "settings_overlay__label_fullscreen"
+    },
+    {
+      "id": "toggle_fullscreen",
+      "kind": "toggle",
+      "rect": [
+        1320,
+        528,
+        81,
+        37
+      ],
+      "states": {
+        "on": "res://assets/ui/common/toggle_on.png",
+        "off": "res://assets/ui/common/toggle_off.png"
+      }
+    },
+    {
+      "id": "label_target_lines",
+      "kind": "text_style",
+      "rect": [
+        532,
+        578,
+        450,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        450,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_target_lines",
+      "theme_type": "settings_overlay__label_target_lines"
+    },
+    {
+      "id": "toggle_target_lines",
+      "kind": "toggle",
+      "rect": [
+        1320,
+        584,
+        81,
+        37
+      ],
+      "states": {
+        "on": "res://assets/ui/common/toggle_on.png",
+        "off": "res://assets/ui/common/toggle_off.png"
+      }
+    },
+    {
+      "id": "label_font_scale",
+      "kind": "text_style",
+      "rect": [
+        532,
+        634,
+        450,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        450,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_font_scale",
+      "theme_type": "settings_overlay__label_font_scale"
+    },
+    {
+      "id": "dropdown_font_scale",
+      "kind": "button",
+      "rect": [
+        1169,
+        631,
+        232,
+        54
+      ],
+      "text_rect": [
+        21,
+        3,
+        154,
+        48
+      ],
+      "align": "left",
+      "ninepatch": [
+        27,
+        27,
+        27,
+        27
+      ],
+      "states": {
+        "normal": "res://assets/ui/common/dropdown_normal.png",
+        "hover": "res://assets/ui/common/dropdown_hover.png",
+        "pressed": "res://assets/ui/common/dropdown_pressed.png",
+        "disabled": "res://assets/ui/common/dropdown_disabled.png"
+      },
+      "theme_type": "settings_overlay__dropdown_font_scale",
+      "popup_theme_type": "settings_overlay__dropdown_font_scale__popup"
+    },
+    {
+      "id": "font_scale_value",
+      "kind": "text_style",
+      "rect": [
+        1190,
+        634,
+        154,
+        48
+      ],
+      "merged_into": "dropdown_font_scale",
+      "text_rect": [
+        0,
+        0,
+        154,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_font_scale_option",
+      "theme_type": "settings_overlay__font_scale_value"
+    },
+    {
+      "id": "dropdown_arrow",
+      "kind": "icon",
+      "rect": [
+        1360,
+        651,
+        20,
+        20
+      ],
+      "file": "res://assets/ui/common/dropdown_arrow.png"
+    },
+    {
+      "id": "section_debug",
+      "kind": "text_style",
+      "rect": [
+        516,
+        708,
+        480,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        480,
+        44
+      ],
+      "align": "left",
+      "key": "ui.settings_section_debug",
+      "theme_type": "settings_overlay__section_debug"
+    },
+    {
+      "id": "label_sim_log",
+      "kind": "text_style",
+      "rect": [
+        532,
+        756,
+        450,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        450,
+        48
+      ],
+      "align": "left",
+      "key": "ui.settings_sim_log",
+      "theme_type": "settings_overlay__label_sim_log"
+    },
+    {
+      "id": "toggle_sim_log",
+      "kind": "toggle",
+      "rect": [
+        1320,
+        762,
+        81,
+        37
+      ],
+      "states": {
+        "on": "res://assets/ui/common/toggle_on.png",
+        "off": "res://assets/ui/common/toggle_off.png"
+      }
+    },
+    {
+      "id": "log_hint",
+      "kind": "text_style",
+      "rect": [
+        532,
+        820,
+        850,
+        56
+      ],
+      "text_rect": [
+        0,
+        0,
+        850,
+        56
+      ],
+      "align": "left",
+      "key": "ui.settings_log_hint",
+      "theme_type": "settings_overlay__log_hint"
+    },
+    {
+      "id": "separator_footer",
+      "kind": "image",
+      "rect": [
+        516,
+        902,
+        889,
+        1
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/separator_footer.png"
+    }
+  ],
+  "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/settings_overlay/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
+}

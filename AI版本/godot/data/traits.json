@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "traits": {
+    "delayed_blast_basic": {
+      "type": "delayed_blast",
+      "public_text": "延迟爆炸：锁定视野内最远分裂体的当时位置，标出半径 1.5 格的范围，2 秒后爆炸造成 30 伤害。落点不追踪，目标死亡也不会取消。冷却 4 秒。",
+      "params": { "damage": 30, "radius": 1.5, "delay": 2.0, "cooldown": 4.0, "selector": "farthest", "filter": "unit", "range": 12, "first_delay": 1.0 }
+    },
+    "delayed_blast_core": {
+      "type": "delayed_blast",
+      "public_text": "花粉爆裂：锁定视野内最远分裂体的当时位置，标出半径 2 格的范围，2.5 秒后爆炸造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
+      "params": { "damage": 35, "radius": 2.0, "delay": 2.5, "cooldown": 5.0, "selector": "farthest", "filter": "unit", "range": 14, "first_delay": 3.0 }
+    },
+    "vulnerable": {
+      "type": "status",
+      "public_text": "受到的伤害增加 50%，持续 6 秒。再次施加刷新持续时间，不叠加。",
+      "params": {"damage_taken_mult": 1.5, "duration": 6.0, "stack": false},
+      "_why": "50% 是「值得为它改打法」的下限。低于 30% 玩家懒得绕，高于 100% 就变成「中了必死」，没有决策空间。"
+    },
+    "paralysis": {
+      "type": "status",
+      "public_text": "无法进行攻击行动（攻击 / 追击攻击），持续 3 秒。仍可移动。",
+      "params": {"duration": 3.0, "blocks": ["attack", "chase_attack"], "stack": false},
+      "_why": "3 秒 ≈ 攻击间隔的 3 倍，够打断一轮输出但不至于让单位废掉。**只封攻击、不封移动**是关键：单位还能走，所以是「暂时没威胁」而不是「变成木头」。"
+    },
+    "slow": {
+      "type": "status",
+      "public_text": "移动速度降低 40%，持续 5 秒。",
+      "params": {"move_speed_mult": 0.6, "duration": 5.0, "stack": false},
+      "_why": "0.6 = 移速 3.0 掉到 1.8，刚好落在「追不上基础形态」和「跑不过承伤形态」之间。所以减速对快单位是致命的，对慢单位几乎无感 —— 这个不对称本身就是设计工具。"
+    },
+    "apply_vulnerable": {
+      "type": "on_hit_status",
+      "public_text": "命中时施加「易伤」。",
+      "params": {"status": "vulnerable", "duration": 6.0}
+    },
+    "apply_paralysis": {
+      "type": "on_hit_status",
+      "public_text": "命中时施加「麻痹」。",
+      "params": {"status": "paralysis", "duration": 3.0}
+    },
+    "aura_slow": {
+      "type": "aura_status",
+      "public_text": "半径 3 格内的敌方单位移速 -40%。",
+      "params": {"status": "slow", "radius": 3.0, "affects": "enemy_of_owner"}
+    },
+    "tile_hazard": {
+      "type": "tile_effect",
+      "public_text": "站上去的单位立刻获得「易伤」。敌我通用。",
+      "params": {"applies": "vulnerable", "duration": 6.0, "affects": "any"},
+      "_why": "**可以走，但不该走。** 和墙的区别是墙禁止通行，危险区提供一条「有代价的捷径」。玩家可以用它：把敌人引进去，或者自己抢时间穿过去。"
+    },
+    "tile_mire": {
+      "type": "tile_effect",
+      "public_text": "站在里面的单位移速减半。敌我通用。",
+      "params": {"move_speed_mult": 0.5, "affects": "any"},
+      "_why": "**改变地形而不是改变单位。** 同一块地对快单位和慢单位意义完全不同 —— 迅捷进去就废了，承伤进去几乎无感。所以缓滞带是「按形态选路」的工具。"
+    },
+    "tile_shrine": {
+      "type": "tile_effect",
+      "public_text": "站上去的我方单位清除全部异常状态。",
+      "params": {"clears": ["vulnerable", "paralysis", "slow"], "affects": "ally_only"},
+      "_why": "**反制手段。** 前面两个格子给玩家制造麻烦，净化台给玩家一个解法 —— 而且它只对我方生效，所以「把敌人拖到净化台旁边」是没用的，你必须自己退回去清状态，这就有了代价。"
+    },
+    "boss_phases": {
+      "type": "phased_boss",
+      "public_text": "**三阶段 Boss。** 每失去三分之一血量就换一种异常状态：孢裂（易伤）→ 钟缚（麻痹）→ 泥沼（减速）。阶段 3 才开始移动。",
+      "params": {"phases": [{"phase": 1, "name": "孢裂", "hp_ratio": 0.34, "mechanic": "vulnerable", "applies_status": "vulnerable", "summon": ["spitter", "spitter", "marrow_hulk"]}, {"phase": 2, "name": "钟缚", "hp_ratio": 0.33, "mechanic": "paralysis", "applies_status": "paralysis", "summon": ["hex_priest", "hex_priest", "bone_guard"]}, {"phase": 3, "name": "泥沼", "hp_ratio": 0.33, "mechanic": "slow", "applies_status": "slow", "summon": ["bone_weaver", "marrow_hulk"], "move_speed_override": 1.2}], "on_phase_change": "清自身状态 / 召唤 / 改地形效果"},
+      "_why": "三阶段的机制分别对应灰棘林 / 圣钟城废墟 / 肉巢沼泽，所以玩家在前面已经各自学过一遍。最终战考的是**串起来用**，而不是新机制 —— 这是「最终 Boss 应该考什么」的答案。"
+    }
+  }
+}

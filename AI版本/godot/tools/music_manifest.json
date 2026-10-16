@@ -1,0 +1,20 @@
+{
+  "_comment": "BGM 清单，gen_music.py 读取。全部纯器乐、可循环。输出到 assets/audio/bgm/<id>.mp3",
+  "mv": "v6",
+  "items": [
+    { "id": "menu_theme", "title": "Artificial Deity - Menu", "tags": "dark ambient, church organ, choir, ritual",
+      "prompt": "dark ambient instrumental, slow church organ drones, distant female choir hum, very sparse bone-like wooden percussion, alchemical glass resonance, 60 BPM, melancholic, loopable, no vocals" },
+    { "id": "battle_01", "title": "Artificial Deity - Bone Farm", "tags": "dark orchestral, ambient, tension",
+      "prompt": "tense dark orchestral ambient instrumental, low cello pulse, dry rattling percussion, wind through dead fields, 90 BPM, loopable, no vocals" },
+    { "id": "battle_02", "title": "Artificial Deity - Wailing Wall", "tags": "ritual percussion, dark, dissonant strings",
+      "prompt": "dark ritual percussion instrumental, deep frame drums, whispering textures, dissonant strings, 100 BPM, loopable, no vocals" },
+    { "id": "battle_03", "title": "Artificial Deity - Hold the Way Home", "tags": "urgent, heartbeat, choir, cinematic",
+      "prompt": "urgent but restrained cinematic instrumental, ticking clock motif, heartbeat bass, choir swells, 110 BPM, loopable, no vocals" },
+    { "id": "boss_01", "title": "Artificial Deity - Bone Flower Mother", "tags": "gothic organ, boss, menacing, choir",
+      "prompt": "grand gothic organ instrumental with distorted flesh-like synth bass, choir, heavy slow drums, 85 BPM, menacing, loopable, no vocals" },
+    { "id": "sting_victory", "title": "Artificial Deity - Victory", "tags": "short sting, choir, chime",
+      "prompt": "an 8 second instrumental resolve: a single bone chime followed by a warm sustained choir chord fading to silence, no vocals" },
+    { "id": "sting_defeat", "title": "Artificial Deity - Defeat", "tags": "short sting, organ, dark",
+      "prompt": "an 8 second instrumental sting: a descending dissonant organ cluster collapsing into silence, no vocals" }
+  ]
+}

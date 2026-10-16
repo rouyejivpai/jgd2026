@@ -1,0 +1,15 @@
+{
+  "id": "level_c20_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "泥里留着一串足迹，绕开了你走过的每一步。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "它不是在逃离某一个人，而是在逃离所有人——离谁越近，被推得越狠。记住这一点。"
+    }
+  ]
+}

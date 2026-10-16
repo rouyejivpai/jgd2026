@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "_comment": "存档初始化时写入的解锁（03 文档 §1.3「初始」行）。之后每关 rewards 追加。第二阶段起出场数量由关卡 roster 的 Cost 预算决定，unlocks.slots 废弃（07 §4.3）。",
+  "initial_unlocks": {
+    "forms": ["striker"],
+    "presets": ["preset.attack_nearest_in_range", "preset.chase_attack_nearest_visible", "preset.idle_always"],
+    "conditions": ["always", "enemy_visible", "enemy_in_range"],
+    "selectors": ["nearest"],
+    "actions": ["attack", "chase_attack", "idle"]
+  },
+  "initial_levels": ["level_01", "level_c01"],
+  "default_settings": { "master": 0.8, "music": 0.7, "sfx": 0.9, "fullscreen": true, "target_lines": true, "font_scale": 1.0, "sim_log": true }
+}

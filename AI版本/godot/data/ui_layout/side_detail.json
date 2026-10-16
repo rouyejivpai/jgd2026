@@ -1,0 +1,1803 @@
+{
+  "schema_version": 1,
+  "screen": "side_detail",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "det_panel",
+      "kind": "ninepatch",
+      "rect": [
+        1264,
+        0,
+        653,
+        1074
+      ],
+      "ninepatch": [
+        48,
+        48,
+        48,
+        48
+      ],
+      "file": "res://assets/ui/side_detail/slices/panel.png",
+      "theme_type": "side_detail__det_panel"
+    },
+    {
+      "id": "det_portrait_ring",
+      "kind": "image",
+      "rect": [
+        1288,
+        37,
+        134,
+        132
+      ],
+      "file": "res://assets/ui/side_detail/slices/portrait_ring.png"
+    },
+    {
+      "id": "det_portrait",
+      "kind": "flatbox",
+      "rect": [
+        1298,
+        46,
+        114,
+        114
+      ],
+      "theme_type": "side_detail__det_portrait"
+    },
+    {
+      "id": "det_remove",
+      "kind": "button",
+      "rect": [
+        1675,
+        22,
+        107,
+        52
+      ],
+      "text_rect": [
+        12,
+        11,
+        84,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1708.0,
+          39.0,
+          42.0,
+          21.0
+        ],
+        "ref_text": "移除"
+      },
+      "ninepatch": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_dark.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_dark.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_dark.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_dark.png"
+      },
+      "theme_type": "side_detail__det_remove"
+    },
+    {
+      "id": "det_close",
+      "kind": "button",
+      "rect": [
+        1788,
+        23,
+        107,
+        51
+      ],
+      "text_rect": [
+        12,
+        9,
+        84,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1821.0,
+          39.0,
+          42.0,
+          21.0
+        ],
+        "ref_text": "关闭"
+      },
+      "ninepatch": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_red_large.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_red_large.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_red_large.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_red_large.png"
+      },
+      "theme_type": "side_detail__det_close"
+    },
+    {
+      "id": "det_stats",
+      "kind": "ninepatch",
+      "rect": [
+        1279,
+        207,
+        637,
+        107
+      ],
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "file": "res://assets/ui/side_detail/slices/stats.png",
+      "theme_type": "side_detail__det_stats"
+    },
+    {
+      "id": "det_stat_icon_0",
+      "kind": "flatbox",
+      "rect": [
+        1308,
+        227,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_0"
+    },
+    {
+      "id": "det_stat_icon_1",
+      "kind": "flatbox",
+      "rect": [
+        1504,
+        227,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_1"
+    },
+    {
+      "id": "det_stat_icon_2",
+      "kind": "flatbox",
+      "rect": [
+        1700,
+        227,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_2"
+    },
+    {
+      "id": "det_stat_icon_3",
+      "kind": "flatbox",
+      "rect": [
+        1308,
+        271,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_3"
+    },
+    {
+      "id": "det_stat_icon_4",
+      "kind": "flatbox",
+      "rect": [
+        1504,
+        271,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_4"
+    },
+    {
+      "id": "det_stat_icon_5",
+      "kind": "flatbox",
+      "rect": [
+        1700,
+        271,
+        22,
+        22
+      ],
+      "theme_type": "side_detail__det_stat_icon_5"
+    },
+    {
+      "id": "det_scroll",
+      "kind": "flatbox",
+      "rect": [
+        1290,
+        344,
+        584,
+        568
+      ],
+      "theme_type": "side_detail__det_scroll"
+    },
+    {
+      "id": "det_track",
+      "kind": "ninepatch",
+      "rect": [
+        1882,
+        350,
+        8,
+        552
+      ],
+      "ninepatch": [
+        0,
+        6,
+        0,
+        6
+      ],
+      "file": "res://assets/ui/side_detail/slices/track.png",
+      "theme_type": "side_detail__det_track"
+    },
+    {
+      "id": "det_thumb",
+      "kind": "ninepatch",
+      "rect": [
+        1882,
+        352,
+        8,
+        150
+      ],
+      "ninepatch": [
+        0,
+        6,
+        0,
+        6
+      ],
+      "file": "res://assets/ui/side_detail/slices/thumb.png",
+      "theme_type": "side_detail__det_thumb"
+    },
+    {
+      "id": "det_row1",
+      "kind": "ninepatch",
+      "rect": [
+        1286,
+        338,
+        592,
+        259
+      ],
+      "ninepatch": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "file": "res://assets/ui/side_detail/slices/card.png",
+      "theme_type": "side_detail__det_row1"
+    },
+    {
+      "id": "det_row2",
+      "kind": "ninepatch",
+      "rect": [
+        1286,
+        594,
+        592,
+        259
+      ],
+      "ninepatch": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "file": "res://assets/ui/side_detail/slices/card.png",
+      "theme_type": "side_detail__det_row2"
+    },
+    {
+      "id": "det_handle",
+      "kind": "image",
+      "rect": [
+        1309,
+        367,
+        18,
+        28
+      ],
+      "file": "res://assets/ui/side_detail/slices/handle.png"
+    },
+    {
+      "id": "det_override",
+      "kind": "toggle",
+      "rect": [
+        1474,
+        363,
+        35,
+        34
+      ],
+      "states": {
+        "off": "res://assets/ui/side_detail/slices/check_off.png",
+        "on": "res://assets/ui/side_detail/slices/check_on.png"
+      }
+    },
+    {
+      "id": "det_delete",
+      "kind": "button",
+      "rect": [
+        1765,
+        355,
+        96,
+        49
+      ],
+      "text_rect": [
+        13,
+        10,
+        70,
+        30
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1792.0,
+          370.0,
+          42.0,
+          21.0
+        ],
+        "ref_text": "删除"
+      },
+      "ninepatch": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_red.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_red.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_red.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_red.png"
+      },
+      "theme_type": "side_detail__det_delete"
+    },
+    {
+      "id": "det_action",
+      "kind": "button",
+      "rect": [
+        1360,
+        411,
+        218,
+        47
+      ],
+      "text_rect": [
+        15,
+        9,
+        166,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1375.0,
+          426.0,
+          98.0,
+          19.0
+        ],
+        "ref_text": "沿我的信标"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+      },
+      "theme_type": "side_detail__det_action"
+    },
+    {
+      "id": "det_p1",
+      "kind": "button",
+      "rect": [
+        1583,
+        411,
+        145,
+        47
+      ],
+      "text_rect": [
+        15,
+        9,
+        94,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1598.0,
+          426.0,
+          59.0,
+          19.0
+        ],
+        "ref_text": "沿路径"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+      },
+      "theme_type": "side_detail__det_p1"
+    },
+    {
+      "id": "det_p2",
+      "kind": "button",
+      "rect": [
+        1733,
+        411,
+        128,
+        47
+      ],
+      "text_rect": [
+        16,
+        9,
+        76,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1749.0,
+          428.0,
+          8.0,
+          16.0
+        ],
+        "ref_text": "1"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+      },
+      "theme_type": "side_detail__det_p2"
+    },
+    {
+      "id": "det_c1",
+      "kind": "button",
+      "rect": [
+        1377,
+        466,
+        427,
+        45
+      ],
+      "text_rect": [
+        16,
+        8,
+        370,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1393.0,
+          480.0,
+          39.0,
+          20.0
+        ],
+        "ref_text": "始终"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+      },
+      "theme_type": "side_detail__det_c1"
+    },
+    {
+      "id": "det_c1_narrow",
+      "kind": "button",
+      "rect": [
+        1377,
+        722,
+        306,
+        45
+      ],
+      "text_rect": [
+        19,
+        8,
+        250,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1396.0,
+          736.0,
+          80,
+          20
+        ],
+        "ref_text": "目标距离"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+      },
+      "theme_type": "side_detail__det_c1_narrow"
+    },
+    {
+      "id": "det_cparam",
+      "kind": "button",
+      "rect": [
+        1686,
+        722,
+        116,
+        45
+      ],
+      "text_rect": [
+        16,
+        8,
+        66,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1702.0,
+          738.5,
+          28,
+          15
+        ],
+        "ref_text": "< 3"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+      },
+      "theme_type": "side_detail__det_cparam"
+    },
+    {
+      "id": "det_c2",
+      "kind": "button",
+      "rect": [
+        1377,
+        536,
+        427,
+        45
+      ],
+      "text_rect": [
+        16,
+        9,
+        370,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1393.0,
+          551.0,
+          18.0,
+          19.0
+        ],
+        "ref_text": "无"
+      },
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+      },
+      "theme_type": "side_detail__det_c2"
+    },
+    {
+      "id": "det_logic_line_l",
+      "kind": "flatbox",
+      "rect": [
+        1380,
+        528,
+        174,
+        1
+      ],
+      "theme_type": "side_detail__det_logic_line_l"
+    },
+    {
+      "id": "det_logic_line_r",
+      "kind": "flatbox",
+      "rect": [
+        1606,
+        528,
+        196,
+        1
+      ],
+      "theme_type": "side_detail__det_logic_line_r"
+    },
+    {
+      "id": "det_logic",
+      "kind": "button",
+      "rect": [
+        1560,
+        516,
+        40,
+        24
+      ],
+      "text_rect": [
+        5,
+        -2,
+        30,
+        30
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1567.0,
+          522.0,
+          26.0,
+          18.0
+        ],
+        "ref_text": "∧"
+      },
+      "theme_type": "side_detail__det_logic"
+    },
+    {
+      "id": "det_footer_line",
+      "kind": "flatbox",
+      "rect": [
+        1290,
+        918,
+        604,
+        1
+      ],
+      "theme_type": "side_detail__det_footer_line"
+    },
+    {
+      "id": "det_add",
+      "kind": "button",
+      "rect": [
+        1295,
+        926,
+        294,
+        59
+      ],
+      "text_rect": [
+        22,
+        12,
+        250,
+        35
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1383.0,
+          945.0,
+          121.0,
+          23.0
+        ],
+        "ref_text": "＋ 添加指令"
+      },
+      "ninepatch": [
+        18,
+        14,
+        18,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_teal.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_teal.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_teal.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_teal.png"
+      },
+      "theme_type": "side_detail__det_add"
+    },
+    {
+      "id": "det_beacon_btn",
+      "kind": "button",
+      "rect": [
+        1598,
+        925,
+        297,
+        61
+      ],
+      "text_rect": [
+        24,
+        13,
+        250,
+        35
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1723.0,
+          945.0,
+          47.0,
+          24.0
+        ],
+        "ref_text": "信标"
+      },
+      "ninepatch": [
+        18,
+        14,
+        18,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_purple.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_purple.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_purple.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_purple.png"
+      },
+      "theme_type": "side_detail__det_beacon_btn"
+    },
+    {
+      "id": "det_wait_box",
+      "kind": "button",
+      "rect": [
+        1733,
+        411,
+        128,
+        47
+      ],
+      "text_rect": [
+        16,
+        9,
+        76,
+        30
+      ],
+      "align": "left",
+      "ninepatch": [
+        14,
+        14,
+        40,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
+        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
+        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
+        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+      },
+      "theme_type": "side_detail__det_wait_box"
+    },
+    {
+      "id": "beacon_bar",
+      "kind": "ninepatch",
+      "rect": [
+        417,
+        838,
+        846,
+        224
+      ],
+      "ninepatch": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "file": "res://assets/ui/side_detail/slices/bar.png",
+      "theme_type": "side_detail__beacon_bar"
+    },
+    {
+      "id": "beacon_mode_once",
+      "kind": "button",
+      "rect": [
+        460,
+        952,
+        174,
+        60
+      ],
+      "text_rect": [
+        18,
+        14,
+        140,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          515.0,
+          973.0,
+          65.0,
+          21.0
+        ],
+        "ref_text": "沿路径"
+      },
+      "ninepatch": [
+        16,
+        14,
+        16,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
+        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
+        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
+        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+      },
+      "theme_type": "side_detail__beacon_mode_once"
+    },
+    {
+      "id": "beacon_mode_loop",
+      "kind": "button",
+      "rect": [
+        641,
+        952,
+        173,
+        59
+      ],
+      "text_rect": [
+        16,
+        14,
+        140,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          704.0,
+          972.0,
+          45.0,
+          22.0
+        ],
+        "ref_text": "循环"
+      },
+      "ninepatch": [
+        16,
+        14,
+        16,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
+        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
+        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
+        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+      },
+      "theme_type": "side_detail__beacon_mode_loop"
+    },
+    {
+      "id": "beacon_mode_pingpong",
+      "kind": "button",
+      "rect": [
+        820,
+        953,
+        172,
+        58
+      ],
+      "text_rect": [
+        15,
+        13,
+        140,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          883.0,
+          973.0,
+          44.0,
+          21.0
+        ],
+        "ref_text": "往返"
+      },
+      "ninepatch": [
+        16,
+        14,
+        16,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
+        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
+        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
+        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+      },
+      "theme_type": "side_detail__beacon_mode_pingpong"
+    },
+    {
+      "id": "beacon_mode_auto",
+      "kind": "button",
+      "rect": [
+        998,
+        953,
+        172,
+        58
+      ],
+      "text_rect": [
+        14,
+        15,
+        140,
+        30
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1045.0,
+          973.0,
+          79.0,
+          20.0
+        ],
+        "ref_text": "自动寻路"
+      },
+      "ninepatch": [
+        16,
+        14,
+        16,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
+        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
+        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
+        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+      },
+      "theme_type": "side_detail__beacon_mode_auto"
+    },
+    {
+      "id": "beacon_done",
+      "kind": "button",
+      "rect": [
+        1079,
+        865,
+        158,
+        56
+      ],
+      "text_rect": [
+        18,
+        13,
+        120,
+        33
+      ],
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1135.0,
+          883.0,
+          45.0,
+          23.0
+        ],
+        "ref_text": "完成"
+      },
+      "ninepatch": [
+        16,
+        14,
+        16,
+        14
+      ],
+      "states": {
+        "normal": "res://assets/ui/side_detail/slices/btn_done.png",
+        "hover": "res://assets/ui/side_detail/slices/btn_done.png",
+        "pressed": "res://assets/ui/side_detail/slices/btn_done.png",
+        "disabled": "res://assets/ui/side_detail/slices/btn_done.png"
+      },
+      "theme_type": "side_detail__beacon_done"
+    },
+    {
+      "id": "det_title",
+      "kind": "text_style",
+      "rect": [
+        1434,
+        73,
+        236,
+        53
+      ],
+      "text_rect": [
+        0,
+        0,
+        236,
+        53
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1434.0,
+          83.0,
+          215.0,
+          35.0
+        ],
+        "ref_text": "基础攻击形态"
+      },
+      "theme_type": "side_detail__det_title"
+    },
+    {
+      "id": "det_cost",
+      "kind": "text_style",
+      "rect": [
+        1435,
+        181,
+        300,
+        24
+      ],
+      "text_rect": [
+        0,
+        0,
+        300,
+        24
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1435.0,
+          186.0,
+          113.0,
+          16.0
+        ],
+        "ref_text": "形态 3 ＋ 指令 0"
+      },
+      "theme_type": "side_detail__det_cost"
+    },
+    {
+      "id": "det_note",
+      "kind": "text_style",
+      "rect": [
+        1294,
+        314,
+        580,
+        24
+      ],
+      "text_rect": [
+        0,
+        0,
+        580,
+        24
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1294.0,
+          319.0,
+          447.0,
+          17.0
+        ],
+        "ref_text": "越靠上，优先级越高；勾选「覆盖」的指令条件成立时优先接管"
+      },
+      "theme_type": "side_detail__det_note"
+    },
+    {
+      "id": "det_stat_name_0",
+      "kind": "text_style",
+      "rect": [
+        1341,
+        223,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1341.0,
+          229.0,
+          39.0,
+          20.0
+        ],
+        "ref_text": "生命"
+      },
+      "theme_type": "side_detail__det_stat_name_0"
+    },
+    {
+      "id": "det_stat_value_0",
+      "kind": "text_style",
+      "rect": [
+        1393,
+        225,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1393.0,
+          232.0,
+          49.0,
+          19.0
+        ],
+        "ref_text": "80/80"
+      },
+      "theme_type": "side_detail__det_stat_value_0"
+    },
+    {
+      "id": "det_stat_name_1",
+      "kind": "text_style",
+      "rect": [
+        1538,
+        224,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1538.0,
+          230.0,
+          38.0,
+          19.0
+        ],
+        "ref_text": "攻击"
+      },
+      "theme_type": "side_detail__det_stat_name_1"
+    },
+    {
+      "id": "det_stat_value_1",
+      "kind": "text_style",
+      "rect": [
+        1591,
+        224,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1591.0,
+          232.0,
+          18.0,
+          16.0
+        ],
+        "ref_text": "12"
+      },
+      "theme_type": "side_detail__det_stat_value_1"
+    },
+    {
+      "id": "det_stat_name_2",
+      "kind": "text_style",
+      "rect": [
+        1733,
+        224,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1733.0,
+          230.0,
+          39.0,
+          19.0
+        ],
+        "ref_text": "攻速"
+      },
+      "theme_type": "side_detail__det_stat_name_2"
+    },
+    {
+      "id": "det_stat_value_2",
+      "kind": "text_style",
+      "rect": [
+        1786,
+        224,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1786.0,
+          233.0,
+          7.0,
+          15.0
+        ],
+        "ref_text": "1"
+      },
+      "theme_type": "side_detail__det_stat_value_2"
+    },
+    {
+      "id": "det_stat_name_3",
+      "kind": "text_style",
+      "rect": [
+        1341,
+        268,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1341.0,
+          274.0,
+          38.0,
+          19.0
+        ],
+        "ref_text": "移速"
+      },
+      "theme_type": "side_detail__det_stat_name_3"
+    },
+    {
+      "id": "det_stat_value_3",
+      "kind": "text_style",
+      "rect": [
+        1393,
+        268,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1393.0,
+          276.0,
+          9.0,
+          16.0
+        ],
+        "ref_text": "3"
+      },
+      "theme_type": "side_detail__det_stat_value_3"
+    },
+    {
+      "id": "det_stat_name_4",
+      "kind": "text_style",
+      "rect": [
+        1538,
+        268,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1538.0,
+          274.0,
+          38.0,
+          19.0
+        ],
+        "ref_text": "视野"
+      },
+      "theme_type": "side_detail__det_stat_name_4"
+    },
+    {
+      "id": "det_stat_value_4",
+      "kind": "text_style",
+      "rect": [
+        1589,
+        268,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1589.0,
+          276.0,
+          10.0,
+          16.0
+        ],
+        "ref_text": "8"
+      },
+      "theme_type": "side_detail__det_stat_value_4"
+    },
+    {
+      "id": "det_stat_name_5",
+      "kind": "text_style",
+      "rect": [
+        1734,
+        267,
+        50,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        50,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1734.0,
+          273.0,
+          38.0,
+          20.0
+        ],
+        "ref_text": "射程"
+      },
+      "theme_type": "side_detail__det_stat_name_5"
+    },
+    {
+      "id": "det_stat_value_5",
+      "kind": "text_style",
+      "rect": [
+        1784,
+        267,
+        100,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        100,
+        30
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1784.0,
+          276.0,
+          10.0,
+          15.0
+        ],
+        "ref_text": "4"
+      },
+      "theme_type": "side_detail__det_stat_value_5"
+    },
+    {
+      "id": "det_prio",
+      "kind": "text_style",
+      "rect": [
+        1340,
+        363,
+        124,
+        35
+      ],
+      "text_rect": [
+        0,
+        0,
+        124,
+        35
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1340.0,
+          370.0,
+          92.0,
+          24.0
+        ],
+        "ref_text": "优先级 1"
+      },
+      "theme_type": "side_detail__det_prio"
+    },
+    {
+      "id": "det_override_label",
+      "kind": "text_style",
+      "rect": [
+        1515,
+        367,
+        70,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        70,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1515.0,
+          373.0,
+          38.0,
+          19.0
+        ],
+        "ref_text": "覆盖"
+      },
+      "theme_type": "side_detail__det_override_label"
+    },
+    {
+      "id": "det_act_label",
+      "kind": "text_style",
+      "rect": [
+        1306,
+        420,
+        52,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        52,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1306.0,
+          426.0,
+          39.0,
+          19.0
+        ],
+        "ref_text": "行为"
+      },
+      "theme_type": "side_detail__det_act_label"
+    },
+    {
+      "id": "det_c1_label",
+      "kind": "text_style",
+      "rect": [
+        1306,
+        476,
+        70,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        70,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1307.0,
+          481.0,
+          57.0,
+          19.0
+        ],
+        "ref_text": "条件一"
+      },
+      "theme_type": "side_detail__det_c1_label"
+    },
+    {
+      "id": "det_c2_label",
+      "kind": "text_style",
+      "rect": [
+        1304,
+        545,
+        70,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        70,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1306.0,
+          550.0,
+          58.0,
+          20.0
+        ],
+        "ref_text": "条件二"
+      },
+      "theme_type": "side_detail__det_c2_label"
+    },
+    {
+      "id": "det_beacons",
+      "kind": "text_style",
+      "rect": [
+        1375,
+        1006,
+        440,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        440,
+        30
+      ],
+      "align": "center",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          1509.0,
+          1012.0,
+          172.0,
+          20.0
+        ],
+        "ref_text": "信标：2 个 · 沿路径"
+      },
+      "theme_type": "side_detail__det_beacons"
+    },
+    {
+      "id": "beacon_bar_title",
+      "kind": "text_style",
+      "rect": [
+        464,
+        873,
+        600,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        600,
+        38
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          464.0,
+          879.0,
+          346.0,
+          26.0
+        ],
+        "ref_text": "信标模式 · 1 号  基础攻击形态"
+      },
+      "theme_type": "side_detail__beacon_bar_title"
+    },
+    {
+      "id": "beacon_bar_hint",
+      "kind": "text_style",
+      "rect": [
+        464,
+        914,
+        752,
+        27
+      ],
+      "text_rect": [
+        0,
+        0,
+        752,
+        27
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "ref_ink": [
+          464.0,
+          919.0,
+          491.0,
+          20.0
+        ],
+        "ref_text": "左键点击地块放置信标，右键撤销最后一个；按 1–5 切换单位"
+      },
+      "theme_type": "side_detail__beacon_bar_hint"
+    },
+    {
+      "id": "det_cunit",
+      "kind": "text_style",
+      "rect": [
+        1809,
+        730,
+        40,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        40,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1809.0,
+          736.0,
+          20,
+          20
+        ],
+        "ref_text": "格"
+      },
+      "theme_type": "side_detail__det_cunit"
+    },
+    {
+      "id": "det_wait_label",
+      "kind": "text_style",
+      "rect": [
+        1594,
+        420,
+        132,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        132,
+        30
+      ],
+      "align": "left",
+      "theme_type": "side_detail__det_wait_label"
+    },
+    {
+      "id": "det_wait_unit",
+      "kind": "text_style",
+      "rect": [
+        1864,
+        420,
+        40,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        40,
+        30
+      ],
+      "align": "left",
+      "theme_type": "side_detail__det_wait_unit"
+    },
+    {
+      "id": "det_desc",
+      "kind": "text_style",
+      "rect": [
+        1435,
+        128,
+        404,
+        52
+      ],
+      "text_rect": [
+        0,
+        0,
+        404,
+        52
+      ],
+      "align": "left",
+      "overflow": "manual",
+      "data": {
+        "ref_ink_line1": [
+          1435.0,
+          133.0,
+          382.0,
+          19.0
+        ]
+      },
+      "theme_type": "side_detail__det_desc"
+    },
+    {
+      "id": "det_pick",
+      "kind": "flatbox",
+      "rect": [
+        1290,
+        344,
+        584,
+        38
+      ],
+      "data": {
+        "_note": "「添加指令」行为列表（批准整图 ui_15，在详情弹窗中部显示）：行高 / 行距 / 颜色取自整图（1920 坐标行高 44、行距 54）",
+        "row_h": 44,
+        "row_gap": 10,
+        "border_width": 1.5,
+        "colors": {
+          "attack": [
+            "#2B153A",
+            "#DAC9B3"
+          ],
+          "chase_attack": [
+            "#043059",
+            "#C4C6AE"
+          ],
+          "chase": [
+            "#25265D",
+            "#998F9B"
+          ],
+          "retreat": [
+            "#752F32",
+            "#F8BC91"
+          ],
+          "idle": [
+            "#3C253D",
+            "#E0C2A6"
+          ],
+          "follow_beacons": [
+            "#043059",
+            "#C4C6AE"
+          ],
+          "wait": [
+            "#3C253D",
+            "#E0C2A6"
+          ],
+          "follow_route": [
+            "#25265D",
+            "#998F9B"
+          ],
+          "cancel": [
+            "#55121D",
+            "#E07070"
+          ]
+        },
+        "icons": {
+          "attack": "ui/icons/act_attack.svg",
+          "chase_attack": "ui/icons/act_chase_attack.svg",
+          "chase": "ui/icons/act_chase.svg",
+          "retreat": "ui/icons/act_retreat.svg",
+          "idle": "ui/icons/act_idle.svg",
+          "follow_route": "ui/icons/act_route.svg",
+          "follow_beacons": "ui/icons/act_follow_beacons.png",
+          "wait": "ui/icons/act_wait.png",
+          "cancel": "ui/icons/act_cancel.png"
+        }
+      },
+      "theme_type": "side_detail__det_pick"
+    }
+  ],
+  "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/side_detail/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
+}

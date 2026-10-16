@@ -1,0 +1,250 @@
+extends Control
+## 地图可视区的输入层（位于 HUD 三栏之间）：点击选中单位；部署阶段拖拽放置/移动/收回单位。
+## 07 §1.1：命中测试只在玩法矩形内有效，矩形外的点击一律视为点击空地、拖起无效。
+## 10 §4：拖拽虚影为形态精灵（落点合法金色、非法红色）；把已放置单位拖出战场（玩法矩形外）= 移除；
+## 在战场内放到非法格：红闪 + toast「无法放置：原因」（原因由 DeploymentValidator.place_problem 给出），单位不动。
+## 07 §3.1 信标（仅部署阶段，作用于当前选中的己方单位）：右键可行走格 = 追加下一个编号；右键已有信标 = 删除；
+## 左键按住信标拖动 = 移动（松开时落点合法才生效）。
+## 第四阶段（用户 2026-10-08）：
+## - 部署阶段按下已放置的己方单位不立即打开详情：松开且没拖动 = 选中（打开侧栏）；拖动 = 移动，虚影吸附到最近的地块显示预览，
+##   原位置的单位变淡；放下后不弹出详情。
+## - 信标模式（HUD 底部信标边栏，数字键 / 「信标」按钮进入）：左键点地块 = 给该单位追加信标，右键 = 撤销最后一个；按住已有信标仍可拖动。
+## - Ctrl + 左键拖动 = 平移镜头，Ctrl + 滚轮 = 缩放（BattleRoot.pan_by / zoom_at），不当作点击。
+
+var _root: Node2D = null
+var _controller: BattleController = null
+var _drag_beacon: String = ""            ## 正在拖动的信标编号
+var _drag_slot: String = ""
+var _press_unit: int = -1                ## 部署阶段按下的己方单位（松开未拖动 = 选中）
+var _cam_drag: bool = false              ## Ctrl + 左键拖动镜头中
+
+
+func setup(root: Node2D, controller: BattleController) -> void:
+	_root = root
+	_controller = controller
+
+
+func _gui_input(event: InputEvent) -> void:
+	if _root == null:
+		return
+	var mm: InputEventMouseMotion = event as InputEventMouseMotion
+	if mm != null:
+		if _cam_drag:
+			_root.call("pan_by", mm.relative)
+			accept_event()
+			return
+		if _drag_beacon != "":
+			var cell: Vector2i = _root.call("screen_to_cell", mm.global_position) as Vector2i
+			var ok: bool = bool(_root.call("in_playfield", mm.global_position)) and _controller.can_place_beacon(_drag_slot, cell, _drag_beacon)
+			_root.call("set_beacon_drag", _drag_beacon, cell, ok)
+			accept_event()
+			return
+		_update_tooltip(mm.global_position)
+		return
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	if mb != null and mb.ctrl_pressed and mb.pressed and mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		_root.call("zoom_at", mb.global_position, 1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else -1)
+		accept_event()
+		return
+	if mb != null and mb.button_index == MOUSE_BUTTON_LEFT and (mb.ctrl_pressed and mb.pressed or _cam_drag and not mb.pressed):
+		_cam_drag = mb.pressed
+		_press_unit = -1
+		accept_event()
+		return
+	if mb != null and mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
+		if beacon_mode_slot() != "":
+			_undo_beacon()
+		else:
+			_on_right_click(mb.global_position)
+		accept_event()
+		return
+	if mb != null and mb.button_index == MOUSE_BUTTON_LEFT and not mb.pressed and _drag_beacon != "":
+		_end_beacon_drag(mb.global_position)
+		accept_event()
+		return
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _try_begin_beacon_drag(mb.global_position):
+		accept_event()
+		return
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and beacon_mode_slot() != "":
+		_place_beacon_at(mb.global_position)
+		accept_event()
+		return
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+		var id: int = int(_root.call("unit_at_screen", mb.global_position))   # 矩形外恒为 -1
+		if _controller != null and _controller.phase == SimTypes.Phase.DEPLOY and _controller.slot_of_unit(id) != "":
+			_press_unit = id               # 部署阶段的己方单位：松开时（未拖动）才选中
+		else:
+			EventBus.unit_selected.emit(id)
+		accept_event()
+		return
+	if mb != null and not mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _press_unit >= 0:
+		EventBus.unit_selected.emit(_press_unit)
+		_press_unit = -1
+		accept_event()
+
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	if _controller == null or _controller.phase != SimTypes.Phase.DEPLOY or _drag_beacon != "":
+		return null
+	if not bool(_root.call("in_playfield", get_global_transform() * at_position)):
+		return null
+	var cell: Vector2i = _root.call("screen_to_cell", get_global_transform() * at_position) as Vector2i
+	var sid: String = _controller.slot_at(cell)
+	if sid == "" or _cam_drag or beacon_mode_slot() != "":
+		return null
+	_press_unit = -1                       # 拖动开始：松开时不再选中
+	set_drag_preview(RosterCard.make_preview(_controller.form_of(sid), float(_root.call("cell_screen_px"))))
+	_root.call("set_drag_source", _controller.unit_id_of_slot(sid))
+	AudioManager.play_sfx("ui_drag_pick", "UI")
+	return { "slot_id": sid, "from_map": true }
+
+
+## 拖拽数据：{ slot_id, from_map }（地图上已放置的单位 / fixed 关槽位卡）或 { form }（free 关出场卡，放下即新建单位，07 §4.1）
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	if _controller == null or (_controller.phase != SimTypes.Phase.DEPLOY and not _controller.boss_pending) or not data is Dictionary:
+		return false
+	var d: Dictionary = data as Dictionary
+	if not d.has("form") and not d.has("slot_id"):
+		return false
+	if not bool(_root.call("in_playfield", get_global_transform() * at_position)):
+		_root.call("clear_drag_hover")
+		RosterCard.tint_preview(0)
+		RosterCard.show_preview(true)
+		return bool(d.get("from_map", false))
+	var cell: Vector2i = _root.call("screen_to_cell", get_global_transform() * at_position) as Vector2i
+	var legal: bool = drop_problem(d, cell) == ""
+	var form: String = str(d["form"]) if d.has("form") else _controller.form_of(str(d["slot_id"]))
+	_root.call("set_drag_hover", cell, legal, form)          # 第四阶段：虚影吸附到最近的地块显示预览
+	RosterCard.tint_preview(1 if legal else -1)
+	RosterCard.show_preview(false)                           # 战场内只显示吸附后的虚影，不再跟手
+	return true      # 非法格也接收放下：红闪 + 原因 toast（10 §4）
+
+
+## 拖拽数据放到 cell 的不可放置原因码，可放置为 ""
+func drop_problem(d: Dictionary, cell: Vector2i) -> String:
+	return _controller.place_problem(str(d["form"]) if d.has("form") else str(d["slot_id"]), cell)
+
+
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	var d: Dictionary = data as Dictionary
+	var screen: Vector2 = get_global_transform() * at_position
+	var cell: Vector2i = _root.call("screen_to_cell", screen) as Vector2i
+	var inside: bool = bool(_root.call("in_playfield", screen))
+	AudioManager.play_sfx("ui_drag_drop", "UI")
+	_root.call("clear_drag_hover")
+	if not inside:
+		if bool(d.get("from_map", false)):
+			_controller.remove_unit(str(d["slot_id"]))      # 拖出战场 = 移除（侧栏随之收起，见 BattleRoot）
+		return
+	var problem: String = drop_problem(d, cell)
+	if problem != "":
+		_root.call("flash_illegal", cell)
+		EventBus.toast.emit(cannot_place_text(problem))
+		if bool(_root.call("in_playfield", screen)) and _root.has_method("cell_top_screen"):
+			EventBus.toast_at.emit(cannot_place_text(problem), _root.call("cell_top_screen", cell) as Vector2)
+		return
+	if d.has("form"):
+		var uid: String = _controller.add_unit(str(d["form"]), cell)
+		if uid != "":
+			EventBus.unit_selected.emit(_controller.unit_id_of_slot(uid))
+		return
+	var sid: String = str(d["slot_id"])
+	if _controller.place_unit(sid, cell) and not bool(d.get("from_map", false)):
+		EventBus.unit_selected.emit(_controller.unit_id_of_slot(sid))   # 槽位卡首次放下才打开详情；地图上移动不弹出（第四阶段）
+
+
+## 「无法放置：原因」（validation.cannot_place.*）
+static func cannot_place_text(problem: String) -> String:
+	return DataRegistry.get_string("validation.cannot_place.format").format({ "reason": DataRegistry.get_string("validation.cannot_place." + problem) })
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and _root != null:
+		_root.call("clear_drag_hover")
+		_root.call("set_drag_source", -1)
+		RosterCard.tint_preview(0)
+	elif what == NOTIFICATION_MOUSE_EXIT and get_parent() != null:
+		get_parent().call("hide_tooltip")
+
+
+# ---- 信标模式（第四阶段）：HUD 底部信标边栏 ----
+func beacon_mode_slot() -> String:
+	var hud: Node = get_parent()
+	return str(hud.call("beacon_mode_slot")) if hud != null and hud.has_method("beacon_mode_slot") else ""
+
+
+func _place_beacon_at(screen_pos: Vector2) -> void:
+	var sid: String = beacon_mode_slot()
+	if not bool(_root.call("in_playfield", screen_pos)) or not _controller.can_edit_beacons(sid):
+		return
+	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
+	if _controller.next_beacon_id(sid) == "":
+		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_soft_cap").format({ "n": SimTypes.BEACON_SOFT_CAP }))
+	elif not _controller.can_place_beacon(sid, cell):
+		if str(_root.call("beacon_at_screen", sid, screen_pos)) == "":
+			EventBus.toast_at.emit(DataRegistry.get_string("ui.beacon_blocked"), _root.call("cell_top_screen", cell) as Vector2)
+	elif _controller.add_beacon(sid, cell) != "":
+		AudioManager.play_sfx("deploy_place")
+
+
+func _undo_beacon() -> void:
+	var sid: String = beacon_mode_slot()
+	var bs: Array[Dictionary] = _controller.get_beacons(sid)
+	if bs.is_empty() or not _controller.can_edit_beacons(sid):
+		return
+	_controller.remove_beacon(sid, str(bs[bs.size() - 1]["id"]))
+	AudioManager.play_sfx("deploy_remove")
+
+
+# ---- 信标（07 §3.1）----
+func _on_right_click(screen_pos: Vector2) -> void:
+	var sid: String = str(_root.call("selected_slot"))
+	if _controller == null or sid == "" or not _controller.can_edit_beacons(sid) or not bool(_root.call("in_playfield", screen_pos)):
+		return
+	var existing: String = str(_root.call("beacon_at_screen", sid, screen_pos))
+	if existing != "":
+		_controller.remove_beacon(sid, existing)
+		AudioManager.play_sfx("deploy_remove")
+		return
+	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
+	if _controller.next_beacon_id(sid) == "":
+		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_soft_cap").format({ "n": SimTypes.BEACON_SOFT_CAP }))
+	elif not _controller.can_place_beacon(sid, cell):
+		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_blocked"))
+	elif _controller.add_beacon(sid, cell) != "":
+		AudioManager.play_sfx("deploy_place")
+
+
+func _try_begin_beacon_drag(screen_pos: Vector2) -> bool:
+	var sid: String = str(_root.call("selected_slot"))
+	if _controller == null or sid == "" or not _controller.can_edit_beacons(sid):
+		return false
+	var id: String = str(_root.call("beacon_at_screen", sid, screen_pos))
+	if id == "":
+		return false
+	_drag_beacon = id
+	_drag_slot = sid
+	_root.call("set_beacon_drag", id, _root.call("screen_to_cell", screen_pos), true)
+	return true
+
+
+func _end_beacon_drag(screen_pos: Vector2) -> void:
+	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
+	if bool(_root.call("in_playfield", screen_pos)):
+		_controller.move_beacon(_drag_slot, _drag_beacon, cell)
+	_drag_beacon = ""
+	_drag_slot = ""
+	_root.call("clear_beacon_drag")
+
+
+## 运行/暂停中悬停在待机单位上：显示原因短句（05 §4.1）
+func _update_tooltip(screen_pos: Vector2) -> void:
+	var hud: Control = get_parent() as Control
+	var running: bool = _controller != null and (_controller.phase == SimTypes.Phase.RUNNING or _controller.phase == SimTypes.Phase.PAUSED)
+	var id: int = int(_root.call("unit_at_screen", screen_pos)) if running else -1
+	var u: SimUnit = _controller.world.get_unit(id) if id >= 0 else null
+	if u != null and RuleText.state_kind(u) > 0:
+		hud.call("show_tooltip", RuleText.state_text(u), screen_pos)
+	else:
+		hud.call("hide_tooltip")
+

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "id": "level_08",
+  "index": 8,
+  "title": "骨花母体",
+  "subtitle": "部署、承伤、绕后、选敌的综合 Boss 战",
+  "biome": "bone_greenhouse",
+  "scene": { "backdrop": "res://assets/backdrops/review_r4/level_08_base.png", "obstacles": "res://assets/backdrops/review_r4/obstacles/level_08/obstacles.json", "ground": "res://assets/grounds/bone_greenhouse_a.png", "ground_tint": "#ffffff", "playfield_rect": null },
+  "bgm": "boss_01",
+  "seed": 8,
+  "grid": {
+    "width": 15, "height": 11,
+    "blocked": [[6, 2], [7, 2], [8, 2], [9, 2], [10, 2], [11, 2], [6, 8], [7, 8], [8, 8], [9, 8], [10, 8], [11, 8]]
+  },
+  "deploy_zone": { "rect": [1, 3, 3, 7] },
+  "roster": { "mode": "free", "budget": 14, "available_forms": ["bulwark", "striker", "swift", "lancer"], "max_units": 4, "min_units": 1, "fixed_slots": [] },
+  "initial_units": [
+    { "id": "G1", "unit": "bone_guard", "faction": "enemy", "pos": [9, 3], "display_name": "骨花护卫·左", "counts_for_annihilate": true },
+    { "id": "G2", "unit": "bone_guard", "faction": "enemy", "pos": [9, 7], "display_name": "骨花护卫·右", "counts_for_annihilate": true },
+    { "id": "CORE", "unit": "bone_core", "faction": "enemy", "pos": [12, 5], "counts_for_annihilate": true }
+  ],
+  "routes": {
+    "north_flank": { "name": "北侧藤廊", "points": [[3, 9], [12, 9], [12, 7]] },
+    "south_flank": { "name": "南侧藤廊", "points": [[3, 1], [12, 1], [12, 3]] },
+    "front": { "name": "正面花径", "points": [[6, 5], [9, 5]] }
+  },
+  "allowed": {
+    "conditions": ["always", "enemy_visible", "enemy_in_range", "target_distance", "self_hp_below"],
+    "selectors": ["nearest", "farthest", "lowest_hp", "first_seen"],
+    "actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"]
+  },
+  "objectives": {
+    "objective_text": "摧毁骨花核心（护卫无需清除）",
+    "win": [ { "id": "win_destroy_core", "type": "destroy", "targets": ["CORE"] } ],
+    "lose": [ { "id": "lose_all_dead", "type": "all_allies_dead" } ]
+  },
+  "briefing": {
+    "mechanic_hint": "护卫锁定首个进入 7 格视野的分裂体。核心每 5 秒向视野内最远的分裂体当时的位置投下花粉团，2.5 秒后爆炸。摧毁核心即胜利。"
+  },
+  "hints": [
+    "点开护卫和核心。护卫视野 7、移速 0.8；核心不会移动，只会向「最远」者投弹。",
+    "承伤从正面花径走进护卫视野，就能把两名护卫钉在正面。",
+    "北、南两条藤廊都能绕到核心旁边。远射形态在 (12,9) 与核心距离 4，在射程 8 之内。注意它可能是最远者——让它保持移动或接受一次 35 伤害。",
+    "推荐部署：承伤 (3,5) 正面；快速形态 (3,7) 与远射 (2,7) 走北侧藤廊；基础攻击形态 (3,3) 走南侧藤廊夹击。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "分裂体全部倒下。回看护卫锁定了谁、花粉落在了谁头上：绕后的单位如果先进入护卫视野，就会把护卫带去后方。",
+    "default": "战斗失败。"
+  },
+  "recommended": {
+    "units": [
+      { "slot": "slot_bulwark", "form": "bulwark", "pos": [3, 5], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_striker", "form": "striker", "pos": [3, 3], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_swift", "form": "swift", "pos": [3, 7], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_lancer", "form": "lancer", "pos": [2, 7], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": ""
+  },
+  "verification": {
+    "expected_win": "承伤正面吸引两名护卫（合计 19.2 伤害/秒，承伤约 8 秒）；远射+快速形态沿北廊到 (12,9)/(12,7)，对核心 150 生命输出 16 伤害/秒，约 9.5 秒；基础攻击形态南廊夹击再加 12 伤害/秒。核心倒下即胜。",
+    "expected_fail": "全员正面推进：护卫 180×2 需 20 秒以上，承伤 8 秒倒下后连锁崩溃；或绕后单位先进入护卫视野把护卫引向后方。",
+    "alternatives": "正面硬拼（承伤+全员集火护卫后再打核心）需要承伤撤离换血，难但合法；远射从正面 8 格外直接狙击核心也是合法解。",
+    "risks": "护卫生命 180、核心 150、花粉参数均为试调起点。需验证：正面与绕后两条路线都可胜；核心被毁立即结算，不存在隐藏目标；失败可回溯到部署或指令。战后剧情（母体吞食与非人低语）在结算后播放，不打断战斗。"
+  }
+}

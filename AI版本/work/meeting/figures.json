@@ -1,0 +1,54 @@
+[
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_00120.jpg",
+    "caption": "图1 · 02:00：编辑器第一关，部署区、敌方感知圈和目标区。教学目标是安排移动，避开敌人后抵达目标。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_00660.jpg",
+    "caption": "图2 · 11:00：护送/牵制变体讨论现场。地图布局与指定目标关系仍在调整。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_00900.jpg",
+    "caption": "图3 · 15:00：巡逻避让示意。利用敌人移动间隙和路径时序穿过地图。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_01320.jpg",
+    "caption": "图4 · 22:00：伏击关的单位与地形。引出精英后，让埋伏单位集中击杀；部署区域仍待细化。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_01530.jpg",
+    "caption": "图5 · 25:30：本地 Godot 版本。右侧展示被选敌人的属性、公开规则与特性；战场显示敌方范围。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_01800.jpg",
+    "caption": "图6 · 30:00：第三关，背景的墙和实际不可走格不一致，暗色标识难辨。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_01890.jpg",
+    "caption": "图7 · 31:30：第三关路线与指令调整现场。来回摇摆问题需回看31:30-32:25视频，静态图不呈现动作。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\docs\\screenshots\\level_03.png",
+    "caption": "图12 · 项目已有第三关截图：网格、地面和立墙处于同一画面范围。非本次重新运行拍摄。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\docs\\screenshots\\level_08.png",
+    "caption": "图13 · 项目已有第八关截图：温室、荆棘墙与玩法网格混合，需按本次补充分区复核。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\ppt\\slide_1.png",
+    "caption": "图8 · 本地 UI设计.pptx 第1页布局复原预览：战场扩大、底部头像卡和 Cost。字体可能与原稿略有差异；Cost 331、3C 为设计稿示意，未作为最终数值。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\ppt\\slide_2.png",
+    "caption": "图9 · 设计稿第2页：点击左侧单位，在右侧显示属性与指令。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\ppt\\slide_3.png",
+    "caption": "图10 · 设计稿第3页：点击右侧单位时，信息面板切到左侧。两图为方案预览，非已实现游戏截图。"
+  },
+  {
+    "path": "H:\\其他\\人工神灵\\work\\meeting\\figures\\video_01440.jpg",
+    "caption": "图11 · 24:00：当前本地八关选关界面。会议55:40以后提出改为节点与连线形式。"
+  }
+]

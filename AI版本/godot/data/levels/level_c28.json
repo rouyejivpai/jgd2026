@@ -1,0 +1,426 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      6,
+      3,
+      7,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 16,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "swift",
+      "lancer"
+    ],
+    "max_units": 4,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "C1",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        15,
+        5
+      ],
+      "display_name": "骨花核心",
+      "overrides": {
+        "vision": 16,
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "S1",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        13,
+        2
+      ],
+      "display_name": "骨喉·下",
+      "overrides": {
+        "vision": 16
+      }
+    },
+    {
+      "id": "S2",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        13,
+        8
+      ],
+      "display_name": "骨喉·上",
+      "overrides": {
+        "vision": 16
+      }
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        3
+      ],
+      "display_name": "护卫·下",
+      "overrides": {
+        "vision": 6,
+        "attack": 8,
+        "max_hp": 150
+      },
+      "public_rule_text": "锁定首个进入 6 格视野的分裂体并追击。"
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        7
+      ],
+      "display_name": "护卫·上",
+      "overrides": {
+        "vision": 6,
+        "attack": 8,
+        "max_hp": 150
+      },
+      "public_rule_text": "同上。"
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp",
+      "first_seen"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          7,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              9,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          6,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              3,
+              2
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              5,
+              2
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              5,
+              8
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              3,
+              8
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          6,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              8,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          7,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              11,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "白纸地图，三具爆裂源，前面站着两名护卫。拆掉核心和两具骨喉就赢——护卫不必杀。",
+    "win": [
+      {
+        "id": "win_blasters",
+        "type": "destroy",
+        "targets": [
+          "C1",
+          "S1",
+          "S2"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态先进到 (9,5) 被两名护卫锁定；快速形态在左后方 (3..5, 2..8) 绕圈当最远者；远射在 (8,5)、基础形态在 (11,5) 按「血量最低」先拆两具骨喉，再拆核心。",
+    "expected_fail": [
+      "不派绕圈的人：爆裂砸在输出身上。",
+      "不带承伤：护卫锁定输出。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "爆裂源视野改为 16，保证绕圈者始终在视野内（否则爆裂会改砸输出）。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_08.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 1587,
+  "schema_version": 1,
+  "_design_comment": "Boss 区第二关。刻意做成开阔场，为最终战的场地做铺垫。",
+  "_teach_role": "Boss 区：开阔战",
+  "briefing": {
+    "mechanic_hint": "没有墙可以躲。爆裂只砸最远的人：派一个人在后方绕圈；护卫只认第一个看见的人：让承伤先进场。输出跟在后面。"
+  },
+  "region": "bone_greenhouse",
+  "region_cn": "骨花温室",
+  "id": "level_c28",
+  "index": 128,
+  "title": "无遮蔽",
+  "subtitle": "Boss 区 · 第二关：没有墙可借",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c29"
+  },
+  "_review_20261012": [
+    "重做：开阔场 + 两名护卫当阻挡（评审：缺少有效阻挡）；胜利条件改为拆三具爆裂源；护卫 150 血 / 攻击 8，核心 100 血；原数据实跑 11 秒全灭——不是「冲进去就赢」，而是「怎么都赢不了」；信标计费、预算 14→16（4 人 14 + 2 包信标）。"
+  ],
+  "display_index": 28,
+  "summary": "Boss 区 · 第二关：没有墙可借",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_core",
+      "stat": "vision",
+      "mul": 0,
+      "add": 13,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "没有墙可以躲。爆裂只砸最远的人：派一个人在后方绕圈；护卫只认第一个看见的人：让承伤先进场。输出跟在后面。",
+    "白纸地图，三具爆裂源，前面站着两名护卫。拆掉核心和两具骨喉就赢——护卫不必杀。",
+    "承伤形态先进到 (9,5) 被两名护卫锁定；快速形态在左后方 (3..5, 2..8) 绕圈当最远者；远射在 (8,5)、基础形态在 (11,5) 按「血量最低」先拆两具骨喉，再拆核心。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。没有墙可以躲。爆裂只砸最远的人：派一个人在后方绕圈；护卫只认第一个看见的人：让承伤先进场。输出跟在后面。",
+    "default": "没有墙可以躲。爆裂只砸最远的人：派一个人在后方绕圈；护卫只认第一个看见的人：让承伤先进场。输出跟在后面。"
+  },
+  "bgm": "region_bone_greenhouse"
+}

@@ -1,0 +1,326 @@
+{
+  "grid": {
+    "width": 15,
+    "height": 9,
+    "blocked": [
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        9,
+        8
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      5
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 8,
+    "available_forms": [
+      "binder",
+      "striker",
+      "swift",
+      "bulwark"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_status_lesson": "定身",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "P1",
+      "unit": "hex_priest",
+      "faction": "enemy",
+      "pos": [
+        11,
+        4
+      ],
+      "display_name": "咒缚祭司",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "站着不动，攻击 6 格内最远的分裂体，命中后对方麻痹 3 秒（打不出手）。",
+      "overrides": {
+        "max_hp": 90
+      }
+    },
+    {
+      "id": "G1",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        9,
+        4
+      ],
+      "display_name": "守卫",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "原地守着，只打 2 格内的分裂体，不追。",
+      "overrides": {
+        "max_hp": 130
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          2,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              8,
+              2
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "farthest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          3
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              6,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "咒缚祭司专打它射程里最远的人，被打中就麻痹 3 秒——打不出手，但还能走。杀掉祭司就赢。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "P1"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态走到 (8,2)：离祭司 3.6（够得着）、离守卫 2.2（守卫够不着），到位后才开火（「在信标 1 且射程内有敌人 → 攻击最远」），打祭司而不是守卫；承伤形态站到 (6,6)，离祭司 5.4，是射程内最远的人，麻痹全落在它身上。基础形态约 8 秒打死祭司。",
+    "expected_fail": [
+      "只派基础形态：它是射程内唯一（也就是最远）的人，被一直麻痹，打不出手，最后被磨死。",
+      "诱导者站得比输出近：麻痹仍落在输出身上。"
+    ],
+    "alternatives": [
+      "缚锁者走到 (12,2)（离祭司 2.2、守卫在它射程外）连续命中祭司，祭司一直麻痹；基础形态补伤害。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_06.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#a8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 9282,
+  "schema_version": 1,
+  "_design_comment": "教麻痹。缚锁者是「用控制换输出」的代表——Cost 3 和基础形态同价，但单独用没有任何杀伤力。",
+  "_teach_role": "机制：麻痹 + 缚锁者",
+  "briefing": {
+    "mechanic_hint": "把输出放在近处，让另一个人站在祭司射程边缘当「最远的那个」。或者：缚锁者的攻击也会让祭司麻痹，它就打不出手了。"
+  },
+  "region": "holy_bell",
+  "region_cn": "圣钟城废墟",
+  "id": "level_c15",
+  "index": 115,
+  "title": "缚手",
+  "subtitle": "麻痹：3 秒打不出手",
+  "biome": "wailing_wall",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [
+      "preset.chase_attack_first_seen"
+    ],
+    "unlock_conditions": [],
+    "unlock_selectors": [
+      "first_seen"
+    ],
+    "unlock_actions": [],
+    "unlock_level": "level_c16"
+  },
+  "_status_name_note": "原关名「定身」与实际效果（麻痹：不能攻击、可以移动）不符，改名；全游戏统一叫「麻痹」。",
+  "_review_20261012": [
+    "关名「定身」→「缚手」，全游戏状态名统一为「麻痹」（攻击不出手、可移动）；重做场地与敌人：专打最远的咒缚祭司 + 原地守卫，推荐解「输出放近、诱导放远」；信标计费。"
+  ],
+  "display_index": 15,
+  "summary": "麻痹：3 秒打不出手",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:warden",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "把输出放在近处，让另一个人站在祭司射程边缘当「最远的那个」。或者：缚锁者的攻击也会让祭司麻痹，它就打不出手了。",
+    "咒缚祭司专打它射程里最远的人，被打中就麻痹 3 秒——打不出手，但还能走。杀掉祭司就赢。",
+    "基础形态走到 (8,2)：离祭司 3.6（够得着）、离守卫 2.2（守卫够不着），到位后才开火（「在信标 1 且射程内有敌人 → 攻击最远」），打祭司而不是守卫；承伤形态站到 (6,6)，离祭司 5.4，是射程内最远的人，麻痹全落在它身上。基础形态约 8 秒打死祭司。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。把输出放在近处，让另一个人站在祭司射程边缘当「最远的那个」。或者：缚锁者的攻击也会让祭司麻痹，它就打不出手了。",
+    "default": "把输出放在近处，让另一个人站在祭司射程边缘当「最远的那个」。或者：缚锁者的攻击也会让祭司麻痹，它就打不出手了。"
+  },
+  "bgm": "region_holy_bell"
+}

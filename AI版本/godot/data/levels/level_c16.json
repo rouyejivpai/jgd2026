@@ -1,0 +1,372 @@
+{
+  "grid": {
+    "width": 15,
+    "height": 9,
+    "blocked": [
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        5
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      5
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 8,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "W1",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        12,
+        1
+      ],
+      "display_name": "守卫·甲",
+      "overrides": {
+        "vision": 5
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_low"
+          }
+        }
+      ],
+      "public_rule_text": "开局就沿下路走过来。锁定首个看见的分裂体并追击，直到它死或离开 5 格视野。"
+    },
+    {
+      "id": "W2",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        12,
+        7
+      ],
+      "display_name": "守卫·乙",
+      "overrides": {
+        "vision": 5
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "always"
+            }
+          ],
+          "action": {
+            "type": "wait",
+            "seconds": 8
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_high"
+          }
+        }
+      ],
+      "public_rule_text": "先在原地等 8 秒，再沿上路走过来。锁定规则同守卫·甲。"
+    }
+  ],
+  "routes": {
+    "lane_low": {
+      "name": "下路",
+      "points": [
+        [
+          12,
+          1
+        ],
+        [
+          4,
+          1
+        ]
+      ]
+    },
+    "lane_high": {
+      "name": "上路",
+      "points": [
+        [
+          12,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "first_seen"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          0,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "两名守卫一先一后压过来，只认第一个看见的人，看见就一直追。谁去当诱饵是你的决定。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态站在 (2,4)，守卫·甲先到、先锁定它；基础形态在 (0,4) 打同一个，乙到之前拆掉甲；8 秒后守卫·乙到，同样先看见承伤形态。",
+    "expected_fail": [
+      "只派基础形态：两名守卫先后锁定它，被追咬致死。"
+    ],
+    "alternatives": [
+      "两名基础形态站桩：火力够，也能赢（「火力优势」解法，允许）。"
+    ],
+    "risks": [
+      "「首见」在同时看见多人时按单位编号决胜；本关靠站位让诱饵**先**进入视野，不依赖编号。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_06.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#a8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 307,
+  "schema_version": 1,
+  "_design_comment": "引入 first_seen。和麻痹配合：被锁的人如果还会被定住，就非常危险。",
+  "_teach_role": "机制：首见锁定",
+  "briefing": {
+    "mechanic_hint": "让扛得住的人站在最前面，两名守卫先后都会「第一个看见」它、只打它；输出的人站在后面守卫看不见的地方，用「首见」盯住同一个打。"
+  },
+  "region": "holy_bell",
+  "region_cn": "圣钟城废墟",
+  "id": "level_c16",
+  "index": 116,
+  "title": "认准",
+  "subtitle": "守卫只认第一个看见的人",
+  "biome": "wailing_wall",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c17"
+  },
+  "_review_20261012": [
+    "守卫改为错时出发（乙等待 8 秒）、沿两条路线压上，视野 9→5；推荐解改为承伤当诱饵 + 首见集火；预算 7→8 并开放承伤形态；信标计费。"
+  ],
+  "display_index": 16,
+  "summary": "守卫只认第一个看见的人",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:warden",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "让扛得住的人站在最前面，两名守卫先后都会「第一个看见」它、只打它；输出的人站在后面守卫看不见的地方，用「首见」盯住同一个打。",
+    "两名守卫一先一后压过来，只认第一个看见的人，看见就一直追。谁去当诱饵是你的决定。",
+    "承伤形态站在 (2,4)，守卫·甲先到、先锁定它；基础形态在 (0,4) 打同一个，乙到之前拆掉甲；8 秒后守卫·乙到，同样先看见承伤形态。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。让扛得住的人站在最前面，两名守卫先后都会「第一个看见」它、只打它；输出的人站在后面守卫看不见的地方，用「首见」盯住同一个打。",
+    "default": "让扛得住的人站在最前面，两名守卫先后都会「第一个看见」它、只打它；输出的人站在后面守卫看不见的地方，用「首见」盯住同一个打。"
+  },
+  "bgm": "region_holy_bell"
+}

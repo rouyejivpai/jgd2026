@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/screens/level_select.gd" id="1_select"]
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_select")
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MapViewport" type="Control" parent="."]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MapContent" type="Control" parent="MapViewport"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="ChapterTitle" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="BackButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="SettingsButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="DetailPanel" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DetailColumn" type="Control" parent="DetailPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DetailTitle" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DetailRegion" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DetailSummary" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DetailObjective" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DetailState" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DetailLockedBy" type="Label" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="EnterButton" type="Button" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="ReplayPick" type="OptionButton" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="ReplayButton" type="Button" parent="DetailPanel/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 0
+

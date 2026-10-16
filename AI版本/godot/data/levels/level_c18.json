@@ -1,0 +1,528 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        8,
+        0
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        12,
+        4
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        12,
+        6
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 11,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "W3",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        9,
+        5
+      ],
+      "display_name": "缺口守卫",
+      "overrides": {
+        "vision": 4,
+        "attack": 14,
+        "max_hp": 130
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "守在墙缺口，只看得见 4 格。锁定首个看见的分裂体并追击。"
+    },
+    {
+      "id": "W1",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        14,
+        1
+      ],
+      "display_name": "巡逻守卫·甲",
+      "overrides": {
+        "vision": 4,
+        "attack": 14,
+        "max_hp": 130
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "patrol_a",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "在墙后来回巡逻，每隔几秒走到缺口附近。视野 4。"
+    },
+    {
+      "id": "W2",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        14,
+        9
+      ],
+      "display_name": "巡逻守卫·乙",
+      "overrides": {
+        "vision": 4,
+        "attack": 14,
+        "max_hp": 130
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "always"
+            }
+          ],
+          "action": {
+            "type": "wait",
+            "seconds": 6
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "patrol_b",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "比甲晚 6 秒出发，巡逻方式相同。"
+    }
+  ],
+  "routes": {
+    "patrol_a": {
+      "name": "甲巡线",
+      "points": [
+        [
+          14,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          14,
+          1
+        ]
+      ]
+    },
+    "patrol_b": {
+      "name": "乙巡线",
+      "points": [
+        [
+          14,
+          9
+        ],
+        [
+          9,
+          7
+        ],
+        [
+          14,
+          9
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "first_seen"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              6,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              4,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker_b",
+        "form": "striker",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              4,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "first_seen",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "三名守卫：一名守缺口，两名在墙后轮流巡到缺口附近。它们只看得见 4 格——一次拉出来一个。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态站到缺口外 (6,5)，两名基础形态在 (4,4..5)。缺口守卫先被拉出；两名巡逻守卫轮流巡到缺口附近，各自看见承伤形态后被拉出来，在阵前逐个击杀。",
+    "expected_fail": [],
+    "alternatives": [
+      "冲进缺口也能赢（仿真里巡逻错开，守卫仍是一个个来，承伤剩 62 血）——这条和评审「连续拉出再打易形成单一解法」的担心相反，说明本关不强制拉出，留给试玩判断是否要再收紧。"
+    ],
+    "risks": [
+      "评审提醒：16–18 关连续使用「拉出再打」。本关保留（评审认可），但 19 关起改为减速/围堵类目标，避免单一解法依赖。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_06.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#a8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 418,
+  "schema_version": 1,
+  "_design_comment": "圣钟城废墟的收束关。",
+  "_teach_role": "收束：综合",
+  "briefing": {
+    "mechanic_hint": "在缺口外等着，谁巡过来、谁先看见你，就把谁拉出来打。别一次把三个都惊动。"
+  },
+  "region": "holy_bell",
+  "region_cn": "圣钟城废墟",
+  "id": "level_c18",
+  "index": 118,
+  "title": "废墟深处",
+  "subtitle": "收束：哭墙深处",
+  "biome": "wailing_wall",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c19"
+  },
+  "_review_20261012": [
+    "墙后两名守卫改为轮流巡逻（乙晚 6 秒），视野 9→4、血 90→130、攻击 10→14（原数值三名一起上也打不过玩家，冲进去反而最快）；缺口守卫同；推荐解改为缺口外逐个拉出；信标计费。"
+  ],
+  "display_index": 18,
+  "summary": "收束：哭墙深处",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:warden",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "在缺口外等着，谁巡过来、谁先看见你，就把谁拉出来打。别一次把三个都惊动。",
+    "三名守卫：一名守缺口，两名在墙后轮流巡到缺口附近。它们只看得见 4 格——一次拉出来一个。",
+    "承伤形态站到缺口外 (6,5)，两名基础形态在 (4,4..5)。缺口守卫先被拉出；两名巡逻守卫轮流巡到缺口附近，各自看见承伤形态后被拉出来，在阵前逐个击杀。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。在缺口外等着，谁巡过来、谁先看见你，就把谁拉出来打。别一次把三个都惊动。",
+    "default": "在缺口外等着，谁巡过来、谁先看见你，就把谁拉出来打。别一次把三个都惊动。"
+  },
+  "bgm": "region_holy_bell"
+}

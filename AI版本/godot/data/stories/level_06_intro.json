@@ -1,0 +1,8 @@
+{
+  "id": "level_06_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "一列残骸护送着什么东西，沿哭墙向深处走去。" },
+    { "speaker": "doll", "illustration": "doll", "text": "祭司携带着记忆。残骸会咬住第一个看见的分裂体——那就让它们看见该看见的。" },
+    { "speaker": "doll", "illustration": "doll", "text": "远射形态只打离它最近的。确保离它最近的是祭司。" }
+  ]
+}

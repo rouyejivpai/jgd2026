@@ -1,0 +1,27 @@
+{
+ "level": "level_03",
+ "_comment": "P7 测试夹具：一格不在 blocked 内",
+ "pieces": [
+  {
+   "file": "01.png",
+   "cells": [
+    [
+     4,
+     2
+    ],
+    [
+     4,
+     3
+    ]
+   ],
+   "anchor_px": [
+    0,
+    0
+   ],
+   "size_px": [
+    61,
+    61
+   ]
+  }
+ ]
+}

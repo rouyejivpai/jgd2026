@@ -1,0 +1,337 @@
+{
+  "_comment": "AI 生成资源清单。gen_image.py 读取此文件；cutout.py 按 kind 做后处理。prompt 末尾会自动追加 style_suffix[kind] 与 style_suffix[common_<kind>]（无则 common）。带 source 的条目不调用 API，由 cutout.py 从源图裁切。kind: units=棋盘 Q 版精灵；illustrations=正常头身立绘；portraits=头像；backgrounds/props/ui。",
+  "style_suffix": {
+    "common": "dark fantasy, western occultism and alchemy, restrained flesh-and-bone body horror, painterly oil texture, muted palette of dark crimson (#7A1E2B), violet-black (#2A1430) and bone white (#E8DCC4), soft rim light, high detail, no text, no watermark, no signature",
+    "units": "chibi super-deformed game sprite, about 2.5 heads tall, big head, large expressive eyes, small compact body, bold readable silhouette, three-quarter front view facing slightly right, full body with feet visible, centered, isolated on a genuinely transparent background, native alpha channel, no ground shadow",
+    "props": "single object, three-quarter top-down view from about 60 degrees, centered, isolated on a genuinely transparent background, native alpha channel, no ground shadow",
+    "portraits": "bust portrait, facing slightly left, dramatic rim light, dark atmospheric background",
+    "backgrounds": "empty terrain seen from directly above at a slight angle, no characters, no creatures, evenly lit so a grid can be drawn over it, no UI, no text",
+    "ui": "",
+    "common_units": "dark fantasy, western occultism and alchemy, restrained flesh-and-bone horror kept cute-but-unsettling, clean cel-shaded anime game art with subtle painterly shading, crisp outlines, muted palette of dark crimson (#7A1E2B), violet-black (#2A1430) and bone white (#E8DCC4), high detail, no text, no watermark, no signature",
+    "illustrations": "full body standing character illustration, normal anatomical proportions about seven heads tall, anime-influenced dark fantasy game character art, detailed costume, facing slightly right, feet visible, centered, isolated on a genuinely transparent background, native alpha channel, no ground shadow"
+  },
+  "defaults": {
+    "units": {
+      "size": "1024x1024"
+    },
+    "props": {
+      "size": "1024x1024"
+    },
+    "portraits": {
+      "size": "1024x1024"
+    },
+    "backgrounds": {
+      "size": "1536x1024"
+    },
+    "ui": {
+      "size": "1536x1024"
+    },
+    "illustrations": {
+      "size": "1024x1536"
+    }
+  },
+  "output": {
+    "units": {
+      "dir": "assets/sprites/units",
+      "target": 256
+    },
+    "props": {
+      "dir": "assets/sprites/props",
+      "target": 256
+    },
+    "portraits": {
+      "dir": "assets/sprites/portraits",
+      "target": 512
+    },
+    "backgrounds": {
+      "dir": "assets/backgrounds",
+      "target": [
+        1536,
+        1024
+      ]
+    },
+    "ui": {
+      "dir": "assets/sprites/ui",
+      "target": null
+    },
+    "illustrations": {
+      "dir": "assets/sprites/illustrations",
+      "target": [
+        768,
+        1152
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "striker",
+      "kind": "units",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), visible stitched joints, three curved bone spikes growing from her right forearm, hollow emotionless eyes, tattered dark crimson robe fragments"
+    },
+    {
+      "id": "bulwark",
+      "kind": "units",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe) in a heavy variant: shoulders, back and forearms covered in layered overlapping bone plates, hardened ivory-colored muscle, low hunched stance"
+    },
+    {
+      "id": "swift",
+      "kind": "units",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe) in a lithe variant: elongated limbs, exposed spine of visible vertebrae along her back, leaning forward in a running pose, robe turned into trailing ribbons"
+    },
+    {
+      "id": "lancer",
+      "kind": "units",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe) in a fragile ranged variant: right arm extended into a long bone lance launcher, kneeling on one knee, thin and brittle body"
+    },
+    {
+      "id": "raider",
+      "kind": "units",
+      "prompt": "a deformed corpse-wreck from a bone farm: humanoid torso fused with several animal limbs, grey-violet skin, a shard of divinity glowing dim red inside the open ribcage, crawling forward"
+    },
+    {
+      "id": "brute",
+      "kind": "units",
+      "prompt": "a massive deformity fused from several corpses, broad shoulders, exposed bones forming natural armor, slow and heavy stance"
+    },
+    {
+      "id": "warden",
+      "kind": "units",
+      "prompt": "a half-petrified witch remnant, face frozen gazing upward, stone cracks leaking dark red, arms hanging with rusted ritual implements"
+    },
+    {
+      "id": "hound",
+      "kind": "units",
+      "prompt": "a hound-shaped monster with exposed skeleton, overly long spine, six eyes, low crouching sprint pose"
+    },
+    {
+      "id": "spitter",
+      "kind": "units",
+      "prompt": "a throat-shaped fleshy growth rooted into the ground, bony maw opening upward at the top, roots wrapped in raw flesh, stationary"
+    },
+    {
+      "id": "husk",
+      "kind": "units",
+      "prompt": "a walking corpse-wreck wrapped in ragged ritual vestments, face covered by a bone mask, both arms hanging limp"
+    },
+    {
+      "id": "priest",
+      "kind": "units",
+      "prompt": "a tall hunched priest, countless tiny whispering mouths under his cloak, holding a violet-glowing memory shard in cupped hands"
+    },
+    {
+      "id": "bone_guard",
+      "kind": "units",
+      "prompt": "a guardian formed from a giant flower's shed petals, petals thick as shield armor, vines and bones woven into legs beneath"
+    },
+    {
+      "id": "bone_core",
+      "kind": "units",
+      "prompt": "a huge half-open bone flower bud, the heart is a pulsing dark red flesh orb, orange glowing pollen drifting around it"
+    },
+    {
+      "id": "transit_node",
+      "kind": "units",
+      "prompt": "an alchemical altar: a bone-white stone pedestal holding a brass memory vessel, violet glowing shards slowly rotating inside glass tubes"
+    },
+    {
+      "id": "echo_pillar",
+      "kind": "units",
+      "prompt": "a stone pillar built of countless stacked skulls and jawbones, a mouth gaping at the top as if reciting prayers"
+    },
+    {
+      "id": "doll",
+      "kind": "illustrations",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), standing calmly with arms at her sides, expressionless, the base form used in dialogue"
+    },
+    {
+      "id": "striker",
+      "kind": "illustrations",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), three curved bone spikes growing from her right forearm, hollow emotionless eyes"
+    },
+    {
+      "id": "bulwark",
+      "kind": "illustrations",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), shoulders, back and forearms covered in layered overlapping bone plates, hardened ivory-colored muscle, low hunched stance"
+    },
+    {
+      "id": "swift",
+      "kind": "illustrations",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), elongated limbs, exposed spine of visible vertebrae along her back, poised to sprint, robe turned into trailing ribbons"
+    },
+    {
+      "id": "lancer",
+      "kind": "illustrations",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe), right arm extended into a long bone lance launcher, thin and brittle body"
+    },
+    {
+      "id": "witch",
+      "kind": "illustrations",
+      "prompt": "a tall gaunt witch weaver in layered dark vestments, hands replaced by articulated bone weaving tools, her face hidden in deep shadow under a hood, faint violet glow from within"
+    },
+    {
+      "id": "striker",
+      "kind": "portraits",
+      "prompt": "(derived from illustration, no API call)",
+      "source": "illustrations/striker"
+    },
+    {
+      "id": "bulwark",
+      "kind": "portraits",
+      "prompt": "(derived from illustration, no API call)",
+      "source": "illustrations/bulwark"
+    },
+    {
+      "id": "swift",
+      "kind": "portraits",
+      "prompt": "(derived from illustration, no API call)",
+      "source": "illustrations/swift"
+    },
+    {
+      "id": "lancer",
+      "kind": "portraits",
+      "prompt": "(derived from illustration, no API call)",
+      "source": "illustrations/lancer"
+    },
+    {
+      "id": "raider",
+      "kind": "portraits",
+      "prompt": "a deformed corpse-wreck with grey-violet skin and a dim red shard glowing in the open ribcage"
+    },
+    {
+      "id": "brute",
+      "kind": "portraits",
+      "prompt": "a massive deformity fused from several corpses, bones as armor"
+    },
+    {
+      "id": "warden",
+      "kind": "portraits",
+      "prompt": "a half-petrified witch remnant gazing upward, stone cracks leaking dark red"
+    },
+    {
+      "id": "hound",
+      "kind": "portraits",
+      "prompt": "a six-eyed hound monster with exposed skull, snarling"
+    },
+    {
+      "id": "spitter",
+      "kind": "portraits",
+      "prompt": "a throat-shaped fleshy growth with a bony maw"
+    },
+    {
+      "id": "husk",
+      "kind": "portraits",
+      "prompt": "a corpse-wreck in ragged ritual vestments wearing a bone mask"
+    },
+    {
+      "id": "priest",
+      "kind": "portraits",
+      "prompt": "a hunched priest with tiny whispering mouths under his cloak and a violet memory shard"
+    },
+    {
+      "id": "bone_guard",
+      "kind": "portraits",
+      "prompt": "a guardian made of giant thick flower petals and bone"
+    },
+    {
+      "id": "bone_core",
+      "kind": "portraits",
+      "prompt": "a half-open bone flower bud with a pulsing flesh heart and orange pollen"
+    },
+    {
+      "id": "transit_node",
+      "kind": "portraits",
+      "prompt": "an alchemical altar with a brass memory vessel and violet glowing shards"
+    },
+    {
+      "id": "echo_pillar",
+      "kind": "portraits",
+      "prompt": "a pillar of stacked skulls with a gaping mouth at the top"
+    },
+    {
+      "id": "level_01",
+      "kind": "backgrounds",
+      "prompt": "an abandoned farm field, furrows filled with animal and human bones, dark red soil, withered crops, a leaning scarecrow in the distance"
+    },
+    {
+      "id": "level_02",
+      "kind": "backgrounds",
+      "prompt": "the yard in front of a half-collapsed wooden barn, dark red drag marks across mud, scattered bone fragments and farm tools"
+    },
+    {
+      "id": "level_03",
+      "kind": "backgrounds",
+      "prompt": "a tall wailing wall covered in petrified upward-gazing faces runs horizontally across the lower third of the image, separating a rubble courtyard above from a narrow passage below"
+    },
+    {
+      "id": "level_04",
+      "kind": "backgrounds",
+      "prompt": "a round arena fenced with ribs and spines, ground torn open by claw marks, four large bone stakes"
+    },
+    {
+      "id": "level_05",
+      "kind": "backgrounds",
+      "prompt": "a slope rising from a low flat left side to an elevated right side, fleshy root systems at the top, bone-slime scorch marks on the ground"
+    },
+    {
+      "id": "level_06",
+      "kind": "backgrounds",
+      "prompt": "a long gallery beneath a wailing wall, a collapsed ruin segment in the middle, two worn procession paths trodden into the ground"
+    },
+    {
+      "id": "level_07",
+      "kind": "backgrounds",
+      "prompt": "a stone-paved transit point between ruins and a bone greenhouse, altar traces on the left, vines and petals beginning to appear on the right"
+    },
+    {
+      "id": "level_08",
+      "kind": "backgrounds",
+      "prompt": "the interior of a giant greenhouse built of glass and bone framework, floor covered by the roots of a colossal flower, two thorn walls above and below, the shadow of a huge bud in the far depth"
+    },
+    {
+      "id": "bone_pile",
+      "kind": "props",
+      "prompt": "a heap of animal bones and skulls"
+    },
+    {
+      "id": "wall_end",
+      "kind": "props",
+      "prompt": "the end piece of a stone wall, one tile wide, with a petrified face relief"
+    },
+    {
+      "id": "wall_mid",
+      "kind": "props",
+      "prompt": "a straight middle segment of a stone wall, one tile wide, with petrified face reliefs, tileable left to right"
+    },
+    {
+      "id": "bone_stake",
+      "kind": "props",
+      "prompt": "a giant rib bone stake planted in the ground"
+    },
+    {
+      "id": "rock_flesh",
+      "kind": "props",
+      "prompt": "a boulder partially covered in raw flesh"
+    },
+    {
+      "id": "thorn_end",
+      "kind": "props",
+      "prompt": "the end piece of a wall of thorns intertwined with bones, one tile wide"
+    },
+    {
+      "id": "thorn_mid",
+      "kind": "props",
+      "prompt": "a straight middle segment of a wall of thorns intertwined with bones, one tile wide, tileable left to right"
+    },
+    {
+      "id": "key_art_menu",
+      "kind": "ui",
+      "size": "3840x2160",
+      "prompt": "a pale porcelain doll girl (short ash-white bobbed hair, finely cracked porcelain face, large grey glass eyes without pupils, visible stitched joints at neck and wrists, dark crimson tattered robe) seen from behind standing at the edge of a rotten plain, distant silhouettes of a wailing wall and a bone greenhouse, dark violet sky, empty dark space on the left third of the image for a title"
+    },
+    {
+      "id": "chapter_map_plain",
+      "kind": "ui",
+      "prompt": "a top-down parchment map of a rotten plain with four regions: bone farmland, a wailing wall ruin, a hound den, and a bone flower greenhouse, old alchemical map style, no text, no markers, no labels"
+    }
+  ]
+}

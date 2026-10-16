@@ -1,0 +1,447 @@
+{
+  "grid": {
+    "width": 19,
+    "height": 11,
+    "blocked": [],
+    "tiles": {
+      "mire": [
+        [
+          12,
+          3
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          12,
+          7
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          14,
+          3
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          7
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          15,
+          4
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          15,
+          6
+        ],
+        [
+          15,
+          7
+        ],
+        [
+          16,
+          3
+        ],
+        [
+          16,
+          4
+        ],
+        [
+          16,
+          5
+        ],
+        [
+          16,
+          6
+        ],
+        [
+          16,
+          7
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      4,
+      2,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 6,
+    "available_forms": [
+      "swift",
+      "striker",
+      "bulwark"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_status_lesson": "泥沼",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "V1",
+      "unit": "bone_weaver",
+      "faction": "enemy",
+      "pos": [
+        14,
+        5
+      ],
+      "display_name": "织骨者",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "坐在缓滞带中央不动，攻击 4 格内最近的分裂体。光环：3 格内的分裂体移速 -40%。",
+      "overrides": {
+        "max_hp": 110
+      }
+    },
+    {
+      "id": "H1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        17,
+        2
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        17,
+        8
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible"
+    ],
+    "selectors": [
+      "nearest",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              13,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "织骨者的光环让 3 格内的分裂体移速 -40%，缓滞带再 -50%，两者叠加只剩 0.3 倍。拆掉织骨者就赢。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "V1"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态沿信标朝织骨者走，一进射程（离它 4 格）就停下（光环和缓滞带都在 3 格内，它不受影响）站定输出，约 10 秒拆掉。",
+    "expected_fail": [
+      "快速形态：要贴到 1.5 格才能打，钻进光环 + 缓滞带后速度 4.5→1.35，一路挨打，倒在半路。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "评审的另一候选「强化把猎犬引入减速带的收益」未采用；如要恢复远射形态，需重新检查绕过解。",
+      "「减半」口述与数据 -40% 不一致，本版文案按数据写。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_04.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#90a888",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 9323,
+  "schema_version": 1,
+  "_design_comment": "教减速 + 两种减速来源（光环 / 地形）。核心是**形态选择**：同一个机制对不同形态的惩罚差 3 倍。",
+  "_teach_role": "机制：减速 + 缓滞带",
+  "briefing": {
+    "mechanic_hint": "近战形态得钻进光环和缓滞带才够得着，速度只剩三成；射程 4 的基础形态停在光环外就能打。"
+  },
+  "region": "flesh_swamp",
+  "region_cn": "肉巢沼泽",
+  "id": "level_c19",
+  "index": 119,
+  "title": "泥沼",
+  "subtitle": "减速：快单位的噩梦",
+  "biome": "hound_den",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c20"
+  },
+  "_review_20261012": [
+    "去掉远射形态（评审候选：限制远程单位，堵掉「牵猎犬 + 远射」绕过解）；织骨者置于 5×5 缓滞带中心；文案「减半」→「光环 -40% / 缓滞带 -50%」；预算 10→6；信标计费。"
+  ],
+  "display_index": 19,
+  "summary": "减速：快单位的噩梦",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:hound",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "近战形态得钻进光环和缓滞带才够得着，速度只剩三成；射程 4 的基础形态停在光环外就能打。",
+    "织骨者的光环让 3 格内的分裂体移速 -40%，缓滞带再 -50%，两者叠加只剩 0.3 倍。拆掉织骨者就赢。",
+    "基础形态沿信标朝织骨者走，一进射程（离它 4 格）就停下（光环和缓滞带都在 3 格内，它不受影响）站定输出，约 10 秒拆掉。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。近战形态得钻进光环和缓滞带才够得着，速度只剩三成；射程 4 的基础形态停在光环外就能打。",
+    "default": "近战形态得钻进光环和缓滞带才够得着，速度只剩三成；射程 4 的基础形态停在光环外就能打。"
+  },
+  "bgm": "region_flesh_swamp"
+}

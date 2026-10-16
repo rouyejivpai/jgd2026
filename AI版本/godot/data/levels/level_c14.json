@@ -1,0 +1,387 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        10,
+        2
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        11,
+        8
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        11,
+        3
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        11,
+        7
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      6,
+      0,
+      8,
+      0
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 12,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer",
+      "hexer"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "斩根",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "CORE",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        8,
+        5
+      ],
+      "display_name": "骨花核心",
+      "overrides": {
+        "max_hp": 200
+      }
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        6,
+        5
+      ],
+      "display_name": "左门护卫",
+      "overrides": {
+        "vision": 4
+      },
+      "public_rule_text": "守在左门内侧，只看得见 4 格。锁定首个看见的分裂体并追击。"
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        5
+      ],
+      "display_name": "右门护卫",
+      "overrides": {
+        "vision": 4
+      },
+      "public_rule_text": "守在右门内侧，只看得见 4 格。锁定首个看见的分裂体并追击。"
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          7,
+          0
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          6,
+          0
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              0,
+              10
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              1,
+              10
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              1,
+              0
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "回字形要塞里是骨花核心（200 血），拆掉它就赢。两扇门内各有一名护卫，只看得见 4 格。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "CORE"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "分兵：远射站在 (7,0)（离核心 5.1、离两名护卫都超过 4 格），按「血量上限最高」点核心；快速形态在地图左缘 x=0..1 绕大圈，一直是最远者，爆裂全部落空。",
+    "expected_fail": [
+      "只派一名远射站桩：它是唯一目标，每 5 秒一发 35 的爆裂，第二发就倒。",
+      "从门口正面打：进入护卫 4 格视野，被锁定追咬。"
+    ],
+    "alternatives": [
+      "速攻：三名远射站在部署区 (6..8,0) 直接开火，约 7 秒拆完，只吃一轮爆裂（三人各掉 35，都活着）。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_03.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b090b8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8211,
+  "schema_version": 1,
+  "_design_comment": "灰棘林的收束关。把易伤、危险区、多入口要塞叠在一起，是本作第一次「较复杂战斗」。",
+  "_teach_role": "收束：较复杂战斗",
+  "briefing": {
+    "mechanic_hint": "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
+  },
+  "region": "grey_thorn",
+  "region_cn": "灰棘林",
+  "id": "level_c14",
+  "index": 114,
+  "title": "斩根",
+  "subtitle": "较复杂战斗：要塞里的核心",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [
+      "binder"
+    ],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c15"
+  },
+  "_review_20261012": [
+    "重做：回字要塞 + 两名守门护卫（门内，视野 4）+ 200 血核心，去掉骨喉；验证「分兵引爆裂」和「三远射速攻」两种打法都能赢，单远射站桩会输；信标计费。"
+  ],
+  "display_index": 14,
+  "summary": "较复杂战斗：要塞里的核心",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_core",
+      "stat": "vision",
+      "mul": 0,
+      "add": 13,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
+    "回字形要塞里是骨花核心（200 血），拆掉它就赢。两扇门内各有一名护卫，只看得见 4 格。",
+    "分兵：远射站在 (7,0)（离核心 5.1、离两名护卫都超过 4 格），按「血量上限最高」点核心；快速形态在地图左缘 x=0..1 绕大圈，一直是最远者，爆裂全部落空。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
+    "default": "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
+  },
+  "bgm": "region_grey_thorn"
+}

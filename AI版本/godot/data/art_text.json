@@ -1,0 +1,24 @@
+{
+ "_comment": "P8 艺术字接入（10 §1.5、决策 ⑭；R6a / R6b）。texts：界面文字 → 素材包目录（ArtText.attach 按 label.text 查找，文字改了就自动回退普通文字）；「文字@variant」为同一文字的变体（章节标题：选中首领关时用 boss 款）。nodes：图片节点 → 素材包（ArtText.fill）。素材包格式见 assets/ui/<界面>/art_text/<id>/manifest.json 与 motion.md。",
+ "nodes": {
+  "main_menu.game_title_art": "res://assets/ui/main_menu/art_text/title"
+ },
+ "texts": {
+  "田埂": "res://assets/ui/chapter/art_text/level_01_tian_geng",
+  "谷仓前": "res://assets/ui/chapter/art_text/level_02_gu_cang_qian",
+  "墙缝": "res://assets/ui/chapter/art_text/level_03_qiang_feng",
+  "围栏": "res://assets/ui/chapter/art_text/level_04_wei_lan",
+  "骨喉坡": "res://assets/ui/chapter/art_text/level_05_gu_hou_po",
+  "祭司行列": "res://assets/ui/chapter/art_text/level_06_ji_si_xing_lie",
+  "守住归途": "res://assets/ui/chapter/art_text/level_07_shou_zhu_gui_tu",
+  "骨花母体": "res://assets/ui/chapter/art_text/level_08_gu_hua_mu_ti",
+  "战斗胜利": "res://assets/ui/battle_fx/art_text/victory_title",
+  "战斗失败": "res://assets/ui/battle_fx/art_text/defeat_title",
+  "战斗开始": "res://assets/ui/battle_fx/art_text/battle_start"
+ },
+ "_disabled": {
+  "腐土平原": "res://assets/ui/chapter/art_text/chapter_title",
+  "腐土平原@boss": "res://assets/ui/chapter/art_text/chapter_title_boss",
+  "_reason": "2026-10-06 实机核对：两款章节名素材只有 211×60 / 184×57，字边有暗色杂边，放大后比普通字体还糊，暂不启用（见 docs/RESOURCE_PENDING.md）；资源侧重交高分辨率干净版后移回 texts 即可"
+ }
+}

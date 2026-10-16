@@ -1,0 +1,648 @@
+{
+  "schema_version": 1,
+  "_design_comment": "新写的关。肉巢沼泽的收束：把减速当成「围栏」用，而不是当成 debuff。",
+  "region": "flesh_swamp",
+  "id": "level_c21",
+  "index": 121,
+  "title": "困兽",
+  "subtitle": "较复杂战斗：用减速困住猎犬",
+  "biome": "hound_den",
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_04.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#90a888",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "bgm": "region_flesh_swamp",
+  "seed": 7651,
+  "grid": {
+    "width": 15,
+    "height": 11,
+    "blocked": [
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        9,
+        3
+      ],
+      [
+        9,
+        4
+      ],
+      [
+        9,
+        5
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        10,
+        3
+      ],
+      [
+        10,
+        4
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        10,
+        6
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "tiles": {
+      "mire": [
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          11,
+          4
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          14,
+          5
+        ],
+        [
+          14,
+          6
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      6,
+      0,
+      8,
+      1
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 11,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_teach": "收束：较复杂战斗",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "H1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        7,
+        9
+      ],
+      "display_name": "受惊的骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 9,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 9,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "视野内有分裂体就朝背离合力的方向逃；被困住才反咬。"
+    },
+    {
+      "id": "H2",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        8,
+        9
+      ],
+      "display_name": "受惊的骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 9,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 9,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "同上。"
+    }
+  ],
+  "routes": {},
+  "new_concept": "status_effect",
+  "concept_tags": [
+    "status_effect",
+    "困兽"
+  ],
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "objectives": {
+    "objective_text": "两只受惊的骸猎犬在环廊里，看见人就跑，你追不上。从两头包夹，左右两段缓滞带会让它们跑不动。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "猎犬朝背离所有威胁的合力方向跑。只从一头追，它就绕着环一直跑；两头一起压，它就被夹在中间——缓滞带让它在那里更跑不动。"
+  },
+  "hint_tiers": [
+    {
+      "tier": 0,
+      "text": "骸猎犬朝远离所有威胁的合力方向跑。正常情况下你追不上。"
+    },
+    {
+      "tier": 1,
+      "text": "地上那些蓝色的带子是缓滞带：站上去移速减半，敌我通用。"
+    },
+    {
+      "tier": 2,
+      "text": "猎犬 4.0 的移速减半只剩 2.0，比你最慢的承伤形态一样快。"
+    },
+    {
+      "tier": 3,
+      "text": "所以别追——把它们赶进缓滞带。"
+    },
+    {
+      "tier": 4,
+      "text": "推荐：三个人分散站位，用站位把猎犬往缓滞带的方向压。"
+    }
+  ],
+  "fail_feedback": {
+    "default": "推荐：三个人分散站位，用站位把猎犬往缓滞带的方向压。",
+    "lose_all_dead": "全员倒下了。猎犬朝背离所有威胁的合力方向跑。只从一头追，它就绕着环一直跑；两头一起压，它就被夹在中间——缓滞带让它在那里更跑不动。"
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          6,
+          0
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              1,
+              1
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              1,
+              9
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker_b",
+        "form": "striker",
+        "pos": [
+          8,
+          0
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              13,
+              1
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              13,
+              9
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c22"
+  },
+  "_rewards_note": "",
+  "verification": {
+    "expected_win": "两名基础形态分别沿环廊左、右两侧往上走，看见猎犬就追：猎犬被两头的合力夹在上方走廊，往两侧逃会钻进缓滞带，被困后反咬、被收掉。",
+    "expected_fail": [],
+    "alternatives": [
+      "两人从同一头追也能赢，但慢（有缓滞带约 16 秒、没有约 15 秒，包夹约 10 秒）。"
+    ],
+    "risks": [
+      "逃跑规则（向量之和）为本版定义，原型需同步实现（补丁已给）。",
+      "【仿真发现】按「投影最大、不更靠近威胁」的规则，猎犬在环廊**拐角**会把自己困住（往前投影为负、往侧面投影为 0），所以单向追也能在拐角堵住它——「追不上」并不成立。若要强制包夹，需要给向量规则补「贴墙滑行」（合力被墙挡住时取沿墙分量）——这正是评审列为未定的「墙体处理」，请在规则表里拍板。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "region_cn": "肉巢沼泽",
+  "_teach_role": "收束：较复杂战斗",
+  "_review_20261012": [
+    "地图改为回字环廊（只从一头追会被绕圈）；猎犬改为「受惊」（视野内即逃，堵掉远射点杀）、逃跑按向量之和；左右走廊缓滞带；去掉织骨者与远射形态；推荐解改为两头包夹；信标计费。"
+  ],
+  "display_index": 21,
+  "summary": "较复杂战斗：用减速困住猎犬",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:hound",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "骸猎犬朝远离所有威胁的合力方向跑。正常情况下你追不上。",
+    "地上那些蓝色的带子是缓滞带：站上去移速减半，敌我通用。",
+    "猎犬 4.0 的移速减半只剩 2.0，比你最慢的承伤形态一样快。",
+    "所以别追——把它们赶进缓滞带。"
+  ]
+}

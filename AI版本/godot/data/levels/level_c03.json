@@ -1,0 +1,237 @@
+{
+  "grid": {
+    "width": 16,
+    "height": 9,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      7,
+      2,
+      8
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 5,
+    "available_forms": [
+      "bulwark",
+      "striker"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "T1",
+      "unit": "dummy",
+      "faction": "enemy",
+      "display_name": "试作人偶·甲",
+      "pos": [
+        9,
+        3
+      ],
+      "counts_for_annihilate": true,
+      "_rule_note": "试作人偶 attack = 0，不反击（评审时口述有分歧，这里定为不反击）",
+      "overrides": {
+        "max_hp": 60
+      }
+    },
+    {
+      "id": "T2",
+      "unit": "dummy",
+      "faction": "enemy",
+      "display_name": "试作人偶·乙",
+      "pos": [
+        12,
+        4
+      ],
+      "counts_for_annihilate": true,
+      "_rule_note": "试作人偶 attack = 0，不反击（评审时口述有分歧，这里定为不反击）",
+      "overrides": {
+        "max_hp": 60
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker_a",
+        "form": "striker",
+        "pos": [
+          2,
+          7
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              2,
+              6
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              5,
+              6
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              8,
+              6
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              11,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "any"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "沿信标走，顺路拆掉两具试作人偶。人偶不会反击",
+    "win": [
+      {
+        "id": "win_dummies",
+        "type": "destroy",
+        "targets": [
+          "T1",
+          "T2"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态 3 + 1 包信标 1 = 4 / 预算 5。走到 (5,6) 附近进入射程，先打甲再打乙，约 15 秒。",
+    "expected_fail": [
+      "把「沿信标走」放在最上：单位走完路线后待机，人偶一个不掉（不会失败，但不会结束）。"
+    ],
+    "alternatives": [],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_01.png",
+    "ground": "res://assets/grounds/wailing_wall_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 4,
+  "schema_version": 1,
+  "_design_comment": "第一次战斗：靶子不反击、没有失败条件，只教「指令顺序 = 优先级」。",
+  "_teach_role": "教学：时机",
+  "briefing": {
+    "mechanic_hint": "指令从上往下判断：把「射程内有敌人 → 攻击」放在「沿信标走」上面，它才会停下来开火。"
+  },
+  "region": "bone_workshop",
+  "region_cn": "织骸工坊",
+  "id": "level_c03",
+  "index": 103,
+  "title": "间歇轨",
+  "subtitle": "沿路打靶",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [
+      "swift"
+    ],
+    "unlock_presets": [],
+    "unlock_conditions": [
+      "at_beacon"
+    ],
+    "unlock_selectors": [],
+    "unlock_actions": [
+      "wait"
+    ],
+    "unlock_level": "level_c04"
+  },
+  "_review_20261012": [
+    "推荐指令的筛选 unit→any（人偶是建筑，原推荐解打不到）；胜利条件 annihilate→destroy[T1,T2]（人偶是建筑，原判定开局即胜）；明确不反击；信标计费，预算 7→5。"
+  ],
+  "display_index": 3,
+  "summary": "沿路打靶",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "指令从上往下判断：把「射程内有敌人 → 攻击」放在「沿信标走」上面，它才会停下来开火。",
+    "沿信标走，顺路拆掉两具试作人偶。人偶不会反击",
+    "基础形态 3 + 1 包信标 1 = 4 / 预算 5。走到 (5,6) 附近进入射程，先打甲再打乙，约 15 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。指令从上往下判断：把「射程内有敌人 → 攻击」放在「沿信标走」上面，它才会停下来开火。",
+    "default": "指令从上往下判断：把「射程内有敌人 → 攻击」放在「沿信标走」上面，它才会停下来开火。"
+  },
+  "bgm": "battle_01"
+}

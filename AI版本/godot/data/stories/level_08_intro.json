@@ -1,0 +1,8 @@
+{
+  "id": "level_08_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "骨花温室。巨花的外层花瓣化作护卫，核心在最深处搏动。" },
+    { "speaker": "doll", "illustration": "doll", "text": "护卫厚重，只盯住第一个闯入者。核心脆弱，但它会朝最远的那个投下花粉。" },
+    { "speaker": "doll", "illustration": "doll", "text": "正面、绕后，或者两者都要。核心倒下即结束。" }
+  ]
+}

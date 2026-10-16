@@ -1,0 +1,196 @@
+{
+  "_comment": "脚本化试玩场景（00 M8 / 05 §5；第二阶段 P3 改为单位列表格式）：每关 recommended + alternative（+ expected_fail 供报告对照）。由 tools/run_playtests.gd 读取，输出 docs/playtests/<level>_<kind>.json。units 按出场顺序列出（free 关依次分配 u1、u2…；fixed 关写 slot），每个单位必须显式给出 rules（新放置单位指令为空）；可选 copy_route（复制预设路线为信标）与 beacons [[x,y],…]。规则可写 rule_library 键名或 route:<id> / route_loop:<id> / beacons_<once|loop|pingpong>:<起点编号> / wait_at:<信标编号>:<秒>（第三阶段起信标为数字编号 1、2…）。",
+  "rule_library": {
+    "atk": { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+    "atk_unit": { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+    "chase": { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+    "chase_unit": { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+    "retreat_low_hp": { "conditions": [{ "type": "self_hp_below", "ratio": 0.3 }], "action": { "type": "retreat" } },
+    "idle": { "conditions": [], "action": { "type": "idle" } },
+    "chase_off": { "enabled": false, "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+    "chase_unit_off": { "enabled": false, "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+    "atk_structure": { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "structure" }, "action": { "type": "attack" } },
+    "approach_unit": { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase" } },
+    "kite_unit_3": { "conditions": [{ "type": "target_distance", "op": "<", "value": 3 }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "retreat" } }
+  },
+  "scenarios": [
+    { "level": "level_01", "kind": "recommended",
+      "units": [
+        { "form": "striker", "pos": [2, 2], "rules": ["atk", "chase", "idle"] },
+        { "form": "striker", "pos": [2, 4], "rules": ["atk", "chase", "idle"] }
+      ],
+      "note": "推荐部署 + 推荐指令" },
+    { "level": "level_01", "kind": "alternative",
+      "units": [
+        { "form": "striker", "pos": [1, 3], "rules": ["atk", "chase", "idle"] },
+        { "form": "striker", "pos": [2, 3], "rules": ["atk", "chase", "idle"] }
+      ],
+      "note": "03 写明无需替代解；记录另一合法部署（同一行并排）" },
+    { "level": "level_01", "kind": "expected_fail", "disable_actions": ["attack", "chase_attack"],
+      "units": [
+        { "form": "striker", "pos": [2, 2], "rules": ["atk", "chase", "idle"] },
+        { "form": "striker", "pos": [2, 4], "rules": ["atk", "chase", "idle"] }
+      ],
+      "note": "verification.expected_fail：关闭两名单位全部攻击指令" },
+
+    { "level": "level_02", "kind": "recommended",
+      "units": [
+        { "form": "bulwark", "pos": [3, 3], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [1, 2], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase_off", "idle"] }
+      ],
+      "note": "推荐部署 + 推荐指令（追击关闭）" },
+    { "level": "level_02", "kind": "alternative", "enable_all": true,
+      "units": [
+        { "form": "bulwark", "pos": [3, 3], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [1, 2], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase_off", "idle"] }
+      ],
+      "note": "verification.alternatives：全部打开追击正面硬拼" },
+    { "level": "level_02", "kind": "expected_fail",
+      "units": [
+        { "form": "bulwark", "pos": [1, 3], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [3, 2], "rules": ["atk", "chase_off", "idle"] },
+        { "form": "striker", "pos": [3, 4], "rules": ["atk", "chase_off", "idle"] }
+      ],
+      "note": "verification.expected_fail：前后排倒置（Q-016）" },
+
+    { "level": "level_03", "kind": "recommended",
+      "units": [
+        { "form": "swift", "pos": [2, 5], "rules": ["kite_unit_3", "approach_unit", "idle"] },
+        { "form": "striker", "pos": [2, 1], "rules": ["atk_structure", "route:corridor"] }
+      ],
+      "note": "快速形态牵制守卫，攻击形态走墙下通道" },
+    { "level": "level_03", "kind": "alternative",
+      "units": [
+        { "form": "swift", "pos": [2, 5], "rules": ["atk_unit", "chase_unit", "atk", "route:yard"] },
+        { "form": "striker", "pos": [2, 4], "rules": ["atk_unit", "chase_unit", "atk", "route:yard"] }
+      ],
+      "note": "verification.alternatives：两单位合力先击杀守卫再摧毁骸柱" },
+    { "level": "level_03", "kind": "expected_fail",
+      "units": [
+        { "form": "swift", "pos": [2, 5], "rules": ["atk", "route:yard"] },
+        { "form": "striker", "pos": [2, 6], "rules": ["atk", "route:yard"] }
+      ],
+      "note": "verification.expected_fail：两单位一起走庭院正面" },
+    { "level": "level_03", "kind": "beacons",
+      "units": [
+        { "form": "swift", "pos": [2, 5], "rules": ["kite_unit_3", "approach_unit", "idle"] },
+        { "form": "striker", "pos": [2, 1], "rules": ["atk_structure", "beacons_once:1"], "copy_route": "corridor" }
+      ],
+      "note": "P2 验收：推荐部署，攻击形态把预设路线「墙下通道」复制为自己的信标 1–3，用「沿我的信标前进（单程）」替代 follow_route 绕后" },
+
+    { "level": "level_04", "kind": "recommended",
+      "units": [
+        { "form": "striker", "pos": [1, 7], "rules": ["atk_unit", "chase_unit", "route:north"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk_unit", "chase_unit", "route:south"] },
+        { "form": "swift", "pos": [1, 6], "rules": ["atk_unit", "chase_unit", "idle"] }
+      ],
+      "note": "两侧攻击形态压迫 + 快速形态正面逼近" },
+    { "level": "level_04", "kind": "alternative",
+      "units": [
+        { "form": "striker", "pos": [1, 7], "rules": ["atk_unit", "route:north"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk_unit", "route:south"] },
+        { "form": "swift", "pos": [1, 6], "rules": ["atk_unit", "chase_unit", "idle"] }
+      ],
+      "note": "verification.alternatives：两名攻击形态守住东侧两角，快速形态驱赶" },
+    { "level": "level_04", "kind": "expected_fail",
+      "units": [
+        { "form": "striker", "pos": [1, 7], "rules": ["idle"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["idle"] },
+        { "form": "swift", "pos": [1, 6], "rules": ["atk_unit", "chase_unit", "idle"] }
+      ],
+      "note": "05 §4.2：单向追击（Q-021）" },
+
+    { "level": "level_05", "kind": "recommended",
+      "units": [
+        { "form": "bulwark", "pos": [2, 4], "rules": ["atk", "chase", "idle"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase", "idle"] },
+        { "form": "swift", "pos": [2, 8], "rules": ["route_loop:patrol"] }
+      ],
+      "note": "快速形态后方巡回当最远者" },
+    { "level": "level_05", "kind": "alternative",
+      "units": [
+        { "form": "bulwark", "pos": [2, 4], "rules": ["atk", "chase", "route:advance"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase", "route:advance"] },
+        { "form": "swift", "pos": [2, 8], "rules": ["atk", "chase", "route:advance"] }
+      ],
+      "note": "verification.alternatives：全员硬吃爆炸正面冲锋" },
+    { "level": "level_05", "kind": "expected_fail",
+      "units": [
+        { "form": "bulwark", "pos": [2, 4], "rules": ["atk", "chase", "idle"] },
+        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase", "idle"] },
+        { "form": "swift", "pos": [2, 8], "rules": ["idle"] }
+      ],
+      "note": "verification.expected_fail：快速形态不动" },
+
+    { "level": "level_06", "kind": "recommended",
+      "units": [
+        { "form": "bulwark", "pos": [7, 8], "rules": ["atk_unit", "chase_unit_off", "idle"] },
+        { "form": "striker", "pos": [4, 2], "rules": ["atk_unit", "chase_unit_off", "idle"] },
+        { "form": "lancer", "pos": [3, 0], "rules": ["atk_unit", "idle"] }
+      ],
+      "note": "承伤前置拦截残骸，远射+攻击形态打祭司" },
+    { "level": "level_06", "kind": "alternative",
+      "units": [
+        { "form": "bulwark", "pos": [7, 8], "rules": ["atk_unit", "chase_unit_off", "idle"] },
+        { "form": "striker", "pos": [4, 2], "rules": ["atk_unit", "chase_unit", "idle"] },
+        { "form": "lancer", "pos": [3, 0], "rules": ["atk_unit", "idle"] }
+      ],
+      "note": "verification.alternatives：改由基础攻击形态追击（推荐部署）" },
+    { "level": "level_06", "kind": "expected_fail",
+      "units": [
+        { "form": "bulwark", "pos": [2, 8], "rules": ["atk_unit", "chase_unit_off", "idle"] },
+        { "form": "striker", "pos": [3, 8], "rules": ["atk_unit", "chase_unit_off", "idle"] },
+        { "form": "lancer", "pos": [7, 7], "rules": ["atk_unit", "idle"] }
+      ],
+      "note": "verification.expected_fail：承伤不前置、远射太靠上" },
+
+    { "level": "level_07", "kind": "recommended",
+      "units": [
+        { "slot": "slot_bulwark", "form": "bulwark", "pos": [3, 4], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_striker", "form": "striker", "pos": [3, 3], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_lancer", "form": "lancer", "pos": [1, 5], "rules": ["atk", "idle"] }
+      ],
+      "note": "推荐部署，20 秒生存" },
+    { "level": "level_07", "kind": "alternative",
+      "units": [
+        { "slot": "slot_bulwark", "form": "bulwark", "pos": [3, 5], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_striker", "form": "striker", "pos": [3, 3], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_lancer", "form": "lancer", "pos": [1, 3], "rules": ["atk", "idle"] }
+      ],
+      "note": "关卡册 5.8：第二种实质不同的合法部署" },
+    { "level": "level_07", "kind": "expected_fail", "enable_all": true,
+      "units": [
+        { "slot": "slot_bulwark", "form": "bulwark", "pos": [3, 6], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_striker", "form": "striker", "pos": [2, 6], "rules": ["atk", "chase_off", "idle"] },
+        { "slot": "slot_lancer", "form": "lancer", "pos": [1, 6], "rules": ["atk", "idle"] }
+      ],
+      "note": "05 §3：前排追击离位 + 全员挤在 y=6（Q-027，数据冻结）" },
+
+    { "level": "level_08", "kind": "recommended",
+      "units": [
+        { "form": "bulwark", "pos": [3, 5], "rules": ["atk", "idle"] },
+        { "form": "striker", "pos": [3, 3], "rules": ["atk", "route:south_flank"] },
+        { "form": "swift", "pos": [3, 7], "rules": ["atk", "route:north_flank"] },
+        { "form": "lancer", "pos": [2, 7], "rules": ["atk", "route:north_flank"] }
+      ],
+      "note": "verification.expected_win：承伤正面原地吸引护卫，快速+远射走北侧藤廊、攻击形态走南侧藤廊绕后打核心（推荐指令为全员追击，等同正面推进，见 Q-028）" },
+    { "level": "level_08", "kind": "alternative",
+      "units": [
+        { "form": "bulwark", "pos": [3, 5], "rules": ["retreat_low_hp", "atk", "chase"] },
+        { "form": "striker", "pos": [3, 3], "rules": ["atk", "chase"] },
+        { "form": "swift", "pos": [3, 7], "rules": ["atk", "chase"] },
+        { "form": "lancer", "pos": [2, 7], "rules": ["atk", "chase"] }
+      ],
+      "note": "verification.alternatives：正面硬拼（承伤低血撤离换血，全员集火）" },
+    { "level": "level_08", "kind": "expected_fail",
+      "units": [
+        { "form": "bulwark", "pos": [3, 5], "rules": ["atk", "chase", "route:front"] },
+        { "form": "striker", "pos": [3, 3], "rules": ["atk", "chase", "route:front"] },
+        { "form": "swift", "pos": [3, 7], "rules": ["atk", "chase", "route:front"] },
+        { "form": "lancer", "pos": [2, 7], "rules": ["atk", "chase", "route:front"] }
+      ],
+      "note": "verification.expected_fail：全员正面推进（Q-028）" }
+  ]
+}

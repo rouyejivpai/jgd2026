@@ -1,0 +1,401 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 9,
+    "blocked": [
+      [
+        5,
+        2
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        11,
+        6
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      6,
+      2,
+      8
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 10,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "lancer"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "送它出去",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "MSG",
+      "unit": "bulwark",
+      "faction": "ally",
+      "pos": [
+        1,
+        4
+      ],
+      "display_name": "信使",
+      "tags": [
+        "protect"
+      ],
+      "counts_for_annihilate": false,
+      "overrides": {
+        "max_hp": 100,
+        "attack": 0,
+        "move_speed": 1.0,
+        "vision": 0
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "msg_lane"
+          }
+        }
+      ],
+      "public_rule_text": "不可指挥。沿走廊匀速走向右侧出口，不还手。"
+    },
+    {
+      "id": "R1",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        9,
+        1
+      ],
+      "display_name": "伏击者·下"
+    },
+    {
+      "id": "R2",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        9,
+        7
+      ],
+      "display_name": "伏击者·上"
+    },
+    {
+      "id": "H1",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        14,
+        4
+      ],
+      "display_name": "拦路行者",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    }
+  ],
+  "routes": {
+    "msg_lane": {
+      "name": "信使路线",
+      "points": [
+        [
+          1,
+          4
+        ],
+        [
+          16,
+          4
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              8,
+              5
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              13,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              5,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "信使（不能被指挥）会自己沿走廊走向右侧出口。伏击者会扑向离它们最近的人——别让那个人是信使。",
+    "win": [
+      {
+        "id": "win_escort",
+        "type": "escort",
+        "target": "MSG",
+        "cells": [
+          [
+            16,
+            3
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            16,
+            5
+          ]
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_msg_dead",
+        "type": "unit_dead",
+        "target": "MSG"
+      },
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态先走到信使前方吸引伏击者，远射形态跟在信使身后点射；信使约 15 秒走到出口。",
+    "expected_fail": [
+      "不派人走在前面（全员原地攻击）：伏击者扑向信使，信使在半路倒下。"
+    ],
+    "alternatives": [],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_02.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8b090",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8174,
+  "schema_version": 1,
+  "_design_comment": "第一个护送任务。U 形地图让「走在前面」变成真实的几何问题。",
+  "_teach_role": "任务类型：护送",
+  "briefing": {
+    "mechanic_hint": "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。"
+  },
+  "region": "withered_farm",
+  "region_cn": "枯骨农田",
+  "id": "level_c08",
+  "index": 108,
+  "title": "送它出去",
+  "subtitle": "护送：保住信使",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [
+      "preset.retreat_low_hp"
+    ],
+    "unlock_conditions": [
+      "self_hp_below"
+    ],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c09"
+  },
+  "_review_20261012": [
+    "护送关重做：信使改为沿路线移动的不可指挥单位，胜利条件 survive→escort（原型已支持）；原信使是不能移动的物资箱，「护送」不成立。"
+  ],
+  "display_index": 8,
+  "summary": "护送：保住信使",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:husk",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:raider",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。",
+    "信使（不能被指挥）会自己沿走廊走向右侧出口。伏击者会扑向离它们最近的人——别让那个人是信使。",
+    "承伤形态先走到信使前方吸引伏击者，远射形态跟在信使身后点射；信使约 15 秒走到出口。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_msg_dead": "要保护的单位倒下了。别让敌人先找上它。",
+    "lose_all_dead": "全员倒下了。被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。",
+    "default": "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。"
+  },
+  "bgm": "region_withered_farm"
+}

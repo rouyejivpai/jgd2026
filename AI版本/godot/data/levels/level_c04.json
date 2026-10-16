@@ -1,0 +1,367 @@
+{
+  "grid": {
+    "width": 16,
+    "height": 11,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      4,
+      1,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 10,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "swift"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "P1",
+      "unit": "raider",
+      "faction": "enemy",
+      "display_name": "夜巡·上",
+      "pos": [
+        5,
+        1
+      ],
+      "overrides": {
+        "attack": 12,
+        "attack_speed": 1,
+        "move_speed": 2.0,
+        "vision": 3,
+        "range": 2
+      },
+      "counts_for_annihilate": false,
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "north_patrol",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "沿上巡道 y=1（x=5..13）来回走。夜巡只带一盏暗灯，视野只有 3 格——你待在 y=4..6 的走廊里它看不见你；贴近 y=1 才会被发现。"
+    },
+    {
+      "id": "P2",
+      "unit": "raider",
+      "faction": "enemy",
+      "display_name": "夜巡·下",
+      "pos": [
+        13,
+        9
+      ],
+      "overrides": {
+        "attack": 12,
+        "attack_speed": 1,
+        "move_speed": 2.0,
+        "vision": 3,
+        "range": 2
+      },
+      "counts_for_annihilate": false,
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "south_patrol",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "沿下巡道 y=9（x=5..13）来回走。视野 3 格，规则同上巡道。"
+    },
+    {
+      "id": "G1",
+      "unit": "echo_pillar",
+      "faction": "enemy",
+      "pos": [
+        14,
+        5
+      ],
+      "counts_for_annihilate": true
+    }
+  ],
+  "routes": {
+    "north_patrol": {
+      "name": "上巡道",
+      "points": [
+        [
+          5,
+          1
+        ],
+        [
+          13,
+          1
+        ]
+      ]
+    },
+    "south_patrol": {
+      "name": "下巡道",
+      "points": [
+        [
+          13,
+          9
+        ],
+        [
+          5,
+          9
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "enemy_in_range",
+      "at_beacon",
+      "enemy_visible"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          0,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              6,
+              5
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              10,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "structure"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "摧毁林间的回响骸柱。两条巡道横在中间",
+    "win": [
+      {
+        "id": "win_destroy_pillar",
+        "type": "destroy",
+        "targets": [
+          "G1"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "沿 y=5 中线走，离两条巡道各 4 格 > 巡逻视野 3，不会被发现；到 (10,5) 后打骸柱。",
+    "expected_fail": [
+      "把信标铺到 y=2 或 y=8：进入巡逻视野，被两名夜巡追咬。"
+    ],
+    "alternatives": [
+      "在 (6,5) 加「到达信标 1 → 等待」可以错开巡逻相位，但走中线本来就安全；评审提到的「检测 + 信号延迟」解法需要信号系统，原型暂未实现。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_01.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 12,
+  "schema_version": 1,
+  "_design_comment": "第一次让玩家意识到「看见」和「够得着」是两件事。",
+  "_teach_role": "教学：视野",
+  "briefing": {
+    "mechanic_hint": "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。"
+  },
+  "region": "bone_workshop",
+  "region_cn": "织骸工坊",
+  "id": "level_c04",
+  "index": 104,
+  "title": "巡夜",
+  "subtitle": "视野不等于射程",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [
+      "preset.attack_farthest_in_range"
+    ],
+    "unlock_conditions": [],
+    "unlock_selectors": [
+      "farthest"
+    ],
+    "unlock_actions": [],
+    "unlock_level": "level_c05"
+  },
+  "_beacon_economy": "**信标第一次要花钱。** 预算 7 看着宽裕，但两个基础形态 = 6，就只剩 1 点——正好一包信标（5 个）。这一关的账是「多带一个单位，还是多买信标」。",
+  "_review_20261012": [
+    "恢复巡道 (5..13,1)/(5..13,9) 与部署区 [0,4,1,6]（被平移脚本改乱）；推荐信标去重；夜巡攻击 8→12、移速 1.2→2.0（原数值被发现也只掉 16 血，「被看见会追过来」没有代价）。"
+  ],
+  "display_index": 4,
+  "summary": "视野不等于射程",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:echo_pillar",
+      "stat": "vision",
+      "mul": 0,
+      "add": 7,
+      "_design_vision": true
+    },
+    {
+      "target": "form:raider",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。",
+    "摧毁林间的回响骸柱。两条巡道横在中间",
+    "沿 y=5 中线走，离两条巡道各 4 格 > 巡逻视野 3，不会被发现；到 (10,5) 后打骸柱。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。",
+    "default": "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。"
+  },
+  "bgm": "battle_01"
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "level": 1,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_01.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 2,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_02.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 3,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_03.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 4,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_04.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 5,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_05.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 6,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_06.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 7,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_07.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "level": 8,
+    "file": "H:\\其他\\人工神灵\\godot\\assets\\backgrounds\\level_08.png",
+    "size": [
+      1536,
+      1024
+    ]
+  }
+]

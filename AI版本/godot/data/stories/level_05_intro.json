@@ -1,0 +1,7 @@
+{
+  "id": "level_05_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "坡顶扎着两株骨喉。它们吐出的东西落地后才会炸开。" },
+    { "speaker": "doll", "illustration": "doll", "text": "爆炸锁定位置，不追人。只要有人一直在远处移动，它们就一直对着空地喷。" }
+  ]
+}

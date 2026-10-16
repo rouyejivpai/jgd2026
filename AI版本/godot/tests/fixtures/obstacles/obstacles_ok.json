@@ -1,0 +1,44 @@
+{
+ "level": "level_03",
+ "_comment": "P7 测试夹具：第三关墙缝的两段矮墙（cells ⊆ blocked）",
+ "pieces": [
+  {
+   "file": "01.png",
+   "cells": [
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ]
+   ],
+   "anchor_px": [
+    0,
+    -20
+   ],
+   "size_px": [
+    122,
+    81
+   ]
+  },
+  {
+   "file": "02.png",
+   "cells": [
+    [
+     8,
+     2
+    ]
+   ],
+   "anchor_px": [
+    -4,
+    -10
+   ],
+   "size_px": [
+    69,
+    71
+   ]
+  }
+ ]
+}

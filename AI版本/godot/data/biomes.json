@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "_comment": "04 §2.5：生态 → 障碍默认道具。wall_segment / thorn_wall 按连续障碍自动选端点或中段变体（wall_end/wall_mid、thorn_end/thorn_mid）。",
+  "props": {
+    "wailing_wall": "wall_segment",
+    "hound_den": "bone_stake",
+    "bone_greenhouse": "thorn_wall",
+    "default": "bone_pile"
+  },
+  "_level_props_comment": "按关卡覆盖默认道具（04 §2.5：第五关同属 hound_den 但用 rock_flesh）",
+  "level_props": {
+    "level_05": "rock_flesh"
+  },
+  "variants": {
+    "wall_segment": { "end": "wall_end", "mid": "wall_mid" },
+    "thorn_wall": { "end": "thorn_end", "mid": "thorn_mid" }
+  },
+  "_ground_comment": "07 §1.3：第二阶段起障碍格不再放竖立道具（上面 props 仅保留供美术合成背景参考）。ground_textures = 每生态可平铺俯视地面（512×512，资源 R1）；ground_marks = 障碍格地面标识贴片名（assets/sprites/ground_marks/<名>.png，256×256），按格坐标确定性挑选；贴图缺失时程序绘制占位。",
+  "ground_textures": {
+    "bone_farm": ["res://assets/grounds/bone_farm_a.png", "res://assets/grounds/bone_farm_b.png"],
+    "wailing_wall": ["res://assets/grounds/wailing_wall_a.png", "res://assets/grounds/wailing_wall_b.png"],
+    "hound_den": ["res://assets/grounds/hound_den_a.png", "res://assets/grounds/hound_den_b.png"],
+    "transit_node": ["res://assets/grounds/transit_node_a.png", "res://assets/grounds/transit_node_b.png"],
+    "bone_greenhouse": ["res://assets/grounds/bone_greenhouse_a.png", "res://assets/grounds/bone_greenhouse_b.png"]
+  },
+  "ground_marks": {
+    "bone_farm": ["rubble_bones", "blood_pool"],
+    "wailing_wall": ["cracked_slab", "rubble_bones"],
+    "hound_den": ["rubble_bones", "blood_pool"],
+    "transit_node": ["cracked_slab", "blood_pool"],
+    "bone_greenhouse": ["thorn_roots", "cracked_slab"],
+    "default": ["rubble_bones"]
+  }
+}

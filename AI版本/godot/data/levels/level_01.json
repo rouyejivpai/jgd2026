@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "id": "level_01",
+  "index": 1,
+  "title": "田埂",
+  "subtitle": "部署单位并启动基础战斗",
+  "biome": "bone_farm",
+  "scene": { "backdrop": "res://assets/backdrops/review_r4/level_01_base.png", "obstacles": "res://assets/backdrops/review_r4/obstacles/level_01/obstacles.json", "ground": "res://assets/grounds/bone_farm_a.png", "ground_tint": "#ffffff", "playfield_rect": null },
+  "bgm": "region_withered_farm",
+  "seed": 1,
+  "grid": { "width": 11, "height": 7, "blocked": [] },
+  "deploy_zone": { "rect": [1, 2, 2, 4] },
+  "roster": { "mode": "free", "budget": 8, "available_forms": ["striker"], "max_units": 2, "min_units": 1, "fixed_slots": [] },
+  "initial_units": [
+    { "id": "R1", "unit": "raider", "faction": "enemy", "pos": [8, 2], "counts_for_annihilate": true },
+    { "id": "R2", "unit": "raider", "faction": "enemy", "pos": [8, 4], "counts_for_annihilate": true }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": ["always", "enemy_visible", "enemy_in_range"],
+    "selectors": ["nearest"],
+    "actions": ["attack", "chase_attack", "idle"]
+  },
+  "objectives": {
+    "objective_text": "消灭田埂上的两具袭击者",
+    "win": [ { "id": "win_annihilate", "type": "annihilate" } ],
+    "lose": [ { "id": "lose_all_dead", "type": "all_allies_dead" } ]
+  },
+  "briefing": {
+    "mechanic_hint": "只有攻击范围内的目标才能受到攻击。视野让单位看见敌人，射程决定它能否出手——两个圈不一样。"
+  },
+  "hints": [
+    "先看地图左侧发光的格子，那是部署区。把两个分裂体拖进去。",
+    "点击已放置的分裂体：虚线环是它能看见的范围，实心环是它能打到的范围。",
+    "打开指令面板。第一条「存在射程内敌人则攻击最近者」负责出手，第二条让它追上去。试试关掉第一条，再看它的待机原因。",
+    "推荐部署：两个分裂体并排放在部署区最前一列。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "分裂体全部倒下。检查攻击指令是否被禁用，或是否只有一个分裂体在承受全部攻击。",
+    "default": "战斗失败。"
+  },
+  "recommended": {
+    "units": [
+      { "slot": "slot_striker_a", "form": "striker", "pos": [2, 2], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_striker_b", "form": "striker", "pos": [2, 4], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": ["bulwark"],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_02"
+  },
+  "verification": {
+    "expected_win": "默认指令、任意合法部署均可胜利。两名基础攻击形态合计 24 伤害/秒，袭击者 55 生命，约 2.3 秒击杀一具。",
+    "expected_fail": "禁用两名单位的全部攻击指令后，单位待机并显示「射程内没有敌人」/「没有成立的指令」，被袭击者击杀。",
+    "alternatives": "无需替代解。",
+    "risks": "必须验证：完全不部署时无法点击开始；关闭攻击后待机原因可见；伤害数字与生命条变化一致。"
+  }
+}

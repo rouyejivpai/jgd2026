@@ -1,0 +1,232 @@
+{
+  "_comment": "run_playtests 基线（第三阶段 P0）：每个场景 1× 终局的 result / time / losses / state_hash。`-- --check` 与本文件逐项比对；只有在有意改变模拟结果并记入 CHANGELOG 后才用 `-- --update-baseline` 重写。",
+  "scenarios": [
+    {
+      "level": "level_01",
+      "kind": "recommended",
+      "result": "win",
+      "time": 4.5,
+      "losses": [],
+      "hash": 2077027089
+    },
+    {
+      "level": "level_01",
+      "kind": "alternative",
+      "result": "win",
+      "time": 4.76666666666667,
+      "losses": [],
+      "hash": 3987003645
+    },
+    {
+      "level": "level_01",
+      "kind": "expected_fail",
+      "result": "lose",
+      "time": 15.1666666666667,
+      "losses": [
+        "u1",
+        "u2"
+      ],
+      "hash": 3031326717
+    },
+    {
+      "level": "level_02",
+      "kind": "recommended",
+      "result": "win",
+      "time": 11.7333333333333,
+      "losses": [],
+      "hash": 1728570966
+    },
+    {
+      "level": "level_02",
+      "kind": "alternative",
+      "result": "win",
+      "time": 9.73333333333333,
+      "losses": [],
+      "hash": 1995872006
+    },
+    {
+      "level": "level_02",
+      "kind": "expected_fail",
+      "result": "win",
+      "time": 12.6666666666667,
+      "losses": [
+        "u3"
+      ],
+      "hash": 679808873
+    },
+    {
+      "level": "level_03",
+      "kind": "recommended",
+      "result": "win",
+      "time": 8.03333333333333,
+      "losses": [],
+      "hash": 3408529087
+    },
+    {
+      "level": "level_03",
+      "kind": "alternative",
+      "result": "win",
+      "time": 17.8333333333333,
+      "losses": [
+        "u1"
+      ],
+      "hash": 1496187789
+    },
+    {
+      "level": "level_03",
+      "kind": "expected_fail",
+      "result": "lose",
+      "time": 9.73333333333333,
+      "losses": [
+        "u1",
+        "u2"
+      ],
+      "hash": 3186721688
+    },
+    {
+      "level": "level_03",
+      "kind": "beacons",
+      "result": "win",
+      "time": 8.03333333333333,
+      "losses": [],
+      "hash": 3408529087
+    },
+    {
+      "level": "level_04",
+      "kind": "recommended",
+      "result": "win",
+      "time": 5.73333333333333,
+      "losses": [],
+      "hash": 3739635852
+    },
+    {
+      "level": "level_04",
+      "kind": "alternative",
+      "result": "win",
+      "time": 11.3,
+      "losses": [],
+      "hash": 1932819578
+    },
+    {
+      "level": "level_04",
+      "kind": "expected_fail",
+      "result": "win",
+      "time": 16.3,
+      "losses": [],
+      "hash": 1621112929
+    },
+    {
+      "level": "level_05",
+      "kind": "recommended",
+      "result": "win",
+      "time": 25.5,
+      "losses": [
+        "u2"
+      ],
+      "hash": 1901988881
+    },
+    {
+      "level": "level_05",
+      "kind": "alternative",
+      "result": "win",
+      "time": 9.06666666666667,
+      "losses": [],
+      "hash": 3604784348
+    },
+    {
+      "level": "level_05",
+      "kind": "expected_fail",
+      "result": "lose",
+      "time": 23.0,
+      "losses": [
+        "u1",
+        "u2",
+        "u3"
+      ],
+      "hash": 2575396413
+    },
+    {
+      "level": "level_06",
+      "kind": "recommended",
+      "result": "win",
+      "time": 8.1,
+      "losses": [],
+      "hash": 1671991294
+    },
+    {
+      "level": "level_06",
+      "kind": "alternative",
+      "result": "win",
+      "time": 8.16666666666667,
+      "losses": [],
+      "hash": 4111732874
+    },
+    {
+      "level": "level_06",
+      "kind": "expected_fail",
+      "result": "lose",
+      "time": 14.5,
+      "losses": [
+        "u2",
+        "u3"
+      ],
+      "hash": 338505214
+    },
+    {
+      "level": "level_07",
+      "kind": "recommended",
+      "result": "win",
+      "time": 20.0,
+      "losses": [],
+      "hash": 3806413355
+    },
+    {
+      "level": "level_07",
+      "kind": "alternative",
+      "result": "win",
+      "time": 20.0,
+      "losses": [],
+      "hash": 2756206642
+    },
+    {
+      "level": "level_07",
+      "kind": "expected_fail",
+      "result": "win",
+      "time": 20.0,
+      "losses": [],
+      "hash": 3791070653
+    },
+    {
+      "level": "level_08",
+      "kind": "recommended",
+      "result": "win",
+      "time": 25.7333333333333,
+      "losses": [
+        "u1",
+        "u4"
+      ],
+      "hash": 183177974
+    },
+    {
+      "level": "level_08",
+      "kind": "alternative",
+      "result": "win",
+      "time": 19.6,
+      "losses": [
+        "u4"
+      ],
+      "hash": 926273167
+    },
+    {
+      "level": "level_08",
+      "kind": "expected_fail",
+      "result": "win",
+      "time": 17.3,
+      "losses": [
+        "u1",
+        "u4"
+      ],
+      "hash": 1648849649
+    }
+  ]
+}

@@ -1,0 +1,788 @@
+{
+  "schema_version": 1,
+  "_design_comment": "**最终 Boss，3 阶段。**\n阶段 1「孢裂」：骨花魔女用易伤标记，孢子群集火。玩家必须学会**换人吃标记**，不能一直让同一个单位扛。\n阶段 2「钟缚」：魔女开始施加麻痹，同时召出咒缚祭司。玩家的输出节奏被打断，必须**先用缚锁者反制**再输出。\n阶段 3「泥沼」：整片场地变成缓滞带，魔女本体开始移动。玩家的走位全部变慢，必须**重新算距离**。\n三阶段的机制分别对应灰棘林 / 圣钟城废墟 / 肉巢沼泽，所以玩家在前面已经各自学过一遍——最终战考的是**串起来用**。",
+  "region": "final_battle",
+  "id": "level_c30",
+  "index": 130,
+  "title": "骨花魔女",
+  "subtitle": "最终战 · 三阶段",
+  "biome": "bone_greenhouse",
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_08.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#d0a0a8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "bgm": "boss_01",
+  "seed": 9999,
+  "grid": {
+    "width": 21,
+    "height": 13,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      8,
+      3,
+      11,
+      9
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 12,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "lancer",
+      "hexer",
+      "binder"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池",
+    "_ui_note": [
+      "去掉形态 swift：原型 HUD 只有 5 个出场卡位"
+    ]
+  },
+  "initial_units": [
+    {
+      "id": "WITCH",
+      "unit": "bone_witch",
+      "faction": "enemy",
+      "pos": [
+        16,
+        6
+      ],
+      "display_name": "骨花魔女",
+      "overrides": {
+        "attack": 12,
+        "range": 6,
+        "vision": 14,
+        "max_hp": 600
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "原地不动，攻击 6 格内最远的分裂体。每隔几秒亮起一种信号，2 秒后放对应的招。"
+    }
+  ],
+  "routes": {},
+  "new_concept": "boss_phases",
+  "concept_tags": [
+    "boss",
+    "phases",
+    "status_effect"
+  ],
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "signal_is",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "retreat",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "initial_rules": [],
+  "objectives": {
+    "objective_text": "骨花魔女，两个阶段。她每隔几秒亮起一种信号，2 秒后放招。血量过半时战斗暂停：看清新信号表、改指令、补增援。",
+    "win": [
+      {
+        "id": "win_kill_witch",
+        "type": "destroy",
+        "targets": [
+          "WITCH"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "用「信号是 红 / 黄」做条件：第一阶段 红=退、黄=进。过半后会暂停——第二阶段红黄的意思反过来，记得改指令。"
+  },
+  "hint_tiers": [
+    {
+      "tier": 0,
+      "text": "第一阶段：红=花粉环（离她 5 格内挨 35）；黄=钟缚（离她 5 格外麻痹 4 秒）。"
+    },
+    {
+      "tier": 1,
+      "text": "第二阶段：红=外圈花粉（4 格外挨 35）；黄=近身钟缚（4 格内麻痹）；蓝=召两只残骸行者。"
+    },
+    {
+      "tier": 2,
+      "text": "暂停时可以补 10 Cost 的增援，放在左侧增援区。派一个人专门处理召出来的小怪。"
+    }
+  ],
+  "fail_feedback": {
+    "default": "她换阶段了，信号的意思也换了。看清信号表再改指令。",
+    "lose_all_dead": "全员倒下了。用「信号是 红 / 黄」做条件：第一阶段 红=退、黄=进。过半后会暂停——第二阶段红黄的意思反过来，记得改指令。"
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          11,
+          6
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "red"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          11,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "red"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          9,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              13,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "red"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "yellow"
+              }
+            ],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ]
+      }
+    ],
+    "phase2": {
+      "_note": "第二阶段暂停时玩家的重新编程与增援（原型/测试读取此字段模拟玩家操作）",
+      "rules": {
+        "slot_bulwark": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "yellow"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ],
+        "slot_striker": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "yellow"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "red"
+              }
+            ],
+            "action": {
+              "type": "chase_attack"
+            },
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ],
+        "slot_lancer": [
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "yellow"
+              }
+            ],
+            "action": {
+              "type": "retreat",
+              "threat_radius": 8
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "signal_is",
+                "signal": "red"
+              }
+            ],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ]
+      },
+      "reinforcements": [
+        {
+          "slot": "slot_striker_r",
+          "form": "striker",
+          "pos": [
+            3,
+            6
+          ],
+          "beacons": [
+            {
+              "id": "1",
+              "cell": [
+                12,
+                6
+              ]
+            }
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "signal_is",
+                  "signal": "yellow"
+                }
+              ],
+              "action": {
+                "type": "retreat",
+                "threat_radius": 8
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "slot": "slot_bulwark_r",
+          "form": "bulwark",
+          "pos": [
+            3,
+            5
+          ],
+          "beacons": [
+            {
+              "id": "1",
+              "cell": [
+                13,
+                5
+              ]
+            }
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "signal_is",
+                  "signal": "yellow"
+                }
+              ],
+              "action": {
+                "type": "retreat",
+                "threat_radius": 8
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": []
+  },
+  "_rewards_note": "",
+  "verification": {
+    "expected_win": "第一阶段：承伤、基础形态贴身打，红信号时撤到 5 格外；远射在 7 格外打，黄信号时走到 (13,6) 进圈。过半暂停：改为「黄=撤、红=进」，在增援区补一名基础形态 + 一名承伤专打召出的残骸行者。",
+    "expected_fail": [
+      "暂停时什么都不改：约 24 秒全灭。",
+      "只重编程、不增援：输出不够，约 24 秒全灭。"
+    ],
+    "alternatives": [
+      "只增援、不重编程：也能赢（约 28 秒），但第一阶段的三人全部阵亡；重编程后只损失远射——仿真里增援决定胜负、重编程决定损失。若希望重编程本身成为门槛，可把第二阶段拉长（Boss 血量调高）。"
+    ],
+    "risks": [
+      "信号序列、补费 10、切换阈值 50% 均为本版取值，评审标为待确认；规则见《Boss 规则页》。",
+      "暂停与重编程是控制器（UI）流程；模拟核心只负责在阈值处暂停（phase_pending），测试里由脚本扮演玩家。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "region_cn": "最终战",
+  "_teach_role": "Boss：3 阶段",
+  "reinforce_zone": {
+    "rect": [
+      1,
+      2,
+      3,
+      10
+    ]
+  },
+  "boss": {
+    "unit": "WITCH",
+    "pause_on_phase_change": true,
+    "phases": [
+      {
+        "name": "孢裂",
+        "first": 4,
+        "cycle": 8,
+        "warn": 2,
+        "signals": [
+          "red",
+          "yellow"
+        ],
+        "next_at_hp_ratio": 0.5,
+        "effects": {
+          "red": {
+            "type": "area_damage",
+            "side": "inside",
+            "radius": 5,
+            "damage": 35,
+            "cn": "花粉环：5 格内 35 伤害"
+          },
+          "yellow": {
+            "type": "area_status",
+            "side": "outside",
+            "radius": 5,
+            "status": "paralysis",
+            "duration": 4,
+            "cn": "钟缚：5 格外麻痹 4 秒"
+          }
+        }
+      },
+      {
+        "name": "泥沼",
+        "first": 3,
+        "cycle": 6,
+        "warn": 2,
+        "signals": [
+          "blue",
+          "red",
+          "yellow"
+        ],
+        "boss_overrides": {
+          "attack": 16
+        },
+        "reinforce": {
+          "budget": 10,
+          "max_units": 2,
+          "zone": [
+            1,
+            2,
+            3,
+            10
+          ]
+        },
+        "effects": {
+          "red": {
+            "type": "area_damage",
+            "side": "outside",
+            "radius": 4,
+            "damage": 35,
+            "cn": "外圈花粉：4 格外 35 伤害"
+          },
+          "yellow": {
+            "type": "area_status",
+            "side": "inside",
+            "radius": 4,
+            "status": "paralysis",
+            "duration": 4,
+            "cn": "近身钟缚：4 格内麻痹 4 秒"
+          },
+          "blue": {
+            "type": "summon",
+            "unit": "husk",
+            "count": 2,
+            "cn": "召出两只残骸行者",
+            "rules": [
+              {
+                "conditions": [
+                  {
+                    "type": "enemy_in_range"
+                  }
+                ],
+                "target": {
+                  "selector": "nearest",
+                  "filter": "unit"
+                },
+                "action": {
+                  "type": "attack"
+                }
+              },
+              {
+                "conditions": [],
+                "target": {
+                  "selector": "nearest",
+                  "filter": "unit"
+                },
+                "action": {
+                  "type": "chase_attack"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "_open_questions": [
+      "信号随机还是固定序列（本版固定，可预告）",
+      "补费 10 是否定稿",
+      "失败重试：从第二阶段开头重来还是整关重来",
+      "暂停时能否挪动已有单位（本版：不能挪，只能改指令）"
+    ]
+  },
+  "_campaign_note": "最终战由 3 阶段改为评审共识的 2 阶段 + 暂停重编程 + 增援。",
+  "_review_20261012": [
+    "重做 Boss：2 阶段（50% 切换）+ 暂停重编程 + 10 Cost 增援 + 红黄蓝信号（新增条件 signal_is）；第二阶段红黄含义互换，使重编程有意义；删除旧的 _phases 三阶段数据。"
+  ],
+  "display_index": 30,
+  "summary": "最终战 · 三阶段",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "第一阶段：红=花粉环（离她 5 格内挨 35）；黄=钟缚（离她 5 格外麻痹 4 秒）。",
+    "第二阶段：红=外圈花粉（4 格外挨 35）；黄=近身钟缚（4 格内麻痹）；蓝=召两只残骸行者。",
+    "暂停时可以补 10 Cost 的增援，放在左侧增援区。派一个人专门处理召出来的小怪。",
+    "用「信号是 红 / 黄」做条件：第一阶段 红=退、黄=进。过半后会暂停——第二阶段红黄的意思反过来，记得改指令。"
+  ]
+}

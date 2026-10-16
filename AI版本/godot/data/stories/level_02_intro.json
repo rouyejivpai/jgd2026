@@ -1,0 +1,8 @@
+{
+  "id": "level_02_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "谷仓塌了一半，四具残骸从阴影里爬出来。" },
+    { "speaker": "doll", "illustration": "doll", "text": "新的形态已经分裂完成。它更厚，也更慢。" },
+    { "speaker": "system", "illustration": "", "text": "点击任意敌人，查看它的公开规则。" }
+  ]
+}

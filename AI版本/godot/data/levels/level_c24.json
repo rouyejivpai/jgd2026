@@ -1,0 +1,554 @@
+{
+  "grid": {
+    "width": 21,
+    "height": 13,
+    "blocked": [
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        9,
+        5
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        12,
+        9
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        13,
+        9
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        15,
+        5
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        16,
+        5
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        17,
+        5
+      ],
+      [
+        17,
+        9
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      11,
+      0,
+      13,
+      2
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 12,
+    "available_forms": [
+      "striker",
+      "swift",
+      "lancer"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "两头堵",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "M1",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        9,
+        7
+      ],
+      "display_name": "信使·左",
+      "overrides": {
+        "move_speed": 0.6,
+        "max_hp": 80
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "run_left"
+          }
+        }
+      ],
+      "public_rule_text": "沿走廊往左侧出口跑，不还手。"
+    },
+    {
+      "id": "M2",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        11,
+        7
+      ],
+      "display_name": "信使·右",
+      "overrides": {
+        "move_speed": 0.6,
+        "max_hp": 80
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "run_right"
+          }
+        }
+      ],
+      "public_rule_text": "沿走廊往右侧出口跑，不还手。"
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        4,
+        7
+      ],
+      "display_name": "左翼护卫",
+      "public_rule_text": "锁定首个进入视野的分裂体并追击。"
+    }
+  ],
+  "routes": {
+    "run_left": {
+      "name": "左逃线",
+      "points": [
+        [
+          9,
+          7
+        ],
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    "run_right": {
+      "name": "右逃线",
+      "points": [
+        [
+          11,
+          7
+        ],
+        [
+          20,
+          7
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          11,
+          1
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              3,
+              3
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              1,
+              11
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          12,
+          1
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              12,
+              2
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              6,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "2"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              }
+            ],
+            "action": {
+              "type": "wait",
+              "seconds": 2
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          13,
+          1
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              17,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "两个信使分别往左端和右端的出口跑。跑掉任何一个都失败。左边还有一名护卫。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "M1",
+          "M2"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_left",
+        "type": "reach_zone",
+        "target": "M1",
+        "cells": [
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            0,
+            8
+          ]
+        ]
+      },
+      {
+        "id": "lose_right",
+        "type": "reach_zone",
+        "target": "M2",
+        "cells": [
+          [
+            20,
+            6
+          ],
+          [
+            20,
+            7
+          ],
+          [
+            20,
+            8
+          ]
+        ]
+      },
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "快速形态先冲到 (3,3) 让左翼护卫锁定它，再往左上角跑把护卫带走；远射在第一个信标上等 2 秒后走到 (6,4)（到位才开火），隔墙追打左信使；基础形态守在右出口附近 (17,4) 打右信使。",
+    "expected_fail": [
+      "只顾一边：另一个信使从对面出口跑掉。"
+    ],
+    "alternatives": [
+      "远射不等、和快速形态同时出发：仿真里也能赢——快速形态快，仍然先被护卫看见。「启动时机」在本图里是保险而不是硬门槛；若要强制，需把护卫视野放大或让远射路线更靠近护卫。"
+    ],
+    "risks": [
+      "评审讨论的「信号」方案（检测到敌人 → 发信号 → 另一单位行动）原型未实现，本版用「信标 + 等待」完成同样的时序。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_07.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8433,
+  "schema_version": 1,
+  "_design_comment": "双目标阻截：第一次强制分兵。",
+  "_teach_role": "综合：分兵",
+  "briefing": {
+    "mechanic_hint": "护卫只追第一个看见的人。先让快的人出发去被它看见、把它带走，打信使的人在信标上等一会儿再走——顺序反了，护卫就会扑向你的输出。"
+  },
+  "region": "warped_corridor",
+  "region_cn": "畸变回廊",
+  "id": "level_c24",
+  "index": 124,
+  "title": "两头堵",
+  "subtitle": "分兵：两个方向同时逃",
+  "biome": "transit_node",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c25"
+  },
+  "_review_20261012": [
+    "补上两名信使的逃跑路线（原 husk_lane 不存在，信使不动）；信使 80 血、移速 0.6；推荐解用信标 + 等待控制启动时机（不依赖信号）；信标计费。"
+  ],
+  "display_index": 24,
+  "summary": "分兵：两个方向同时逃",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:husk",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "护卫只追第一个看见的人。先让快的人出发去被它看见、把它带走，打信使的人在信标上等一会儿再走——顺序反了，护卫就会扑向你的输出。",
+    "两个信使分别往左端和右端的出口跑。跑掉任何一个都失败。左边还有一名护卫。",
+    "快速形态先冲到 (3,3) 让左翼护卫锁定它，再往左上角跑把护卫带走；远射在第一个信标上等 2 秒后走到 (6,4)（到位才开火），隔墙追打左信使；基础形态守在右出口附近 (17,4) 打右信使。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_left": "目标跑到出口了。时间要花在赶路上——先到能盯住它的位置。",
+    "lose_right": "目标跑到出口了。时间要花在赶路上——先到能盯住它的位置。",
+    "lose_all_dead": "全员倒下了。护卫只追第一个看见的人。先让快的人出发去被它看见、把它带走，打信使的人在信标上等一会儿再走——顺序反了，护卫就会扑向你的输出。",
+    "default": "护卫只追第一个看见的人。先让快的人出发去被它看见、把它带走，打信使的人在信标上等一会儿再走——顺序反了，护卫就会扑向你的输出。"
+  },
+  "bgm": "region_warped_corridor"
+}

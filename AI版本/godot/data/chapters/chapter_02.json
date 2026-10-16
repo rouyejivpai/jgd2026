@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "_comment": "30 关战役（2026-10-12 评审后版本，由 tools/import_campaign.py 生成）。地图暂借第一章宽图；节点坐标为临时值，等章节美术。",
+  "id": "chapter_02",
+  "title": "人工神灵 · 战役",
+  "map": "res://assets/ui/chapter/map_chapter_01_low_noise.png",
+  "map_size": [
+    3240,
+    1080
+  ],
+  "regions": [
+    {
+      "id": "bone_workshop",
+      "title": "织骸工坊"
+    },
+    {
+      "id": "withered_farm",
+      "title": "枯骨农田"
+    },
+    {
+      "id": "grey_thorn",
+      "title": "灰棘林"
+    },
+    {
+      "id": "holy_bell",
+      "title": "圣钟城废墟"
+    },
+    {
+      "id": "flesh_swamp",
+      "title": "肉巢沼泽"
+    },
+    {
+      "id": "warped_corridor",
+      "title": "畸变回廊"
+    },
+    {
+      "id": "bone_greenhouse",
+      "title": "骨花温室"
+    },
+    {
+      "id": "final_battle",
+      "title": "最终战"
+    }
+  ],
+  "nodes": [
+    {
+      "level": "level_c01",
+      "region": "bone_workshop",
+      "pos": [
+        170,
+        760
+      ],
+      "links": [
+        "level_c02"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c02",
+      "region": "bone_workshop",
+      "pos": [
+        270,
+        600
+      ],
+      "links": [
+        "level_c03"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c03",
+      "region": "bone_workshop",
+      "pos": [
+        370,
+        700
+      ],
+      "links": [
+        "level_c04"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c04",
+      "region": "bone_workshop",
+      "pos": [
+        470,
+        470
+      ],
+      "links": [
+        "level_c05"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c05",
+      "region": "bone_workshop",
+      "pos": [
+        570,
+        620
+      ],
+      "links": [
+        "level_c06"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c06",
+      "region": "bone_workshop",
+      "pos": [
+        670,
+        360
+      ],
+      "links": [
+        "level_c07"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c07",
+      "region": "withered_farm",
+      "pos": [
+        770,
+        760
+      ],
+      "links": [
+        "level_c08"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c08",
+      "region": "withered_farm",
+      "pos": [
+        870,
+        600
+      ],
+      "links": [
+        "level_c09"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c09",
+      "region": "withered_farm",
+      "pos": [
+        970,
+        700
+      ],
+      "links": [
+        "level_c10"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c10",
+      "region": "withered_farm",
+      "pos": [
+        1070,
+        470
+      ],
+      "links": [
+        "level_c11"
+      ],
+      "node_art": "rake"
+    },
+    {
+      "level": "level_c11",
+      "region": "grey_thorn",
+      "pos": [
+        1170,
+        620
+      ],
+      "links": [
+        "level_c12"
+      ],
+      "node_art": "shield"
+    },
+    {
+      "level": "level_c12",
+      "region": "grey_thorn",
+      "pos": [
+        1270,
+        360
+      ],
+      "links": [
+        "level_c13"
+      ],
+      "node_art": "shield"
+    },
+    {
+      "level": "level_c13",
+      "region": "grey_thorn",
+      "pos": [
+        1370,
+        760
+      ],
+      "links": [
+        "level_c14"
+      ],
+      "node_art": "shield"
+    },
+    {
+      "level": "level_c14",
+      "region": "grey_thorn",
+      "pos": [
+        1470,
+        600
+      ],
+      "links": [
+        "level_c15"
+      ],
+      "node_art": "shield"
+    },
+    {
+      "level": "level_c15",
+      "region": "holy_bell",
+      "pos": [
+        1570,
+        700
+      ],
+      "links": [
+        "level_c16"
+      ],
+      "node_art": "grid"
+    },
+    {
+      "level": "level_c16",
+      "region": "holy_bell",
+      "pos": [
+        1670,
+        470
+      ],
+      "links": [
+        "level_c17"
+      ],
+      "node_art": "grid"
+    },
+    {
+      "level": "level_c17",
+      "region": "holy_bell",
+      "pos": [
+        1770,
+        620
+      ],
+      "links": [
+        "level_c18"
+      ],
+      "node_art": "grid"
+    },
+    {
+      "level": "level_c18",
+      "region": "holy_bell",
+      "pos": [
+        1870,
+        360
+      ],
+      "links": [
+        "level_c19"
+      ],
+      "node_art": "grid"
+    },
+    {
+      "level": "level_c19",
+      "region": "flesh_swamp",
+      "pos": [
+        1970,
+        760
+      ],
+      "links": [
+        "level_c20"
+      ],
+      "node_art": "wolf_head"
+    },
+    {
+      "level": "level_c20",
+      "region": "flesh_swamp",
+      "pos": [
+        2070,
+        600
+      ],
+      "links": [
+        "level_c21"
+      ],
+      "node_art": "wolf_head"
+    },
+    {
+      "level": "level_c21",
+      "region": "flesh_swamp",
+      "pos": [
+        2170,
+        700
+      ],
+      "links": [
+        "level_c22"
+      ],
+      "node_art": "wolf_head"
+    },
+    {
+      "level": "level_c22",
+      "region": "flesh_swamp",
+      "pos": [
+        2270,
+        470
+      ],
+      "links": [
+        "level_c23"
+      ],
+      "node_art": "wolf_head"
+    },
+    {
+      "level": "level_c23",
+      "region": "warped_corridor",
+      "pos": [
+        2370,
+        620
+      ],
+      "links": [
+        "level_c24"
+      ],
+      "node_art": "crosshair"
+    },
+    {
+      "level": "level_c24",
+      "region": "warped_corridor",
+      "pos": [
+        2470,
+        360
+      ],
+      "links": [
+        "level_c25"
+      ],
+      "node_art": "crosshair"
+    },
+    {
+      "level": "level_c25",
+      "region": "warped_corridor",
+      "pos": [
+        2570,
+        760
+      ],
+      "links": [
+        "level_c26"
+      ],
+      "node_art": "crosshair"
+    },
+    {
+      "level": "level_c26",
+      "region": "warped_corridor",
+      "pos": [
+        2670,
+        600
+      ],
+      "links": [
+        "level_c27"
+      ],
+      "node_art": "crosshair"
+    },
+    {
+      "level": "level_c27",
+      "region": "bone_greenhouse",
+      "pos": [
+        2770,
+        700
+      ],
+      "links": [
+        "level_c28"
+      ],
+      "node_art": "flower"
+    },
+    {
+      "level": "level_c28",
+      "region": "bone_greenhouse",
+      "pos": [
+        2870,
+        470
+      ],
+      "links": [
+        "level_c29"
+      ],
+      "node_art": "flower"
+    },
+    {
+      "level": "level_c29",
+      "region": "bone_greenhouse",
+      "pos": [
+        2970,
+        620
+      ],
+      "links": [
+        "level_c30"
+      ],
+      "node_art": "flower"
+    },
+    {
+      "level": "level_c30",
+      "region": "final_battle",
+      "pos": [
+        3070,
+        360
+      ],
+      "links": [],
+      "node_art": "flower",
+      "boss": true
+    }
+  ]
+}

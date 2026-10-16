@@ -1,0 +1,562 @@
+{
+  "grid": {
+    "width": 23,
+    "height": 13,
+    "blocked": [
+      [
+        0,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        9,
+        4
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        10,
+        4
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        12,
+        4
+      ],
+      [
+        12,
+        9
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        13,
+        9
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        15,
+        4
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        16,
+        4
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        17,
+        4
+      ],
+      [
+        17,
+        9
+      ],
+      [
+        18,
+        9
+      ],
+      [
+        19,
+        9
+      ],
+      [
+        20,
+        9
+      ],
+      [
+        21,
+        9
+      ],
+      [
+        22,
+        9
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      10,
+      2,
+      12
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 8,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "点名",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "B1",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        7,
+        6
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "守在货舱里，只打贴身（1.5 格内）的分裂体，不追。",
+      "overrides": {
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "B2",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        13,
+        6
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "守在货舱里，只打贴身（1.5 格内）的分裂体，不追。",
+      "overrides": {
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "B3",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        19,
+        6
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "守在货舱里，只打贴身（1.5 格内）的分裂体，不追。",
+      "overrides": {
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        2
+      ],
+      "overrides": {
+        "vision": 4
+      },
+      "public_rule_text": "只看得见 4 格。锁定首个看见的分裂体并追击。"
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        16,
+        11
+      ],
+      "overrides": {
+        "vision": 4
+      },
+      "public_rule_text": "只看得见 4 格。锁定首个看见的分裂体并追击。"
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          2,
+          11
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              7,
+              11
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              11,
+              11
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          10
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              1,
+              7
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              16,
+              8
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "2"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "三个工头各占一间货舱。只杀他们三个，两个护卫不用管。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "B1",
+          "B2",
+          "B3"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "远射沿上方通道走：在 (7,11) 隔墙点工头一，再挪到 (11,11) 点工头二（离上护卫 5 格，不会被看见）；基础形态从左端进走廊，贴着走廊上沿走到 (16,8)，到位后打工头三。两名护卫全程不用打。",
+    "expected_fail": [
+      "远射站在部署区不动：够不着任何工头。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "护卫视野 4 是本版为「绕开强敌」加的；原数据视野 9，几乎无法绕开。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_07.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8470,
+  "schema_version": 1,
+  "_design_comment": "多点刺杀。第一次把「绕开强敌」变成比「打赢」更好的解法。",
+  "_teach_role": "综合：刺杀 + 绕行",
+  "briefing": {
+    "mechanic_hint": "三个工头、两个护卫。护卫不用打——第一次「绕开」比「打赢」更优。"
+  },
+  "region": "warped_corridor",
+  "region_cn": "畸变回廊",
+  "id": "level_c25",
+  "index": 125,
+  "title": "点名",
+  "subtitle": "绕开强敌，只杀目标",
+  "biome": "transit_node",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c26"
+  },
+  "_review_20261012": [
+    "部署区左下→左上；工头改为原地驻守；护卫视野 9→4；推荐解补「沿信标走」指令；预算 13→8、2 人；信标计费。"
+  ],
+  "display_index": 25,
+  "summary": "绕开强敌，只杀目标",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:husk",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:raider",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "三个工头、两个护卫。护卫不用打——第一次「绕开」比「打赢」更优。",
+    "三个工头各占一间货舱。只杀他们三个，两个护卫不用管。",
+    "远射沿上方通道走：在 (7,11) 隔墙点工头一，再挪到 (11,11) 点工头二（离上护卫 5 格，不会被看见）；基础形态从左端进走廊，贴着走廊上沿走到 (16,8)，到位后打工头三。两名护卫全程不用打。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。三个工头、两个护卫。护卫不用打——第一次「绕开」比「打赢」更优。",
+    "default": "三个工头、两个护卫。护卫不用打——第一次「绕开」比「打赢」更优。"
+  },
+  "bgm": "region_warped_corridor"
+}

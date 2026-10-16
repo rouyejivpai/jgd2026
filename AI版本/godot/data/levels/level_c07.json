@@ -1,0 +1,406 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        0,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        9,
+        4
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        10,
+        4
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        8
+      ],
+      [
+        12,
+        4
+      ],
+      [
+        12,
+        8
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        16,
+        8
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      5,
+      9,
+      7,
+      10
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 7,
+    "available_forms": [
+      "lancer",
+      "swift"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "猎首"
+  },
+  "initial_units": [
+    {
+      "id": "BOSS",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        16,
+        5
+      ],
+      "display_name": "头犬",
+      "overrides": {
+        "move_speed": 0.8,
+        "max_hp": 140
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "pack_boss"
+          }
+        }
+      ],
+      "public_rule_text": "沿中廊往左侧出口撤离，不理会攻击。到出口即逃脱。"
+    },
+    {
+      "id": "H1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        15,
+        7
+      ],
+      "display_name": "护卫犬·前",
+      "overrides": {
+        "move_speed": 0.8
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "pack_escort"
+          }
+        }
+      ],
+      "public_rule_text": "贴着头犬一起撤离，比头犬更靠近你。"
+    },
+    {
+      "id": "H2",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        16,
+        7
+      ],
+      "display_name": "护卫犬·后",
+      "overrides": {
+        "move_speed": 0.8
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "pack_escort"
+          }
+        }
+      ],
+      "public_rule_text": "贴着头犬一起撤离，比头犬更靠近你。"
+    }
+  ],
+  "routes": {
+    "pack_boss": {
+      "name": "头犬撤离线",
+      "points": [
+        [
+          16,
+          5
+        ],
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    "pack_escort": {
+      "name": "护卫犬撤离线",
+      "points": [
+        [
+          16,
+          7
+        ],
+        [
+          0,
+          7
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range"
+    ],
+    "selectors": [
+      "nearest",
+      "lowest_hp",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          7,
+          9
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "头犬（140 血）带着两只护卫犬往左边出口撤。杀掉头犬就赢，它跑到出口就输。",
+    "win": [
+      {
+        "id": "win_destroy",
+        "type": "destroy",
+        "targets": [
+          "BOSS"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_escaped",
+        "type": "reach_zone",
+        "target": "BOSS",
+        "cells": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ]
+      },
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "远射形态在 (7,9) 隔墙射击，按「血量上限最高」锁定头犬，约 12 秒击杀，头犬还没到出口。",
+    "expected_fail": [
+      "选「最近」或「血量最低」：先打护卫犬，打完两只再打头犬，头犬已经跑出出口。"
+    ],
+    "alternatives": [
+      "带两个远射（8 > 预算 7）不允许；快速形态可以下到中廊补伤害，但选敌错了照样来不及。"
+    ],
+    "risks": [
+      "新增 selector highest_max_hp：commands.json、原型 SimTypes / TargetSelector 需要同步（补丁已给）。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_02.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8b090",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8137,
+  "schema_version": 1,
+  "_design_comment": "第一个刺杀任务（不是清场）。第一次让玩家发现「可以不打完」。",
+  "_teach_role": "任务类型：刺杀",
+  "briefing": {
+    "mechanic_hint": "「血量最低」会被小狗吸走火力；头犬挨了几下之后，按「当前血量」挑目标也会转火。按血量上限最高挑，火力就一直钉在头犬身上。"
+  },
+  "region": "withered_farm",
+  "region_cn": "枯骨农田",
+  "id": "level_c07",
+  "index": 107,
+  "title": "猎首",
+  "subtitle": "刺杀：盯住那只最大的",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_selectors": [],
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c08"
+  },
+  "_review_20261012": [
+    "选敌改为「血量上限最高」（新增 selector）；加撤离与出口失败条件，使选敌差异可被测出。"
+  ],
+  "display_index": 7,
+  "summary": "刺杀：盯住那只最大的",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:hound",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "「血量最低」会被小狗吸走火力；头犬挨了几下之后，按「当前血量」挑目标也会转火。按血量上限最高挑，火力就一直钉在头犬身上。",
+    "头犬（140 血）带着两只护卫犬往左边出口撤。杀掉头犬就赢，它跑到出口就输。",
+    "远射形态在 (7,9) 隔墙射击，按「血量上限最高」锁定头犬，约 12 秒击杀，头犬还没到出口。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_escaped": "目标跑到出口了。时间要花在赶路上——先到能盯住它的位置。",
+    "lose_all_dead": "全员倒下了。「血量最低」会被小狗吸走火力；头犬挨了几下之后，按「当前血量」挑目标也会转火。按血量上限最高挑，火力就一直钉在头犬身上。",
+    "default": "「血量最低」会被小狗吸走火力；头犬挨了几下之后，按「当前血量」挑目标也会转火。按血量上限最高挑，火力就一直钉在头犬身上。"
+  },
+  "bgm": "region_withered_farm"
+}

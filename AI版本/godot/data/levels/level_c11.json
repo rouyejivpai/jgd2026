@@ -1,0 +1,371 @@
+{
+  "grid": {
+    "width": 19,
+    "height": 11,
+    "blocked": [],
+    "tiles": {
+      "hazard": [
+        [
+          6,
+          0
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          7,
+          10
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      4,
+      2,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 11,
+    "available_forms": [
+      "swift",
+      "striker",
+      "lancer"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_status_lesson": "腐地",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        12,
+        6
+      ],
+      "display_name": "护卫·甲",
+      "overrides": {
+        "max_hp": 150
+      }
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        12,
+        3
+      ],
+      "display_name": "护卫·乙",
+      "overrides": {
+        "max_hp": 150
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              5
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              4,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          2,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "红叉是腐地：站上去就易伤（受伤 ×1.5，离开后持续 6 秒），敌我都一样。把护卫引过腐地，再在自己这边打。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "快速形态过线到 (10,5) 让两名护卫看见并锁定，再退到 (4,5) 停住（仍在护卫视野内，它们会一直追）；护卫追过腐地后易伤 6 秒，远射 + 基础形态在线后集火。",
+    "expected_fail": [
+      "不派诱导者（全员待机）：护卫看不见任何人，永远不动，打不起来。",
+      "全员过线去打：自己先吃易伤，在护卫面前被打穿。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "易伤持续时间：评审口述推测为「无限」，未定。本版按 traits.json 的 6 秒（离开腐地后再持续 6 秒）。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_03.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b090b8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 9241,
+  "schema_version": 1,
+  "_design_comment": "教易伤 + 危险区。第一次出现「可以走但不该走」的地形——墙是禁止，腐地是代价。",
+  "_teach_role": "机制：易伤 + 危险区",
+  "briefing": {
+    "mechanic_hint": "护卫看不见你就不会动——诱导者得走进它的视野，再退回来。它追过腐地就会易伤；你自己的人也别在腐地上停留。"
+  },
+  "region": "grey_thorn",
+  "region_cn": "灰棘林",
+  "id": "level_c11",
+  "index": 111,
+  "title": "腐地",
+  "subtitle": "易伤：踩上去就变脆",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c12"
+  },
+  "_review_20261012": [
+    "危险区改为两列 x=6..7 贯穿全图（原两段短线可绕过）；护卫 150 血；去掉骨喉，专教易伤；推荐解改为诱导过线 + 线后集火；信标计费。"
+  ],
+  "display_index": 11,
+  "summary": "易伤：踩上去就变脆",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "护卫看不见你就不会动——诱导者得走进它的视野，再退回来。它追过腐地就会易伤；你自己的人也别在腐地上停留。",
+    "红叉是腐地：站上去就易伤（受伤 ×1.5，离开后持续 6 秒），敌我都一样。把护卫引过腐地，再在自己这边打。",
+    "快速形态过线到 (10,5) 让两名护卫看见并锁定，再退到 (4,5) 停住（仍在护卫视野内，它们会一直追）；护卫追过腐地后易伤 6 秒，远射 + 基础形态在线后集火。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。护卫看不见你就不会动——诱导者得走进它的视野，再退回来。它追过腐地就会易伤；你自己的人也别在腐地上停留。",
+    "default": "护卫看不见你就不会动——诱导者得走进它的视野，再退回来。它追过腐地就会易伤；你自己的人也别在腐地上停留。"
+  },
+  "bgm": "region_grey_thorn"
+}

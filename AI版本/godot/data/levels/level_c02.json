@@ -1,0 +1,241 @@
+{
+  "grid": {
+    "width": 14,
+    "height": 7,
+    "blocked": [
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        6,
+        1
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      5,
+      2,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 4,
+    "available_forms": [
+      "striker"
+    ],
+    "max_units": 1,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "GOAL",
+      "unit": "supply_crate",
+      "faction": "ally",
+      "display_name": "物资箱",
+      "pos": [
+        8,
+        0
+      ],
+      "tags": [
+        "protect"
+      ],
+      "counts_for_annihilate": false
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              2,
+              6
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              6,
+              6
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              8,
+              0
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "让分裂体沿 N 字形走到物资箱旁。信标要花 Cost 买：1 Cost 一包（5 个）",
+    "win": [
+      {
+        "id": "win_reach_crate",
+        "type": "reach_zone",
+        "target": "any_ally",
+        "cells": [
+          [
+            8,
+            0
+          ]
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态 3 + 1 包信标 1 = 4 / 预算 4。沿 4 个信标走 N 字，约 8 秒到物资箱。",
+    "expected_fail": [
+      "不放信标：单位原地待机，不会结束（本关无失败条件，开始前应提示「还没有放信标」）。"
+    ],
+    "alternatives": [
+      "4 个信标以内的任意 N 字路线都可以；1 包 5 个，够用。"
+    ],
+    "risks": [],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_01.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 2,
+  "schema_version": 1,
+  "_design_comment": "第一次见信标，就按正式规则收费：预算 4 = 基础形态 3 + 一包信标 1。不再设「教学期免费」的特例，免得玩家第 3 关才发现规则变了。",
+  "_teach_role": "教学：信标",
+  "briefing": {
+    "mechanic_hint": "信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。"
+  },
+  "region": "bone_workshop",
+  "region_cn": "织骸工坊",
+  "id": "level_c02",
+  "index": 102,
+  "title": "送料轨",
+  "subtitle": "沿 N 字形走完全程",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [
+      "bulwark"
+    ],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c03"
+  },
+  "_beacon_economy": "按正常费用教学：基础形态 3 + 1 包信标（5 个）1 = 4，正好花光。",
+  "_review_20261012": [
+    "预算 3→4；信标改为计费（1 Cost/5 个），删除「教学期免费」说明。"
+  ],
+  "display_index": 2,
+  "summary": "沿 N 字形走完全程",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。",
+    "让分裂体沿 N 字形走到物资箱旁。信标要花 Cost 买：1 Cost 一包（5 个）",
+    "基础形态 3 + 1 包信标 1 = 4 / 预算 4。沿 4 个信标走 N 字，约 8 秒到物资箱。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。",
+    "default": "信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。"
+  },
+  "bgm": "battle_01"
+}

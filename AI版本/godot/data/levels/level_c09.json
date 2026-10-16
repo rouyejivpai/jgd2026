@@ -1,0 +1,803 @@
+{
+  "grid": {
+    "width": 22,
+    "height": 13,
+    "blocked": [
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        9,
+        4
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        10,
+        4
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        11,
+        4
+      ],
+      [
+        11,
+        8
+      ],
+      [
+        12,
+        4
+      ],
+      [
+        12,
+        8
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        15,
+        4
+      ],
+      [
+        15,
+        8
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      5,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 12,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "swift"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_mission": "守帐",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "TENT",
+      "unit": "bulwark",
+      "faction": "ally",
+      "pos": [
+        1,
+        6
+      ],
+      "display_name": "营帐",
+      "tags": [
+        "protect"
+      ],
+      "counts_for_annihilate": false,
+      "overrides": {
+        "max_hp": 180,
+        "attack": 0,
+        "move_speed": 0,
+        "vision": 0
+      },
+      "rules": [
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "不可指挥，不能移动，不还手。被拆掉就失败。"
+    },
+    {
+      "id": "R1",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        13,
+        6
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_mid"
+          }
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        17,
+        6
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_mid"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H1",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        14,
+        2
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_bot"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        14,
+        10
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_top"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "unit": "brute",
+      "faction": "enemy",
+      "pos": [
+        18,
+        10
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_top"
+          }
+        }
+      ],
+      "overrides": {
+        "max_hp": 140
+      }
+    },
+    {
+      "id": "R3",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        21,
+        8
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_mid"
+          }
+        }
+      ],
+      "display_name": "后续袭击者"
+    },
+    {
+      "id": "R4",
+      "unit": "raider",
+      "faction": "enemy",
+      "pos": [
+        21,
+        4
+      ],
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "lane_mid"
+          }
+        }
+      ],
+      "display_name": "后续袭击者"
+    }
+  ],
+  "routes": {
+    "lane_mid": {
+      "name": "lane_mid",
+      "points": [
+        [
+          18,
+          6
+        ],
+        [
+          2,
+          6
+        ]
+      ]
+    },
+    "lane_top": {
+      "name": "lane_top",
+      "points": [
+        [
+          18,
+          10
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          1,
+          7
+        ]
+      ]
+    },
+    "lane_bot": {
+      "name": "lane_bot",
+      "points": [
+        [
+          18,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          5
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          6
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker_b",
+        "form": "striker",
+        "pos": [
+          1,
+          7
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "援军 40 秒后到。营帐被拆就输——撑住就行，不用清场。",
+    "win": [
+      {
+        "id": "win_survive",
+        "type": "survive",
+        "seconds": 40,
+        "target": "TENT"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_tent",
+        "type": "unit_dead",
+        "target": "TENT"
+      },
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤 + 两名基础形态守在营帐边，只打进入射程的敌人：40 秒时营帐约剩 40 血（仿真）。",
+    "expected_fail": [
+      "C 纯拖延（两个快速形态绕圈 + 承伤待机）：约 35 秒营帐被拆。",
+      "A 全员追击清场：约 31 秒营帐被拆（后一批敌人进来时没人守）。",
+      "D 一人引外路 + 两人守中路：约 35 秒失守。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "四种打法的结果来自原型模拟核心实跑；真人操作会更灵活，数值以试玩为准。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_02.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8b090",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 8248,
+  "schema_version": 1,
+  "_design_comment": "生存关（评审后按仿真定简报）：比较四种打法——A 追出去清场 / B 守帐只打射程内 / C 纯拖延不打 / D 一人引走两人守。只有 B 稳定撑到 40 秒：击杀确实在减压，但追出去会把营帐留空。",
+  "_teach_role": "任务类型：生存",
+  "briefing": {
+    "mechanic_hint": "撑 40 秒，但不是不打：敌人死一个，压力就少一份。别追出去——守在营帐边上，只打走进射程的。"
+  },
+  "region": "withered_farm",
+  "region_cn": "枯骨农田",
+  "id": "level_c09",
+  "index": 109,
+  "title": "守帐",
+  "subtitle": "生存：撑过 40 秒",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c10"
+  },
+  "hint_tiers": [
+    {
+      "tier": 0,
+      "text": "敌人分三路、两批压上来。营帐不能动，你的人可以。"
+    },
+    {
+      "tier": 1,
+      "text": "只绕圈拖延、一个不杀：拖不到 40 秒。"
+    },
+    {
+      "tier": 2,
+      "text": "全员追出去清场：营帐边上没人，后一批敌人会直接拆帐。"
+    },
+    {
+      "tier": 3,
+      "text": "守在营帐边上，「射程内有敌人 → 攻击最近」，等它们自己走过来。"
+    }
+  ],
+  "_review_20261012": [
+    "增加营帐（守护对象，survive.target 必填）；敌人改为三路压进（原敌人看不到部署区就原地不动）；信标计费。"
+  ],
+  "display_index": 9,
+  "summary": "生存：撑过 40 秒",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:brute",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:husk",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:raider",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "敌人分三路、两批压上来。营帐不能动，你的人可以。",
+    "只绕圈拖延、一个不杀：拖不到 40 秒。",
+    "全员追出去清场：营帐边上没人，后一批敌人会直接拆帐。",
+    "守在营帐边上，「射程内有敌人 → 攻击最近」，等它们自己走过来。"
+  ],
+  "fail_feedback": {
+    "lose_tent": "要保护的单位倒下了。别让敌人先找上它。",
+    "lose_all_dead": "全员倒下了。撑 40 秒，但不是不打：敌人死一个，压力就少一份。别追出去——守在营帐边上，只打走进射程的。",
+    "default": "撑 40 秒，但不是不打：敌人死一个，压力就少一份。别追出去——守在营帐边上，只打走进射程的。"
+  },
+  "bgm": "region_withered_farm"
+}

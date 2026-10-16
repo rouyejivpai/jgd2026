@@ -1,0 +1,98 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/battle_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://scripts/battle/battle_controller.gd" id="2_ctrl"]
+[ext_resource type="Script" path="res://scripts/battle/grid_overlay.gd" id="4_grid"]
+[ext_resource type="Script" path="res://scripts/battle/deploy_zone.gd" id="5_zone"]
+[ext_resource type="Script" path="res://scripts/battle/fx_layer.gd" id="6_fx"]
+[ext_resource type="Script" path="res://scripts/battle/range_layer.gd" id="7_range"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="8_hud"]
+[ext_resource type="Script" path="res://scripts/battle/target_lines.gd" id="9_lines"]
+[ext_resource type="Script" path="res://scripts/battle/debug_layer.gd" id="11_debug"]
+[ext_resource type="Script" path="res://scripts/battle/map_background.gd" id="13_bg"]
+[ext_resource type="Shader" path="res://assets/shaders/post_vignette_grain.gdshader" id="15_post"]
+[ext_resource type="Script" path="res://scripts/battle/floor_highlight.gd" id="16_floor"]
+[ext_resource type="Script" path="res://scripts/battle/playfield_clip.gd" id="17_clip"]
+[ext_resource type="Script" path="res://scripts/battle/ground_layer.gd" id="18_ground"]
+[ext_resource type="Script" path="res://scripts/battle/beacon_layer.gd" id="19_beacons"]
+
+[sub_resource type="Environment" id="Environment_glow"]
+background_mode = 3
+glow_enabled = true
+glow_intensity = 0.6
+glow_hdr_threshold = 1.1
+glow_blend_mode = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("15_post")
+shader_parameter/vignette = 0.35
+shader_parameter/grain = 0.05
+shader_parameter/aberration = 0.002
+
+[node name="BattleRoot" type="Node2D"]
+script = ExtResource("1_root")
+
+[node name="BattleController" type="Node" parent="."]
+script = ExtResource("2_ctrl")
+
+[node name="BackdropLayer" type="Sprite2D" parent="."]
+script = ExtResource("13_bg")
+
+[node name="MapLayer" type="Node2D" parent="."]
+script = ExtResource("17_clip")
+
+[node name="GroundLayer" type="Node2D" parent="MapLayer"]
+script = ExtResource("18_ground")
+
+[node name="FloorHighlight" type="Node2D" parent="MapLayer"]
+script = ExtResource("16_floor")
+
+[node name="GridOverlay" type="Node2D" parent="MapLayer"]
+script = ExtResource("4_grid")
+
+[node name="DeployZone" type="Node2D" parent="MapLayer"]
+script = ExtResource("5_zone")
+
+[node name="BeaconLayer" type="Node2D" parent="MapLayer"]
+script = ExtResource("19_beacons")
+
+[node name="TargetLines" type="Node2D" parent="."]
+visible = false
+script = ExtResource("9_lines")
+
+[node name="UnitLayer" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="FXLayer" type="Node2D" parent="."]
+script = ExtResource("6_fx")
+
+[node name="LightLayer" type="Node2D" parent="."]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="LightLayer"]
+color = Color(0.352941, 0.290196, 0.368627, 1)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_glow")
+
+[node name="RangeLayer" type="Node2D" parent="."]
+script = ExtResource("7_range")
+
+[node name="DebugLayer" type="Node2D" parent="."]
+visible = false
+script = ExtResource("11_debug")
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+
+[node name="Grain" type="ColorRect" parent="PostFX"]
+material = SubResource("ShaderMaterial_post")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="HUD" parent="UI" instance=ExtResource("8_hud")]

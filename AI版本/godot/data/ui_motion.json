@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "_doc": "10 §1.5 UI 动效参数（P8）。时长单位秒；trans / ease 取 Tween.TransitionType / EaseType 的小写名（sine / quad / cubic / back …；in / out / in_out / out_in）。代码里不写时长与幅度，全部读本文件。一档可写 \"extends\": \"<另一档>\"，只列出不同的项（浅合并）。button = 全部按钮的通用档（UiKit 自动挂）；button_menu = 主界面大按钮（P8 用户目视：加大选中与未选中的差别；Q-072 焦点跟随鼠标）。 scroll_text = 文字溢出遮罩滚动（ScrollText）：自动滚动速度（像素/秒）、两端停顿、滚轮步长、拖动阈值、遮罩两端渐隐宽度。",
+  "button": {
+    "hover_in": {
+      "duration": 0.14,
+      "trans": "sine",
+      "ease": "out"
+    },
+    "hover_out": {
+      "duration": 0.2,
+      "trans": "sine",
+      "ease": "in_out"
+    },
+    "press": {
+      "duration": 0.06,
+      "trans": "quad",
+      "ease": "out"
+    },
+    "release": {
+      "duration": 0.18,
+      "trans": "back",
+      "ease": "out"
+    },
+    "press_scale": 0.97,
+    "text_hover_lighten": 0.25,
+    "text_press_darken": 0.1,
+    "hover_boost": 0.3,
+    "hover_lift": 0.08,
+    "hover_nudge_px": 0,
+    "focus_follows_mouse": false,
+    "sweep": {
+      "duration": 0.45,
+      "trans": "cubic",
+      "ease": "in_out",
+      "band_px": 60.0,
+      "slant": 0.45,
+      "strength": 0.8
+    },
+    "breathe": {
+      "period": 2.8,
+      "amplitude": 0.1
+    },
+    "gold_mask": [
+      0.06,
+      0.22
+    ]
+  },
+  "button_menu": {
+    "extends": "button",
+    "hover_in": {
+      "duration": 0.16,
+      "trans": "sine",
+      "ease": "out"
+    },
+    "hover_out": {
+      "duration": 0.22,
+      "trans": "sine",
+      "ease": "in_out"
+    },
+    "press_scale": 0.985,
+    "text_hover_lighten": 0.55,
+    "hover_boost": 0.45,
+    "hover_lift": 0.3,
+    "hover_nudge_px": 14,
+    "focus_follows_mouse": true,
+    "sweep": {
+      "duration": 0.55,
+      "trans": "cubic",
+      "ease": "in_out",
+      "band_px": 110.0,
+      "slant": 0.45,
+      "strength": 0.85
+    },
+    "breathe": {
+      "period": 2.8,
+      "amplitude": 0.15
+    }
+  },
+  "scroll_text": {
+    "auto_speed_px": 30.0,
+    "auto_pause_s": 1.2,
+    "wheel_step_px": 40.0,
+    "drag_threshold_px": 6.0,
+    "edge_fade_px": 10.0
+  },
+  "art_banner": {
+    "_doc": "P8 战斗开始提示（决策 ⑭，R6b battle_start 艺术字）：部署 → 运行时在玩法矩形中央淡入、停留、淡出并略微上浮；ink_height_px = 字形可见高（设计像素，取 R6b 整图 battle_start.png 量出 127 px × 1080/941）；motion_enabled 关闭时不显示（截图冻结在静止态）。",
+    "ink_height_px": 146,
+    "fade_in_s": 0.18,
+    "hold_s": 0.9,
+    "fade_out_s": 0.45,
+    "rise_px": 18,
+    "start_scale": 1.08
+  }
+}

@@ -1,0 +1,605 @@
+{
+  "grid": {
+    "width": 19,
+    "height": 11,
+    "blocked": [
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        9,
+        10
+      ]
+    ],
+    "tiles": {
+      "shrine": [
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ]
+      ],
+      "hazard": [
+        [
+          6,
+          0
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          6,
+          10
+        ]
+      ],
+      "mire": [
+        [
+          11,
+          0
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          11,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          11,
+          4
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          8
+        ],
+        [
+          11,
+          9
+        ],
+        [
+          11,
+          10
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      1,
+      3,
+      3,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 13,
+    "available_forms": [
+      "striker",
+      "bulwark",
+      "lancer",
+      "hexer",
+      "binder"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_status_lesson": "三重咒",
+    "_ui_note": [
+      "去掉形态 swift：原型 HUD 只有 5 个出场卡位"
+    ]
+  },
+  "initial_units": [
+    {
+      "id": "M1",
+      "unit": "marrow_hulk",
+      "faction": "enemy",
+      "pos": [
+        15,
+        5
+      ],
+      "display_name": "髓块",
+      "overrides": {
+        "vision": 12,
+        "max_hp": 130
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "push"
+          }
+        }
+      ],
+      "public_rule_text": "命中施加易伤。追击血量最低的分裂体。"
+    },
+    {
+      "id": "V1",
+      "unit": "bone_weaver",
+      "faction": "enemy",
+      "pos": [
+        14,
+        7
+      ],
+      "display_name": "织骨者",
+      "overrides": {
+        "vision": 12
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "push"
+          }
+        }
+      ],
+      "public_rule_text": "光环：3 格内分裂体移速 -40%。追击最近的分裂体。"
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        13,
+        3
+      ],
+      "display_name": "护卫",
+      "overrides": {
+        "vision": 12,
+        "max_hp": 150
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "push"
+          }
+        }
+      ],
+      "public_rule_text": "锁定首个看见的分裂体并追击。"
+    },
+    {
+      "id": "P1",
+      "unit": "hex_priest",
+      "faction": "enemy",
+      "pos": [
+        16,
+        5
+      ],
+      "display_name": "咒缚祭司",
+      "overrides": {
+        "vision": 12,
+        "max_hp": 80
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "farthest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "push"
+          }
+        }
+      ],
+      "public_rule_text": "攻击射程 6 内最远的分裂体，命中麻痹 3 秒；够不着就往前挪。"
+    }
+  ],
+  "routes": {
+    "push": {
+      "name": "压进",
+      "points": [
+        [
+          15,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          3,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          3,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_hexer",
+        "form": "hexer",
+        "pos": [
+          3,
+          6
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "易伤、麻痹、减速一起压过来。三格净化台站上去就清掉全部异常——在台上打。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤、远射、咒术师站在三格净化台上：髓块的易伤、织骨者的减速、祭司的麻痹每一步都被清掉；敌人穿过缓滞带被拖慢、穿过腐地带着易伤，远射与咒术师在台上集火。",
+    "expected_fail": [
+      "同样站位但没有净化台：三种异常叠满，先倒的是被祭司反复麻痹的后排。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "「编辑器显示问题」需在编辑器里按原坐标复现；本版已把单位挪离墙端，避免范围圈与墙体重叠。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_07.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 9405,
+  "schema_version": 1,
+  "_design_comment": "综合关。故意让预算（3 人）少于状态数（3）+ 威胁数（4），逼玩家做「放弃一路」的取舍。",
+  "_teach_role": "综合：三种状态",
+  "briefing": {
+    "mechanic_hint": "三种异常你都学过，但预算只够三个人。最省事的办法：三个人都站在净化台上，刚被标上的异常下一刻就被清掉；敌人穿过缓滞带和腐地才走得到你面前。"
+  },
+  "region": "warped_corridor",
+  "region_cn": "畸变回廊",
+  "id": "level_c23",
+  "index": 123,
+  "title": "三重咒",
+  "subtitle": "三种状态同时压过来",
+  "biome": "transit_node",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c24"
+  },
+  "_review_20261012": [
+    "重做：三格净化台 + 腐地 + 缓滞带三道地形；四名敌人主动压进（原数据敌人不动、推荐解超时）；单位挪离墙端（评审提到一只单位卡住）；推荐解改为「站在净化台上打」。"
+  ],
+  "display_index": 23,
+  "summary": "三种状态同时压过来",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "三种异常你都学过，但预算只够三个人。最省事的办法：三个人都站在净化台上，刚被标上的异常下一刻就被清掉；敌人穿过缓滞带和腐地才走得到你面前。",
+    "易伤、麻痹、减速一起压过来。三格净化台站上去就清掉全部异常——在台上打。",
+    "承伤、远射、咒术师站在三格净化台上：髓块的易伤、织骨者的减速、祭司的麻痹每一步都被清掉；敌人穿过缓滞带被拖慢、穿过腐地带着易伤，远射与咒术师在台上集火。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。三种异常你都学过，但预算只够三个人。最省事的办法：三个人都站在净化台上，刚被标上的异常下一刻就被清掉；敌人穿过缓滞带和腐地才走得到你面前。",
+    "default": "三种异常你都学过，但预算只够三个人。最省事的办法：三个人都站在净化台上，刚被标上的异常下一刻就被清掉；敌人穿过缓滞带和腐地才走得到你面前。"
+  },
+  "bgm": "region_warped_corridor"
+}

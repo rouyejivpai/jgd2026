@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "_comment": "敌我统一的单位定义。数值来源：第七关表为策划已定；其余为架构【建议】值，试玩后可调。坐标/数量不在此文件。",
+  "units": {
+    "striker": {
+      "display_name": "基础攻击形态", "cost": 3,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 80, "attack": 12, "attack_speed": 1.0, "move_speed": 3.0, "vision": 8, "range": 4,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "description": "人偶最先学会的分裂形态。骨刺从前臂增生弹出，中距离、均衡。",
+      "visuals": { "sprite": "res://assets/sprites/units/striker.png", "portrait": "res://assets/sprites/portraits/striker.png", "projectile": "res://assets/sprites/projectiles/bone_shard.png", "scale": 1.0, "light_color": "#e8dcc4", "attack_sfx": "attack_striker.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg" }
+    },
+    "bulwark": {
+      "display_name": "承伤形态", "cost": 4,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 160, "attack": 8, "attack_speed": 1.0, "move_speed": 2.0, "vision": 8, "range": 2,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "description": "骨板增生、肌肉硬化的厚重形态。靠站位吸引敌人的最近目标规则。",
+      "visuals": { "sprite": "res://assets/sprites/units/bulwark.png", "portrait": "res://assets/sprites/portraits/bulwark.png", "projectile": "none", "scale": 1.1, "light_color": "#e8dcc4", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg" }
+    },
+    "swift": {
+      "display_name": "快速形态", "cost": 3,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 60, "attack": 6, "attack_speed": 1.0, "move_speed": 4.5, "vision": 9, "range": 1.5,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "description": "四肢拉长、脊骨外露的轻捷形态。用来诱敌、牵制与撤离。",
+      "visuals": { "sprite": "res://assets/sprites/units/swift.png", "portrait": "res://assets/sprites/portraits/swift.png", "projectile": "none", "scale": 0.95, "light_color": "#e8dcc4", "attack_sfx": "attack_swift.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg" }
+    },
+    "lancer": {
+      "display_name": "远射形态", "cost": 4,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 45, "attack": 20, "attack_speed": 0.5, "move_speed": 2.0, "vision": 10, "range": 8,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "description": "手臂延展为骨质长矛投射器的脆弱后排。射程极远，攻速缓慢。",
+      "visuals": { "sprite": "res://assets/sprites/units/lancer.png", "portrait": "res://assets/sprites/portraits/lancer.png", "projectile": "res://assets/sprites/projectiles/lance_beam.png", "scale": 1.0, "light_color": "#e8dcc4", "attack_sfx": "attack_lancer.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg" }
+    },
+
+    "raider": {
+      "display_name": "袭击者",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 55, "attack": 8, "attack_speed": 0.8, "move_speed": 1.2, "vision": 12, "range": 1.5,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "攻击射程内最近的分裂体；否则追击视野内最近的分裂体。",
+      "description": "枯骨农田里游荡的畸形残骸，神性碎片让它们持续蠕动。",
+      "visuals": { "sprite": "res://assets/sprites/units/raider.png", "portrait": "res://assets/sprites/portraits/raider.png", "projectile": "none", "scale": 1.0, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "brute": {
+      "display_name": "正面袭击者",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 90, "attack": 10, "attack_speed": 0.8, "move_speed": 1.0, "vision": 12, "range": 2,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "攻击射程内最近的分裂体；否则追击视野内最近的分裂体。",
+      "description": "多具残骸融合而成的厚重畸形体，缓慢但难以击倒。",
+      "visuals": { "sprite": "res://assets/sprites/units/brute.png", "portrait": "res://assets/sprites/portraits/brute.png", "projectile": "none", "scale": 1.2, "light_color": "#ff4b3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "warden": {
+      "display_name": "哭墙守卫",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 90, "attack": 10, "attack_speed": 0.8, "move_speed": 1.2, "vision": 6, "range": 2,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "锁定首个进入视野的分裂体并追击，直到它死亡或离开视野；视野较短。",
+      "description": "贴着哭墙等待神启的石化魔女残躯，只认得第一个看见的东西。",
+      "visuals": { "sprite": "res://assets/sprites/units/warden.png", "portrait": "res://assets/sprites/portraits/warden.png", "projectile": "none", "scale": 1.15, "light_color": "#c05070", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "hound": {
+      "display_name": "骸猎犬",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 70, "attack": 6, "attack_speed": 1.0, "move_speed": 4.0, "vision": 10, "range": 1.5,
+      "traits": [],
+      "allowed_actions": ["attack", "retreat", "idle", "follow_route"],
+      "default_rules": [
+        { "conditions": [{ "type": "retreat_possible", "threat_radius": 4, "search_depth": 3 }], "action": { "type": "retreat", "search_depth": 3 } },
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "4 格内有分裂体且存在退路时，朝远离所有威胁的方向撤离；无路可退时攻击射程内最近者。",
+      "description": "猎犬巢穴的高速畸形体。它会同时躲开周围所有的威胁，只有被堵住才会反咬。",
+      "visuals": { "sprite": "res://assets/sprites/units/hound.png", "portrait": "res://assets/sprites/portraits/hound.png", "projectile": "none", "scale": 0.95, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "spitter": {
+      "display_name": "骨喉",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 60, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 12, "range": 0,
+      "traits": ["delayed_blast_basic"],
+      "allowed_actions": ["idle"],
+      "default_rules": [
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "每 4 秒向视野内最远的分裂体当时所在的位置喷出骨浆，2 秒后爆炸（半径 1.5 格，30 伤害）。不会移动，不做普通攻击。",
+      "description": "扎根在坡地上的喉管状增生体，远远地吐出会延迟炸开的骨浆。",
+      "visuals": { "sprite": "res://assets/sprites/units/spitter.png", "portrait": "res://assets/sprites/portraits/spitter.png", "projectile": "res://assets/sprites/projectiles/bone_spit.png", "scale": 1.2, "light_color": "#ff7a3e", "attack_sfx": "spitter_charge.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "husk": {
+      "display_name": "残骸行者",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 70, "attack": 9, "attack_speed": 0.8, "move_speed": 1.2, "vision": 10, "range": 1.5,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "follow_route", "route_id": "husk_lane" } }
+      ],
+      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击；没有锁定目标时沿行列路线前进。",
+      "description": "护送祭司的行列残骸，一旦咬住谁就不再松口。",
+      "visuals": { "sprite": "res://assets/sprites/units/husk.png", "portrait": "res://assets/sprites/portraits/husk.png", "projectile": "none", "scale": 1.0, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "priest": {
+      "display_name": "低语祭司",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 50, "attack": 12, "attack_speed": 0.5, "move_speed": 1.0, "vision": 10, "range": 5,
+      "traits": [],
+      "allowed_actions": ["attack", "follow_route", "idle"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [], "action": { "type": "follow_route", "route_id": "priest_lane" } }
+      ],
+      "public_rule_text": "沿低语路线前往哭墙深处；途中若有分裂体进入 5 格射程，停下攻击最近者。抵达终点即逃离。",
+      "description": "携带着失去神启的记忆碎片，低声复述早已无人回应的祷文。",
+      "visuals": { "sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#b06cff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg" }
+    },
+    "bone_guard": {
+      "display_name": "骨花护卫",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 180, "attack": 12, "attack_speed": 0.8, "move_speed": 0.8, "vision": 7, "range": 2,
+      "traits": [],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "attack" } },
+        { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "锁定首个进入 7 格视野的分裂体并追击攻击；失去目标后停在原地。",
+      "description": "骨花母体外层剥落的花瓣护卫，厚重迟缓，只盯住第一个闯入者。",
+      "visuals": { "sprite": "res://assets/sprites/units/bone_guard.png", "portrait": "res://assets/sprites/portraits/bone_guard.png", "projectile": "none", "scale": 1.3, "light_color": "#ff4b3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
+    },
+    "bone_core": {
+      "display_name": "骨花核心",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 150, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 14, "range": 0,
+      "traits": ["delayed_blast_core"],
+      "allowed_actions": ["idle"],
+      "default_rules": [
+        { "conditions": [], "action": { "type": "idle" } }
+      ],
+      "public_rule_text": "开战 3 秒后，每 5 秒向视野内最远的分裂体当时所在的位置投下花粉团，2.5 秒后爆炸（半径 2 格，35 伤害）。核心本身不会移动。",
+      "description": "骨花温室的母体核心，脆弱而贪食。被摧毁后，低语会说：继续走。",
+      "visuals": { "sprite": "res://assets/sprites/units/bone_core.png", "portrait": "res://assets/sprites/portraits/bone_core.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.5, "light_color": "#ff9a6a", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg" }
+    },
+
+    "transit_node": {
+      "display_name": "转运点",
+      "kind": "structure",
+      "faction_default": "ally",
+      "max_hp": 80, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 0, "range": 0,
+      "traits": [],
+      "allowed_actions": [],
+      "default_rules": [],
+      "description": "哭墙废墟与骨花温室之间的记忆转运点。碎片还没读完。",
+      "visuals": { "sprite": "res://assets/sprites/units/transit_node.png", "portrait": "res://assets/sprites/portraits/transit_node.png", "projectile": "none", "scale": 1.3, "light_color": "#c9a24a", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg" }
+    },
+    "echo_pillar": {
+      "display_name": "回响骸柱",
+      "kind": "structure",
+      "faction_default": "enemy",
+      "max_hp": 60, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 0, "range": 0,
+      "traits": [],
+      "allowed_actions": [],
+      "default_rules": [],
+      "description": "哭墙后方不断复述祷词的骨柱。守卫们围着它等待神启。",
+      "visuals": { "sprite": "res://assets/sprites/units/echo_pillar.png", "portrait": "res://assets/sprites/portraits/echo_pillar.png", "projectile": "none", "scale": 1.3, "light_color": "#b06cff", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg" }
+    },
+    "hexer": {
+      "display_name": "咒术师", "cost": 4,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 50, "attack": 9, "attack_speed": 0.6, "move_speed": 2.0, "vision": 10, "range": 5,
+      "traits": ["apply_vulnerable"],
+      "allowed_actions": ["attack", "idle", "retreat"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "nearest", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "攻击会施加「易伤」（受伤 +50%，6 秒）。自身很脆，射程 5 比基础形态远 1 格。",
+      "description": "用骨粉在敌人身上画符的术士。她自己的伤害不高，但被她标记过的东西会变得很好杀。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#c07aff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg"}
+    },
+    "binder": {
+      "display_name": "缚锁者", "cost": 3,
+      "kind": "unit",
+      "faction_default": "ally",
+      "max_hp": 70, "attack": 5, "attack_speed": 0.7, "move_speed": 2.5, "vision": 9, "range": 3,
+      "traits": ["apply_paralysis"],
+      "allowed_actions": ["attack", "chase_attack", "idle"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "nearest", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "攻击会施加「麻痹」（无法攻击 3 秒）。自身攻击力很低，但能让敌人打不出伤害。",
+      "description": "把骨链甩出去缠住对手手脚的狱卒。他杀不死任何东西，但能让任何东西杀不死你。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/bulwark.png", "portrait": "res://assets/sprites/portraits/bulwark.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
+    },
+    "bone_weaver": {
+      "display_name": "织骨者",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 110, "attack": 7, "attack_speed": 0.9, "move_speed": 1.6, "vision": 9, "range": 4,
+      "traits": ["aura_slow"],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "nearest", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "**光环**：半径 3 格内的我方单位移速 -40%。",
+      "description": "一边爬一边吐丝的东西。它自己不追人，但凡是靠近它的东西都会变得迈不开腿。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/spitter.png", "portrait": "res://assets/sprites/portraits/spitter.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
+    },
+    "hex_priest": {
+      "display_name": "咒缚祭司",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 80, "attack": 10, "attack_speed": 0.6, "move_speed": 1.4, "vision": 10, "range": 6,
+      "traits": ["apply_paralysis"],
+      "allowed_actions": ["attack", "retreat", "idle", "follow_route", "chase_attack"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "farthest", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "远程攻击会施加「麻痹」3 秒。专打最远的目标。",
+      "description": "披着破布在远处念咒的祭司。它不追人，但你的后排会被它一个个定住。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.05, "light_color": "#e070ff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg"}
+    },
+    "marrow_hulk": {
+      "display_name": "髓块",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 220, "attack": 18, "attack_speed": 0.5, "move_speed": 0.7, "vision": 6, "range": 1.5,
+      "traits": ["apply_vulnerable"],
+      "allowed_actions": ["attack", "chase_attack", "idle", "follow_route"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "lowest_hp", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "近战命中施加「易伤」（受伤 +50%，6 秒）。血极厚、移速极慢。专打血量最低的目标。",
+      "description": "一大坨缝合起来的髓质。走得很慢，但被它碰一下之后，任何攻击都会变得很痛。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/brute.png", "portrait": "res://assets/sprites/portraits/brute.png", "projectile": "none", "scale": 1.35, "light_color": "#ff7a3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg"}
+    },
+    "bone_witch": {
+      "display_name": "骨花魔女",
+      "kind": "unit",
+      "faction_default": "enemy",
+      "max_hp": 900, "attack": 22, "attack_speed": 0.6, "move_speed": 0.0, "vision": 12, "range": 6,
+      "traits": ["boss_phases"],
+      "allowed_actions": ["attack", "chase_attack", "idle"],
+      "default_rules": [
+        {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "farthest", "filter": "unit"}, "action": {"type": "attack"}},
+        {"conditions": [], "action": {"type": "idle"}}
+      ],
+      "public_rule_text": "**三阶段 Boss。** 每失去三分之一血量就换一种异常状态：孢裂（易伤）→ 钟缚（麻痹）→ 泥沼（减速）。阶段 3 才开始移动。",
+      "description": "骨花温室最深处的东西。她不是植物，也不完全是骨头——她把整片温室的根都连在自己身上。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/bone_core.png", "portrait": "res://assets/sprites/portraits/bone_core.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg"}
+    },
+    "dummy": {
+      "display_name": "试作人偶",
+      "kind": "structure",
+      "faction_default": "enemy",
+      "max_hp": 200, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 0, "range": 0,
+      "traits": [],
+      "allowed_actions": [],
+      "default_rules": [
+      ],
+      "description": "织骸工坊里用来校准的空壳人偶。不会动，也不会反击。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/echo_pillar.png", "portrait": "res://assets/sprites/portraits/echo_pillar.png", "projectile": "none", "scale": 1.1, "light_color": "#d8d0c0", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
+    },
+    "supply_crate": {
+      "display_name": "物资箱",
+      "kind": "structure",
+      "faction_default": "ally",
+      "max_hp": 1, "attack": 0, "attack_speed": 0, "move_speed": 0, "vision": 0, "range": 0,
+      "traits": [],
+      "allowed_actions": [],
+      "default_rules": [
+      ],
+      "description": "教学关的目标标记：一只骨箱。",
+      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "visuals": {"sprite": "res://assets/sprites/units/transit_node.png", "portrait": "res://assets/sprites/portraits/transit_node.png", "projectile": "none", "scale": 1.0, "light_color": "#c9a24a", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
+    }
+  }
+}

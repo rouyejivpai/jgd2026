@@ -1,0 +1,296 @@
+{
+  "grid": {
+    "width": 15,
+    "height": 11,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      0,
+      6,
+      10
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 6,
+    "available_forms": [
+      "striker",
+      "swift"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_subtraction": [
+      "收束：没有信标、只有两个最便宜的形态、一个选敌——只剩站位"
+    ],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "CARGO",
+      "unit": "echo_pillar",
+      "faction": "enemy",
+      "pos": [
+        10,
+        5
+      ],
+      "display_name": "最后一车货",
+      "overrides": {
+        "max_hp": 80
+      }
+    },
+    {
+      "id": "W1",
+      "unit": "warden",
+      "faction": "enemy",
+      "pos": [
+        12,
+        9
+      ],
+      "display_name": "押车守卫",
+      "overrides": {
+        "vision": 7,
+        "attack": 20,
+        "max_hp": 150
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "escort",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "在货车旁来回巡视，视野 7，锁定第一个看见的分裂体并追击。一下 20。"
+    }
+  ],
+  "routes": {
+    "escort": {
+      "name": "押车巡线",
+      "points": [
+        [
+          12,
+          9
+        ],
+        [
+          8,
+          7
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "enemy_in_range",
+      "enemy_visible"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          6,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "any"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          6,
+          10
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "拆掉最后一车货就赢。押车守卫一下 20，在车旁巡视，只认第一个看见的人。6 点预算，买不起信标。",
+    "win": [
+      {
+        "id": "win_cargo",
+        "type": "destroy",
+        "targets": [
+          "CARGO"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态摆在 (6,5)：离货车正好 4 格（射程内），开局就打货车，约 6 秒拆完；快速形态摆在 (6,10)：开局就在守卫 7 格视野里（基础形态在 8 格外），守卫先锁定它、走过去追杀；等守卫回头找基础形态时，货车已经没了。",
+    "expected_fail": [
+      "基础形态摆在 (5,5)：差 1 格够不着货车（本关没有信标），干等。",
+      "只派基础形态：守卫巡视过来看见它，一下 20，货车还没拆完它就倒了。",
+      "两个人都摆在货车旁：守卫先看见基础形态，输出被打断。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "本关的可解性已用原型模拟核心实跑验证；人数上限 2、预算 6 均保持评审截图中的数值。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_08.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 3168,
+  "schema_version": 1,
+  "_design_comment": "Boss 区第三关，也是最终战的门槛。用原「空手」终局关 —— 它是全流程工具箱最窄的一关（只给两个形态、一个选敌），和最终战的「什么都有」正好相反，放在 Boss 前当最后一道门。",
+  "_teach_role": "Boss 区：守门",
+  "briefing": {
+    "mechanic_hint": "没有信标，部署位置就是你的路线。把输出摆在开局就够得着货车的那一格；让另一个人站在守卫一眼就能看见的地方。"
+  },
+  "region": "bone_greenhouse",
+  "region_cn": "骨花温室",
+  "id": "level_c29",
+  "index": 129,
+  "title": "转运",
+  "subtitle": "Boss 区 · 第三关：最后一车货",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [
+      "preset.boss_signal",
+      "preset.retreat_when_close"
+    ],
+    "unlock_conditions": [
+      "signal_is"
+    ],
+    "unlock_selectors": [],
+    "unlock_actions": [
+      "retreat"
+    ],
+    "unlock_level": "level_c30"
+  },
+  "_review_20261012": [
+    "重做为「精确摆位」解谜：货车 80 血 + 一名巡视的重击守卫；保持 6 Cost / 2 人；原数据实跑不可解（评审质疑成立）；新版推荐解与反例已实跑验证。"
+  ],
+  "display_index": 29,
+  "summary": "Boss 区 · 第三关：最后一车货",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:echo_pillar",
+      "stat": "vision",
+      "mul": 0,
+      "add": 7,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:warden",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "没有信标，部署位置就是你的路线。把输出摆在开局就够得着货车的那一格；让另一个人站在守卫一眼就能看见的地方。",
+    "拆掉最后一车货就赢。押车守卫一下 20，在车旁巡视，只认第一个看见的人。6 点预算，买不起信标。",
+    "基础形态摆在 (6,5)：离货车正好 4 格（射程内），开局就打货车，约 6 秒拆完；快速形态摆在 (6,10)：开局就在守卫 7 格视野里（基础形态在 8 格外），守卫先锁定它、走过去追杀；等守卫回头找基础形态时，货车已经没了。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。没有信标，部署位置就是你的路线。把输出摆在开局就够得着货车的那一格；让另一个人站在守卫一眼就能看见的地方。",
+    "default": "没有信标，部署位置就是你的路线。把输出摆在开局就够得着货车的那一格；让另一个人站在守卫一眼就能看见的地方。"
+  },
+  "bgm": "region_bone_greenhouse"
+}

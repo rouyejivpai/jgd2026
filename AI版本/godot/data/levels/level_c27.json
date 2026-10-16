@@ -1,0 +1,718 @@
+{
+  "grid": {
+    "width": 23,
+    "height": 17,
+    "blocked": [
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        10,
+        2
+      ],
+      [
+        12,
+        2
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        14,
+        2
+      ],
+      [
+        15,
+        2
+      ],
+      [
+        16,
+        2
+      ],
+      [
+        17,
+        2
+      ],
+      [
+        18,
+        2
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        3,
+        14
+      ],
+      [
+        4,
+        14
+      ],
+      [
+        5,
+        14
+      ],
+      [
+        6,
+        14
+      ],
+      [
+        7,
+        14
+      ],
+      [
+        8,
+        14
+      ],
+      [
+        9,
+        14
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        11,
+        14
+      ],
+      [
+        12,
+        14
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        14
+      ],
+      [
+        15,
+        14
+      ],
+      [
+        16,
+        14
+      ],
+      [
+        17,
+        14
+      ],
+      [
+        18,
+        14
+      ],
+      [
+        19,
+        14
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        13
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        19,
+        5
+      ],
+      [
+        19,
+        6
+      ],
+      [
+        19,
+        7
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        19,
+        9
+      ],
+      [
+        19,
+        10
+      ],
+      [
+        19,
+        11
+      ],
+      [
+        19,
+        12
+      ],
+      [
+        19,
+        13
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        9,
+        5
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ],
+      [
+        7,
+        11
+      ],
+      [
+        8,
+        11
+      ],
+      [
+        9,
+        11
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        11
+      ],
+      [
+        12,
+        11
+      ],
+      [
+        13,
+        11
+      ],
+      [
+        14,
+        11
+      ],
+      [
+        15,
+        11
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        7,
+        10
+      ],
+      [
+        15,
+        6
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        15,
+        10
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      9,
+      0,
+      13,
+      0
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 5,
+    "available_forms": [
+      "striker",
+      "swift"
+    ],
+    "max_units": 1,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "HEART",
+      "unit": "echo_pillar",
+      "faction": "enemy",
+      "pos": [
+        11,
+        8
+      ],
+      "display_name": "温室之心",
+      "overrides": {
+        "max_hp": 120
+      }
+    },
+    {
+      "id": "P1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        5,
+        3
+      ],
+      "display_name": "回廊巡逻·甲",
+      "overrides": {
+        "vision": 3.5,
+        "attack": 14,
+        "move_speed": 2.0
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "ring_a",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "沿回廊顺时针绕圈，视野 3.5，看见就追。"
+    },
+    {
+      "id": "P2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        17,
+        6
+      ],
+      "display_name": "回廊巡逻·乙",
+      "overrides": {
+        "vision": 3.5,
+        "attack": 14,
+        "move_speed": 2.0
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "ring_b",
+            "loop": true
+          }
+        }
+      ],
+      "public_rule_text": "同上；开局正从右侧回廊往上走，会经过内圈门口。"
+    }
+  ],
+  "routes": {
+    "ring_a": {
+      "name": "回廊巡线·甲",
+      "points": [
+        [
+          5,
+          3
+        ],
+        [
+          17,
+          3
+        ],
+        [
+          17,
+          13
+        ],
+        [
+          5,
+          13
+        ]
+      ]
+    },
+    "ring_b": {
+      "name": "回廊巡线·乙",
+      "points": [
+        [
+          17,
+          13
+        ],
+        [
+          5,
+          13
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          17,
+          3
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          11,
+          0
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              11,
+              3
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              17,
+              4
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              17,
+              8
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              12,
+              8
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "4"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "structure"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "温室之心在两圈回廊的最里面。外圈门在下、内圈门在右；两名巡逻者在回廊里顺时针绕圈。拆掉它。",
+    "win": [
+      {
+        "id": "win_heart",
+        "type": "destroy",
+        "targets": [
+          "HEART"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "快速形态开局立刻进门、向右、上到内圈门 (15,8)：巡逻者甲在它身后、乙已往上走过门口，两人都追不上；进内圈打温室之心。",
+    "expected_fail": [
+      "在门外等：巡逻者转到门口时看见它（视野 3.5），被追咬。"
+    ],
+    "alternatives": [
+      "立刻走左路也能过（路更长，约 28 秒）——两条路都通，考的是「别在门口磨蹭」。"
+    ],
+    "risks": [
+      "多圈回廊是评审建议的形状之一；尺寸、门的位置可以在编辑器里继续调。",
+      "仿真里「立刻进」是关键（左右都行）；如果希望「等待时机」也成为解，需要把门外等候点挪到巡逻者视野外。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_08.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b8a8c0",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 1519,
+  "schema_version": 1,
+  "_design_comment": "Boss 区第一关。回到骨花温室，把延迟爆炸的机制再压一次。",
+  "_teach_role": "Boss 区：前庭",
+  "briefing": {
+    "mechanic_hint": "巡逻者顺时针绕圈，正朝门口过来。趁它们还没转过来，马上选近的那条路冲进去；在门口等，反而会被看见。"
+  },
+  "region": "bone_greenhouse",
+  "region_cn": "骨花温室",
+  "id": "level_c27",
+  "index": 127,
+  "title": "温室深处",
+  "subtitle": "Boss 区 · 第一关：花粉前庭",
+  "biome": "bone_greenhouse",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c28"
+  },
+  "_review_20261012": [
+    "重做为两圈回廊异形场景（外门下、内门右，左右两条路）；两名同向绕圈的巡逻者；去掉核心爆裂与诱敌，只考选路和时机；1 人、预算 5；信标计费。"
+  ],
+  "display_index": 27,
+  "summary": "Boss 区 · 第一关：花粉前庭",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:echo_pillar",
+      "stat": "vision",
+      "mul": 0,
+      "add": 7,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "巡逻者顺时针绕圈，正朝门口过来。趁它们还没转过来，马上选近的那条路冲进去；在门口等，反而会被看见。",
+    "温室之心在两圈回廊的最里面。外圈门在下、内圈门在右；两名巡逻者在回廊里顺时针绕圈。拆掉它。",
+    "快速形态开局立刻进门、向右、上到内圈门 (15,8)：巡逻者甲在它身后、乙已往上走过门口，两人都追不上；进内圈打温室之心。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。巡逻者顺时针绕圈，正朝门口过来。趁它们还没转过来，马上选近的那条路冲进去；在门口等，反而会被看见。",
+    "default": "巡逻者顺时针绕圈，正朝门口过来。趁它们还没转过来，马上选近的那条路冲进去；在门口等，反而会被看见。"
+  },
+  "bgm": "region_bone_greenhouse"
+}

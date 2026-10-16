@@ -1,0 +1,665 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        9,
+        10
+      ]
+    ],
+    "tiles": {
+      "mire": [
+        [
+          13,
+          0
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          0
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          9
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          15,
+          9
+        ],
+        [
+          15,
+          10
+        ],
+        [
+          16,
+          0
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          16,
+          9
+        ],
+        [
+          16,
+          10
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 16,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer"
+    ],
+    "max_units": 4,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "S1",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        15,
+        5
+      ],
+      "display_name": "巢心骨喉"
+    },
+    {
+      "id": "H1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        11,
+        3
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        11,
+        7
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        12,
+        5
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "id": "H4",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        13,
+        5
+      ],
+      "display_name": "头犬",
+      "overrides": {
+        "max_hp": 100
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              8,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "farthest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          0,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              4,
+              10
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              5,
+              10
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              5,
+              0
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          2,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "巢里有一具会落雷的骨喉、三只骸猎犬和一只 100 血的头犬。全部清掉。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "远射走到 (8,5)（离骨喉 7 格）按「最远」先点骨喉；快速形态在 x=4..5 绕圈（仍在骨喉 12 格射程内）当最远者引雷；承伤与基础形态追猎犬，猎犬往右逃进角落缓滞带后被收掉。",
+    "expected_fail": [
+      "全员待在部署区：骨喉的雷一发发砸在最远的人身上，猎犬不靠近也不离开，打不完。"
+    ],
+    "alternatives": [
+      "仿真三种顺序都能赢：先拆雷+引雷+追猎、只引雷不专门拆雷、四人直接冲（不引雷）——直接冲最快：骨喉只有 60 血，冲得快就来不及砸第二轮（具体秒数见《关卡修改报告》）。"
+    ],
+    "risks": [
+      "评审说顺序「需要实测」：原型模拟核心的实测是「直接冲」最快。若希望引雷/拆雷更有意义，可把骨喉血量提到 120 或增加第二具骨喉，留给试玩决定。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_04.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#90a888",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 1121,
+  "schema_version": 1,
+  "_design_comment": "肉巢沼泽的收束关。",
+  "_teach_role": "收束：综合",
+  "briefing": {
+    "mechanic_hint": "骨喉的雷砸最远的人，猎犬一靠近就跑。先拆雷还是先引雷，你来定；猎犬跑进角落的缓滞带就跑不动了。"
+  },
+  "region": "flesh_swamp",
+  "region_cn": "肉巢沼泽",
+  "id": "level_c22",
+  "index": 122,
+  "title": "巢",
+  "subtitle": "收束：猎犬巢深处",
+  "biome": "hound_den",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c23"
+  },
+  "_review_20261012": [
+    "新增落雷敌人（骨喉，原数据缺失）与 100 血头犬；角落缓滞带；推荐解改为远射拆雷 + 快速引雷 + 两人追猎；信标计费（4 人 14 + 2 包信标 = 预算 16）。"
+  ],
+  "display_index": 22,
+  "summary": "收束：猎犬巢深处",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:hound",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "骨喉的雷砸最远的人，猎犬一靠近就跑。先拆雷还是先引雷，你来定；猎犬跑进角落的缓滞带就跑不动了。",
+    "巢里有一具会落雷的骨喉、三只骸猎犬和一只 100 血的头犬。全部清掉。",
+    "远射走到 (8,5)（离骨喉 7 格）按「最远」先点骨喉；快速形态在 x=4..5 绕圈（仍在骨喉 12 格射程内）当最远者引雷；承伤与基础形态追猎犬，猎犬往右逃进角落缓滞带后被收掉。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。骨喉的雷砸最远的人，猎犬一靠近就跑。先拆雷还是先引雷，你来定；猎犬跑进角落的缓滞带就跑不动了。",
+    "default": "骨喉的雷砸最远的人，猎犬一靠近就跑。先拆雷还是先引雷，你来定；猎犬跑进角落的缓滞带就跑不动了。"
+  },
+  "bgm": "region_flesh_swamp"
+}

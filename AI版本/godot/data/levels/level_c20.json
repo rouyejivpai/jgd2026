@@ -1,0 +1,238 @@
+{
+  "grid": {
+    "width": 13,
+    "height": 7,
+    "blocked": []
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      0,
+      2,
+      2
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 4,
+    "available_forms": [
+      "striker"
+    ],
+    "max_units": 1,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "H1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        7,
+        3
+      ],
+      "display_name": "骸猎犬",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "retreat_possible",
+              "threat_radius": 4,
+              "search_depth": 3,
+              "flee": "vector_sum"
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "threat_radius": 4,
+            "search_depth": 3,
+            "flee": "vector_sum"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ]
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always"
+    ],
+    "selectors": [
+      "nearest"
+    ],
+    "actions": [
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          1
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              5,
+              2
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              9,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "把分裂体送到右上角的足迹处。路上看看那只骸猎犬往哪跑。",
+    "win": [
+      {
+        "id": "win_footprint",
+        "type": "reach_zone",
+        "target": "any_ally",
+        "cells": [
+          [
+            9,
+            5
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            10,
+            5
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态从左下走向右上足迹，猎犬被从左下方「推」开，沿合力方向往右/右下逃；分裂体到达足迹即通关。",
+    "expected_fail": [],
+    "alternatives": [],
+    "risks": [
+      "剧情触发（story_trigger）是新字段，原型需要在胜利结算时读取并播放。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_04.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#90a888",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 913,
+  "schema_version": 1,
+  "_design_comment": "纯观察关。减速能让猎犬跑不掉——这是减速和猎犬的配合点。",
+  "_teach_role": "机制：观察",
+  "briefing": {
+    "mechanic_hint": "骸猎犬朝背离所有威胁的合力方向跑——离它越近的威胁，推得越狠。它只有被逼到无路可退时才会反咬。"
+  },
+  "region": "flesh_swamp",
+  "region_cn": "肉巢沼泽",
+  "id": "level_c20",
+  "index": 120,
+  "title": "足迹",
+  "subtitle": "观察：骸猎犬怎么跑",
+  "biome": "hound_den",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c21"
+  },
+  "story_trigger": {
+    "on": "win_footprint",
+    "story_id": "level_20_footprint",
+    "_note": "剧情内容未定（评审未展开）；原型 data/stories/ 下新增同名文件即可接入。"
+  },
+  "_review_20261012": [
+    "胜利条件 survive（无守护对象，原型解析失败）→ reach_zone 足迹区域；加剧情触发接口；猎犬按向量之和逃跑；信标计费。"
+  ],
+  "display_index": 20,
+  "summary": "观察：骸猎犬怎么跑",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:hound",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "骸猎犬朝背离所有威胁的合力方向跑——离它越近的威胁，推得越狠。它只有被逼到无路可退时才会反咬。",
+    "把分裂体送到右上角的足迹处。路上看看那只骸猎犬往哪跑。",
+    "基础形态从左下走向右上足迹，猎犬被从左下方「推」开，沿合力方向往右/右下逃；分裂体到达足迹即通关。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。骸猎犬朝背离所有威胁的合力方向跑——离它越近的威胁，推得越狠。它只有被逼到无路可退时才会反咬。",
+    "default": "骸猎犬朝背离所有威胁的合力方向跑——离它越近的威胁，推得越狠。它只有被逼到无路可退时才会反咬。"
+  },
+  "bgm": "region_flesh_swamp"
+}

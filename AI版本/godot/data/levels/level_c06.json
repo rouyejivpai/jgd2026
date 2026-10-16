@@ -1,0 +1,299 @@
+{
+  "grid": {
+    "width": 16,
+    "height": 9,
+    "blocked": [
+      [
+        8,
+        2
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        10,
+        2
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        10,
+        6
+      ],
+      [
+        11,
+        6
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      1,
+      5
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 7,
+    "available_forms": [
+      "striker",
+      "swift"
+    ],
+    "max_units": 2,
+    "min_units": 1,
+    "fixed_slots": [],
+    "_budget_note": "预算 7 = 两个形态（3+3）+ 一包信标（1）。阵容只能是「输出 + 诱导」或「两个输出」，后者会被骨浆轮流砸死。",
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "S1",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        13,
+        2
+      ],
+      "display_name": "骨喉·上",
+      "overrides": {
+        "max_hp": 120
+      }
+    },
+    {
+      "id": "S2",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        13,
+        6
+      ],
+      "display_name": "骨喉·下",
+      "overrides": {
+        "max_hp": 120
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          0,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              3,
+              2
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              6,
+              2
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              6,
+              6
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              3,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "拆掉两具骨喉。骨浆专砸视野内最远的分裂体——派一个人在远处绕圈，替站桩输出的人挨砸。",
+    "win": [
+      {
+        "id": "win_spitters",
+        "type": "destroy",
+        "targets": [
+          "S1",
+          "S2"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "基础形态走到 (10,4)（离两具骨喉都 3.6 格）站定输出；快速形态在 (3..6, 2..6) 绕圈，始终是骨浆的最远目标且一直在动，骨浆全部落空。",
+    "expected_fail": [
+      "两个基础形态一起上去输出：远的那个先被砸死，剩下一个独自挨砸，打不完 240 血。",
+      "诱导者停在视野外（离骨喉 > 12 格）：骨浆改砸输出者。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "评审口头还提到「到达位置」作为胜利条件；本版选「全部清掉」，因为只有它要求站桩输出、分工才有意义。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_01.png",
+    "ground": "res://assets/grounds/wailing_wall_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 6,
+  "schema_version": 1,
+  "_design_comment": "织骸工坊收束关（评审后重做）：恢复「专人拉技能、其他单位输出」。诱导者必须**一直**是最远目标（停在视野外会把骨浆让给输出者），并且要绕圈躲开落点。",
+  "_teach_role": "收束：综合",
+  "briefing": {
+    "mechanic_hint": "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
+  },
+  "region": "bone_workshop",
+  "region_cn": "织骸工坊",
+  "id": "level_c06",
+  "index": 106,
+  "title": "祭司行列",
+  "subtitle": "一人引雷，一人输出",
+  "biome": "bone_farm",
+  "rewards": {
+    "unlock_forms": [
+      "lancer"
+    ],
+    "unlock_presets": [
+      "preset.attack_highest_max_hp_in_range",
+      "preset.attack_lowest_hp_in_range"
+    ],
+    "unlock_conditions": [],
+    "unlock_selectors": [
+      "highest_max_hp",
+      "lowest_hp"
+    ],
+    "unlock_actions": [],
+    "unlock_level": "level_c07"
+  },
+  "_review_20261012": [
+    "重做：胜利条件 reach_zone→destroy[S1,S2]；骨喉血 120；预算 10→7（信标计费）；推荐解改为诱导+输出分工。"
+  ],
+  "display_index": 6,
+  "summary": "一人引雷，一人输出",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
+    "拆掉两具骨喉。骨浆专砸视野内最远的分裂体——派一个人在远处绕圈，替站桩输出的人挨砸。",
+    "基础形态走到 (10,4)（离两具骨喉都 3.6 格）站定输出；快速形态在 (3..6, 2..6) 绕圈，始终是骨浆的最远目标且一直在动，骨浆全部落空。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
+    "default": "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
+  },
+  "bgm": "battle_01"
+}

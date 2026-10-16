@@ -1,0 +1,7 @@
+{
+  "id": "level_04_intro",
+  "scenes": [
+    { "speaker": "narrator", "illustration": "", "text": "猎犬巢穴外围。骸猎犬被围栏困住，但没有谁能在开阔地追上它。" },
+    { "speaker": "doll", "illustration": "doll", "text": "它逃跑时会同时考虑所有逼近它的东西。那就从三个方向逼近。" }
+  ]
+}

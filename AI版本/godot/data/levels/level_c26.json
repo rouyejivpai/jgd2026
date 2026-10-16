@@ -1,0 +1,463 @@
+{
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        7,
+        0
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        7,
+        10
+      ]
+    ]
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      4,
+      2,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 16,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer",
+      "hexer"
+    ],
+    "max_units": 4,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "C1",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        14,
+        2
+      ],
+      "display_name": "核心·下",
+      "overrides": {
+        "vision": 15,
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "C2",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        15,
+        5
+      ],
+      "display_name": "核心·中",
+      "overrides": {
+        "vision": 15,
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "C3",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        14,
+        8
+      ],
+      "display_name": "核心·上",
+      "overrides": {
+        "vision": 15,
+        "max_hp": 100
+      }
+    },
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        11,
+        3
+      ],
+      "display_name": "护卫·下",
+      "overrides": {
+        "vision": 6,
+        "attack": 10,
+        "max_hp": 150
+      },
+      "public_rule_text": "锁定首个进入 6 格视野的分裂体并追击。"
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        11,
+        7
+      ],
+      "display_name": "护卫·上",
+      "overrides": {
+        "vision": 6,
+        "attack": 10,
+        "max_hp": 150
+      },
+      "public_rule_text": "同上。"
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "highest_max_hp",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              1,
+              1
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              5,
+              1
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              5,
+              9
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              1,
+              9
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              8,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              12,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "拆掉三个骨花核心就赢，两名护卫不必杀。核心的花粉只砸最远的人。",
+    "win": [
+      {
+        "id": "win_cores",
+        "type": "destroy",
+        "targets": [
+          "C1",
+          "C2",
+          "C3"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "verification": {
+    "expected_win": "承伤形态先走到 (10,5)，两名护卫先看见它、锁定它；快速形态在左半场 (1..5, 1..9) 绕大圈（一圈约 5 秒，花粉 2.5 秒后落地时它已在对边），一直是最远者，花粉全落在那里；远射和基础形态紧跟承伤**立刻**进场，在第一轮花粉落地前穿过引雷区，按「血量上限最高」点核心。",
+    "expected_fail": [
+      "引雷者绕在中路：花粉落在进场路线上，砸到跟进的输出。",
+      "输出在部署区等几秒再进场：正好在第一轮花粉落地时穿过引雷区，和诱导者一起被砸（仿真：5.5 秒远射与快速形态同时阵亡）。"
+    ],
+    "alternatives": [],
+    "risks": [
+      "核心 100 血 ×3（原 150）；护卫视野 6。评审说「地图范围配合较紧」，本版把左半场整片留给引雷者；核心视野 13→15，保证引雷者绕到角落时仍在核心视野内（否则花粉会改砸输出）。"
+    ],
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_07.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8ccd8",
+    "playfield_rect": null,
+    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+  },
+  "seed": 2404,
+  "schema_version": 1,
+  "_design_comment": "畸变回廊的收束关，也是进 Boss 区之前的最终考核。用转运点收束，因为它是全流程预算压力最大的一关。",
+  "_teach_role": "收束：综合考核",
+  "briefing": {
+    "mechanic_hint": "引雷的人别绕在大家进场的路上——雷落在那里，砸的是自己人。让扛得住的人先进场被护卫锁定，输出再跟进。"
+  },
+  "region": "warped_corridor",
+  "region_cn": "畸变回廊",
+  "id": "level_c26",
+  "index": 126,
+  "title": "转运点",
+  "subtitle": "收束：最紧的账",
+  "biome": "transit_node",
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_c27"
+  },
+  "_review_20261012": [
+    "重做：胜利条件全歼→拆三核心；去掉骨喉；护卫视野 6、150 血、攻击 10；核心视野 15；引雷路线放在进场路线之外；预算 14→16（4 人 14 + 2 包信标）；信标计费。"
+  ],
+  "display_index": 26,
+  "summary": "收束：最紧的账",
+  "chapter": "chapter_02",
+  "modifiers": [
+    {
+      "target": "form:bone_core",
+      "stat": "vision",
+      "mul": 0,
+      "add": 13,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bone_guard",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 11,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "hints": [
+    "引雷的人别绕在大家进场的路上——雷落在那里，砸的是自己人。让扛得住的人先进场被护卫锁定，输出再跟进。",
+    "拆掉三个骨花核心就赢，两名护卫不必杀。核心的花粉只砸最远的人。",
+    "承伤形态先走到 (10,5)，两名护卫先看见它、锁定它；快速形态在左半场 (1..5, 1..9) 绕大圈（一圈约 5 秒，花粉 2.5 秒后落地时它已在对边），一直是最远者，花粉全落在那里；远射和基础形态紧跟承伤立刻进场，在第一轮花粉落地前穿过引雷区，按「血量上限最高」点核心。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。引雷的人别绕在大家进场的路上——雷落在那里，砸的是自己人。让扛得住的人先进场被护卫锁定，输出再跟进。",
+    "default": "引雷的人别绕在大家进场的路上——雷落在那里，砸的是自己人。让扛得住的人先进场被护卫锁定，输出再跟进。"
+  },
+  "bgm": "region_warped_corridor"
+}
