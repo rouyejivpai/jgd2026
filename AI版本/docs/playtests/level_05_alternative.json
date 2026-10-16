@@ -1,0 +1,163 @@
+{
+  "level_id": "level_05",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "u1": [
+      2,
+      4
+    ],
+    "u2": [
+      1,
+      4
+    ],
+    "u3": [
+      2,
+      8
+    ]
+  },
+  "rules": {
+    "u1": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "advance",
+          "loop": false
+        }
+      }
+    ],
+    "u2": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "advance",
+          "loop": false
+        }
+      }
+    ],
+    "u3": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "advance",
+          "loop": false
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 9.06666666666667,
+  "losses": [],
+  "objective_hp": {
+    "S1": 0.0,
+    "S2": 0.0
+  },
+  "notes": "verification.alternatives：全员硬吃爆炸正面冲锋；2× 复核：一致",
+  "state_hash": 3604784348
+}

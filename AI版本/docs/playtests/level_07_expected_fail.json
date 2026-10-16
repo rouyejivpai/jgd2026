@@ -1,0 +1,140 @@
+{
+  "level_id": "level_07",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "slot_bulwark": [
+      3,
+      6
+    ],
+    "slot_striker": [
+      2,
+      6
+    ],
+    "slot_lancer": [
+      1,
+      6
+    ]
+  },
+  "rules": {
+    "slot_bulwark": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "slot_striker": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "slot_lancer": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 20.0,
+  "losses": [],
+  "objective_hp": {
+    "P": 72.0
+  },
+  "notes": "05 §3：前排追击离位 + 全员挤在 y=6（Q-027，数据冻结）；2× 复核：一致",
+  "state_hash": 3791070653
+}

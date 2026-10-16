@@ -1,0 +1,147 @@
+{
+  "level_id": "level_08",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "u1": [
+      3,
+      5
+    ],
+    "u2": [
+      3,
+      3
+    ],
+    "u3": [
+      3,
+      7
+    ],
+    "u4": [
+      2,
+      7
+    ]
+  },
+  "rules": {
+    "u1": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "u2": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "south_flank",
+          "loop": false
+        }
+      }
+    ],
+    "u3": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "north_flank",
+          "loop": false
+        }
+      }
+    ],
+    "u4": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "north_flank",
+          "loop": false
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 25.7333333333333,
+  "losses": [
+    "u1",
+    "u4"
+  ],
+  "objective_hp": {
+    "CORE": 0.0
+  },
+  "notes": "verification.expected_win：承伤正面原地吸引护卫，快速+远射走北侧藤廊、攻击形态走南侧藤廊绕后打核心（推荐指令为全员追击，等同正面推进，见 Q-028）；2× 复核：一致",
+  "state_hash": 183177974
+}

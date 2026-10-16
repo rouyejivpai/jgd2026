@@ -1,0 +1,92 @@
+{
+  "level_id": "level_04",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "u1": [
+      1,
+      7
+    ],
+    "u2": [
+      1,
+      4
+    ],
+    "u3": [
+      1,
+      6
+    ]
+  },
+  "rules": {
+    "u1": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "u2": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "u3": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 16.3,
+  "losses": [],
+  "objective_hp": {
+    "HOUND": 0.0
+  },
+  "notes": "05 §4.2：单向追击（Q-021）；2× 复核：一致",
+  "state_hash": 1621112929
+}

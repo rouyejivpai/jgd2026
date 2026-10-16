@@ -1,0 +1,212 @@
+{
+  "level_id": "level_08",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "slot_bulwark": [
+      3,
+      5
+    ],
+    "slot_striker": [
+      3,
+      3
+    ],
+    "slot_swift": [
+      3,
+      7
+    ],
+    "slot_lancer": [
+      2,
+      7
+    ]
+  },
+  "rules": {
+    "slot_bulwark": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "front",
+          "loop": false
+        }
+      }
+    ],
+    "slot_striker": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "front",
+          "loop": false
+        }
+      }
+    ],
+    "slot_swift": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "front",
+          "loop": false
+        }
+      }
+    ],
+    "slot_lancer": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "front",
+          "loop": false
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 17.3,
+  "losses": [
+    "slot_bulwark",
+    "slot_lancer"
+  ],
+  "objective_hp": {
+    "CORE": 0.0
+  },
+  "notes": "脚本复现（M6）：全员沿正面花径推进并追击"
+}

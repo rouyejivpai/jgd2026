@@ -1,0 +1,140 @@
+{
+  "level_id": "level_07",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "slot_bulwark": [
+      3,
+      4
+    ],
+    "slot_striker": [
+      3,
+      3
+    ],
+    "slot_lancer": [
+      1,
+      5
+    ]
+  },
+  "rules": {
+    "slot_bulwark": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": false,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "slot_striker": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": false,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "slot_lancer": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 20.0,
+  "losses": [],
+  "objective_hp": {
+    "P": 80.0
+  },
+  "notes": "推荐部署，20 秒生存；2× 复核：一致",
+  "state_hash": 3806413355
+}

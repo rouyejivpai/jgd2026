@@ -1,0 +1,186 @@
+{
+  "level_id": "level_08",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "u1": [
+      3,
+      5
+    ],
+    "u2": [
+      3,
+      3
+    ],
+    "u3": [
+      3,
+      7
+    ],
+    "u4": [
+      2,
+      7
+    ]
+  },
+  "rules": {
+    "u1": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "self_hp_below",
+            "ratio": 0.3
+          }
+        ],
+        "action": {
+          "type": "retreat",
+          "search_depth": 3
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      }
+    ],
+    "u2": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      }
+    ],
+    "u3": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      }
+    ],
+    "u4": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase_attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 19.6,
+  "losses": [
+    "u4"
+  ],
+  "objective_hp": {
+    "CORE": 0.0
+  },
+  "notes": "verification.alternatives：正面硬拼（承伤低血撤离换血，全员集火）；2× 复核：一致",
+  "state_hash": 926273167
+}

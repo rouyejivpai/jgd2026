@@ -1,0 +1,19 @@
+{
+  "design": "assets/ui/main_menu/design_error.png",
+  "actual": "../docs/screenshots/motion/static/nomotion/main_menu_error_actual.png",
+  "diff_image": "../docs/screenshots/motion/static/nomotion/main_menu_error_diff.png",
+  "size": [
+    1920,
+    1080
+  ],
+  "ignore": [],
+  "tol": 2,
+  "text_shift": 1,
+  "threshold_pct": 2.0,
+  "strict_pct": 0.6794,
+  "tolerant_pct": 0.4952,
+  "final_pct": 0.3192,
+  "max_channel_diff_failing": 203,
+  "no_motion": true,
+  "passed": true
+}

@@ -1,0 +1,4 @@
+# 超过 GitHub 100MB 单文件限制的本地大文件（仅保存在本机）
+work/meeting/recording/
+work/meeting/gpu/
+work/meeting/audio.wav

@@ -1,0 +1,124 @@
+{
+  "level_id": "level_03",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "u1": [
+      2,
+      5
+    ],
+    "u2": [
+      2,
+      1
+    ]
+  },
+  "rules": {
+    "u1": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "target_distance",
+            "op": "<",
+            "value": 3.0
+          }
+        ],
+        "action": {
+          "type": "retreat",
+          "search_depth": 3
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "u2": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "structure"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_beacons",
+          "mode": "once",
+          "from": "1"
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 8.03333333333333,
+  "losses": [],
+  "objective_hp": {
+    "PILLAR": 0.0
+  },
+  "notes": "P2 验收：推荐部署，攻击形态把预设路线「墙下通道」复制为自己的信标 1–3，用「沿我的信标前进（单程）」替代 follow_route 绕后；2× 复核：一致",
+  "beacons": {
+    "u2": [
+      {
+        "id": "1",
+        "cell": [
+          2,
+          1
+        ]
+      },
+      {
+        "id": "2",
+        "cell": [
+          13,
+          1
+        ]
+      },
+      {
+        "id": "3",
+        "cell": [
+          14,
+          1
+        ]
+      }
+    ]
+  },
+  "state_hash": 3408529087
+}

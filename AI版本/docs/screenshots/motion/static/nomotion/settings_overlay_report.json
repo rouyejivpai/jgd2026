@@ -1,0 +1,26 @@
+{
+  "design": "assets/ui/settings_overlay/design.png",
+  "actual": "../docs/screenshots/motion/static/nomotion/settings_overlay_actual.png",
+  "diff_image": "../docs/screenshots/motion/static/nomotion/settings_overlay_diff.png",
+  "size": [
+    1920,
+    1080
+  ],
+  "ignore": [
+    [
+      532,
+      820,
+      850,
+      56
+    ]
+  ],
+  "tol": 2,
+  "text_shift": 1,
+  "threshold_pct": 2.0,
+  "strict_pct": 3.4802,
+  "tolerant_pct": 0.9786,
+  "final_pct": 0.6552,
+  "max_channel_diff_failing": 202,
+  "no_motion": true,
+  "passed": true
+}

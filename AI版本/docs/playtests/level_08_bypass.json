@@ -1,0 +1,146 @@
+{
+  "level_id": "level_08",
+  "level_version": 1,
+  "data_version": "units.json@1",
+  "deploy": {
+    "slot_bulwark": [
+      3,
+      5
+    ],
+    "slot_striker": [
+      3,
+      3
+    ],
+    "slot_swift": [
+      3,
+      7
+    ],
+    "slot_lancer": [
+      2,
+      7
+    ]
+  },
+  "rules": {
+    "slot_bulwark": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "idle"
+        }
+      }
+    ],
+    "slot_striker": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "south_flank",
+          "loop": false
+        }
+      }
+    ],
+    "slot_swift": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "north_flank",
+          "loop": false
+        }
+      }
+    ],
+    "slot_lancer": [
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "attack"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "follow_route",
+          "route_id": "north_flank",
+          "loop": false
+        }
+      }
+    ]
+  },
+  "speed": 1,
+  "result": "win",
+  "time": 25.7333333333333,
+  "losses": [
+    "slot_bulwark",
+    "slot_lancer"
+  ],
+  "objective_hp": {
+    "CORE": 0.0
+  },
+  "notes": "脚本复现（M6）：承伤正面原地，快速+远射走北侧藤廊，基础攻击走南侧藤廊"
+}
