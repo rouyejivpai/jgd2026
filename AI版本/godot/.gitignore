@@ -1,0 +1,26 @@
+# Godot editor data
+.godot/
+*.import.bak
+
+# Export artifacts
+export/
+*.pck
+*.exe
+*.zip
+
+# Resource pipeline intermediates (raw AI generations kept outside repo)
+tools/_raw/
+tools/_work/
+
+# OS / IDE
+.vscode/settings.json
+.idea/
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# 本地严格警告检查（tools/strict_warnings.cfg 复制而来）
+override.cfg

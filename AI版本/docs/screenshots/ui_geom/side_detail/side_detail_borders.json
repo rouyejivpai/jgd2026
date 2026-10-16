@@ -1,0 +1,706 @@
+[
+ {
+  "id": "det_panel",
+  "side": "left",
+  "ref": 1271,
+  "act": 1271,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_panel",
+  "side": "right",
+  "ref": 1909,
+  "act": 1909,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_panel",
+  "side": "top",
+  "ref": 7,
+  "act": 7,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_panel",
+  "side": "bottom",
+  "ref": 1064,
+  "act": 1064,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_remove",
+  "side": "left",
+  "ref": 1677,
+  "act": 1677,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_remove",
+  "side": "right",
+  "ref": 1779,
+  "act": 1779,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_remove",
+  "side": "top",
+  "ref": 25,
+  "act": 25,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_remove",
+  "side": "bottom",
+  "ref": 71,
+  "act": 71,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_close",
+  "side": "left",
+  "ref": 1790,
+  "act": 1790,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_close",
+  "side": "right",
+  "ref": 1892,
+  "act": 1892,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_close",
+  "side": "top",
+  "ref": 25,
+  "act": 25,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_close",
+  "side": "bottom",
+  "ref": 71,
+  "act": 71,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_stats",
+  "side": "left",
+  "ref": 1271,
+  "act": 1271,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_stats",
+  "side": "right",
+  "ref": 1909,
+  "act": 1909,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_stats",
+  "side": "top",
+  "ref": 213,
+  "act": 213,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_stats",
+  "side": "bottom",
+  "ref": 306,
+  "act": 306,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_track",
+  "side": "top",
+  "ref": 353,
+  "act": 353,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_thumb",
+  "side": "top",
+  "ref": 353,
+  "act": 353,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_thumb",
+  "side": "bottom",
+  "ref": 503,
+  "act": 504,
+  "d": 1,
+  "pass": true
+ },
+ {
+  "id": "det_override",
+  "side": "left",
+  "ref": 1476,
+  "act": 1476,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_override",
+  "side": "right",
+  "ref": 1505,
+  "act": 1506,
+  "d": 1,
+  "pass": true
+ },
+ {
+  "id": "det_override",
+  "side": "top",
+  "ref": 365,
+  "act": 365,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_override",
+  "side": "bottom",
+  "ref": 395,
+  "act": 394,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_delete",
+  "side": "left",
+  "ref": 1767,
+  "act": 1767,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_delete",
+  "side": "right",
+  "ref": 1858,
+  "act": 1858,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_delete",
+  "side": "top",
+  "ref": 358,
+  "act": 357,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_delete",
+  "side": "bottom",
+  "ref": 401,
+  "act": 401,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_action",
+  "side": "left",
+  "ref": 1363,
+  "act": 1363,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_action",
+  "side": "right",
+  "ref": 1575,
+  "act": 1575,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_action",
+  "side": "top",
+  "ref": 414,
+  "act": 414,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_action",
+  "side": "bottom",
+  "ref": 454,
+  "act": 454,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p1",
+  "side": "left",
+  "ref": 1586,
+  "act": 1586,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p1",
+  "side": "right",
+  "ref": 1725,
+  "act": 1725,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p1",
+  "side": "top",
+  "ref": 414,
+  "act": 414,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p1",
+  "side": "bottom",
+  "ref": 454,
+  "act": 454,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p2",
+  "side": "left",
+  "ref": 1736,
+  "act": 1736,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p2",
+  "side": "right",
+  "ref": 1858,
+  "act": 1858,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p2",
+  "side": "top",
+  "ref": 414,
+  "act": 414,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_p2",
+  "side": "bottom",
+  "ref": 454,
+  "act": 454,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1",
+  "side": "left",
+  "ref": 1380,
+  "act": 1380,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1",
+  "side": "right",
+  "ref": 1800,
+  "act": 1800,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1",
+  "side": "top",
+  "ref": 469,
+  "act": 469,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1",
+  "side": "bottom",
+  "ref": 507,
+  "act": 507,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1_narrow",
+  "side": "left",
+  "ref": 1380,
+  "act": 1380,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1_narrow",
+  "side": "right",
+  "ref": 1679,
+  "act": 1679,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1_narrow",
+  "side": "top",
+  "ref": 725,
+  "act": 725,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c1_narrow",
+  "side": "bottom",
+  "ref": 764,
+  "act": 763,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_cparam",
+  "side": "left",
+  "ref": 1689,
+  "act": 1689,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_cparam",
+  "side": "right",
+  "ref": 1800,
+  "act": 1799,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_cparam",
+  "side": "top",
+  "ref": 725,
+  "act": 725,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_cparam",
+  "side": "bottom",
+  "ref": 764,
+  "act": 763,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_c2",
+  "side": "left",
+  "ref": 1380,
+  "act": 1380,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c2",
+  "side": "right",
+  "ref": 1800,
+  "act": 1800,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c2",
+  "side": "top",
+  "ref": 539,
+  "act": 539,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_c2",
+  "side": "bottom",
+  "ref": 577,
+  "act": 577,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_logic",
+  "side": "bottom",
+  "ref": 540,
+  "act": 539,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "det_add",
+  "side": "left",
+  "ref": 1298,
+  "act": 1298,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_add",
+  "side": "right",
+  "ref": 1586,
+  "act": 1586,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_add",
+  "side": "top",
+  "ref": 929,
+  "act": 929,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_add",
+  "side": "bottom",
+  "ref": 981,
+  "act": 981,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_beacon_btn",
+  "side": "left",
+  "ref": 1602,
+  "act": 1602,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_beacon_btn",
+  "side": "right",
+  "ref": 1891,
+  "act": 1891,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_beacon_btn",
+  "side": "top",
+  "ref": 928,
+  "act": 928,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "det_beacon_btn",
+  "side": "bottom",
+  "ref": 982,
+  "act": 982,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_bar",
+  "side": "left",
+  "ref": 423,
+  "act": 423,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_bar",
+  "side": "right",
+  "ref": 1275,
+  "act": 1274,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "beacon_bar",
+  "side": "top",
+  "ref": 844,
+  "act": 844,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_bar",
+  "side": "bottom",
+  "ref": 1055,
+  "act": 1055,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_once",
+  "side": "left",
+  "ref": 463,
+  "act": 463,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_once",
+  "side": "right",
+  "ref": 630,
+  "act": 630,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_once",
+  "side": "top",
+  "ref": 955,
+  "act": 955,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_once",
+  "side": "bottom",
+  "ref": 1008,
+  "act": 1008,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_loop",
+  "side": "left",
+  "ref": 644,
+  "act": 644,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_loop",
+  "side": "right",
+  "ref": 810,
+  "act": 810,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_loop",
+  "side": "top",
+  "ref": 955,
+  "act": 955,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_loop",
+  "side": "bottom",
+  "ref": 1008,
+  "act": 1008,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_pingpong",
+  "side": "left",
+  "ref": 823,
+  "act": 823,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_pingpong",
+  "side": "right",
+  "ref": 988,
+  "act": 988,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_pingpong",
+  "side": "top",
+  "ref": 956,
+  "act": 956,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_pingpong",
+  "side": "bottom",
+  "ref": 1008,
+  "act": 1008,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_auto",
+  "side": "left",
+  "ref": 1001,
+  "act": 1001,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_auto",
+  "side": "right",
+  "ref": 1166,
+  "act": 1166,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_auto",
+  "side": "top",
+  "ref": 956,
+  "act": 956,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_mode_auto",
+  "side": "bottom",
+  "ref": 1008,
+  "act": 1008,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_done",
+  "side": "left",
+  "ref": 1081,
+  "act": 1081,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_done",
+  "side": "right",
+  "ref": 1234,
+  "act": 1233,
+  "d": -1,
+  "pass": true
+ },
+ {
+  "id": "beacon_done",
+  "side": "top",
+  "ref": 868,
+  "act": 868,
+  "d": 0,
+  "pass": true
+ },
+ {
+  "id": "beacon_done",
+  "side": "bottom",
+  "ref": 918,
+  "act": 918,
+  "d": 0,
+  "pass": true
+ }
+]
