@@ -1,0 +1,398 @@
+{
+  "schema_version": 1,
+  "purpose": "resource_delivery_inventory_not_runtime_ui",
+  "assets": [
+    {
+      "file": "common/button_compact_disabled.png",
+      "sha256": "3756c4e255b0a7fd609863f32a5dcf7577da2aac38b07ee5f59f3b12a0620e42",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "common/button_compact_hover.png",
+      "sha256": "44d60024f28a0ab3675aa0171678f8ad9d267b19580c7fd6f84b14c0d87d4fa7",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "common/button_compact_normal.png",
+      "sha256": "b68afe9aaa1d56b341e87da8c5152deefe13c2b6bc744a36da815dff3c21f40f",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "common/button_compact_pressed.png",
+      "sha256": "db4cdbebf7318bd5f970198e10322ee34dbd21d78e9999e66cbce94b04422476",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "common/button_menu_disabled.png",
+      "sha256": "24c496f2bba9b04679858c1d4424c063453f1cb111bad7bb5ee25ab6f39748a7",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "common/button_menu_disabled.svg",
+      "sha256": "9502744fadbb3efd1129ed992339b221d67dfaa750bbdbd3b2121d15212b4781"
+    },
+    {
+      "file": "common/button_menu_hover.png",
+      "sha256": "a9d0d9461e92745dcf712ea132a1eb5d6033b6286de9bce62d6d8dfdbd859bf4",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "common/button_menu_hover.svg",
+      "sha256": "0de4bda9645898c037e823985bdf9a87aef17bed969922b7451ce12c45431916"
+    },
+    {
+      "file": "common/button_menu_normal.png",
+      "sha256": "4d75a192b6848d684a02374cf42d6bd2e5c585f3c7dbedfb95951b4f1b3e622c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "common/button_menu_normal.svg",
+      "sha256": "763385c668496922762ef0baabe20542b7789422dd2088048979d0656d282383"
+    },
+    {
+      "file": "common/button_menu_pressed.png",
+      "sha256": "7ffb71689b1bc48d8089f5bafe53dfeaf8b505755897ac7e6e49c5ede84aca8c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "common/button_menu_pressed.svg",
+      "sha256": "c44437d678db01c7985ee006ddf8a40785264453c3d2c258b3241a4ff178238b"
+    },
+    {
+      "file": "common/dropdown_arrow.png",
+      "sha256": "29d882eb544092e717b9c1952357c9d5cf625ad85aad20f446b97c6fd3f349a2",
+      "size": [
+        20,
+        20
+      ]
+    },
+    {
+      "file": "common/dropdown_disabled.png",
+      "sha256": "14ce6a93036c0c19e2759d2daed7325e45837bdb12c1bd15930c3c6524fc3366",
+      "size": [
+        98,
+        98
+      ]
+    },
+    {
+      "file": "common/dropdown_hover.png",
+      "sha256": "27b1ce59f1749940d0c693368bef83028ec0cd3aeab73e0a5f6b2e32b1423867",
+      "size": [
+        98,
+        98
+      ]
+    },
+    {
+      "file": "common/dropdown_normal.png",
+      "sha256": "275017be21833d292d386e0cac29d74711a98018675fe7f44c87bc21fcb5bb15",
+      "size": [
+        98,
+        98
+      ]
+    },
+    {
+      "file": "common/dropdown_pressed.png",
+      "sha256": "91303ea4ac3dd24b1bc8471446944715d8b65657d7f5aea68ed6e87d199f1de6",
+      "size": [
+        98,
+        98
+      ]
+    },
+    {
+      "file": "common/panel_dark.png",
+      "sha256": "3b01a199fa87046651cea084ad3ff3d6d276202714ea8cb5b616e9c3da95cc88",
+      "size": [
+        96,
+        96
+      ]
+    },
+    {
+      "file": "common/panel_settings.png",
+      "sha256": "b4ef7c4f1186ed26a356d483c0cf618ed7766918ae90723158962d5e3bb3f7a0",
+      "size": [
+        96,
+        96
+      ]
+    },
+    {
+      "file": "common/slider_fill.png",
+      "sha256": "da171bfa81cdac4fcde2bc0d7f57995271b7ac7ea573b67392a376bd298490f2",
+      "size": [
+        381,
+        6
+      ]
+    },
+    {
+      "file": "common/slider_grabber_disabled.png",
+      "sha256": "6257df33dd922a80d9aea713321c6cde4fc76fd51dd6e6fe93e757f9606a1564",
+      "size": [
+        23,
+        23
+      ]
+    },
+    {
+      "file": "common/slider_grabber_hover.png",
+      "sha256": "5efce05bd6c6ea074769d7b54668403f77b11b61d152460c70e8018191a66622",
+      "size": [
+        23,
+        23
+      ]
+    },
+    {
+      "file": "common/slider_grabber_normal.png",
+      "sha256": "502797ba409503340c0321d3ccf181c2e3c747dc2241acacc40bbedcf17b350f",
+      "size": [
+        23,
+        23
+      ]
+    },
+    {
+      "file": "common/slider_grabber_pressed.png",
+      "sha256": "a17df795c6c53e75755fced66cbd7973a1d202c28a622d23c78f12dbd4298331",
+      "size": [
+        23,
+        23
+      ]
+    },
+    {
+      "file": "common/slider_track.png",
+      "sha256": "70d53ac2f2b5fec529c3761543792be5f6536bc9ffa228f60fc5fc4c041fc1f9",
+      "size": [
+        383,
+        10
+      ]
+    },
+    {
+      "file": "common/states_preview.png",
+      "sha256": "54e98e3cf7a89c0eaeb1357ba9eeceeb3540f3c27cd46cc00fc447442a485728",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "common/toggle_off.png",
+      "sha256": "0f42695207424d7558dad0fe5a08229c59dc71bb9d52d35d8c2a46fdff6ccd51",
+      "size": [
+        81,
+        37
+      ]
+    },
+    {
+      "file": "common/toggle_on.png",
+      "sha256": "6d00d413b98df72f5adb54dbc184cb7a558ed4d759d5a0ddf498240258515802",
+      "size": [
+        81,
+        37
+      ]
+    },
+    {
+      "file": "main_menu/slices/bg.png",
+      "sha256": "7998e5a4ce4c6ef35300aabcff09a4993422434fcb8d4cac3c4876c9812b6acf",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_quit_disabled.png",
+      "sha256": "24c496f2bba9b04679858c1d4424c063453f1cb111bad7bb5ee25ab6f39748a7",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_quit_hover.png",
+      "sha256": "a9d0d9461e92745dcf712ea132a1eb5d6033b6286de9bce62d6d8dfdbd859bf4",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_quit_normal.png",
+      "sha256": "4d75a192b6848d684a02374cf42d6bd2e5c585f3c7dbedfb95951b4f1b3e622c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_quit_pressed.png",
+      "sha256": "7ffb71689b1bc48d8089f5bafe53dfeaf8b505755897ac7e6e49c5ede84aca8c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_settings_disabled.png",
+      "sha256": "24c496f2bba9b04679858c1d4424c063453f1cb111bad7bb5ee25ab6f39748a7",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_settings_hover.png",
+      "sha256": "a9d0d9461e92745dcf712ea132a1eb5d6033b6286de9bce62d6d8dfdbd859bf4",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_settings_normal.png",
+      "sha256": "4d75a192b6848d684a02374cf42d6bd2e5c585f3c7dbedfb95951b4f1b3e622c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_settings_pressed.png",
+      "sha256": "7ffb71689b1bc48d8089f5bafe53dfeaf8b505755897ac7e6e49c5ede84aca8c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_start_disabled.png",
+      "sha256": "24c496f2bba9b04679858c1d4424c063453f1cb111bad7bb5ee25ab6f39748a7",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_start_hover.png",
+      "sha256": "a9d0d9461e92745dcf712ea132a1eb5d6033b6286de9bce62d6d8dfdbd859bf4",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_start_normal.png",
+      "sha256": "4d75a192b6848d684a02374cf42d6bd2e5c585f3c7dbedfb95951b4f1b3e622c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/btn_start_pressed.png",
+      "sha256": "7ffb71689b1bc48d8089f5bafe53dfeaf8b505755897ac7e6e49c5ede84aca8c",
+      "size": [
+        500,
+        116
+      ]
+    },
+    {
+      "file": "main_menu/slices/error_bar.png",
+      "sha256": "40c8c16ef8ad4fd6cf5b947b904f4b04491a25c8efd26fd3d3ffc7a03a84adc4",
+      "size": [
+        1920,
+        64
+      ]
+    },
+    {
+      "file": "main_menu/slices/game_title_art.png",
+      "sha256": "c42b1f797e3dcadf27b917b947ce1fd9340ea120085109f47d93fc6876e7fd98",
+      "size": [
+        580,
+        149
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/btn_close_disabled.png",
+      "sha256": "3756c4e255b0a7fd609863f32a5dcf7577da2aac38b07ee5f59f3b12a0620e42",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/btn_close_hover.png",
+      "sha256": "44d60024f28a0ab3675aa0171678f8ad9d267b19580c7fd6f84b14c0d87d4fa7",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/btn_close_normal.png",
+      "sha256": "b68afe9aaa1d56b341e87da8c5152deefe13c2b6bc744a36da815dff3c21f40f",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/btn_close_pressed.png",
+      "sha256": "db4cdbebf7318bd5f970198e10322ee34dbd21d78e9999e66cbce94b04422476",
+      "size": [
+        98,
+        66
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/mask.png",
+      "sha256": "537d589e90aa720a629d6f614112019e544999611109a033fd737d3b5d78d041",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/panel.png",
+      "sha256": "b4ef7c4f1186ed26a356d483c0cf618ed7766918ae90723158962d5e3bb3f7a0",
+      "size": [
+        96,
+        96
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/separator_footer.png",
+      "sha256": "e52b50a3d8dc814c720cb79d6b14a8babb78abd450159e7ee6edf23ff1f137a8",
+      "size": [
+        889,
+        1
+      ]
+    },
+    {
+      "file": "settings_overlay/slices/separator_header.png",
+      "sha256": "ed7050c4cb85f5d251766372bfbdf345e2633896e8f8937df8a46d2401ce5a46",
+      "size": [
+        889,
+        1
+      ]
+    }
+  ]
+}

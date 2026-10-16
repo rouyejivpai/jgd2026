@@ -1,0 +1,4567 @@
+{
+  "schema_version": 1,
+  "screen": "battle_hud",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "_comment": "由 tools/ui_fit_reference.py 从 fit_spec.json 生成：以批准整图 ../hud/design_low_noise.png 为准拟合（切片按轮廓、文字按 ink），勿手改。",
+  "elements": [
+    {
+      "id": "quest",
+      "kind": "image",
+      "rect": [
+        46,
+        35,
+        358,
+        124
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/quest.png"
+    },
+    {
+      "id": "quest_title",
+      "kind": "text_style",
+      "rect": [
+        148,
+        68,
+        211,
+        37
+      ],
+      "text_rect": [
+        0,
+        0,
+        211,
+        37
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 25,
+        "color": "#EBD48A"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          149.3,
+          75.7,
+          157.3,
+          24.1
+        ],
+        "ref_text": "第 3 关 · 墙缝"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "quest_objective",
+      "kind": "text_style",
+      "rect": [
+        149,
+        105,
+        211,
+        25
+      ],
+      "text_rect": [
+        0,
+        0,
+        211,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 17,
+        "color": "#E5E0E6"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          149.3,
+          110.2,
+          188.3,
+          14.9
+        ],
+        "ref_text": "摧毁哭墙后方的回响骸柱"
+      },
+      "overflow": "manual"
+    },
+    {
+      "id": "timer",
+      "kind": "image",
+      "rect": [
+        808,
+        25,
+        312,
+        122
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/timer.png"
+    },
+    {
+      "id": "timer_value",
+      "kind": "text_style",
+      "rect": [
+        931,
+        71,
+        57,
+        33
+      ],
+      "text_rect": [
+        0,
+        0,
+        57,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 22,
+        "color": "#F4F8F8"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          937.0,
+          78.0,
+          47.1,
+          18.4
+        ],
+        "ref_text": "00.0"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "timer_phase",
+      "kind": "text_style",
+      "rect": [
+        1010,
+        78,
+        73,
+        21
+      ],
+      "text_rect": [
+        0,
+        0,
+        73,
+        21
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 14,
+        "color": "#D3DEE1"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1017.4,
+          81.5,
+          58.6,
+          12.6
+        ],
+        "ref_text": "部署阶段"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_retry",
+      "kind": "button",
+      "rect": [
+        1354,
+        39,
+        80,
+        96
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/retry.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/retry.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/retry.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/retry.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        21,
+        44,
+        46,
+        23
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 15,
+        "color": "#EAE6E5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1383.4,
+          86.1,
+          29.9,
+          16.1
+        ],
+        "ref_text": "重试"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_speed1",
+      "kind": "button",
+      "rect": [
+        1434,
+        40,
+        79,
+        95
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/speed1.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed1.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed1.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed1.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        19,
+        41,
+        46,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 17,
+        "color": "#D8DDDB"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1463.5,
+          86.1,
+          21.8,
+          14.9
+        ],
+        "ref_text": "1×"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_speed2",
+      "kind": "button",
+      "rect": [
+        1513,
+        39,
+        80,
+        96
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/speed2.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed2.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed2.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/speed2.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        16,
+        42,
+        46,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 17,
+        "color": "#E2E4DF"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1540.3,
+          86.1,
+          23.0,
+          14.9
+        ],
+        "ref_text": "2×"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_pause",
+      "kind": "button",
+      "rect": [
+        1593,
+        39,
+        80,
+        96
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/pause.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/pause.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/pause.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/pause.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        15,
+        44,
+        46,
+        21
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 14,
+        "color": "#D6D7D5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1616.1,
+          86.1,
+          31.0,
+          14.9
+        ],
+        "ref_text": "暂停"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_settings",
+      "kind": "button",
+      "rect": [
+        1678,
+        40,
+        80,
+        96
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/settings.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/settings.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/settings.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/settings.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        16,
+        43,
+        46,
+        23
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 15,
+        "color": "#E3E5E1"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1701.6,
+          86.1,
+          31.0,
+          14.9
+        ],
+        "ref_text": "设置"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_exit",
+      "kind": "button",
+      "rect": [
+        1766,
+        39,
+        80,
+        96
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/exit.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/exit.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/exit.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/exit.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        16,
+        44,
+        46,
+        23
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 15,
+        "color": "#FEF4EB"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1788.7,
+          86.1,
+          32.2,
+          14.9
+        ],
+        "ref_text": "退出"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_task",
+      "kind": "button",
+      "rect": [
+        1617,
+        137,
+        134,
+        57
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_task_clean.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_task_clean.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_task_clean.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_task_clean.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        45,
+        16,
+        51,
+        21
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 14,
+        "color": "#EDF3F6"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1673.1,
+          157.2,
+          28.7,
+          13.8
+        ],
+        "ref_text": "任务"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_mechanics",
+      "kind": "button",
+      "rect": [
+        1753,
+        137,
+        134,
+        57
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/mechanics.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/mechanics.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/mechanics.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/mechanics.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        32,
+        17,
+        70,
+        21
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 14,
+        "color": "#E1D5E2"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1790.2,
+          157.2,
+          60.9,
+          13.8
+        ],
+        "ref_text": "机制说明"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_clear",
+      "kind": "button",
+      "rect": [
+        1563,
+        857,
+        165,
+        68
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_clear_clean.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_clear_clean.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_clear_clean.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": "derived/clear_disabled.png"
+      },
+      "text_rect": [
+        43,
+        23,
+        83,
+        24
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 16,
+        "color": "#DAEDF0",
+        "disabled_color": "#969192"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1629.5,
+          883.7,
+          34.4,
+          17.2
+        ],
+        "ref_text": "清空"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "btn_hint",
+      "kind": "button",
+      "rect": [
+        1727,
+        856,
+        169,
+        69
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/hint.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/hint.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/hint.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": "derived/hint_disabled.png"
+      },
+      "text_rect": [
+        39,
+        24,
+        78,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 17,
+        "color": "#EAECF9",
+        "disabled_color": "#A4A09F"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1787.9,
+          883.7,
+          35.6,
+          17.2
+        ],
+        "ref_text": "提示"
+      }
+    },
+    {
+      "id": "btn_start",
+      "kind": "button",
+      "rect": [
+        1544,
+        917,
+        360,
+        139
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_start_clean.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_start_clean.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_start_clean.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": "derived/start_disabled.png"
+      },
+      "text_rect": [
+        96,
+        31,
+        172,
+        59
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 40,
+        "color": "#FBF2D2",
+        "disabled_color": "#958F8E"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1684.6,
+          958.3,
+          85.0,
+          40.2
+        ],
+        "ref_text": "开始"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "budget",
+      "kind": "image",
+      "rect": [
+        24,
+        919,
+        325,
+        130
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/budget.png"
+    },
+    {
+      "id": "budget_title",
+      "kind": "text_style",
+      "rect": [
+        120,
+        953,
+        172,
+        24
+      ],
+      "text_rect": [
+        0,
+        0,
+        172,
+        24
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 16,
+        "color": "#F1F0D4"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          188.3,
+          956.0,
+          35.6,
+          17.2
+        ],
+        "ref_text": "预算"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "budget_value",
+      "kind": "text_style",
+      "rect": [
+        118,
+        979,
+        172,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        172,
+        44
+      ],
+      "font": {
+        "family": "Cinzel",
+        "size": 32,
+        "color": "#F2EABB"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          170.0,
+          984.7,
+          66.6,
+          24.1
+        ],
+        "ref_text": "6 / 8",
+        "over_color": "#EA453C",
+        "_note_over": "超出预算时的红色，取自 ui_05 整图"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "budget_fixed",
+      "kind": "text_style",
+      "rect": [
+        123,
+        957,
+        172,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        172,
+        44
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 30,
+        "color": "#FAF1BD"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          149.0,
+          966.0,
+          121.7,
+          28.7
+        ],
+        "ref_text": "固定出场"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "card_1",
+      "kind": "image",
+      "rect": [
+        422,
+        827,
+        200,
+        230
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/card_swift.png",
+      "data": {
+        "reference_form": "swift",
+        "tint": {
+          "hover": "#FFFFFF",
+          "pressed": "#C9C2C9",
+          "disabled": "#E6E2E6"
+        },
+        "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+      }
+    },
+    {
+      "id": "card_2",
+      "kind": "image",
+      "rect": [
+        642,
+        828,
+        199,
+        229
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/card_striker.png",
+      "data": {
+        "reference_form": "striker",
+        "tint": {
+          "hover": "#FFFFFF",
+          "pressed": "#C9C2C9",
+          "disabled": "#E6E2E6"
+        },
+        "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+      }
+    },
+    {
+      "id": "card_3",
+      "kind": "image",
+      "rect": [
+        860,
+        827,
+        200,
+        230
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/card_bulwark.png",
+      "data": {
+        "reference_form": "bulwark",
+        "tint": {
+          "hover": "#FFFFFF",
+          "pressed": "#C9C2C9",
+          "disabled": "#E6E2E6"
+        },
+        "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+      }
+    },
+    {
+      "id": "card_4",
+      "kind": "image",
+      "rect": [
+        1081,
+        827,
+        200,
+        230
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/card_spitter.png",
+      "data": {
+        "reference_form": "lancer",
+        "tint": {
+          "hover": "#FFFFFF",
+          "pressed": "#C9C2C9",
+          "disabled": "#E6E2E6"
+        },
+        "_note": "切片名 card_spitter，内容是己方「远射形态」= 形态 id lancer（spitter 是敌方骨喉）",
+        "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+      }
+    },
+    {
+      "id": "card_5",
+      "kind": "image",
+      "rect": [
+        1301,
+        828,
+        199,
+        229
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/card_locked.png",
+      "data": {
+        "reference_form": "locked",
+        "tint": {
+          "hover": "#FFFFFF",
+          "pressed": "#C9C2C9",
+          "disabled": "#E6E2E6"
+        },
+        "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+      }
+    },
+    {
+      "id": "card_name",
+      "kind": "text_style",
+      "rect": [
+        669,
+        973,
+        149,
+        25
+      ],
+      "text_rect": [
+        0,
+        0,
+        149,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 17,
+        "color": "#EDE9EF"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          690.1,
+          976.7,
+          105.6,
+          17.2
+        ],
+        "ref_text": "基础攻击形态",
+        "card": "card_2"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "card_cost_label",
+      "kind": "text_style",
+      "rect": [
+        498,
+        1013,
+        46,
+        19
+      ],
+      "text_rect": [
+        0,
+        0,
+        46,
+        19
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 13,
+        "color": "#F4DD74"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          503.0,
+          1016.9,
+          37.9,
+          11.5
+        ],
+        "ref_text": "COST",
+        "card": "card_1"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "card_cost_value",
+      "kind": "text_style",
+      "rect": [
+        554,
+        1002,
+        34,
+        46
+      ],
+      "text_rect": [
+        0,
+        0,
+        34,
+        46
+      ],
+      "font": {
+        "family": "Cinzel",
+        "size": 33,
+        "color": "#FDEB89"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          561.5,
+          1010.0,
+          17.2,
+          26.4
+        ],
+        "ref_text": "3",
+        "card": "card_1"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "problems_panel",
+      "kind": "ninepatch",
+      "rect": [
+        559,
+        693,
+        801,
+        176
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "problems_title",
+      "kind": "text_style",
+      "rect": [
+        607,
+        722,
+        712,
+        34
+      ],
+      "text_rect": [
+        0,
+        0,
+        712,
+        34
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 23,
+        "color": "#EA453B"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          607.5,
+          728.8,
+          112.5,
+          24.1
+        ],
+        "ref_text": "无法开始："
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "problems_line",
+      "kind": "text_style",
+      "rect": [
+        607,
+        768,
+        712,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        712,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D74339"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          607.5,
+          774.7,
+          229.7,
+          21.8
+        ],
+        "ref_text": "出场 Cost 12，超出预算",
+        "line_pitch": 37.9,
+        "warn_color": "#C0AF91",
+        "_note": "行距取 ui_05 两行 ink 之差（33 整图像素）；阻塞项颜色 = 本元素字色（红），提醒项 = warn_color"
+      }
+    },
+    {
+      "id": "obj_panel",
+      "kind": "ninepatch",
+      "rect": [
+        460,
+        214,
+        999,
+        577
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "obj_close",
+      "kind": "button",
+      "rect": [
+        1265,
+        246,
+        151,
+        73
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        31,
+        19,
+        92,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#ECDFCF"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1320.6,
+          272.0,
+          42.5,
+          21.8
+        ],
+        "ref_text": "关闭"
+      }
+    },
+    {
+      "id": "obj_moon",
+      "kind": "image",
+      "rect": [
+        503,
+        239,
+        67,
+        88
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_crescent_moon.png"
+    },
+    {
+      "id": "obj_close_gem",
+      "kind": "image",
+      "rect": [
+        1389,
+        270,
+        20,
+        25
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_close_gem.png"
+    },
+    {
+      "id": "obj_title",
+      "kind": "text_style",
+      "rect": [
+        572,
+        256,
+        574,
+        54
+      ],
+      "text_rect": [
+        0,
+        0,
+        574,
+        54
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 37,
+        "color": "#FCF3D4"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          571.9,
+          266.3,
+          74.6,
+          35.6
+        ],
+        "ref_text": "任务"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "obj_sep",
+      "kind": "flatbox",
+      "rect": [
+        520,
+        324,
+        881,
+        1
+      ],
+      "style": {
+        "bg": "#79574D"
+      }
+    },
+    {
+      "id": "obj_text",
+      "kind": "text_style",
+      "rect": [
+        521,
+        355,
+        881,
+        43
+      ],
+      "text_rect": [
+        0,
+        0,
+        881,
+        43
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 29,
+        "color": "#EBC14B"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          521.3,
+          362.7,
+          319.2,
+          27.5
+        ],
+        "ref_text": "摧毁哭墙后方的回响骸柱"
+      }
+    },
+    {
+      "id": "obj_win_header",
+      "kind": "text_style",
+      "rect": [
+        522,
+        449,
+        881,
+        37
+      ],
+      "text_rect": [
+        0,
+        0,
+        881,
+        37
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 25,
+        "color": "#F2C54A"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          522.5,
+          455.6,
+          99.9,
+          23.0
+        ],
+        "ref_text": "胜利条件"
+      }
+    },
+    {
+      "id": "obj_box",
+      "kind": "flatbox",
+      "rect": [
+        520,
+        492,
+        881,
+        69
+      ],
+      "style": {
+        "bg": "#241B29",
+        "border": "#55425C",
+        "border_width": 1.7,
+        "radius": 6.9
+      },
+      "data": {
+        "box_gap_ref": 12,
+        "_note": "多条条件时相邻框间距（整图只有一条，取 12 整图像素）"
+      }
+    },
+    {
+      "id": "obj_box_text",
+      "kind": "text_style",
+      "rect": [
+        550,
+        507,
+        827,
+        37
+      ],
+      "text_rect": [
+        0,
+        0,
+        827,
+        37
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 25,
+        "color": "#EEE9DD"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          550.0,
+          514.2,
+          173.4,
+          24.1
+        ],
+        "ref_text": "摧毁：回响骸柱"
+      }
+    },
+    {
+      "id": "obj_lose_header",
+      "kind": "text_style",
+      "rect": [
+        524,
+        588,
+        881,
+        37
+      ],
+      "text_rect": [
+        0,
+        0,
+        881,
+        37
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 25,
+        "color": "#E84E3C"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          523.6,
+          594.5,
+          98.8,
+          24.1
+        ],
+        "ref_text": "失败条件"
+      }
+    },
+    {
+      "id": "obj_box2",
+      "kind": "flatbox",
+      "rect": [
+        520,
+        631,
+        881,
+        69
+      ],
+      "style": {
+        "bg": "#241B29",
+        "border": "#55425C",
+        "border_width": 1.7,
+        "radius": 6.9
+      }
+    },
+    {
+      "id": "mech_panel",
+      "kind": "ninepatch",
+      "rect": [
+        425,
+        197,
+        1069,
+        644
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "mech_close",
+      "kind": "button",
+      "rect": [
+        1317,
+        252,
+        124,
+        46
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        19,
+        6,
+        92,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E2D6C1"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1360.8,
+          265.1,
+          37.9,
+          19.5
+        ],
+        "ref_text": "关闭"
+      }
+    },
+    {
+      "id": "mech_title",
+      "kind": "text_style",
+      "rect": [
+        487,
+        244,
+        689,
+        53
+      ],
+      "text_rect": [
+        0,
+        0,
+        689,
+        53
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 36,
+        "color": "#FCEFCF"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          486.9,
+          253.6,
+          150.4,
+          35.6
+        ],
+        "ref_text": "机制说明"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "mech_sep",
+      "kind": "flatbox",
+      "rect": [
+        485,
+        313,
+        968,
+        1
+      ],
+      "style": {
+        "bg": "#604C4E"
+      }
+    },
+    {
+      "id": "mech_hint",
+      "kind": "text_style",
+      "rect": [
+        489,
+        348,
+        968,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        968,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D1A441"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          489.2,
+          353.5,
+          961.1,
+          20.7
+        ],
+        "ref_text": "本关要点：先让它看见谁，会改变它接下来追谁。哭墙守卫锁定首个进入视野的分裂体，直到它死亡或",
+        "lines_ref": 2,
+        "_note": "整图两行，行高取 hint 两行 ink 之差"
+      }
+    },
+    {
+      "id": "mech_box",
+      "kind": "flatbox",
+      "rect": [
+        485,
+        442,
+        949,
+        106
+      ],
+      "style": {
+        "bg": "#201624",
+        "border": "#48374D",
+        "border_width": 1.7,
+        "radius": 6.9
+      },
+      "data": {
+        "_note": "最小高 92 整图像素（单行也同高），文字竖直居中"
+      }
+    },
+    {
+      "id": "mech_box_text",
+      "kind": "text_style",
+      "rect": [
+        510,
+        469,
+        907,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        907,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D9CDB7"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          509.9,
+          471.7,
+          896.8,
+          19.5
+        ],
+        "ref_text": "单位从上到下检查指令，执行第一条条件成立的；之后的指令本次不再看。每次决策都从顶部重新"
+      }
+    },
+    {
+      "id": "mech_box2",
+      "kind": "flatbox",
+      "rect": [
+        485,
+        560,
+        949,
+        107
+      ],
+      "style": {
+        "bg": "#201624",
+        "border": "#48374D",
+        "border_width": 1.7,
+        "radius": 6.9
+      }
+    },
+    {
+      "id": "mech_track",
+      "kind": "ninepatch",
+      "rect": [
+        1443,
+        445,
+        6,
+        357
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/scroll_track.png",
+      "ninepatch": [
+        0,
+        8,
+        0,
+        8
+      ]
+    },
+    {
+      "id": "mech_thumb",
+      "kind": "ninepatch",
+      "rect": [
+        1443,
+        446,
+        6,
+        127
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/scroll_thumb.png",
+      "ninepatch": [
+        0,
+        8,
+        0,
+        8
+      ]
+    },
+    {
+      "id": "hint_panel",
+      "kind": "ninepatch",
+      "rect": [
+        512,
+        257,
+        895,
+        418
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "hint_title",
+      "kind": "text_style",
+      "rect": [
+        567,
+        297,
+        643,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        643,
+        48
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 33,
+        "color": "#FCF1D2"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          567.3,
+          306.4,
+          67.8,
+          33.3
+        ],
+        "ref_text": "提示"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "hint_close",
+      "kind": "button",
+      "rect": [
+        1251,
+        302,
+        104,
+        45
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_close_outline.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        14,
+        5,
+        87,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D0C5BC"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1287.3,
+          314.5,
+          35.6,
+          19.5
+        ],
+        "ref_text": "关闭"
+      }
+    },
+    {
+      "id": "hint_sep",
+      "kind": "flatbox",
+      "rect": [
+        565,
+        364,
+        790,
+        1
+      ],
+      "style": {
+        "bg": "#513C3D"
+      }
+    },
+    {
+      "id": "hint_line",
+      "kind": "text_style",
+      "rect": [
+        568,
+        415,
+        790,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#D0C1B0"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          568.4,
+          421.2,
+          736.1,
+          20.7
+        ],
+        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+      }
+    },
+    {
+      "id": "hint_line2",
+      "kind": "text_style",
+      "rect": [
+        567,
+        501,
+        790,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#D3C4B7"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          567.3,
+          507.3,
+          777.4,
+          19.5
+        ],
+        "ref_text": "2. 快速形态移速 4.5，守卫只有 1.2。让快速形态先走进守卫视野，再在被追近时撤离"
+      }
+    },
+    {
+      "id": "hint_dot_on",
+      "kind": "flatbox",
+      "rect": [
+        572,
+        608,
+        10,
+        10
+      ],
+      "style": {
+        "bg": "#EBBA4D",
+        "radius": 5.2
+      }
+    },
+    {
+      "id": "hint_dot_off",
+      "kind": "flatbox",
+      "rect": [
+        596,
+        608,
+        10,
+        10
+      ],
+      "style": {
+        "bg": "#734C79",
+        "radius": 5.2
+      }
+    },
+    {
+      "id": "rec_panel",
+      "kind": "ninepatch",
+      "rect": [
+        514,
+        188,
+        891,
+        650
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "rec_hint4",
+      "kind": "text_style",
+      "rect": [
+        570,
+        597,
+        790,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#D8AD3B"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          569.6,
+          602.6,
+          607.5,
+          20.7
+        ],
+        "ref_text": "4. 推荐部署：快速形态 (2,5) 面向庭院；基础攻击形态 (2,1) 走通道。"
+      }
+    },
+    {
+      "id": "rec_sep",
+      "kind": "flatbox",
+      "rect": [
+        565,
+        660,
+        790,
+        1
+      ],
+      "style": {
+        "bg": "#49383C"
+      }
+    },
+    {
+      "id": "rec_confirm",
+      "kind": "text_style",
+      "rect": [
+        571,
+        682,
+        790,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#DEB43D"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          570.7,
+          688.6,
+          419.1,
+          19.5
+        ],
+        "ref_text": "将覆盖当前部署与指令，确定摆放推荐阵型？"
+      }
+    },
+    {
+      "id": "rec_apply",
+      "kind": "button",
+      "rect": [
+        1038,
+        737,
+        146,
+        54
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_place.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_place.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_place.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_place.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        10,
+        10,
+        126,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#EDF2F3"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1089.8,
+          754.0,
+          42.5,
+          19.5
+        ],
+        "ref_text": "摆放"
+      }
+    },
+    {
+      "id": "rec_cancel",
+      "kind": "button",
+      "rect": [
+        1209,
+        737,
+        141,
+        54
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_cancel.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_cancel.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_cancel.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_cancel.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        10,
+        10,
+        122,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#FAF4F5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1258.6,
+          754.0,
+          40.2,
+          19.5
+        ],
+        "ref_text": "取消"
+      }
+    },
+    {
+      "id": "rec_hint1",
+      "kind": "text_style",
+      "rect": [
+        573,
+        325,
+        790,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#DACEC4"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          573.0,
+          330.5,
+          721.1,
+          20.7
+        ],
+        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+      }
+    },
+    {
+      "id": "rec_hint2",
+      "kind": "text_style",
+      "rect": [
+        570,
+        396,
+        790,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        790,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#D8CCC1"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          569.6,
+          401.7,
+          780.9,
+          19.5
+        ],
+        "ref_text": "2. 快速形态移速 4.5，守卫只有 1.2。让快速形态先走进守卫视野，再在被追近时撤离——"
+      }
+    },
+    {
+      "id": "rec_title",
+      "kind": "text_style",
+      "rect": [
+        567,
+        225,
+        643,
+        48
+      ],
+      "text_rect": [
+        0,
+        0,
+        643,
+        48
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 33,
+        "color": "#FDF7E0"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          567.3,
+          234.1,
+          142.4,
+          34.4
+        ],
+        "ref_text": "推荐阵型"
+      }
+    },
+    {
+      "id": "win_panel",
+      "kind": "ninepatch",
+      "rect": [
+        551,
+        203,
+        816,
+        613
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "win_title_sigil",
+      "kind": "image",
+      "rect": [
+        871,
+        217,
+        180,
+        180
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_victory_sigil.png"
+    },
+    {
+      "id": "win_title_crescent",
+      "kind": "image",
+      "rect": [
+        581,
+        227,
+        54,
+        70
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_crescent_moon.png"
+    },
+    {
+      "id": "win_title_lines",
+      "kind": "image",
+      "rect": [
+        637,
+        305,
+        661,
+        22
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_victory_title_lines.png"
+    },
+    {
+      "id": "win_title",
+      "kind": "text_style",
+      "rect": [
+        721,
+        269,
+        482,
+        88
+      ],
+      "text_rect": [
+        0,
+        0,
+        482,
+        88
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 60,
+        "color": "#F8EDB9"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          841.7,
+          286.9,
+          237.7,
+          67.7
+        ],
+        "ref_text": "战斗胜利"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "win_sep",
+      "kind": "flatbox",
+      "rect": [
+        586,
+        381,
+        746,
+        1
+      ],
+      "style": {
+        "bg": "#6B5240"
+      }
+    },
+    {
+      "id": "win_level",
+      "kind": "text_style",
+      "rect": [
+        621,
+        411,
+        735,
+        44
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        44
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 30,
+        "color": "#F9D043"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          621.2,
+          420.1,
+          60.9,
+          28.7
+        ],
+        "ref_text": "墙缝"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "win_time",
+      "kind": "text_style",
+      "rect": [
+        630,
+        480,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#E4D6C0"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          630.4,
+          486.6,
+          183.7,
+          24.1
+        ],
+        "ref_text": "完成时间：24.8"
+      }
+    },
+    {
+      "id": "win_survivors",
+      "kind": "text_style",
+      "rect": [
+        630,
+        531,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#E0D4C1"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          630.4,
+          538.3,
+          423.7,
+          24.1
+        ],
+        "ref_text": "存活单位：快速形态、基础攻击形态"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "win_reward_head",
+      "kind": "text_style",
+      "rect": [
+        632,
+        608,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#E8B42E"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          631.6,
+          615.2,
+          45.9,
+          23.0
+        ],
+        "ref_text": "解锁"
+      }
+    },
+    {
+      "id": "win_reward",
+      "kind": "text_style",
+      "rect": [
+        630,
+        644,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#DEAD32"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          630.4,
+          650.8,
+          274.4,
+          23.0
+        ],
+        "ref_text": "新选敌：最远、生命最低",
+        "_note": "奖励多行时在「解锁」与按钮之间上下滚动"
+      }
+    },
+    {
+      "id": "win_retry",
+      "kind": "button",
+      "rect": [
+        619,
+        709,
+        192,
+        59
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        34,
+        16,
+        34,
+        16
+      ],
+      "text_rect": [
+        31,
+        12,
+        134,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 22,
+        "color": "#EEE8EB"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          694.7,
+          727.7,
+          43.6,
+          21.8
+        ],
+        "ref_text": "重试"
+      }
+    },
+    {
+      "id": "win_next",
+      "kind": "button",
+      "rect": [
+        850,
+        709,
+        220,
+        59
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        34,
+        16,
+        34,
+        16
+      ],
+      "text_rect": [
+        35,
+        12,
+        163,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 22,
+        "color": "#C7D3D7"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          933.6,
+          727.7,
+          60.9,
+          21.8
+        ],
+        "ref_text": "下一关"
+      }
+    },
+    {
+      "id": "win_back",
+      "kind": "button",
+      "rect": [
+        1110,
+        709,
+        191,
+        59
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        34,
+        16,
+        34,
+        16
+      ],
+      "text_rect": [
+        28,
+        12,
+        133,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 22,
+        "color": "#FAF8FA"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1182.8,
+          727.7,
+          45.9,
+          21.8
+        ],
+        "ref_text": "返回"
+      }
+    },
+    {
+      "id": "lose_panel",
+      "kind": "ninepatch",
+      "rect": [
+        494,
+        187,
+        933,
+        609
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "lose_title_compass",
+      "kind": "image",
+      "rect": [
+        998,
+        209,
+        293,
+        293
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_defeat_compass.png"
+    },
+    {
+      "id": "lose_title",
+      "kind": "text_style",
+      "rect": [
+        563,
+        225,
+        482,
+        69
+      ],
+      "text_rect": [
+        0,
+        0,
+        482,
+        69
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 47,
+        "color": "#F8515A"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          562.7,
+          238.7,
+          190.6,
+          45.9
+        ],
+        "ref_text": "战斗失败"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "lose_sep",
+      "kind": "image",
+      "rect": [
+        551,
+        305,
+        815,
+        18
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_defeat_divider.png"
+    },
+    {
+      "id": "lose_level",
+      "kind": "text_style",
+      "rect": [
+        560,
+        344,
+        735,
+        42
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        42
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 28,
+        "color": "#F54D54"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          560.4,
+          351.2,
+          56.3,
+          27.5
+        ],
+        "ref_text": "墙缝"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "lose_time",
+      "kind": "text_style",
+      "rect": [
+        562,
+        421,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#E4D3AE"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          561.5,
+          428.1,
+          180.3,
+          23.0
+        ],
+        "ref_text": "完成时间：24.8"
+      }
+    },
+    {
+      "id": "lose_survivors",
+      "kind": "text_style",
+      "rect": [
+        563,
+        469,
+        735,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        735,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#D6C6A3"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          562.7,
+          476.3,
+          151.6,
+          24.1
+        ],
+        "ref_text": "存活单位：无"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "lose_sep2",
+      "kind": "flatbox",
+      "rect": [
+        551,
+        546,
+        815,
+        1
+      ],
+      "style": {
+        "bg": "#6B5240"
+      }
+    },
+    {
+      "id": "lose_reason",
+      "kind": "text_style",
+      "rect": [
+        563,
+        576,
+        816,
+        35
+      ],
+      "text_rect": [
+        0,
+        0,
+        816,
+        35
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 24,
+        "color": "#E34349"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          562.7,
+          583.0,
+          800.4,
+          23.0
+        ],
+        "ref_text": "原因：分裂体全部倒下。回看守卫锁定了谁：如果快速形态离开了守卫视野，",
+        "lines_ref": 2,
+        "_note": "原因（与最后一击来源）在两条分隔线下方，多行时在按钮以上上下滚动"
+      }
+    },
+    {
+      "id": "lose_retry",
+      "kind": "button",
+      "rect": [
+        655,
+        690,
+        287,
+        62
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_teal.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        34,
+        16,
+        34,
+        16
+      ],
+      "text_rect": [
+        26,
+        12,
+        230,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 22,
+        "color": "#F8F7F4"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          774.0,
+          709.3,
+          45.9,
+          23.0
+        ],
+        "ref_text": "重试"
+      }
+    },
+    {
+      "id": "lose_back",
+      "kind": "button",
+      "rect": [
+        976,
+        690,
+        299,
+        62
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_result_purple.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        34,
+        16,
+        34,
+        16
+      ],
+      "text_rect": [
+        26,
+        12,
+        241,
+        33
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 22,
+        "color": "#FCF8FD"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1100.1,
+          709.3,
+          48.2,
+          23.0
+        ],
+        "ref_text": "返回"
+      }
+    },
+    {
+      "id": "det_panel",
+      "kind": "ninepatch",
+      "rect": [
+        413,
+        115,
+        1093,
+        841
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/modal_panel.png",
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": "det_footer_tab",
+      "kind": "ninepatch",
+      "rect": [
+        811,
+        918,
+        299,
+        44
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_footer_tab.png",
+      "ninepatch": [
+        42,
+        15,
+        42,
+        7
+      ]
+    },
+    {
+      "id": "det_scrim",
+      "kind": "flatbox",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "style": {
+        "bg": "#0C060E99"
+      }
+    },
+    {
+      "id": "det_portrait",
+      "kind": "flatbox",
+      "rect": [
+        465,
+        149,
+        149,
+        145
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_close",
+      "kind": "button",
+      "rect": [
+        1331,
+        144,
+        154,
+        81
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        20,
+        16,
+        20,
+        16
+      ],
+      "text_rect": [
+        27,
+        25,
+        103,
+        27
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 18,
+        "color": "#F9F6F5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1391.8,
+          174.5,
+          35.6,
+          19.5
+        ],
+        "ref_text": "关闭"
+      }
+    },
+    {
+      "id": "det_remove",
+      "kind": "button",
+      "rect": [
+        1208,
+        156,
+        124,
+        56
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/p6_button_remove.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_remove.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_remove.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/p6_button_remove.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "text_rect": [
+        12,
+        13,
+        103,
+        27
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 18,
+        "color": "#F9F6F5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1391.8,
+          174.5,
+          35.6,
+          19.5
+        ],
+        "ref_text": "关闭"
+      }
+    },
+    {
+      "id": "det_title",
+      "kind": "text_style",
+      "rect": [
+        640,
+        151,
+        551,
+        62
+      ],
+      "text_rect": [
+        0,
+        0,
+        551,
+        62
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 42,
+        "color": "#F9CB52"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          639.6,
+          163.0,
+          172.2,
+          40.2
+        ],
+        "ref_text": "快速形态"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "det_desc",
+      "kind": "text_style",
+      "rect": [
+        644,
+        227,
+        804,
+        34
+      ],
+      "text_rect": [
+        0,
+        0,
+        804,
+        34
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 23,
+        "color": "#D8D3D6"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          644.2,
+          234.1,
+          592.5,
+          23.0
+        ],
+        "ref_text": "四肢拉长、脊骨外露的轻捷形态。用来诱敌、牵制与撤离。"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "det_cost",
+      "kind": "text_style",
+      "rect": [
+        644,
+        259,
+        804,
+        25
+      ],
+      "text_rect": [
+        0,
+        0,
+        804,
+        25
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 17,
+        "color": "#D8D3D6"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          644.2,
+          234.1,
+          592.5,
+          23.0
+        ],
+        "ref_text": "四肢拉长、脊骨外露的轻捷形态。用来诱敌、牵制与撤离。"
+      }
+    },
+    {
+      "id": "det_stats",
+      "kind": "ninepatch",
+      "rect": [
+        433,
+        283,
+        1060,
+        92
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/stats_panel.png",
+      "ninepatch": [
+        30,
+        26,
+        30,
+        26
+      ]
+    },
+    {
+      "id": "det_stat_icon_0",
+      "kind": "flatbox",
+      "rect": [
+        464,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_0",
+      "kind": "text_style",
+      "rect": [
+        506,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D5D3D5"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          506.4,
+          317.9,
+          42.5,
+          21.8
+        ],
+        "ref_text": "生命"
+      }
+    },
+    {
+      "id": "det_stat_value_0",
+      "kind": "text_style",
+      "rect": [
+        573,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#FED442"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          573.0,
+          320.2,
+          24.1,
+          17.2
+        ],
+        "ref_text": "60"
+      }
+    },
+    {
+      "id": "det_stat_icon_1",
+      "kind": "flatbox",
+      "rect": [
+        640,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_1",
+      "kind": "text_style",
+      "rect": [
+        678,
+        313,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E2DCE0"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          677.5,
+          317.9,
+          43.6,
+          20.7
+        ],
+        "ref_text": "攻击"
+      }
+    },
+    {
+      "id": "det_stat_value_1",
+      "kind": "text_style",
+      "rect": [
+        759,
+        313,
+        69,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#F5CF48"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          760.2,
+          320.2,
+          10.3,
+          17.2
+        ],
+        "ref_text": "6"
+      }
+    },
+    {
+      "id": "det_stat_icon_2",
+      "kind": "flatbox",
+      "rect": [
+        814,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_2",
+      "kind": "text_style",
+      "rect": [
+        854,
+        314,
+        69,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#EAE5E8"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          854.4,
+          317.9,
+          42.5,
+          20.7
+        ],
+        "ref_text": "攻速"
+      }
+    },
+    {
+      "id": "det_stat_value_2",
+      "kind": "text_style",
+      "rect": [
+        924,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#EDC444"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          924.4,
+          320.2,
+          28.7,
+          18.4
+        ],
+        "ref_text": "1.0"
+      }
+    },
+    {
+      "id": "det_stat_icon_3",
+      "kind": "flatbox",
+      "rect": [
+        996,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_3",
+      "kind": "text_style",
+      "rect": [
+        1036,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E6E1E1"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1035.8,
+          317.9,
+          43.6,
+          20.7
+        ],
+        "ref_text": "移速"
+      }
+    },
+    {
+      "id": "det_stat_value_3",
+      "kind": "text_style",
+      "rect": [
+        1100,
+        313,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#EBC344"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1100.1,
+          320.2,
+          32.2,
+          17.2
+        ],
+        "ref_text": "4.5"
+      }
+    },
+    {
+      "id": "det_stat_icon_4",
+      "kind": "flatbox",
+      "rect": [
+        1170,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_4",
+      "kind": "text_style",
+      "rect": [
+        1215,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E5E2E3"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1214.9,
+          317.9,
+          42.5,
+          21.8
+        ],
+        "ref_text": "视野"
+      }
+    },
+    {
+      "id": "det_stat_value_4",
+      "kind": "text_style",
+      "rect": [
+        1278,
+        313,
+        69,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#F0CF49"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1279.2,
+          320.2,
+          10.3,
+          17.2
+        ],
+        "ref_text": "9"
+      }
+    },
+    {
+      "id": "det_stat_icon_5",
+      "kind": "flatbox",
+      "rect": [
+        1323,
+        313,
+        30,
+        30
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_stat_name_5",
+      "kind": "text_style",
+      "rect": [
+        1364,
+        311,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E4DFE3"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1364.2,
+          317.9,
+          43.6,
+          21.8
+        ],
+        "ref_text": "射程"
+      }
+    },
+    {
+      "id": "det_stat_value_5",
+      "kind": "text_style",
+      "rect": [
+        1430,
+        313,
+        69,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#F0BE43"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1430.8,
+          320.2,
+          27.6,
+          18.4
+        ],
+        "ref_text": "1.5"
+      }
+    },
+    {
+      "id": "det_scroll",
+      "kind": "flatbox",
+      "rect": [
+        447,
+        370,
+        994,
+        494
+      ],
+      "style": {
+        "bg": "#00000000"
+      }
+    },
+    {
+      "id": "det_track",
+      "kind": "ninepatch",
+      "rect": [
+        1445,
+        382,
+        9,
+        471
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/scroll_track.png",
+      "ninepatch": [
+        0,
+        8,
+        0,
+        8
+      ]
+    },
+    {
+      "id": "det_thumb",
+      "kind": "ninepatch",
+      "rect": [
+        1445,
+        383,
+        9,
+        92
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/scroll_thumb.png",
+      "ninepatch": [
+        0,
+        8,
+        0,
+        8
+      ]
+    },
+    {
+      "id": "det_scroll_arrow_up",
+      "kind": "image",
+      "rect": [
+        1438,
+        377,
+        23,
+        16
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_scroll_arrow_up.png"
+    },
+    {
+      "id": "det_scroll_arrow_down",
+      "kind": "image",
+      "rect": [
+        1438,
+        843,
+        23,
+        16
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_scroll_arrow_down.png"
+    },
+    {
+      "id": "det_add",
+      "kind": "button",
+      "rect": [
+        770,
+        860,
+        402,
+        53
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/button_add.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_add.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_add.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_add.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        50,
+        0,
+        50,
+        0
+      ],
+      "text_rect": [
+        47,
+        19,
+        287,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 21,
+        "color": "#F4F8F8"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          917.5,
+          883.7,
+          85.0,
+          20.7
+        ],
+        "ref_text": "添加指令"
+      }
+    },
+    {
+      "id": "det_beacons",
+      "kind": "text_style",
+      "rect": [
+        673,
+        924,
+        574,
+        31
+      ],
+      "text_rect": [
+        0,
+        0,
+        574,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#D9D4D9"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          886.5,
+          930.8,
+          148.1,
+          19.5
+        ],
+        "ref_text": "信标：尚无信标"
+      },
+      "overflow": "auto"
+    },
+    {
+      "id": "det_row1",
+      "kind": "ninepatch",
+      "rect": [
+        431,
+        351,
+        1027,
+        242
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/command_panel.png",
+      "ninepatch": [
+        44,
+        44,
+        44,
+        44
+      ]
+    },
+    {
+      "id": "det_row2",
+      "kind": "ninepatch",
+      "rect": [
+        431,
+        570,
+        1027,
+        242
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/command_panel.png",
+      "ninepatch": [
+        44,
+        44,
+        44,
+        44
+      ]
+    },
+    {
+      "id": "det_handle",
+      "kind": "image",
+      "rect": [
+        462,
+        391,
+        32,
+        52
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/drag_handle.png"
+    },
+    {
+      "id": "det_prio",
+      "kind": "text_style",
+      "rect": [
+        524,
+        395,
+        126,
+        40
+      ],
+      "text_rect": [
+        0,
+        0,
+        126,
+        40
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 27,
+        "color": "#F4CC45"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          523.6,
+          402.8,
+          101.1,
+          23.0
+        ],
+        "ref_text": "优先级 1"
+      }
+    },
+    {
+      "id": "det_action",
+      "kind": "button",
+      "rect": [
+        644,
+        376,
+        236,
+        78
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        21,
+        141,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          674.1,
+          404.0,
+          106.8,
+          19.5
+        ],
+        "ref_text": "沿我的信标"
+      }
+    },
+    {
+      "id": "det_p1",
+      "kind": "button",
+      "rect": [
+        870,
+        377,
+        202,
+        74
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        19,
+        107,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_p2",
+      "kind": "button",
+      "rect": [
+        1065,
+        377,
+        171,
+        74
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        19,
+        76,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_delete",
+      "kind": "button",
+      "rect": [
+        1298,
+        378,
+        137,
+        75
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/button_delete.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        20,
+        16,
+        20,
+        16
+      ],
+      "text_rect": [
+        25,
+        24,
+        87,
+        28
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 19,
+        "color": "#F6EBE5"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          1345.8,
+          406.3,
+          40.2,
+          20.7
+        ],
+        "ref_text": "删除"
+      }
+    },
+    {
+      "id": "det_c1_label",
+      "kind": "text_style",
+      "rect": [
+        668,
+        458,
+        103,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        103,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#C4C0C7"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          668.3,
+          463.7,
+          62.0,
+          19.5
+        ],
+        "ref_text": "条件一"
+      }
+    },
+    {
+      "id": "det_c2_label",
+      "kind": "text_style",
+      "rect": [
+        669,
+        522,
+        103,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        103,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#C7C0C7"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          669.5,
+          527.9,
+          60.9,
+          20.7
+        ],
+        "ref_text": "条件二"
+      }
+    },
+    {
+      "id": "det_c1",
+      "kind": "button",
+      "rect": [
+        782,
+        441,
+        445,
+        67
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        15,
+        350,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_c2",
+      "kind": "button",
+      "rect": [
+        782,
+        509,
+        445,
+        67
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        15,
+        350,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_c1_narrow",
+      "kind": "button",
+      "rect": [
+        782,
+        658,
+        307,
+        71
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        17,
+        212,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_cparam",
+      "kind": "button",
+      "rect": [
+        1084,
+        658,
+        143,
+        71
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        17,
+        48,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_cunit",
+      "kind": "text_style",
+      "rect": [
+        1234,
+        677,
+        46,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        46,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#DBD6D7"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1234.4,
+          686.3,
+          17.2,
+          16.1
+        ],
+        "ref_text": "%"
+      }
+    },
+    {
+      "id": "det_wait_label",
+      "kind": "text_style",
+      "rect": [
+        949,
+        617,
+        115,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        115,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#D3CDD3"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          948.5,
+          623.2,
+          81.5,
+          18.4
+        ],
+        "ref_text": "持续时间"
+      }
+    },
+    {
+      "id": "det_wait_box",
+      "kind": "button",
+      "rect": [
+        1038,
+        595,
+        164,
+        76
+      ],
+      "states": {
+        "normal": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+        "hover": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#FFFFFF"
+        },
+        "pressed": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C9C2C9"
+        },
+        "disabled": {
+          "file": "../battle_hud/../unified_low_noise/slices/dropdown.png",
+          "modulate": "#C8C0C8"
+        }
+      },
+      "ninepatch": [
+        18,
+        18,
+        52,
+        18
+      ],
+      "text_rect": [
+        30,
+        20,
+        69,
+        31
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 21,
+        "color": "#E7E3E6"
+      },
+      "align": "left"
+    },
+    {
+      "id": "det_wait_unit",
+      "kind": "text_style",
+      "rect": [
+        1207,
+        618,
+        46,
+        27
+      ],
+      "text_rect": [
+        0,
+        0,
+        46,
+        27
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 18,
+        "color": "#DFDBDE"
+      },
+      "align": "left",
+      "data": {
+        "ref_ink": [
+          1206.9,
+          623.2,
+          17.2,
+          18.4
+        ],
+        "ref_text": "秒"
+      }
+    },
+    {
+      "id": "det_logic_line_l",
+      "kind": "flatbox",
+      "rect": [
+        795,
+        507,
+        175,
+        1
+      ],
+      "style": {
+        "bg": "#6E6670"
+      }
+    },
+    {
+      "id": "det_logic_line_r",
+      "kind": "flatbox",
+      "rect": [
+        1038,
+        507,
+        176,
+        1
+      ],
+      "style": {
+        "bg": "#6E6670"
+      }
+    },
+    {
+      "id": "det_logic",
+      "kind": "button",
+      "rect": [
+        981,
+        494,
+        46,
+        28
+      ],
+      "flat_states": {
+        "normal": {
+          "bg": "#00000000",
+          "border": "",
+          "border_width": 0.0,
+          "radius": 0.0
+        },
+        "hover": {
+          "bg": "#00000000",
+          "border": "#00000000",
+          "border_width": 0.0,
+          "radius": 0.0
+        },
+        "pressed": {
+          "bg": "#00000000",
+          "border": "",
+          "border_width": 0.0,
+          "radius": 0.0
+        },
+        "disabled": {
+          "bg": "#00000000",
+          "border": "#00000000",
+          "border_width": 0.0,
+          "radius": 0.0
+        }
+      },
+      "text_rect": [
+        6,
+        1,
+        34,
+        23
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 15,
+        "color": "#F2EFF2"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          996.7,
+          501.6,
+          13.8,
+          12.6
+        ],
+        "ref_text": "∧"
+      }
+    },
+    {
+      "id": "det_pick",
+      "kind": "flatbox",
+      "rect": [
+        1456,
+        537,
+        411,
+        44
+      ],
+      "style": {
+        "bg": "#00000000"
+      },
+      "data": {
+        "_note": "「添加指令」行为列表（批准整图 ui_15，在详情弹窗中部显示）：行高 / 行距 / 颜色取自整图（1920 坐标行高 44、行距 54）",
+        "row_h": 44,
+        "row_gap": 10,
+        "border_width": 1.5,
+        "colors": {
+          "attack": [
+            "#2B153A",
+            "#DAC9B3"
+          ],
+          "chase_attack": [
+            "#043059",
+            "#C4C6AE"
+          ],
+          "chase": [
+            "#25265D",
+            "#998F9B"
+          ],
+          "retreat": [
+            "#752F32",
+            "#F8BC91"
+          ],
+          "idle": [
+            "#3C253D",
+            "#E0C2A6"
+          ],
+          "follow_beacons": [
+            "#043059",
+            "#C4C6AE"
+          ],
+          "wait": [
+            "#3C253D",
+            "#E0C2A6"
+          ],
+          "follow_route": [
+            "#25265D",
+            "#998F9B"
+          ],
+          "cancel": [
+            "#55121D",
+            "#E07070"
+          ]
+        },
+        "icons": {
+          "attack": "ui/icons/act_attack.svg",
+          "chase_attack": "ui/icons/act_chase_attack.svg",
+          "chase": "ui/icons/act_chase.svg",
+          "retreat": "ui/icons/act_retreat.svg",
+          "idle": "ui/icons/act_idle.svg",
+          "follow_route": "ui/icons/act_route.svg",
+          "follow_beacons": "ui/icons/act_follow_beacons.png",
+          "wait": "ui/icons/act_wait.png",
+          "cancel": "ui/icons/act_cancel.png"
+        }
+      }
+    },
+    {
+      "id": "fx_beacon",
+      "kind": "ninepatch",
+      "rect": [
+        975,
+        363,
+        55,
+        55
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_beacon_badge.png",
+      "ninepatch": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "data": {
+        "size_cells": 0.6,
+        "min_px": 30,
+        "_note": "信标数字牌（批准整图 ui_21）：深底金边圆角方块；边长 = 0.6 格（不小于 30 px）"
+      }
+    },
+    {
+      "id": "fx_beacon_text",
+      "kind": "text_style",
+      "rect": [
+        981,
+        368,
+        46,
+        38
+      ],
+      "text_rect": [
+        0,
+        0,
+        46,
+        38
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 26,
+        "color": "#F5D869"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          996.7,
+          378.7,
+          11.5,
+          19.5
+        ],
+        "ref_text": "3"
+      }
+    },
+    {
+      "id": "fx_toast",
+      "kind": "ninepatch",
+      "rect": [
+        734,
+        557,
+        286,
+        57
+      ],
+      "file": "../battle_hud/../unified_low_noise/slices/p6_placement_blocked_bubble.png",
+      "ninepatch": [
+        14,
+        12,
+        14,
+        12
+      ],
+      "data": {
+        "pointer_px": 0,
+        "pad_x": 14,
+        "pad_y": 6,
+        "seconds": 2.5,
+        "_note": "不可放置提示（ui_21）：切片已含下沿三角，关闭旧程序三角以避免重叠"
+      }
+    },
+    {
+      "id": "fx_toast_text",
+      "kind": "text_style",
+      "rect": [
+        739,
+        568,
+        276,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        276,
+        30
+      ],
+      "font": {
+        "family": "NotoSerifSC",
+        "size": 20,
+        "color": "#E34840"
+      },
+      "align": "center",
+      "data": {
+        "ref_ink": [
+          756.7,
+          573.9,
+          237.7,
+          19.5
+        ],
+        "ref_text": "无法放置：障碍格不能放置"
+      }
+    }
+  ],
+  "reserved": {
+    "top": 203,
+    "bottom": 261,
+    "_note": "战场让出的上下带（用户 2026-10-05 选择缩小战场区）：上 = 「任务」「机制说明」底（195）+ 8，下 = 角色卡顶（827）− 8（设计坐标）"
+  }
+}

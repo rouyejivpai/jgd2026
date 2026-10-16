@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "screen": "chapter",
+  "design_size": [
+    1672,
+    941
+  ],
+  "_comment": "R6b art_text 独立素材；当前仅静态交付。",
+  "elements": [
+    {
+      "id": "level_01_tian_geng",
+      "kind": "art_text",
+      "rect": [
+        351,
+        84,
+        278,
+        141
+      ],
+      "layers": [
+        {
+          "id": "base",
+          "file": "base.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mix"
+        },
+        {
+          "id": "glow",
+          "file": "glow.png",
+          "offset": [
+            -12,
+            -12
+          ],
+          "size": [
+            302,
+            165
+          ],
+          "blend": "screen"
+        }
+      ]
+    }
+  ],
+  "_source": {
+    "file": "godot/tools/_raw/p3/art_text_review/level_names.png",
+    "canvas_size": [
+      1672,
+      941
+    ],
+    "crop_rect": [
+      351,
+      84,
+      278,
+      141
+    ],
+    "approved_basis": "用户于 2026-10-06 批准当前源图作为分层基准。",
+    "extraction_note": "纯色底稿中的「田埂」按暖色差分透明化；字形颜色及 alpha 以原稿深梅色底为键恢复。"
+  }
+}

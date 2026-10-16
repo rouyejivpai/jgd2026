@@ -1,0 +1,2808 @@
+{
+ "screen": "battle_hud",
+ "reference": "../hud/design_low_noise.png",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "slices": {
+  "layout": "../unified_low_noise/layout.json",
+  "dir": "../unified_low_noise/slices"
+ },
+ "text_anchors": {
+  "file": "../unified_low_noise/pixel_review/text_anchors.json",
+  "ref": "hud"
+ },
+ "reserved": {
+  "top": 203,
+  "bottom": 261,
+  "_note": "战场让出的上下带（用户 2026-10-05 选择缩小战场区）：上 = 「任务」「机制说明」底（195）+ 8，下 = 角色卡顶（827）− 8（设计坐标）"
+ },
+ "elements": [
+  {
+   "id": "quest",
+   "kind": "image",
+   "slice": "quest"
+  },
+  {
+   "id": "quest_title",
+   "kind": "text_style",
+   "text_anchor": "quest-title",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 184,
+   "overflow": "auto",
+   "size_adjust": -1,
+   "nudge": [
+    -1,
+    -1
+   ]
+  },
+  {
+   "id": "quest_objective",
+   "kind": "text_style",
+   "text_anchor": "quest-objective",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 184,
+   "overflow": "manual",
+   "size_adjust": 0,
+   "nudge": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "timer",
+   "kind": "image",
+   "slice": "timer"
+  },
+  {
+   "id": "timer_value",
+   "kind": "text_style",
+   "text_anchor": "timer-value",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 50,
+   "nudge": [
+    0,
+    2
+   ],
+   "overflow": "auto"
+  },
+  {
+   "id": "timer_phase",
+   "kind": "text_style",
+   "text_anchor": "timer-phase",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 64,
+   "overflow": "auto",
+   "size_adjust": 0,
+   "nudge": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "btn_retry",
+   "kind": "button",
+   "slice": "retry",
+   "text_anchor": "retry-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    0,
+    1
+   ],
+   "overflow": "auto",
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_speed1",
+   "kind": "button",
+   "slice": "speed1",
+   "text_anchor": "speed1-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "size_adjust": 2,
+   "nudge": [
+    0,
+    2
+   ],
+   "overflow": "auto",
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_speed2",
+   "kind": "button",
+   "slice": "speed2",
+   "text_anchor": "speed2-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "size_adjust": 2,
+   "nudge": [
+    -2,
+    2
+   ],
+   "scale_like": "retry",
+   "overflow": "auto",
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_pause",
+   "kind": "button",
+   "slice": "pause",
+   "text_anchor": "pause-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    1,
+    1
+   ],
+   "scale_like": "retry",
+   "overflow": "auto",
+   "size_adjust": -1,
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_settings",
+   "kind": "button",
+   "slice": "settings",
+   "text_anchor": "settings-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    0,
+    2
+   ],
+   "scale_like": "retry",
+   "overflow": "auto",
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_exit",
+   "kind": "button",
+   "slice": "exit",
+   "text_anchor": "exit-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    1,
+    2
+   ],
+   "scale_like": "retry",
+   "overflow": "auto",
+   "center_on_slice": true
+  },
+  {
+   "id": "btn_task",
+   "kind": "button",
+   "slice": "task",
+   "text_anchor": "task-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 44,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    0,
+    0
+   ],
+   "overflow": "auto"
+  },
+  {
+   "id": "btn_mechanics",
+   "kind": "button",
+   "slice": "mechanics",
+   "text_anchor": "mechanics-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 61,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    1
+   ],
+   "scale_like": "task",
+   "overflow": "auto"
+  },
+  {
+   "id": "btn_clear",
+   "kind": "button",
+   "slice": "clear",
+   "text_anchor": "clear-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 72,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    2,
+    0
+   ],
+   "size_adjust": -1,
+   "overflow": "auto",
+   "disabled_from": "../hud/design_running_low_noise.png"
+  },
+  {
+   "id": "btn_hint",
+   "kind": "button",
+   "slice": "hint",
+   "text_anchor": "hint-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 68,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "nudge": [
+    0,
+    0
+   ],
+   "_note": "只显示「提示」或「推荐阵型」（用户 2026-10-06）；文字区放宽到 68（参考像素）、不滚动",
+   "disabled_from": "../hud/design_running_low_noise.png"
+  },
+  {
+   "id": "btn_start",
+   "kind": "button",
+   "slice": "start",
+   "text_anchor": "start-label",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 150,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    2
+   ],
+   "overflow": "auto",
+   "disabled_from": "../hud/design_running_low_noise.png"
+  },
+  {
+   "id": "budget",
+   "kind": "image",
+   "slice": "budget"
+  },
+  {
+   "id": "budget_title",
+   "kind": "text_style",
+   "text_anchor": "budget-title",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 150,
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    2
+   ],
+   "overflow": "auto"
+  },
+  {
+   "id": "budget_value",
+   "kind": "text_style",
+   "text_anchor": "budget-value",
+   "font": "Cinzel",
+   "align": "center",
+   "max_w": 150,
+   "size_adjust": 1,
+   "nudge": [
+    2,
+    1
+   ],
+   "overflow": "auto",
+   "data": {
+    "over_color": "#EA453C",
+    "_note_over": "超出预算时的红色，取自 ui_05 整图"
+   }
+  },
+  {
+   "id": "budget_fixed",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 150,
+   "overflow": "auto",
+   "ink_from": {
+    "reference": "../hud/design_fixed_roster_low_noise.png",
+    "roi": [
+     116,
+     848,
+     126,
+     50
+    ],
+    "text": "固定出场",
+    "relative_to": "budget"
+   },
+   "_note": "fixed 关（第七关）预算铭牌显示「固定出场」（批准整图 ui_04）"
+  },
+  {
+   "id": "card_1",
+   "kind": "image",
+   "slice": "card_swift",
+   "data": {
+    "reference_form": "swift",
+    "tint": {
+     "hover": "#FFFFFF",
+     "pressed": "#C9C2C9",
+     "disabled": "#E6E2E6"
+    },
+    "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+   }
+  },
+  {
+   "id": "card_2",
+   "kind": "image",
+   "slice": "card_striker",
+   "data": {
+    "reference_form": "striker",
+    "tint": {
+     "hover": "#FFFFFF",
+     "pressed": "#C9C2C9",
+     "disabled": "#E6E2E6"
+    },
+    "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+   }
+  },
+  {
+   "id": "card_3",
+   "kind": "image",
+   "slice": "card_bulwark",
+   "data": {
+    "reference_form": "bulwark",
+    "tint": {
+     "hover": "#FFFFFF",
+     "pressed": "#C9C2C9",
+     "disabled": "#E6E2E6"
+    },
+    "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+   }
+  },
+  {
+   "id": "card_4",
+   "kind": "image",
+   "slice": "card_spitter",
+   "data": {
+    "reference_form": "lancer",
+    "tint": {
+     "hover": "#FFFFFF",
+     "pressed": "#C9C2C9",
+     "disabled": "#E6E2E6"
+    },
+    "_note": "切片名 card_spitter，内容是己方「远射形态」= 形态 id lancer（spitter 是敌方骨喉）",
+    "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+   }
+  },
+  {
+   "id": "card_5",
+   "kind": "image",
+   "slice": "card_locked",
+   "data": {
+    "reference_form": "locked",
+    "tint": {
+     "hover": "#FFFFFF",
+     "pressed": "#C9C2C9",
+     "disabled": "#E6E2E6"
+    },
+    "_note_tint": "批准整图 ui_02 / ui_03（战斗中、暂停）里卡片禁用但画成正常亮度，禁用调色取得很轻"
+   }
+  },
+  {
+   "id": "card_name",
+   "kind": "text_style",
+   "text_anchor": "card-striker-name",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 130,
+   "overflow": "auto",
+   "data": {
+    "card": "card_2"
+   },
+   "nudge": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "card_cost_label",
+   "kind": "text_style",
+   "text_anchor": "card-swift-cost",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 40,
+   "data": {
+    "card": "card_1"
+   },
+   "nudge": [
+    0,
+    1
+   ],
+   "size_adjust": -1,
+   "overflow": "auto"
+  },
+  {
+   "id": "card_cost_value",
+   "kind": "text_style",
+   "text_anchor": "card-swift-value",
+   "font": "Cinzel",
+   "align": "center",
+   "max_w": 30,
+   "data": {
+    "card": "card_1"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    2
+   ],
+   "overflow": "auto"
+  },
+  {
+   "id": "problems_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    500,
+    618,
+    672,
+    126
+   ],
+   "_note": "开始校验问题面板（批准整图 ui_05）：金色细边框检测得 x 500–1171、y 618–743；行数变化时下沿不动、向上长"
+  },
+  {
+   "id": "problems_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 620,
+   "overflow": "auto",
+   "ink_from": {
+    "reference": "../hud/design_validation_low_noise.png",
+    "roi": [
+     525,
+     630,
+     110,
+     30
+    ],
+    "text": "无法开始："
+   },
+   "size_adjust": 1,
+   "nudge": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "problems_line",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 620,
+   "ink_from": {
+    "reference": "../hud/design_validation_low_noise.png",
+    "roi": [
+     524,
+     672,
+     212,
+     24
+    ],
+    "text": "出场 Cost 12，超出预算"
+   },
+   "data": {
+    "line_pitch": 37.9,
+    "warn_color": "#C0AF91",
+    "_note": "行距取 ui_05 两行 ink 之差（33 整图像素）；阻塞项颜色 = 本元素字色（红），提醒项 = warn_color"
+   }
+  },
+  {
+   "id": "obj_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    414,
+    200,
+    845,
+    476
+   ],
+   "_note": "「任务」弹窗（批准整图 ui_06）：金色边框检测 x 414–1258、y 200–675"
+  },
+  {
+   "id": "obj_close",
+   "kind": "button",
+   "slice": "button_delete",
+   "rect_ref": [
+    1115,
+    225,
+    105,
+    42
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 80,
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     1135,
+     230,
+     65,
+     32
+    ],
+    "text": "关闭"
+   },
+   "_note": "整图的关闭按钮右端多一枚小宝石，切片没有（Q-081）"
+  },
+  {
+   "id": "obj_moon",
+   "kind": "image",
+   "slice": "p6_crescent_moon",
+   "rect_ref": [
+    448,
+    222,
+    35,
+    46
+   ],
+   "no_pad": true,
+   "_note": "任务标题左侧月牙（P6 #4）",
+   "fit_visible": true
+  },
+  {
+   "id": "obj_close_gem",
+   "kind": "image",
+   "slice": "p6_close_gem",
+   "rect_ref": [
+    1211,
+    236,
+    15,
+    20
+   ],
+   "no_pad": true,
+   "_note": "关闭按钮右端小宝石（P6 #4）",
+   "fit_visible": true
+  },
+  {
+   "id": "obj_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 500,
+   "overflow": "auto",
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     490,
+     225,
+     85,
+     48
+    ],
+    "text": "任务"
+   },
+   "_note": "整图标题左侧的月牙图标没有切片（Q-081）"
+  },
+  {
+   "id": "obj_sep",
+   "kind": "flatbox",
+   "rect_ref": [
+    453,
+    282,
+    767,
+    1
+   ],
+   "style": {
+    "bg": "#79574D"
+   }
+  },
+  {
+   "id": "obj_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 767,
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     448,
+     308,
+     300,
+     40
+    ],
+    "text": "摧毁哭墙后方的回响骸柱"
+   }
+  },
+  {
+   "id": "obj_win_header",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 767,
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     448,
+     390,
+     105,
+     35
+    ],
+    "text": "胜利条件"
+   }
+  },
+  {
+   "id": "obj_box",
+   "kind": "flatbox",
+   "rect_ref": [
+    453,
+    429,
+    767,
+    60
+   ],
+   "style": {
+    "bg": "#241B29",
+    "border": "#55425C",
+    "border_width": 1.5,
+    "radius": 6
+   },
+   "data": {
+    "box_gap_ref": 12,
+    "_note": "多条条件时相邻框间距（整图只有一条，取 12 整图像素）"
+   }
+  },
+  {
+   "id": "obj_box_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 720,
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     472,
+     440,
+     170,
+     36
+    ],
+    "text": "摧毁：回响骸柱"
+   }
+  },
+  {
+   "id": "obj_lose_header",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 767,
+   "ink_from": {
+    "reference": "../hud/design_objectives_low_noise.png",
+    "roi": [
+     448,
+     511,
+     105,
+     35
+    ],
+    "text": "失败条件"
+   },
+   "size_like": "obj_win_header"
+  },
+  {
+   "id": "obj_box2",
+   "kind": "flatbox",
+   "rect_ref": [
+    453,
+    550,
+    767,
+    60
+   ],
+   "style": {
+    "bg": "#241B29",
+    "border": "#55425C",
+    "border_width": 1.5,
+    "radius": 6
+   },
+   "_note": "第二个框，仅用于量取版式"
+  },
+  {
+   "id": "mech_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    383,
+    186,
+    906,
+    534
+   ],
+   "_note": "「机制说明」弹窗（批准整图 ui_07）：金色边框 x 383–1288、y 186–719"
+  },
+  {
+   "id": "mech_close",
+   "kind": "button",
+   "rect_ref": [
+    1147,
+    220,
+    108,
+    40
+   ],
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 80,
+   "ink_from": {
+    "reference": "../hud/design_mechanics_low_noise.png",
+    "roi": [
+     1175,
+     228,
+     55,
+     26
+    ],
+    "text": "关闭"
+   },
+   "size_like": "obj_close",
+   "_note": "整图 ui_07 为描边式关闭按钮，没有切片：平面按钮，颜色取自整图",
+   "slice": "p6_button_close_outline",
+   "no_pad": true,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   }
+  },
+  {
+   "id": "mech_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 600,
+   "overflow": "auto",
+   "ink_from": {
+    "reference": "../hud/design_mechanics_low_noise.png",
+    "roi": [
+     420,
+     212,
+     150,
+     48
+    ],
+    "text": "机制说明"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "mech_sep",
+   "kind": "flatbox",
+   "rect_ref": [
+    422,
+    273,
+    843,
+    1
+   ],
+   "style": {
+    "bg": "#604C4E"
+   }
+  },
+  {
+   "id": "mech_hint",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 843,
+   "ink_from": {
+    "reference": "../hud/design_mechanics_low_noise.png",
+    "roi": [
+     420,
+     302,
+     860,
+     24
+    ],
+    "text": "本关要点：先让它看见谁，会改变它接下来追谁。哭墙守卫锁定首个进入视野的分裂体，直到它死亡或"
+   },
+   "data": {
+    "lines_ref": 2,
+    "_note": "整图两行，行高取 hint 两行 ink 之差"
+   },
+   "nudge": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "mech_box",
+   "kind": "flatbox",
+   "rect_ref": [
+    422,
+    385,
+    826,
+    92
+   ],
+   "style": {
+    "bg": "#201624",
+    "border": "#48374D",
+    "border_width": 1.5,
+    "radius": 6
+   },
+   "data": {
+    "_note": "最小高 92 整图像素（单行也同高），文字竖直居中"
+   }
+  },
+  {
+   "id": "mech_box_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 790,
+   "ink_from": {
+    "reference": "../hud/design_mechanics_low_noise.png",
+    "roi": [
+     438,
+     402,
+     800,
+     26
+    ],
+    "text": "单位从上到下检查指令，执行第一条条件成立的；之后的指令本次不再看。每次决策都从顶部重新"
+   },
+   "nudge": [
+    0,
+    4
+   ]
+  },
+  {
+   "id": "mech_box2",
+   "kind": "flatbox",
+   "rect_ref": [
+    422,
+    488,
+    826,
+    93
+   ],
+   "style": {
+    "bg": "#201624",
+    "border": "#48374D",
+    "border_width": 1.5,
+    "radius": 6
+   },
+   "_note": "第二个框，仅用于量取间距"
+  },
+  {
+   "id": "mech_track",
+   "kind": "ninepatch",
+   "slice": "scroll_track",
+   "rect_ref": [
+    1257,
+    388,
+    5,
+    311
+   ],
+   "ninepatch": [
+    0,
+    8,
+    0,
+    8
+   ]
+  },
+  {
+   "id": "mech_thumb",
+   "kind": "ninepatch",
+   "slice": "scroll_thumb",
+   "rect_ref": [
+    1257,
+    389,
+    5,
+    111
+   ],
+   "ninepatch": [
+    0,
+    8,
+    0,
+    8
+   ],
+   "_note": "滑块在最上时的位置；长度按可见比例计算"
+  },
+  {
+   "id": "hint_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    459,
+    238,
+    754,
+    337
+   ],
+   "_note": "「提示」面板（批准整图 ui_08）：边框 x 459–1212、y 238–575；高度随内容，宽与左右取自整图"
+  },
+  {
+   "id": "hint_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 560,
+   "overflow": "auto",
+   "ink_from": {
+    "reference": "../hud/design_hint_low_noise.png",
+    "roi": [
+     485,
+     258,
+     80,
+     44
+    ],
+    "text": "提示"
+   }
+  },
+  {
+   "id": "hint_close",
+   "kind": "button",
+   "rect_ref": [
+    1089,
+    263,
+    91,
+    39
+   ],
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 76,
+   "size_like": "obj_close",
+   "ink_from": {
+    "reference": "../hud/design_hint_low_noise.png",
+    "roi": [
+     1108,
+     270,
+     56,
+     26
+    ],
+    "text": "关闭"
+   },
+   "slice": "p6_button_close_outline",
+   "no_pad": true,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   }
+  },
+  {
+   "id": "hint_sep",
+   "kind": "flatbox",
+   "rect_ref": [
+    492,
+    317,
+    688,
+    1
+   ],
+   "style": {
+    "bg": "#513C3D"
+   }
+  },
+  {
+   "id": "hint_line",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "ink_from": {
+    "reference": "../hud/design_hint_low_noise.png",
+    "roi": [
+     488,
+     356,
+     720,
+     32
+    ],
+    "text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+   }
+  },
+  {
+   "id": "hint_line2",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "size_like": "hint_line",
+   "ink_from": {
+    "reference": "../hud/design_hint_low_noise.png",
+    "roi": [
+     488,
+     431,
+     720,
+     32
+    ],
+    "text": "2. 快速形态移速 4.5，守卫只有 1.2。让快速形态先走进守卫视野，再在被追近时撤离"
+   },
+   "_note": "只用于量取段距"
+  },
+  {
+   "id": "hint_dot_on",
+   "kind": "flatbox",
+   "rect_ref": [
+    498,
+    530,
+    9,
+    9
+   ],
+   "style": {
+    "bg": "#EBBA4D",
+    "radius": 4.5
+   }
+  },
+  {
+   "id": "hint_dot_off",
+   "kind": "flatbox",
+   "rect_ref": [
+    519,
+    530,
+    9,
+    9
+   ],
+   "style": {
+    "bg": "#734C79",
+    "radius": 4.5
+   },
+   "_note": "第二个点的位置即点距（21 整图像素）"
+  },
+  {
+   "id": "rec_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    461,
+    178,
+    751,
+    539
+   ],
+   "_note": "「推荐阵型」（批准整图 ui_09）：只用于量取相对下沿的版式（下沿 717），实际框体同 hint_panel"
+  },
+  {
+   "id": "rec_hint4",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "size_like": "hint_line",
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     488,
+     520,
+     600,
+     26
+    ],
+    "text": "4. 推荐部署：快速形态 (2,5) 面向庭院；基础攻击形态 (2,1) 走通道。"
+   },
+   "_note": "第 4 层（推荐部署）金色"
+  },
+  {
+   "id": "rec_sep",
+   "kind": "flatbox",
+   "rect_ref": [
+    492,
+    575,
+    688,
+    1
+   ],
+   "style": {
+    "bg": "#49383C"
+   }
+  },
+  {
+   "id": "rec_confirm",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     490,
+     594,
+     420,
+     30
+    ],
+    "text": "将覆盖当前部署与指令，确定摆放推荐阵型？"
+   }
+  },
+  {
+   "id": "rec_apply",
+   "kind": "button",
+   "rect_ref": [
+    904,
+    642,
+    127,
+    47
+   ],
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 110,
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     935,
+     652,
+     70,
+     28
+    ],
+    "text": "摆放"
+   },
+   "slice": "p6_button_place",
+   "no_pad": true,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   }
+  },
+  {
+   "id": "rec_cancel",
+   "kind": "button",
+   "rect_ref": [
+    1053,
+    642,
+    123,
+    47
+   ],
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 106,
+   "size_like": "rec_apply",
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     1082,
+     652,
+     70,
+     28
+    ],
+    "text": "取消"
+   },
+   "slice": "p6_button_cancel",
+   "no_pad": true,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   }
+  },
+  {
+   "id": "rec_hint1",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "size_like": "hint_line",
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     488,
+     286,
+     700,
+     28
+    ],
+    "text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+   },
+   "_note": "确认态的列表顶与段距取 ui_09（比 ui_08 紧凑）"
+  },
+  {
+   "id": "rec_hint2",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 688,
+   "size_like": "hint_line",
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     488,
+     346,
+     720,
+     22
+    ],
+    "text": "2. 快速形态移速 4.5，守卫只有 1.2。让快速形态先走进守卫视野，再在被追近时撤离——"
+   }
+  },
+  {
+   "id": "rec_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 560,
+   "size_like": "hint_title",
+   "ink_from": {
+    "reference": "../hud/design_recommend_low_noise.png",
+    "roi": [
+     485,
+     195,
+     140,
+     46
+    ],
+    "text": "推荐阵型"
+   },
+   "_note": "确认态标题位置（相对 ui_09 上沿）"
+  },
+  {
+   "id": "win_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    493,
+    191,
+    685,
+    507
+   ],
+   "_note": "结算 · 胜利（批准整图 ui_10）：金色边框 x 493–1177、y 191–697；标题两侧装饰线与背后纹章没有切片（Q-081）"
+  },
+  {
+   "id": "win_title_sigil",
+   "kind": "image",
+   "slice": "p6_victory_sigil",
+   "rect_ref": [
+    765,
+    194,
+    144,
+    148
+   ],
+   "no_pad": true,
+   "_note": "胜利标题正后方的纹章（P6 #7）：rect_ref 为批准整图 ui_10 里纹章（含上下菱形）的可见外框，中心对准标题",
+   "fit_visible": true
+  },
+  {
+   "id": "win_title_crescent",
+   "kind": "image",
+   "slice": "p6_crescent_moon",
+   "rect_ref": [
+    514,
+    209,
+    28,
+    37
+   ],
+   "no_pad": true,
+   "_note": "胜利面板左上角大月牙框内的小月牙（P6 #7）：整图里外圈还有一道大月牙 + 圆环角饰，切片只交了小月牙",
+   "fit_visible": true
+  },
+  {
+   "id": "win_title_lines",
+   "kind": "image",
+   "slice": "p6_victory_title_lines",
+   "rect_ref": [
+    555,
+    266,
+    576,
+    19
+   ],
+   "no_pad": true,
+   "_note": "胜利标题两侧带菱形端头的装饰线（P6 #7）：整图里左线 637–820、右线 1100–1298（设计像素），中线 y 316"
+  },
+  {
+   "id": "win_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 420,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     725,
+     250,
+     220,
+     65
+    ],
+    "text": "战斗胜利"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "win_sep",
+   "kind": "flatbox",
+   "rect_ref": [
+    510,
+    332,
+    650,
+    1
+   ],
+   "style": {
+    "bg": "#6B5240"
+   }
+  },
+  {
+   "id": "win_level",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     536,
+     362,
+     70,
+     36
+    ],
+    "text": "墙缝"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "win_time",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     544,
+     420,
+     170,
+     32
+    ],
+    "text": "完成时间：24.8"
+   }
+  },
+  {
+   "id": "win_survivors",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     544,
+     466,
+     380,
+     32
+    ],
+    "text": "存活单位：快速形态、基础攻击形态"
+   },
+   "size_like": "win_time",
+   "overflow": "auto"
+  },
+  {
+   "id": "win_reward_head",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     544,
+     531,
+     50,
+     28
+    ],
+    "text": "解锁"
+   },
+   "size_like": "win_time"
+  },
+  {
+   "id": "win_reward",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     544,
+     563,
+     250,
+     30
+    ],
+    "text": "新选敌：最远、生命最低"
+   },
+   "size_like": "win_time",
+   "data": {
+    "_note": "奖励多行时在「解锁」与按钮之间上下滚动"
+   }
+  },
+  {
+   "id": "win_retry",
+   "kind": "button",
+   "slice": "p6_button_result_purple",
+   "rect_ref": [
+    539,
+    618,
+    167,
+    51
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    16,
+    34,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 117,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     575,
+     628,
+     90,
+     30
+    ],
+    "text": "重试"
+   }
+  },
+  {
+   "id": "win_next",
+   "kind": "button",
+   "slice": "p6_button_result_teal",
+   "rect_ref": [
+    740,
+    618,
+    192,
+    51
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    16,
+    34,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 142,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     795,
+     628,
+     85,
+     30
+    ],
+    "text": "下一关"
+   },
+   "size_like": "win_retry"
+  },
+  {
+   "id": "win_back",
+   "kind": "button",
+   "slice": "p6_button_result_purple",
+   "rect_ref": [
+    967,
+    618,
+    166,
+    51
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    16,
+    34,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 116,
+   "ink_from": {
+    "reference": "../hud/design_result_win_low_noise.png",
+    "roi": [
+     1015,
+     628,
+     70,
+     30
+    ],
+    "text": "返回"
+   },
+   "size_like": "win_retry"
+  },
+  {
+   "id": "lose_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    443,
+    177,
+    787,
+    504
+   ],
+   "_note": "结算 · 失败（批准整图 ui_11）：金色边框 x 443–1229、y 177–680；右侧罗盘纹章没有切片（Q-081）"
+  },
+  {
+   "id": "lose_title_compass",
+   "kind": "image",
+   "slice": "p6_defeat_compass",
+   "rect_ref": [
+    884,
+    189,
+    226,
+    242
+   ],
+   "no_pad": true,
+   "_note": "失败结算右侧带红色裂痕罗盘（P6 #8）：rect_ref 为整图 ui_11 里罗盘（含四向尖刺）的可见外框",
+   "fit_visible": true
+  },
+  {
+   "id": "lose_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 420,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     480,
+     200,
+     190,
+     60
+    ],
+    "text": "战斗失败"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "lose_sep",
+   "kind": "image",
+   "slice": "p6_defeat_divider",
+   "rect_ref": [
+    480,
+    266,
+    710,
+    16
+   ],
+   "no_pad": true,
+   "_note": "失败结算带中央菱形的分隔线（P6 #8）"
+  },
+  {
+   "id": "lose_level",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     484,
+     300,
+     70,
+     38
+    ],
+    "text": "墙缝"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "lose_time",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     484,
+     368,
+     170,
+     34
+    ],
+    "text": "完成时间：24.8"
+   },
+   "size_like": "win_time"
+  },
+  {
+   "id": "lose_survivors",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 640,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     484,
+     408,
+     150,
+     34
+    ],
+    "text": "存活单位：无"
+   },
+   "size_like": "win_time",
+   "overflow": "auto"
+  },
+  {
+   "id": "lose_sep2",
+   "kind": "flatbox",
+   "rect_ref": [
+    480,
+    476,
+    710,
+    1
+   ],
+   "style": {
+    "bg": "#6B5240"
+   }
+  },
+  {
+   "id": "lose_reason",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 710,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     484,
+     498,
+     710,
+     30
+    ],
+    "text": "原因：分裂体全部倒下。回看守卫锁定了谁：如果快速形态离开了守卫视野，"
+   },
+   "data": {
+    "lines_ref": 2,
+    "_note": "原因（与最后一击来源）在两条分隔线下方，多行时在按钮以上上下滚动"
+   }
+  },
+  {
+   "id": "lose_retry",
+   "kind": "button",
+   "slice": "p6_button_result_teal",
+   "rect_ref": [
+    570,
+    601,
+    250,
+    54
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    16,
+    34,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 200,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     640,
+     612,
+     90,
+     32
+    ],
+    "text": "重试"
+   },
+   "size_like": "win_retry"
+  },
+  {
+   "id": "lose_back",
+   "kind": "button",
+   "slice": "p6_button_result_purple",
+   "rect_ref": [
+    850,
+    601,
+    260,
+    54
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    16,
+    34,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 210,
+   "ink_from": {
+    "reference": "../hud/design_result_lose_low_noise.png",
+    "roi": [
+     920,
+     612,
+     90,
+     32
+    ],
+    "text": "返回"
+   },
+   "size_like": "win_retry"
+  },
+  {
+   "id": "det_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    373,
+    114,
+    927,
+    706
+   ],
+   "_note": "角色详情弹窗（批准整图 detail_modal_whole，用户授权的详情窗修改）：金色边框 x 373–1299、y 114–819"
+  },
+  {
+   "id": "det_footer_tab",
+   "kind": "ninepatch",
+   "slice": "p6_footer_tab",
+   "rect_ref": [
+    706,
+    800,
+    260,
+    38
+   ],
+   "ninepatch": [
+    42,
+    15,
+    42,
+    7
+   ],
+   "no_pad": true,
+   "_note": "详情框底边信标状态文字下方的凸出标签（P6 #10）"
+  },
+  {
+   "id": "det_scrim",
+   "kind": "flatbox",
+   "rect_ref": [
+    0,
+    0,
+    1672,
+    941
+   ],
+   "style": {
+    "bg": "#0C060E99"
+   },
+   "_note": "全屏遮罩（整图里弹窗外的 HUD 亮度约为原来的 40%）"
+  },
+  {
+   "id": "det_portrait",
+   "kind": "flatbox",
+   "rect_ref": [
+    405,
+    130,
+    130,
+    126
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_close",
+   "kind": "button",
+   "slice": "button_delete",
+   "rect_ref": [
+    1172,
+    136,
+    108,
+    49
+   ],
+   "ninepatch": [
+    20,
+    16,
+    20,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "text_anchor": "detail:detail-close",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 90
+  },
+  {
+   "id": "det_remove",
+   "kind": "button",
+   "rect_ref": [
+    1052,
+    136,
+    108,
+    49
+   ],
+   "text_anchor": "detail:detail-close",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 90,
+   "nudge": [
+    -138,
+    0
+   ],
+   "_note": "「移除」不在整图里（第三阶段 10 §4 功能）：放在关闭左侧，描边平面按钮，字号同关闭",
+   "slice": "p6_button_remove",
+   "no_pad": true,
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   }
+  },
+  {
+   "id": "det_title",
+   "kind": "text_style",
+   "text_anchor": "detail:detail-title",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 480,
+   "overflow": "auto"
+  },
+  {
+   "id": "det_desc",
+   "kind": "text_style",
+   "text_anchor": "detail:detail-description",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 700,
+   "overflow": "auto"
+  },
+  {
+   "id": "det_cost",
+   "kind": "text_style",
+   "text_anchor": "detail:detail-description",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 700,
+   "size_adjust": -6,
+   "nudge": [
+    0,
+    30
+   ],
+   "_note": "「形态 N ＋ 指令 M」小字，描述下一行（整图未画，取描述样式缩小）"
+  },
+  {
+   "id": "det_stats",
+   "kind": "ninepatch",
+   "slice": "stats_panel",
+   "rect_ref": [
+    389.8,
+    259.0,
+    897,
+    53
+   ],
+   "ninepatch": [
+    30,
+    26,
+    30,
+    26
+   ]
+  },
+  {
+   "id": "det_stat_icon_0",
+   "kind": "flatbox",
+   "rect_ref": [
+    404,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_0",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-0-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60
+  },
+  {
+   "id": "det_stat_value_0",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-0-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60
+  },
+  {
+   "id": "det_stat_icon_1",
+   "kind": "flatbox",
+   "rect_ref": [
+    557,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_1",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-1-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_name_0",
+   "nudge": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "det_stat_value_1",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-1-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_value_0",
+   "size_adjust": -1,
+   "nudge": [
+    -1,
+    2
+   ]
+  },
+  {
+   "id": "det_stat_icon_2",
+   "kind": "flatbox",
+   "rect_ref": [
+    709,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_2",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-2-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_name_0",
+   "size_adjust": -1,
+   "nudge": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "det_stat_value_2",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-2-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_value_0"
+  },
+  {
+   "id": "det_stat_icon_3",
+   "kind": "flatbox",
+   "rect_ref": [
+    867,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_3",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-3-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_name_0"
+  },
+  {
+   "id": "det_stat_value_3",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-3-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_value_0",
+   "nudge": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "det_stat_icon_4",
+   "kind": "flatbox",
+   "rect_ref": [
+    1019,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_4",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-4-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_name_0"
+  },
+  {
+   "id": "det_stat_value_4",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-4-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_value_0",
+   "size_adjust": -1,
+   "nudge": [
+    -1,
+    2
+   ]
+  },
+  {
+   "id": "det_stat_icon_5",
+   "kind": "flatbox",
+   "rect_ref": [
+    1152,
+    273,
+    26,
+    26
+   ],
+   "style": {
+    "bg": "#00000000"
+   }
+  },
+  {
+   "id": "det_stat_name_5",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-5-name",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_name_0"
+  },
+  {
+   "id": "det_stat_value_5",
+   "kind": "text_style",
+   "text_anchor": "detail:stat-5-value",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 60,
+   "size_like": "det_stat_value_0",
+   "nudge": [
+    -1,
+    2
+   ]
+  },
+  {
+   "id": "det_scroll",
+   "kind": "flatbox",
+   "rect_ref": [
+    389,
+    322,
+    866,
+    430
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_note": "指令区（只有这里滚动）：第一行顶到底部分隔线 752"
+  },
+  {
+   "id": "det_track",
+   "kind": "ninepatch",
+   "slice": "scroll_track",
+   "rect_ref": [
+    1258,
+    333,
+    8,
+    410
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    0,
+    8,
+    0,
+    8
+   ]
+  },
+  {
+   "id": "det_thumb",
+   "kind": "ninepatch",
+   "slice": "scroll_thumb",
+   "rect_ref": [
+    1258,
+    334,
+    8,
+    80
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    0,
+    8,
+    0,
+    8
+   ]
+  },
+  {
+   "id": "det_scroll_arrow_up",
+   "kind": "image",
+   "slice": "p6_scroll_arrow_up",
+   "rect_ref": [
+    1252,
+    328.5,
+    20,
+    14
+   ],
+   "no_pad": true,
+   "_note": "详情滚动条上端箭头（P6 #14）：中心对准整图 ▲（设计 y≈385）"
+  },
+  {
+   "id": "det_scroll_arrow_down",
+   "kind": "image",
+   "slice": "p6_scroll_arrow_down",
+   "rect_ref": [
+    1252,
+    734.2,
+    20,
+    14
+   ],
+   "no_pad": true,
+   "_note": "详情滚动条下端箭头（P6 #14）：中心对准整图 ▼（设计 y≈850）"
+  },
+  {
+   "id": "det_add",
+   "kind": "button",
+   "slice": "button_add",
+   "rect_ref": [
+    670.7,
+    748.9,
+    350,
+    46
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    50,
+    0,
+    50,
+    0
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "text_anchor": "detail:detail-add",
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 250,
+   "nudge": [
+    1,
+    2
+   ],
+   "_np_note": "上下不设边距：切片 91 px 高、按钮约 53 px，上下各 20 px 的边距会把中段压没；竖向整体等比缩放，只保留左右端头"
+  },
+  {
+   "id": "det_beacons",
+   "kind": "text_style",
+   "text_anchor": "detail:detail-beacons",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 500,
+   "overflow": "auto"
+  },
+  {
+   "id": "det_row1",
+   "kind": "ninepatch",
+   "slice": "command_panel",
+   "rect_ref": [
+    389.0,
+    322.0,
+    866,
+    181
+   ],
+   "ninepatch": [
+    44,
+    44,
+    44,
+    44
+   ]
+  },
+  {
+   "id": "det_row2",
+   "kind": "ninepatch",
+   "slice": "command_panel",
+   "rect_ref": [
+    389,
+    513,
+    866,
+    181
+   ],
+   "ninepatch": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "_note": "第二行仅用于量取行距与等待 / 条件参数版式"
+  },
+  {
+   "id": "det_handle",
+   "kind": "image",
+   "slice": "drag_handle",
+   "rect_ref": [
+    402.4,
+    340.7,
+    28,
+    45
+   ],
+   "no_pad": true
+  },
+  {
+   "id": "det_prio",
+   "kind": "text_style",
+   "text_anchor": "detail:row-1-priority",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 110
+  },
+  {
+   "id": "det_action",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    572,
+    339,
+    183,
+    45
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "text_anchor": "detail:row-1-action",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 123
+  },
+  {
+   "id": "det_p1",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    769,
+    340,
+    153,
+    42
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_p2",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    939,
+    340,
+    126,
+    42
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_delete",
+   "kind": "button",
+   "slice": "button_delete",
+   "rect_ref": [
+    1143,
+    340,
+    93,
+    44
+   ],
+   "ninepatch": [
+    20,
+    16,
+    20,
+    16
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "text_anchor": "detail:row-1-delete",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 76,
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "det_c1_label",
+   "kind": "text_style",
+   "text_anchor": "detail:row-1-condition-one",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 90
+  },
+  {
+   "id": "det_c2_label",
+   "kind": "text_style",
+   "text_anchor": "detail:row-1-condition-two",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 90,
+   "size_like": "det_c1_label"
+  },
+  {
+   "id": "det_c1",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    692,
+    396,
+    365,
+    36
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_c2",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    692,
+    455,
+    365,
+    36
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_c1_narrow",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    692,
+    585,
+    245,
+    39
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "_note": "条件带参数时：下拉变窄（row2 量取）",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_cparam",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    955,
+    585,
+    102,
+    39
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_cunit",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 40,
+   "ink_from": {
+    "reference": "../../../tools/_raw/p3/unified_ui/detail_modal_whole.png",
+    "roi": [
+     1068,
+     590,
+     25,
+     30
+    ],
+    "text": "%"
+   },
+   "size_like": "det_c1_label"
+  },
+  {
+   "id": "det_wait_label",
+   "kind": "text_style",
+   "text_anchor": "detail:row-2-duration-label",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 100
+  },
+  {
+   "id": "det_wait_box",
+   "kind": "button",
+   "slice": "dropdown",
+   "rect_ref": [
+    915,
+    530,
+    120,
+    44
+   ],
+   "ninepatch": [
+    18,
+    18,
+    52,
+    18
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#C9C2C9",
+    "disabled": "#C8C0C8"
+   },
+   "align": "left",
+   "text_inset_like": "det_action"
+  },
+  {
+   "id": "det_wait_unit",
+   "kind": "text_style",
+   "text_anchor": "detail:row-2-duration-unit",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 40
+  },
+  {
+   "id": "det_logic_line_l",
+   "kind": "flatbox",
+   "rect_ref": [
+    692,
+    442,
+    152,
+    1
+   ],
+   "style": {
+    "bg": "#6E6670"
+   }
+  },
+  {
+   "id": "det_logic_line_r",
+   "kind": "flatbox",
+   "rect_ref": [
+    904,
+    442,
+    153,
+    1
+   ],
+   "style": {
+    "bg": "#6E6670"
+   }
+  },
+  {
+   "id": "det_logic",
+   "kind": "button",
+   "rect_ref": [
+    854,
+    430,
+    40,
+    24
+   ],
+   "flat": {
+    "bg": "#00000000",
+    "border": "",
+    "border_width": 0,
+    "radius": 0
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 30,
+   "_note": "与 / 或切换（∧ / ∨），位于两条件之间（10 §5.3）",
+   "ink_from": {
+    "reference": "../../../tools/_raw/p3/unified_ui/detail_modal_whole.png",
+    "roi": [
+     862,
+     434,
+     24,
+     18
+    ],
+    "text": "∧"
+   }
+  },
+  {
+   "id": "det_pick",
+   "kind": "flatbox",
+   "rect_ref": [
+    1268,
+    468,
+    358,
+    38
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "data": {
+    "_note": "「添加指令」行为列表（批准整图 ui_15，在详情弹窗中部显示）：行高 / 行距 / 颜色取自整图（1920 坐标行高 44、行距 54）",
+    "row_h": 44,
+    "row_gap": 10,
+    "border_width": 1.5,
+    "colors": {
+     "attack": [
+      "#2B153A",
+      "#DAC9B3"
+     ],
+     "chase_attack": [
+      "#043059",
+      "#C4C6AE"
+     ],
+     "chase": [
+      "#25265D",
+      "#998F9B"
+     ],
+     "retreat": [
+      "#752F32",
+      "#F8BC91"
+     ],
+     "idle": [
+      "#3C253D",
+      "#E0C2A6"
+     ],
+     "follow_beacons": [
+      "#043059",
+      "#C4C6AE"
+     ],
+     "wait": [
+      "#3C253D",
+      "#E0C2A6"
+     ],
+     "follow_route": [
+      "#25265D",
+      "#998F9B"
+     ],
+     "cancel": [
+      "#55121D",
+      "#E07070"
+     ]
+    },
+    "icons": {
+     "attack": "ui/icons/act_attack.svg",
+     "chase_attack": "ui/icons/act_chase_attack.svg",
+     "chase": "ui/icons/act_chase.svg",
+     "retreat": "ui/icons/act_retreat.svg",
+     "idle": "ui/icons/act_idle.svg",
+     "follow_route": "ui/icons/act_route.svg",
+     "follow_beacons": "ui/icons/act_follow_beacons.png",
+     "wait": "ui/icons/act_wait.png",
+     "cancel": "ui/icons/act_cancel.png"
+    }
+   }
+  },
+  {
+   "id": "fx_beacon",
+   "kind": "ninepatch",
+   "rect_ref": [
+    849,
+    316,
+    48,
+    48
+   ],
+   "data": {
+    "size_cells": 0.6,
+    "min_px": 30,
+    "_note": "信标数字牌（批准整图 ui_21）：深底金边圆角方块；边长 = 0.6 格（不小于 30 px）"
+   },
+   "slice": "p6_beacon_badge",
+   "no_pad": true,
+   "ninepatch": [
+    8,
+    8,
+    8,
+    8
+   ]
+  },
+  {
+   "id": "fx_beacon_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 40,
+   "ink_from": {
+    "reference": "../battle_fx/design_low_noise.png",
+    "roi": [
+     861,
+     326,
+     24,
+     28
+    ],
+    "text": "3"
+   }
+  },
+  {
+   "id": "fx_toast",
+   "kind": "ninepatch",
+   "rect_ref": [
+    639,
+    485,
+    249,
+    50
+   ],
+   "data": {
+    "pointer_px": 0,
+    "pad_x": 14,
+    "pad_y": 6,
+    "seconds": 2.5,
+    "_note": "不可放置提示（ui_21）：切片已含下沿三角，关闭旧程序三角以避免重叠"
+   },
+   "slice": "p6_placement_blocked_bubble",
+   "no_pad": true,
+   "ninepatch": [
+    14,
+    12,
+    14,
+    12
+   ]
+  },
+  {
+   "id": "fx_toast_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 240,
+   "ink_from": {
+    "reference": "../battle_fx/design_low_noise.png",
+    "roi": [
+     650,
+     494,
+     228,
+     30
+    ],
+    "text": "无法放置：障碍格不能放置"
+   }
+  }
+ ],
+ "_doc_overflow": "全部文字槽都遮罩：名字 / 标签 / 数值超出时自动滚动（auto），任务句等长文本滚轮 / 拖动（manual）；max_w 为文字区宽（参考像素），以参考文字中心为轴、到框体内侧最近的装饰为界"
+}

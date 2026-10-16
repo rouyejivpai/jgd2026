@@ -1,0 +1,975 @@
+{
+ "screen": "chapter",
+ "reference": "design_low_noise.png",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "slices": {
+  "layout": "../unified_low_noise/layout.json",
+  "dir": "../unified_low_noise/slices"
+ },
+ "text_anchors": {
+  "file": "../unified_low_noise/pixel_review/text_anchors.json",
+  "ref": "chapter_none"
+ },
+ "elements": [
+  {
+   "id": "title_plaque",
+   "kind": "ninepatch",
+   "slice": "p6_chapter_title_plaque",
+   "rect_ref": [
+    24,
+    10,
+    560,
+    94
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    78,
+    12,
+    78,
+    12
+   ],
+   "_note": "P6 #18：章节标题后的低调深色底牌，先绘制于月牙徽牌、标题字和装饰线下方。"
+  },
+  {
+   "id": "title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 380,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     125,
+     25,
+     180,
+     50
+    ],
+    "text": "腐土平原"
+   },
+   "overflow": "auto",
+   "nudge": [
+    -4,
+    0
+   ],
+   "size_adjust": -1
+  },
+  {
+   "id": "title_moon",
+   "kind": "image",
+   "slice": "p6_chapter_title_moon_badge",
+   "rect_ref": [
+    34.8,
+    17.4,
+    74,
+    74
+   ],
+   "no_pad": true,
+   "fit_visible": true,
+   "_note": "P6 #18：章节名左侧月牙徽牌（月牙 + 圆环），圆环覆盖整图里月牙与左侧括弧的范围（约 x 40–125、y 20–105 设计像素）"
+  },
+  {
+   "id": "title_line",
+   "kind": "ninepatch",
+   "rect_ref": [
+    31.4,
+    71.0,
+    485,
+    20.8
+   ],
+   "style": {
+    "bg": "#B48A4E"
+   },
+   "_note": "P6 #18：标题装饰线（右端菱形）；整图线从左括弧 x≈60 到右端菱形 x≈572、y≈92（设计像素）",
+   "slice": "p6_chapter_title_line",
+   "no_pad": true,
+   "ninepatch": [
+    10,
+    0,
+    20,
+    0
+   ]
+  },
+  {
+   "id": "btn_back",
+   "kind": "button",
+   "slice": "p6_chapter_button_back_red",
+   "rect_ref": [
+    1296.7,
+    29.6,
+    170.7,
+    46.2
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    54,
+    0,
+    54,
+    0
+   ],
+   "tint": {
+    "normal": "#FFFFFF",
+    "hover": "#FFFFFF",
+    "pressed": "#D3B3A0",
+    "disabled": "#80777E"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 100,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1360,
+     40,
+     50,
+     28
+    ],
+    "text": "返回"
+   },
+   "_note": "P6 #19：重新导出的红色宝石胶囊，直接使用完整可见切片，四态由调色派生。",
+   "size_adjust": 1,
+   "nudge": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "btn_settings",
+   "kind": "button",
+   "slice": "p6_chapter_button_settings_purple",
+   "rect_ref": [
+    1476.1,
+    29.6,
+    164.6,
+    46.2
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    34,
+    0,
+    34,
+    0
+   ],
+   "tint": {
+    "normal": "#FFFFFF",
+    "hover": "#FFF2D4",
+    "pressed": "#D1B982",
+    "disabled": "#827987"
+   },
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 100,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1538,
+     40,
+     50,
+     28
+    ],
+    "text": "设置"
+   },
+   "size_like": "btn_back",
+   "nudge": [
+    -1,
+    2
+   ],
+   "size_adjust": -1,
+   "_rect_note": "slice_crop 去掉四周留白；rect_ref = 整图可见外框；九宫格只留左右端头",
+   "_note": "P6 #19：ImageGen 生成的紫色宝石胶囊，四态由调色派生。",
+   "slice_crop": [
+    19,
+    11,
+    481,
+    92
+   ]
+  },
+  {
+   "id": "panel_top",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    1207.9,
+    109.0,
+    440,
+    229
+   ]
+  },
+  {
+   "id": "panel_bottom",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    1207.9,
+    356.0,
+    440,
+    325
+   ]
+  },
+  {
+   "id": "moon_orn",
+   "kind": "image",
+   "slice": "p6_chapter_title_moon_badge",
+   "rect_ref": [
+    1492.6,
+    114.5,
+    149.4,
+    174.4
+   ],
+   "no_pad": true,
+   "data": {
+    "region": [
+     0,
+     19,
+     66,
+     77
+    ],
+    "modulate": "#B07E5A66"
+   },
+   "_note": "P6 #20：上框右上的低对比月牙刻纹（整图月牙中心约 (1839, 207)、外圈刻线半径约 85）；用月牙徽牌（月牙 + 圆环）放大 2.6 倍、裁去框外部分、压暗半透明"
+  },
+  {
+   "id": "astro_orn",
+   "kind": "image",
+   "slice": "p6_chapter_astrolabe",
+   "rect_ref": [
+    1529.2,
+    534.1,
+    114.9,
+    143.3
+   ],
+   "no_pad": true,
+   "data": {
+    "region": [
+     0,
+     0,
+     65,
+     81
+    ],
+    "modulate": "#B07E5A40"
+   },
+   "_note": "P6 #20：下框右下的星盘刻纹（整图中心约 (1853, 710)、直径约 195，被框右边与底边截断）；裁去框外部分，压暗半透明"
+  },
+  {
+   "id": "gem1_orn",
+   "kind": "image",
+   "slice": "p6_chapter_corner_gem",
+   "rect_ref": [
+    1198.3,
+    134.2,
+    19.2,
+    20.9
+   ],
+   "no_pad": true,
+   "fit_visible": true,
+   "_note": "P6 #20：框左 / 右边线靠上的紫宝石（整图中心在边线上、距框顶约 41 设计像素，约 22×24）"
+  },
+  {
+   "id": "gem2_orn",
+   "kind": "image",
+   "slice": "p6_chapter_corner_gem",
+   "rect_ref": [
+    1638.1,
+    134.2,
+    19.2,
+    20.9
+   ],
+   "no_pad": true,
+   "fit_visible": true,
+   "_note": "P6 #20：框左 / 右边线靠上的紫宝石（整图中心在边线上、距框顶约 41 设计像素，约 22×24）"
+  },
+  {
+   "id": "gem3_orn",
+   "kind": "image",
+   "slice": "p6_chapter_corner_gem",
+   "rect_ref": [
+    1198.3,
+    381.6,
+    19.2,
+    20.9
+   ],
+   "no_pad": true,
+   "fit_visible": true,
+   "_note": "P6 #20：框左 / 右边线靠上的紫宝石（整图中心在边线上、距框顶约 41 设计像素，约 22×24）"
+  },
+  {
+   "id": "gem4_orn",
+   "kind": "image",
+   "slice": "p6_chapter_corner_gem",
+   "rect_ref": [
+    1638.1,
+    381.6,
+    19.2,
+    20.9
+   ],
+   "no_pad": true,
+   "fit_visible": true,
+   "_note": "P6 #20：框左 / 右边线靠上的紫宝石（整图中心在边线上、距框顶约 41 设计像素，约 22×24）"
+  },
+  {
+   "id": "level_no",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     140,
+     75,
+     28
+    ],
+    "text": "第 3 关"
+   },
+   "nudge": [
+    -1,
+    0
+   ]
+  },
+  {
+   "id": "level_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     182,
+     110,
+     52
+    ],
+    "text": "墙缝"
+   },
+   "overflow": "auto",
+   "size_adjust": -3,
+   "nudge": [
+    -1,
+    3
+   ]
+  },
+  {
+   "id": "sep_top",
+   "kind": "image",
+   "slice": "p6_chapter_separator_diamond",
+   "rect_ref": [
+    1243.6,
+    235.5,
+    363,
+    40
+   ],
+   "no_pad": true,
+   "_note": "P6 #21：中央菱形分隔线（重导 372×41，线在第 17–23 行、中心第 20 行，横向满宽）；线覆盖整图 1428–1845 设计像素，线心对准整图 y"
+  },
+  {
+   "id": "region",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     276,
+     140,
+     30
+    ],
+    "text": "区域 · 哭墙"
+   },
+   "overflow": "auto",
+   "size_adjust": -1,
+   "nudge": [
+    -2,
+    -2
+   ]
+  },
+  {
+   "id": "summary",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     400,
+     380,
+     32
+    ],
+    "text": "查看敌人规则，诱敌撤离，绕后破坏"
+   },
+   "data": {
+    "_note": "关卡特征（summary，空则 subtitle），多行时与下方内容一起在下框内滚动"
+   },
+   "size_adjust": 1,
+   "nudge": [
+    -1,
+    -1
+   ]
+  },
+  {
+   "id": "sep_bottom",
+   "kind": "image",
+   "slice": "p6_chapter_separator_diamond",
+   "rect_ref": [
+    1243.6,
+    443.5,
+    363,
+    40
+   ],
+   "no_pad": true,
+   "_note": "P6 #21：中央菱形分隔线（重导 372×41，线在第 17–23 行、中心第 20 行，横向满宽）；线覆盖整图 1428–1845 设计像素，线心对准整图 y"
+  },
+  {
+   "id": "objective_head",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     492,
+     60,
+     32
+    ],
+    "text": "任务"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    -6,
+    1
+   ]
+  },
+  {
+   "id": "objective",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     535,
+     270,
+     30
+    ],
+    "text": "摧毁哭墙后方的回响骸柱"
+   },
+   "nudge": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "state",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 360,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     614,
+     170,
+     34
+    ],
+    "text": "状态 · 可挑战"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    2,
+    -1
+   ]
+  },
+  {
+   "id": "btn_enter",
+   "kind": "button",
+   "slice": "p6_chapter_enter_teal",
+   "rect_ref": [
+    1207.0,
+    701.7,
+    441.5,
+    99.3
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    96,
+    0,
+    52,
+    0
+   ],
+   "tint": {
+    "normal": "#FFFFFF",
+    "hover": "#FFFFFF",
+    "pressed": "#C6DDD2",
+    "disabled": "#77727B"
+   },
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 200,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1378,
+     726,
+     95,
+     46
+    ],
+    "text": "进入"
+   },
+   "_note": "P6 #22：章节专用青色月牙长胶囊；四态通过 tint 派生。",
+   "size_adjust": -3,
+   "nudge": [
+    0,
+    2
+   ],
+   "_rect_note": "rect_ref 取整图可见外框（月牙圆章顶 812 – 底 905 设计像素）按切片可见行（第 8–118 行；第 0–1 行为切片残留暗线，见缺素材 #3）换算；代用切片画法不同，框体几何比对不判（目视）",
+   "disabled_from": "design_locked_low_noise.png",
+   "_disabled_note": "锁定态（ui_23）：按整图实测亮度 / 饱和度从青色切片派生灰图（资源侧的细灰切片只用于占位版式）"
+  },
+  {
+   "id": "replay_pick",
+   "kind": "button",
+   "slice": "p6_chapter_story_dropdown",
+   "rect_ref": [
+    1195.7,
+    804.2,
+    261.3,
+    68.0
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    32,
+    18,
+    22,
+    18
+   ],
+   "tint": {
+    "normal": "#FFFFFF",
+    "hover": "#FFF5DC",
+    "pressed": "#D4BE8D",
+    "disabled": "#77717A"
+   },
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 150,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1243,
+     824,
+     90,
+     28
+    ],
+    "text": "开场剧情"
+   },
+   "size_adjust": -1,
+   "nudge": [
+    -1,
+    2
+   ],
+   "_rect_note": "左端宝石（切片 x=32）对准整图宝石中心 x≈1405 设计像素，右缘 1660，上下 932–992；九宫格边距 1:1 外扩",
+   "_note": "P6 #23：左端宝石剧情下拉胶囊。",
+   "disabled_from": "design_locked_low_noise.png",
+   "_disabled_note": "锁定关没有可回放的剧情（ui_23）：按整图实测派生禁用贴图与禁用文字色"
+  },
+  {
+   "id": "btn_replay",
+   "kind": "button",
+   "rect_ref": [
+    1467,
+    812,
+    164,
+    51
+   ],
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 140,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     1505,
+     824,
+     95,
+     28
+    ],
+    "text": "回放剧情"
+   },
+   "size_like": "replay_pick",
+   "size_adjust": 0,
+   "nudge": [
+    19,
+    2
+   ],
+   "slice": "p6_chapter_replay",
+   "ninepatch": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "tint": {
+    "normal": "#FFFFFF",
+    "hover": "#FFF5DC",
+    "pressed": "#D4BE8D",
+    "disabled": "#77717A"
+   },
+   "_note": "P6 #23：描边回放胶囊左侧含独立金色播放三角；文字由程序绘制。",
+   "disabled_from": "design_locked_low_noise.png",
+   "_disabled_note": "锁定关没有可回放的剧情（ui_23）：按整图实测派生禁用贴图与禁用文字色",
+   "_icon_note": "切片左端含宝石 + ▶ 圆标（贴图 x 0–110）；切片比例与按钮外框接近，整体缩放（不设九宫格，图标不变形）；文字移到图标右侧空白区居中（nudge x +20）"
+  },
+  {
+   "id": "ph_plaque",
+   "kind": "ninepatch",
+   "slice": "p6_chapter_placeholder_plaque",
+   "rect_ref": [
+    1230,
+    145,
+    418,
+    85
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    86,
+    0,
+    62,
+    0
+   ],
+   "_note": "P6 #27：左月牙、右宝石的紫色占位标题胶囊。"
+  },
+  {
+   "id": "ph_title",
+   "kind": "text_style",
+   "font": "NotoSerifSC-Bold",
+   "align": "left",
+   "max_w": 280,
+   "ink_from": {
+    "reference": "design_pan_end_low_noise.png",
+    "roi": [
+     1330,
+     158,
+     140,
+     55
+    ],
+    "text": "未开放"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "ph_panel",
+   "kind": "ninepatch",
+   "slice": "modal_panel",
+   "rect_ref": [
+    1239.4,
+    248.7,
+    403.3,
+    255
+   ],
+   "_note": "占位版式：说明框"
+  },
+  {
+   "id": "ph_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "left",
+   "max_w": 340,
+   "ink_from": {
+    "reference": "design_pan_end_low_noise.png",
+    "roi": [
+     1268,
+     300,
+     100,
+     40
+    ],
+    "text": "未解锁"
+   }
+  },
+  {
+   "id": "ph_enter",
+   "kind": "button",
+   "slice": "p6_chapter_enter_disabled",
+   "rect_ref": [
+    1262.7,
+    538.5,
+    357.0,
+    54.0
+   ],
+   "no_pad": true,
+   "ninepatch": [
+    72,
+    0,
+    50,
+    0
+   ],
+   "tint": {
+    "hover": "#FFFFFF",
+    "pressed": "#FFFFFF",
+    "disabled": "#FFFFFF"
+   },
+   "font": "NotoSerifSC-Bold",
+   "align": "center",
+   "max_w": 200,
+   "ink_from": {
+    "reference": "design_pan_end_low_noise.png",
+    "roi": [
+     1400,
+     540,
+     90,
+     45
+    ],
+    "text": "进入"
+   },
+   "_note": "P6 #22：重新导出的占位版灰色进入胶囊，含左侧小月牙和右侧暗紫宝石。",
+   "_rect_note": "rect_ref = 整图 ui_25 可见外框；完整透明 PNG 切片直接使用，不再裁掉中段。"
+  },
+  {
+   "id": "scroll_line",
+   "kind": "ninepatch",
+   "rect_ref": [
+    40,
+    881,
+    1125,
+    24
+   ],
+   "style": {
+    "bg": "#B48A4E"
+   },
+   "_note": "P6 #26：缩小端饰的滚动轨道，九宫格固定两端月牙 / 菱形尺寸。",
+   "slice": "p6_chapter_scroll_rail",
+   "ninepatch": [
+    32,
+    0,
+    32,
+    0
+   ]
+  },
+  {
+   "id": "scroll_thumb",
+   "kind": "ninepatch",
+   "rect_ref": [
+    40,
+    885,
+    260,
+    20
+   ],
+   "style": {
+    "bg": "#F2C24A",
+    "radius": 4
+   },
+   "_note": "P6 #26：两端菱形的动态亮段。",
+   "slice": "p6_chapter_scroll_thumb",
+   "ninepatch": [
+    12,
+    0,
+    12,
+    0
+   ]
+  },
+  {
+   "id": "node",
+   "kind": "flatbox",
+   "rect_ref": [
+    142,
+    674,
+    76,
+    76
+   ],
+   "style": {
+    "bg": "#1D121A",
+    "border": "#C7973F",
+    "border_width": 3,
+    "radius": 38
+   },
+   "data": {
+    "_note": "节点（ui_22）：徽章切片按状态切换（node_tex_*），切片边长 = 金环直径 × art_scale；区域图标边长 = 金环直径 × icon_ratio；选中放大在 data",
+    "locked_border": "#6E5A70",
+    "done_border": "#E9C66B",
+    "selected_scale": 1.3,
+    "selected_border": "#F5B63A",
+    "boss_scale": 1.35,
+    "boss_bg": "#0E3B3E",
+    "glyph_color": "#FFFEFD",
+    "glyph_locked": "#8C7F8E",
+    "art_scale": 1.25,
+    "icon_ratio": 0.5
+   }
+  },
+  {
+   "id": "node_tex_locked",
+   "kind": "image",
+   "slice": "p6_chapter_node_locked",
+   "rect_ref": [
+    132.5,
+    664.5,
+    95,
+    95
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点锁定（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_tex_open",
+   "kind": "image",
+   "slice": "p6_chapter_node_challengeable",
+   "rect_ref": [
+    132.5,
+    664.5,
+    95,
+    95
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点可挑战（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_tex_done",
+   "kind": "image",
+   "slice": "p6_chapter_node_completed",
+   "rect_ref": [
+    132.5,
+    664.5,
+    95,
+    95
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点已完成（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_tex_selected",
+   "kind": "image",
+   "slice": "p6_chapter_node_selected",
+   "rect_ref": [
+    132.5,
+    664.5,
+    95,
+    95
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点选中（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_tex_boss",
+   "kind": "image",
+   "slice": "p6_chapter_node_boss",
+   "rect_ref": [
+    132.5,
+    664.5,
+    95,
+    95
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点首领（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_lock_marker",
+   "kind": "image",
+   "slice": "p6_chapter_node_lock_marker",
+   "rect_ref": [
+    195,
+    722,
+    22,
+    24
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点锁角标（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "node_check_marker",
+   "kind": "image",
+   "slice": "p6_chapter_node_check_marker",
+   "rect_ref": [
+    195,
+    722,
+    22,
+    24
+   ],
+   "no_pad": true,
+   "_note": "P6 #24：节点已完成角标（程序按节点位置摆放，rect 只取尺寸）"
+  },
+  {
+   "id": "link_gem",
+   "kind": "image",
+   "slice": "p6_chapter_link_diamond",
+   "rect_ref": [
+    0,
+    0,
+    14,
+    14
+   ],
+   "no_pad": true,
+   "_note": "P6 #25：连线中点的菱形（程序画在每条连线中点，rect 只取尺寸）"
+  },
+  {
+   "id": "plate",
+   "kind": "ninepatch",
+   "rect_ref": [
+    82,
+    762,
+    195,
+    36
+   ],
+   "data": {
+    "offset": [
+     0,
+     57
+    ],
+    "selected_border": "#F2C24A",
+    "_note": "名牌（P6 #24 名牌胶囊切片）：节点正下方（中心相对节点中心 offset，设计像素）；选中时提亮"
+   },
+   "slice": "p6_chapter_nameplate",
+   "no_pad": true,
+   "ninepatch": [
+    30,
+    0,
+    30,
+    0
+   ]
+  },
+  {
+   "id": "plate_text",
+   "kind": "text_style",
+   "font": "NotoSerifSC",
+   "align": "center",
+   "max_w": 180,
+   "ink_from": {
+    "reference": "design_low_noise.png",
+    "roi": [
+     120,
+     768,
+     120,
+     24
+    ],
+    "text": "01 · 田埂"
+   }
+  },
+  {
+   "id": "link",
+   "kind": "flatbox",
+   "rect_ref": [
+    0,
+    0,
+    3,
+    3
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "data": {
+    "width": 2.5,
+    "done": "#E9C66B",
+    "open": "#C9A35AB0",
+    "locked": "#463B54B0"
+   }
+  }
+ ]
+}

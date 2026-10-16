@@ -1,0 +1,73 @@
+{
+  "full": "../../level_04_full.png",
+  "pieces": [
+    {
+      "file": "01.png",
+      "cells": [
+        [
+          3,
+          3
+        ]
+      ],
+      "anchor_px": [
+        0,
+        0
+      ],
+      "size_px": [
+        51,
+        51
+      ]
+    },
+    {
+      "file": "02.png",
+      "cells": [
+        [
+          8,
+          3
+        ]
+      ],
+      "anchor_px": [
+        0,
+        0
+      ],
+      "size_px": [
+        51,
+        51
+      ]
+    },
+    {
+      "file": "03.png",
+      "cells": [
+        [
+          3,
+          8
+        ]
+      ],
+      "anchor_px": [
+        0,
+        0
+      ],
+      "size_px": [
+        51,
+        51
+      ]
+    },
+    {
+      "file": "04.png",
+      "cells": [
+        [
+          8,
+          8
+        ]
+      ],
+      "anchor_px": [
+        0,
+        0
+      ],
+      "size_px": [
+        51,
+        51
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "screen": "battle_fx",
+  "design_size": [
+    1672,
+    941
+  ],
+  "_comment": "R6b art_text 独立素材；当前仅静态交付。",
+  "elements": [
+    {
+      "id": "battle_start",
+      "kind": "art_text",
+      "rect": [
+        590,
+        345,
+        490,
+        150
+      ],
+      "layers": [
+        {
+          "id": "base",
+          "file": "base.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mix"
+        },
+        {
+          "id": "glow",
+          "file": "glow.png",
+          "offset": [
+            -12,
+            -12
+          ],
+          "size": [
+            514,
+            174
+          ],
+          "blend": "screen"
+        }
+      ]
+    }
+  ],
+  "_source": {
+    "file": "godot/tools/_raw/p3/art_text_review/battle_start.png",
+    "canvas_size": [
+      1672,
+      941
+    ],
+    "crop_rect": [
+      590,
+      345,
+      490,
+      150
+    ],
+    "approved_basis": "用户于 2026-10-06 批准当前源图作为分层基准。",
+    "extraction_note": "亮金色文字按源图像素提取；角色遮挡区域留透明，便于运行时角色层保持在字样前方。"
+  }
+}

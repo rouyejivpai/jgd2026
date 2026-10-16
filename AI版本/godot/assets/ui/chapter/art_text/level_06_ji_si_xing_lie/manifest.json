@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "screen": "chapter",
+  "design_size": [
+    1672,
+    941
+  ],
+  "_comment": "R6b art_text 独立素材；当前仅静态交付。",
+  "elements": [
+    {
+      "id": "level_06_ji_si_xing_lie",
+      "kind": "art_text",
+      "rect": [
+        955,
+        507,
+        515,
+        141
+      ],
+      "layers": [
+        {
+          "id": "base",
+          "file": "base.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mix"
+        },
+        {
+          "id": "glow",
+          "file": "glow.png",
+          "offset": [
+            -12,
+            -12
+          ],
+          "size": [
+            539,
+            165
+          ],
+          "blend": "screen"
+        }
+      ]
+    }
+  ],
+  "_source": {
+    "file": "godot/tools/_raw/p3/art_text_review/level_names.png",
+    "canvas_size": [
+      1672,
+      941
+    ],
+    "crop_rect": [
+      955,
+      507,
+      515,
+      141
+    ],
+    "approved_basis": "用户于 2026-10-06 批准当前源图作为分层基准。",
+    "extraction_note": "纯色底稿中的「祭司行列」按暖色差分透明化；字形颜色及 alpha 以原稿深梅色底为键恢复。"
+  }
+}

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="116" viewBox="0 0 500 116">
+  <title>轻量炼金按钮 normal</title>
+  <path d="M 46 22 C 31 22 26 33 22 44 C 20 50 15 55 9 58 C 15 61 20 66 22 72 C 26 83 31 94 46 94 L 454 94 C 469 94 474 83 478 72 C 480 66 485 61 491 58 C 485 55 480 50 478 44 C 474 33 469 22 454 22 Z" fill="#2A1430" fill-opacity="0.74" stroke="#E8DCC4" stroke-opacity="0.60" stroke-width="1.4" stroke-linejoin="round" />
+  <path d="M 41 43 C 32 44 28 54 33 63 C 36 69 43 73 49 70 C 38 70 33 53 41 43 Z" fill="#C9A24A" fill-opacity="0.70" />
+  <path d="M 13 44 C 16 31 25 21 36 18 C 43 16 49 16 56 17" fill="none" stroke="#C9A24A" stroke-opacity="0.65" stroke-width="1.1" stroke-linecap="round" />
+  <path d="M 487 72 C 484 85 475 95 464 98 C 457 100 451 100 444 99" fill="none" stroke="#C9A24A" stroke-opacity="0.65" stroke-width="1.1" stroke-linecap="round" />
+  <path d="M 45 94 C 38 94 32 91 29 86" fill="none" stroke="#7A1E2B" stroke-opacity="0.60" stroke-width="1.4" stroke-linecap="round" />
+</svg>

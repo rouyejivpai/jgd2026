@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "screen": "chapter",
+  "design_size": [
+    1671,
+    941
+  ],
+  "_comment": "R6b art_text 独立素材；当前仅静态交付。",
+  "elements": [
+    {
+      "id": "chapter_title",
+      "kind": "art_text",
+      "rect": [
+        120,
+        20,
+        211,
+        60
+      ],
+      "layers": [
+        {
+          "id": "base",
+          "file": "base.png",
+          "offset": [
+            0,
+            0
+          ],
+          "blend": "mix"
+        },
+        {
+          "id": "glow",
+          "file": "glow.png",
+          "offset": [
+            -12,
+            -12
+          ],
+          "size": [
+            235,
+            84
+          ],
+          "blend": "screen"
+        }
+      ]
+    }
+  ],
+  "_source": {
+    "file": "godot/tools/_raw/p3/art_text_review/chapter.png",
+    "canvas_size": [
+      1671,
+      941
+    ],
+    "crop_rect": [
+      120,
+      20,
+      211,
+      60
+    ],
+    "approved_basis": "用户于 2026-10-06 批准当前源图作为分层基准。",
+    "extraction_note": "透明字形按源图像素提取；未改变字形、字号或源图坐标。"
+  }
+}

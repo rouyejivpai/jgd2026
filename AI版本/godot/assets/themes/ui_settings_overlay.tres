@@ -1,0 +1,342 @@
+[gd_resource type="Theme" load_steps=36 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/panel.png" id="1_texture2d"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Bold.otf" id="2_fontfile"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_normal.png" id="3_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_hover.png" id="4_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_pressed.png" id="5_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_disabled.png" id="6_texture2d"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Regular.otf" id="7_fontfile"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/slider_track.png" id="8_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/slider_fill.png" id="9_texture2d"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Regular.ttf" id="10_fontfile"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/dropdown_normal.png" id="11_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/dropdown_hover.png" id="12_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/dropdown_pressed.png" id="13_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/common/dropdown_disabled.png" id="14_texture2d"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
+texture = ExtResource("1_texture2d")
+texture_margin_left = 32.0
+texture_margin_top = 32.0
+texture_margin_right = 32.0
+texture_margin_bottom = 32.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
+texture = ExtResource("3_texture2d")
+texture_margin_left = 25.0
+texture_margin_top = 25.0
+texture_margin_right = 25.0
+texture_margin_bottom = 25.0
+content_margin_left = 17.0
+content_margin_top = 9.0
+content_margin_right = 17.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
+texture = ExtResource("4_texture2d")
+texture_margin_left = 25.0
+texture_margin_top = 25.0
+texture_margin_right = 25.0
+texture_margin_bottom = 25.0
+content_margin_left = 17.0
+content_margin_top = 9.0
+content_margin_right = 17.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
+texture = ExtResource("5_texture2d")
+texture_margin_left = 25.0
+texture_margin_top = 25.0
+texture_margin_right = 25.0
+texture_margin_bottom = 25.0
+content_margin_left = 17.0
+content_margin_top = 9.0
+content_margin_right = 17.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
+texture = ExtResource("6_texture2d")
+texture_margin_left = 25.0
+texture_margin_top = 25.0
+texture_margin_right = 25.0
+texture_margin_bottom = 25.0
+content_margin_left = 17.0
+content_margin_top = 9.0
+content_margin_right = 17.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6"]
+texture = ExtResource("5_texture2d")
+texture_margin_left = 25.0
+texture_margin_top = 25.0
+texture_margin_right = 25.0
+texture_margin_bottom = 25.0
+content_margin_left = 17.0
+content_margin_top = 9.0
+content_margin_right = 17.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8"]
+texture = ExtResource("8_texture2d")
+texture_margin_left = 5.0
+texture_margin_top = 4.0
+texture_margin_right = 5.0
+texture_margin_bottom = 4.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_9"]
+texture = ExtResource("9_texture2d")
+texture_margin_left = 3.0
+texture_margin_top = 2.0
+texture_margin_right = 3.0
+texture_margin_bottom = 2.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_10"]
+texture = ExtResource("8_texture2d")
+texture_margin_left = 5.0
+texture_margin_top = 4.0
+texture_margin_right = 5.0
+texture_margin_bottom = 4.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_11"]
+texture = ExtResource("9_texture2d")
+texture_margin_left = 3.0
+texture_margin_top = 2.0
+texture_margin_right = 3.0
+texture_margin_bottom = 2.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_12"]
+texture = ExtResource("8_texture2d")
+texture_margin_left = 5.0
+texture_margin_top = 4.0
+texture_margin_right = 5.0
+texture_margin_bottom = 4.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_13"]
+texture = ExtResource("9_texture2d")
+texture_margin_left = 3.0
+texture_margin_top = 2.0
+texture_margin_right = 3.0
+texture_margin_bottom = 2.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_14"]
+texture = ExtResource("11_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 21.0
+content_margin_top = 3.0
+content_margin_right = 57.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_15"]
+texture = ExtResource("12_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 21.0
+content_margin_top = 3.0
+content_margin_right = 57.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_16"]
+texture = ExtResource("13_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 21.0
+content_margin_top = 3.0
+content_margin_right = 57.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_17"]
+texture = ExtResource("14_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 21.0
+content_margin_top = 3.0
+content_margin_right = 57.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_18"]
+texture = ExtResource("13_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 21.0
+content_margin_top = 3.0
+content_margin_right = 57.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_19"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_20"]
+texture = ExtResource("11_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_21"]
+texture = ExtResource("12_texture2d")
+texture_margin_left = 27.0
+texture_margin_top = 27.0
+texture_margin_right = 27.0
+texture_margin_bottom = 27.0
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+
+[resource]
+settings_overlay__panel_settings/base_type = &"PanelContainer"
+settings_overlay__panel_settings/styles/panel = SubResource("StyleBoxTexture_1")
+settings_overlay__title/base_type = &"Label"
+settings_overlay__title/fonts/font = ExtResource("2_fontfile")
+settings_overlay__title/font_sizes/font_size = 40
+settings_overlay__title/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/base_type = &"Button"
+settings_overlay__btn_close/styles/normal = SubResource("StyleBoxTexture_2")
+settings_overlay__btn_close/styles/hover = SubResource("StyleBoxTexture_3")
+settings_overlay__btn_close/styles/pressed = SubResource("StyleBoxTexture_4")
+settings_overlay__btn_close/styles/disabled = SubResource("StyleBoxTexture_5")
+settings_overlay__btn_close/styles/hover_pressed = SubResource("StyleBoxTexture_6")
+settings_overlay__btn_close/styles/focus = SubResource("StyleBoxEmpty_7")
+settings_overlay__btn_close/fonts/font = ExtResource("7_fontfile")
+settings_overlay__btn_close/font_sizes/font_size = 24
+settings_overlay__btn_close/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/colors/font_hover_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/colors/font_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/colors/font_focus_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/colors/font_hover_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__btn_close/colors/font_disabled_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__section_audio/base_type = &"Label"
+settings_overlay__section_audio/fonts/font = ExtResource("7_fontfile")
+settings_overlay__section_audio/font_sizes/font_size = 26
+settings_overlay__section_audio/colors/font_color = Color(0.788235, 0.635294, 0.290196, 1)
+settings_overlay__label_master/base_type = &"Label"
+settings_overlay__label_master/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_master/font_sizes/font_size = 26
+settings_overlay__label_master/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__slider_master_track/base_type = &"PanelContainer"
+settings_overlay__slider_master_track/styles/panel = SubResource("StyleBoxTexture_8")
+settings_overlay__slider_master_fill/base_type = &"PanelContainer"
+settings_overlay__slider_master_fill/styles/panel = SubResource("StyleBoxTexture_9")
+settings_overlay__pct_master/base_type = &"Label"
+settings_overlay__pct_master/fonts/font = ExtResource("10_fontfile")
+settings_overlay__pct_master/font_sizes/font_size = 24
+settings_overlay__pct_master/colors/font_color = Color(0.721569, 0.666667, 0.556863, 1)
+settings_overlay__label_music/base_type = &"Label"
+settings_overlay__label_music/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_music/font_sizes/font_size = 26
+settings_overlay__label_music/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__slider_music_track/base_type = &"PanelContainer"
+settings_overlay__slider_music_track/styles/panel = SubResource("StyleBoxTexture_10")
+settings_overlay__slider_music_fill/base_type = &"PanelContainer"
+settings_overlay__slider_music_fill/styles/panel = SubResource("StyleBoxTexture_11")
+settings_overlay__pct_music/base_type = &"Label"
+settings_overlay__pct_music/fonts/font = ExtResource("10_fontfile")
+settings_overlay__pct_music/font_sizes/font_size = 24
+settings_overlay__pct_music/colors/font_color = Color(0.721569, 0.666667, 0.556863, 1)
+settings_overlay__label_sfx/base_type = &"Label"
+settings_overlay__label_sfx/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_sfx/font_sizes/font_size = 26
+settings_overlay__label_sfx/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__slider_sfx_track/base_type = &"PanelContainer"
+settings_overlay__slider_sfx_track/styles/panel = SubResource("StyleBoxTexture_12")
+settings_overlay__slider_sfx_fill/base_type = &"PanelContainer"
+settings_overlay__slider_sfx_fill/styles/panel = SubResource("StyleBoxTexture_13")
+settings_overlay__pct_sfx/base_type = &"Label"
+settings_overlay__pct_sfx/fonts/font = ExtResource("10_fontfile")
+settings_overlay__pct_sfx/font_sizes/font_size = 24
+settings_overlay__pct_sfx/colors/font_color = Color(0.721569, 0.666667, 0.556863, 1)
+settings_overlay__section_display/base_type = &"Label"
+settings_overlay__section_display/fonts/font = ExtResource("7_fontfile")
+settings_overlay__section_display/font_sizes/font_size = 26
+settings_overlay__section_display/colors/font_color = Color(0.788235, 0.635294, 0.290196, 1)
+settings_overlay__label_fullscreen/base_type = &"Label"
+settings_overlay__label_fullscreen/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_fullscreen/font_sizes/font_size = 26
+settings_overlay__label_fullscreen/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__label_target_lines/base_type = &"Label"
+settings_overlay__label_target_lines/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_target_lines/font_sizes/font_size = 26
+settings_overlay__label_target_lines/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__label_font_scale/base_type = &"Label"
+settings_overlay__label_font_scale/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_font_scale/font_sizes/font_size = 26
+settings_overlay__label_font_scale/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/base_type = &"OptionButton"
+settings_overlay__dropdown_font_scale/styles/normal = SubResource("StyleBoxTexture_14")
+settings_overlay__dropdown_font_scale/styles/hover = SubResource("StyleBoxTexture_15")
+settings_overlay__dropdown_font_scale/styles/pressed = SubResource("StyleBoxTexture_16")
+settings_overlay__dropdown_font_scale/styles/disabled = SubResource("StyleBoxTexture_17")
+settings_overlay__dropdown_font_scale/styles/hover_pressed = SubResource("StyleBoxTexture_18")
+settings_overlay__dropdown_font_scale/styles/focus = SubResource("StyleBoxEmpty_19")
+settings_overlay__dropdown_font_scale/fonts/font = ExtResource("10_fontfile")
+settings_overlay__dropdown_font_scale/font_sizes/font_size = 24
+settings_overlay__dropdown_font_scale/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/colors/font_hover_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/colors/font_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/colors/font_focus_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/colors/font_hover_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__dropdown_font_scale/colors/font_disabled_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__font_scale_value/base_type = &"Label"
+settings_overlay__font_scale_value/fonts/font = ExtResource("10_fontfile")
+settings_overlay__font_scale_value/font_sizes/font_size = 24
+settings_overlay__font_scale_value/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__section_debug/base_type = &"Label"
+settings_overlay__section_debug/fonts/font = ExtResource("7_fontfile")
+settings_overlay__section_debug/font_sizes/font_size = 26
+settings_overlay__section_debug/colors/font_color = Color(0.788235, 0.635294, 0.290196, 1)
+settings_overlay__label_sim_log/base_type = &"Label"
+settings_overlay__label_sim_log/fonts/font = ExtResource("7_fontfile")
+settings_overlay__label_sim_log/font_sizes/font_size = 26
+settings_overlay__label_sim_log/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+settings_overlay__log_hint/base_type = &"Label"
+settings_overlay__log_hint/fonts/font = ExtResource("7_fontfile")
+settings_overlay__log_hint/font_sizes/font_size = 20
+settings_overlay__log_hint/colors/font_color = Color(0.721569, 0.666667, 0.556863, 1)
+settings_overlay__dropdown_font_scale__popup/base_type = &"PopupMenu"
+settings_overlay__dropdown_font_scale__popup/styles/panel = SubResource("StyleBoxTexture_20")
+settings_overlay__dropdown_font_scale__popup/styles/hover = SubResource("StyleBoxTexture_21")
