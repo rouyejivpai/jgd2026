@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "_comment": "30 关战役（2026-10-12 评审后版本，由 tools/import_campaign.py 生成）。地图暂借第一章宽图；节点坐标为临时值，等章节美术。",
+  "_comment": "30 关战役 = 腐土平原七个区域（2026-10-18 用户口径）：人偶工坊 6 关（c01–c06）、枯骨农田（c07–c10）、灰棘林（c11–c14）、圣钟城废墟（c15–c18）、肉巢沼泽（c19–c22）、畸变回廊（c23–c26）、骨花温室（c27–c30）各 4 关；关卡编号与解锁链不变（c06 通关解锁 c07 …）。world = 一级地图（选区域）：map 为整图、map_size 为其设计尺寸，各区域 world_pos 为该区域图标中心（一级地图坐标）。每个区域有自己的区域地图（map / map_size，按高 1080 等比），节点 pos 为所在区域地图上的坐标（临时排布，避开右侧详情面板，可按美术调整）。顶层 map / map_size 保留给没有区域地图时的兜底。",
   "id": "chapter_02",
-  "title": "人工神灵 · 战役",
+  "title": "腐土平原",
   "map": "res://assets/ui/chapter/map_chapter_01_low_noise.png",
   "map_size": [
     3240,
@@ -11,35 +11,94 @@
   "regions": [
     {
       "id": "bone_workshop",
-      "title": "织骸工坊"
+      "title": "人偶工坊",
+      "map": "res://assets/ui/regions/region_bone_workshop.png",
+      "map_size": [
+        1919,
+        1080
+      ],
+      "world_pos": [
+        627,
+        167
+      ]
     },
     {
       "id": "withered_farm",
-      "title": "枯骨农田"
+      "title": "枯骨农田",
+      "map": "res://assets/ui/regions/region_withered_farm.png",
+      "map_size": [
+        1919,
+        1080
+      ],
+      "world_pos": [
+        230,
+        787
+      ]
     },
     {
       "id": "grey_thorn",
-      "title": "灰棘林"
+      "title": "灰棘林",
+      "map": "res://assets/ui/regions/region_grey_thorn.png",
+      "map_size": [
+        1921,
+        1080
+      ],
+      "world_pos": [
+        418,
+        502
+      ]
     },
     {
       "id": "holy_bell",
-      "title": "圣钟城废墟"
+      "title": "圣钟城废墟",
+      "map": "res://assets/ui/regions/region_holy_bell.png",
+      "map_size": [
+        1919,
+        1080
+      ],
+      "world_pos": [
+        836,
+        446
+      ]
     },
     {
       "id": "flesh_swamp",
-      "title": "肉巢沼泽"
+      "title": "肉巢沼泽",
+      "map": "res://assets/ui/regions/region_flesh_swamp.png",
+      "map_size": [
+        1919,
+        1080
+      ],
+      "world_pos": [
+        1024,
+        738
+      ]
     },
     {
       "id": "warped_corridor",
-      "title": "畸变回廊"
+      "title": "畸变回廊",
+      "map": "res://assets/ui/regions/region_warped_corridor.png",
+      "map_size": [
+        1919,
+        1080
+      ],
+      "world_pos": [
+        571,
+        1031
+      ]
     },
     {
       "id": "bone_greenhouse",
-      "title": "骨花温室"
-    },
-    {
-      "id": "final_battle",
-      "title": "最终战"
+      "title": "骨花温室",
+      "map": "res://assets/ui/regions/region_bone_greenhouse.png",
+      "map_size": [
+        1620,
+        1080
+      ],
+      "world_pos": [
+        996,
+        1031
+      ]
     }
   ],
   "nodes": [
@@ -47,8 +106,8 @@
       "level": "level_c01",
       "region": "bone_workshop",
       "pos": [
-        170,
-        760
+        180,
+        780
       ],
       "links": [
         "level_c02"
@@ -59,7 +118,7 @@
       "level": "level_c02",
       "region": "bone_workshop",
       "pos": [
-        270,
+        400,
         600
       ],
       "links": [
@@ -71,8 +130,8 @@
       "level": "level_c03",
       "region": "bone_workshop",
       "pos": [
-        370,
-        700
+        620,
+        790
       ],
       "links": [
         "level_c04"
@@ -83,8 +142,8 @@
       "level": "level_c04",
       "region": "bone_workshop",
       "pos": [
-        470,
-        470
+        840,
+        610
       ],
       "links": [
         "level_c05"
@@ -95,8 +154,8 @@
       "level": "level_c05",
       "region": "bone_workshop",
       "pos": [
-        570,
-        620
+        1060,
+        780
       ],
       "links": [
         "level_c06"
@@ -107,8 +166,8 @@
       "level": "level_c06",
       "region": "bone_workshop",
       "pos": [
-        670,
-        360
+        1260,
+        590
       ],
       "links": [
         "level_c07"
@@ -119,7 +178,7 @@
       "level": "level_c07",
       "region": "withered_farm",
       "pos": [
-        770,
+        240,
         760
       ],
       "links": [
@@ -131,8 +190,8 @@
       "level": "level_c08",
       "region": "withered_farm",
       "pos": [
-        870,
-        600
+        560,
+        580
       ],
       "links": [
         "level_c09"
@@ -143,8 +202,8 @@
       "level": "level_c09",
       "region": "withered_farm",
       "pos": [
-        970,
-        700
+        880,
+        770
       ],
       "links": [
         "level_c10"
@@ -155,8 +214,8 @@
       "level": "level_c10",
       "region": "withered_farm",
       "pos": [
-        1070,
-        470
+        1200,
+        590
       ],
       "links": [
         "level_c11"
@@ -167,8 +226,8 @@
       "level": "level_c11",
       "region": "grey_thorn",
       "pos": [
-        1170,
-        620
+        240,
+        760
       ],
       "links": [
         "level_c12"
@@ -179,8 +238,8 @@
       "level": "level_c12",
       "region": "grey_thorn",
       "pos": [
-        1270,
-        360
+        560,
+        580
       ],
       "links": [
         "level_c13"
@@ -191,8 +250,8 @@
       "level": "level_c13",
       "region": "grey_thorn",
       "pos": [
-        1370,
-        760
+        880,
+        770
       ],
       "links": [
         "level_c14"
@@ -203,8 +262,8 @@
       "level": "level_c14",
       "region": "grey_thorn",
       "pos": [
-        1470,
-        600
+        1200,
+        590
       ],
       "links": [
         "level_c15"
@@ -215,8 +274,8 @@
       "level": "level_c15",
       "region": "holy_bell",
       "pos": [
-        1570,
-        700
+        240,
+        760
       ],
       "links": [
         "level_c16"
@@ -227,8 +286,8 @@
       "level": "level_c16",
       "region": "holy_bell",
       "pos": [
-        1670,
-        470
+        560,
+        580
       ],
       "links": [
         "level_c17"
@@ -239,8 +298,8 @@
       "level": "level_c17",
       "region": "holy_bell",
       "pos": [
-        1770,
-        620
+        880,
+        770
       ],
       "links": [
         "level_c18"
@@ -251,8 +310,8 @@
       "level": "level_c18",
       "region": "holy_bell",
       "pos": [
-        1870,
-        360
+        1200,
+        590
       ],
       "links": [
         "level_c19"
@@ -263,7 +322,7 @@
       "level": "level_c19",
       "region": "flesh_swamp",
       "pos": [
-        1970,
+        240,
         760
       ],
       "links": [
@@ -275,8 +334,8 @@
       "level": "level_c20",
       "region": "flesh_swamp",
       "pos": [
-        2070,
-        600
+        560,
+        580
       ],
       "links": [
         "level_c21"
@@ -287,8 +346,8 @@
       "level": "level_c21",
       "region": "flesh_swamp",
       "pos": [
-        2170,
-        700
+        880,
+        770
       ],
       "links": [
         "level_c22"
@@ -299,8 +358,8 @@
       "level": "level_c22",
       "region": "flesh_swamp",
       "pos": [
-        2270,
-        470
+        1200,
+        590
       ],
       "links": [
         "level_c23"
@@ -311,8 +370,8 @@
       "level": "level_c23",
       "region": "warped_corridor",
       "pos": [
-        2370,
-        620
+        240,
+        760
       ],
       "links": [
         "level_c24"
@@ -323,8 +382,8 @@
       "level": "level_c24",
       "region": "warped_corridor",
       "pos": [
-        2470,
-        360
+        560,
+        580
       ],
       "links": [
         "level_c25"
@@ -335,8 +394,8 @@
       "level": "level_c25",
       "region": "warped_corridor",
       "pos": [
-        2570,
-        760
+        880,
+        770
       ],
       "links": [
         "level_c26"
@@ -347,8 +406,8 @@
       "level": "level_c26",
       "region": "warped_corridor",
       "pos": [
-        2670,
-        600
+        1200,
+        590
       ],
       "links": [
         "level_c27"
@@ -359,8 +418,8 @@
       "level": "level_c27",
       "region": "bone_greenhouse",
       "pos": [
-        2770,
-        700
+        240,
+        760
       ],
       "links": [
         "level_c28"
@@ -371,8 +430,8 @@
       "level": "level_c28",
       "region": "bone_greenhouse",
       "pos": [
-        2870,
-        470
+        560,
+        580
       ],
       "links": [
         "level_c29"
@@ -383,8 +442,8 @@
       "level": "level_c29",
       "region": "bone_greenhouse",
       "pos": [
-        2970,
-        620
+        880,
+        770
       ],
       "links": [
         "level_c30"
@@ -393,14 +452,21 @@
     },
     {
       "level": "level_c30",
-      "region": "final_battle",
+      "region": "bone_greenhouse",
       "pos": [
-        3070,
-        360
+        1200,
+        590
       ],
       "links": [],
       "node_art": "flower",
       "boss": true
     }
-  ]
+  ],
+  "world": {
+    "map": "res://assets/ui/regions/world_map.png",
+    "map_size": [
+      1254,
+      1254
+    ]
+  }
 }

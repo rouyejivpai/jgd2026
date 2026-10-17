@@ -4,6 +4,8 @@ extends RefCounted
 ## 解锁规则：节点有一条"已完成的前驱连线"（某个 links 含本节点的节点已通关）即解锁；没有前驱的节点仅当在初始关卡列表中时解锁。
 ## 第三阶段（10 §3.1）：节点以 `id` 索引（缺省 = level）；`placeholder` 占位节点（无关卡）恒为锁定，指向它的连线按锁定色画；
 ## 可选 `title_key`（占位名文案键）、`node_art`（节点素材 id，R3）；章节 `map_size`（地图设计尺寸，默认 1920×1080）。
+## 2026-10-18 分区域：区域可带 `map` / `map_size`（区域地图；有则选关界面按区域分屏显示，节点 pos 为区域地图坐标）与 `world_pos`
+## （在一级地图上的图标中心）；章节可带 `world`：{ map, map_size }（一级地图，选区域）。解锁规则不变（连线可跨区域）。
 
 const DEFAULT_MAP_SIZE: Vector2 = Vector2(1920.0, 1080.0)
 
@@ -11,7 +13,8 @@ var id: String = ""
 var title: String = ""
 var map: String = ""
 var map_size: Vector2 = DEFAULT_MAP_SIZE
-var regions: Array[Dictionary] = []     ## { id, title }
+var regions: Array[Dictionary] = []     ## { id, title, map, map_size: Vector2, world_pos: Vector2, has_world_pos: bool }
+var world: Dictionary = {}              ## 一级地图 { map: String, map_size: Vector2 }；空 = 本章没有一级地图
 ## { id, level, placeholder: bool, title_key, node_art, region, pos: Vector2, links: Array[String]（节点 id）, boss: bool, story_on_unlock: String, legacy_ids: Array[String] }
 var nodes: Array[Dictionary] = []
 
@@ -29,7 +32,13 @@ static func from_dict(d: Dictionary, ctx: String) -> ChapterDef:
 			DataReader.report(ctx, "map_size 必须是 [宽, 高]（正数）")
 	for item: Variant in DataReader.req_array(d, "regions", ctx):
 		var r: Dictionary = DataReader.as_dict(item, ctx + ".regions")
-		c.regions.append({ "id": DataReader.req_str(r, "id", ctx + ".regions"), "title": DataReader.opt_str(r, "title", "", ctx + ".regions") })
+		var rctx: String = ctx + ".regions"
+		c.regions.append({ "id": DataReader.req_str(r, "id", rctx), "title": DataReader.opt_str(r, "title", "", rctx),
+			"map": DataReader.opt_str(r, "map", "", rctx), "map_size": _size(r.get("map_size", null), DEFAULT_MAP_SIZE, rctx + ".map_size"),
+			"world_pos": _size(r.get("world_pos", null), Vector2.ZERO, rctx + ".world_pos", true), "has_world_pos": r.has("world_pos") })
+	if d.has("world"):
+		var w: Dictionary = DataReader.as_dict(d["world"], ctx + ".world")
+		c.world = { "map": DataReader.req_str(w, "map", ctx + ".world"), "map_size": _size(w.get("map_size", null), DEFAULT_MAP_SIZE, ctx + ".world.map_size") }
 	for item: Variant in DataReader.req_array(d, "nodes", ctx):
 		var n: Dictionary = DataReader.as_dict(item, ctx + ".nodes")
 		var level: String = DataReader.opt_str(n, "level", "", ctx + ".nodes")
@@ -60,6 +69,91 @@ static func from_dict(d: Dictionary, ctx: String) -> ChapterDef:
 			"legacy_ids": DataReader.string_array(DataReader.opt_array(n, "legacy_ids", nctx), nctx + ".legacy_ids"),
 		})
 	return c
+
+
+## [宽, 高] / [x, y] → Vector2；缺省（null）返回 fallback；allow_zero = 坐标（允许 0）
+static func _size(v: Variant, fallback: Vector2, ctx: String, allow_zero: bool = false) -> Vector2:
+	if v == null:
+		return fallback
+	var a: Array = DataReader.as_array(v, ctx)
+	if a.size() == 2 and (a[0] is float or a[0] is int) and (a[1] is float or a[1] is int) and (allow_zero or (float(a[0]) > 0.0 and float(a[1]) > 0.0)):
+		return Vector2(float(a[0]), float(a[1]))
+	DataReader.report(ctx, "必须是 [数, 数]%s" % ("" if allow_zero else "（正数）"))
+	return fallback
+
+
+# ---- 分区域（2026-10-18）----
+func has_world() -> bool:
+	return not world.is_empty()
+
+
+func region(region_id: String) -> Dictionary:
+	for r: Dictionary in regions:
+		if str(r["id"]) == region_id:
+			return r
+	return {}
+
+
+## 区域是否有自己的地图（有则选关按区域分屏）
+func region_has_map(region_id: String) -> bool:
+	return str(region(region_id).get("map", "")) != ""
+
+
+func region_index(region_id: String) -> int:
+	for i: int in regions.size():
+		if str(regions[i]["id"]) == region_id:
+			return i
+	return -1
+
+
+## 关卡所在区域 id（无则 ""）
+func region_of_level(level_id: String) -> String:
+	return str(node_of_level(level_id).get("region", ""))
+
+
+## 区域内的节点（按数据顺序）
+func region_nodes(region_id: String) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for n: Dictionary in nodes:
+		if str(n["region"]) == region_id:
+			out.append(n)
+	return out
+
+
+func region_level_ids(region_id: String) -> Array[String]:
+	var out: Array[String] = []
+	for n: Dictionary in region_nodes(region_id):
+		if not bool(n["placeholder"]) and str(n["level"]) != "":
+			out.append(str(n["level"]))
+	return out
+
+
+## 区域解锁 = 区域内有任一节点解锁
+func region_unlocked(region_id: String, completed: Array, initial_levels: Array) -> bool:
+	for lid: String in region_level_ids(region_id):
+		if is_unlocked(lid, completed, initial_levels):
+			return true
+	return false
+
+
+## 区域进度 (已通关数, 关卡数)
+func region_progress(region_id: String, completed: Array) -> Vector2i:
+	var ids: Array[String] = region_level_ids(region_id)
+	var done: int = 0
+	for lid: String in ids:
+		if completed.has(lid):
+			done += 1
+	return Vector2i(done, ids.size())
+
+
+## 解锁本区域首关需要先通关的关卡（区域首关的前驱，可能在上一区域）；没有则 ""
+func region_requirement(region_id: String) -> String:
+	var ns: Array[Dictionary] = region_nodes(region_id)
+	if ns.is_empty():
+		return ""
+	for p: String in predecessors(str(ns[0]["id"])):
+		return str(node_of(p).get("level", ""))
+	return ""
 
 
 ## 按节点 id 取节点（关卡节点的 id 缺省 = 关卡 id，因此也可直接用关卡 id）；无则 {}

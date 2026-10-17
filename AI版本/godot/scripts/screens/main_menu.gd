@@ -84,7 +84,7 @@ func _layout() -> void:
 
 
 func _on_start_pressed() -> void:
-	SceneRouter.goto_level_select()
+	SceneRouter.goto_world_map()          # 2026-10-18：先选区域
 
 
 func _on_settings_pressed() -> void:

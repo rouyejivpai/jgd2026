@@ -58,6 +58,25 @@ func run(tree: SceneTree) -> void:
 		GameState.unlocks = saved_unlocks
 		tree.quit(0)
 		return
+	if str(args.get("screen", "battle")) in ["world_map", "region"]:     # 2026-10-18：一级地图 / 区域选关（--completed=N 前 N 关战役已通关，--region=<id>）
+		var wc: ChapterDef = DataRegistry.world_chapter()
+		var done: Array = wc.level_ids().slice(0, int(args.get("completed", "8")))
+		SaveManager.data["progress"] = { "completed": done, "unlocked_levels": [] }
+		GameState.sync_from_save()
+		GameState.current_level_id = ""
+		GameState.current_region_id = str(args.get("region", ""))
+		if str(args["screen"]) == "world_map":
+			SceneRouter.goto_world_map()
+		else:
+			SceneRouter.goto_region(str(args.get("region", "bone_workshop")))
+		for i: int in LOAD_FRAMES:
+			await tree.process_frame
+		_save_shot(tree, out_dir.path_join("%s_%s.png" % [str(args["screen"]), str(args.get("region", "default"))]))
+		GameState.unlocks = saved_unlocks
+		SaveManager.data = saved
+		GameState.sync_from_save()
+		tree.quit(0)
+		return
 	if str(args.get("screen", "battle")) == "chapter":
 		await _chapter_shots(tree, out_dir, args)
 		GameState.unlocks = saved_unlocks

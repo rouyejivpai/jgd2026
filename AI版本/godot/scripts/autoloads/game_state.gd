@@ -8,6 +8,8 @@ var unlocks: Dictionary = {}
 var progress: Dictionary = {}
 ## 当前选择的关卡 id
 var current_level_id: String = ""
+## 2026-10-18 分区域：当前所在区域（一级地图「进入」或进入关卡时设置；选关界面据此显示区域地图）
+var current_region_id: String = ""
 ## 设置项：master / music / sfx / fullscreen / target_lines / font_scale / sim_log
 var settings: Dictionary = {}
 ## 主题中各字号的原始值（type -> { name: size }，"" 键为 default_font_size），字体缩放以此为基准

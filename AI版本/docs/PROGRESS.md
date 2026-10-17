@@ -1157,3 +1157,8 @@ ui_geom_check battle_hud（level_03 部署）：共 36 项，未通过 0 项（7
 - 顶栏「导出配置包」「导入配置包」「打开导出文件夹」与备注；导入：格式检查 → 校验 → 逐关改动确认 → 备份 → 写入 → 记 CHANGELOG。`tools/bake_teaching.py` 可选固化。
 - 说明：`docs/关卡配置器使用说明.md`。截图 `docs/screenshots/p5/config_editor/`（tab0 = 关卡配置）。
 - 验证：GUT 普通 Tests 336 / Passing 332 / Pending 4 / 0 失败；严格警告同样 332 / 4 pending / 0 失败；`run_playtests -- --check` 25 场景全等；`validate_data.py` 通过。
+
+## 分区域与一级地图（用户 2026-10-18）—— 完成，等待用户目视
+- 规格：`docs/16_分区域与一级地图.md`。截图：`docs/screenshots/regions/`（一级地图、人偶工坊、枯骨农田）。
+- 验证：GUT 普通 Tests 341 / Passing 337 / Pending 4 / 0 失败；严格警告同样 337 / 4 pending / 0 失败；`run_playtests -- --check` 25 场景全等；`validate_data.py` 通过。
+- 已知：区域节点坐标为临时排布（地面一线，避开详情面板），可按美术调整；第一章旧 8 关 Demo 不在流程中（数据与测试保留）。

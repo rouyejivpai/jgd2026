@@ -740,6 +740,26 @@ def main():
             if k not in ch:
                 err(cctx, f"缺少必填字段 {k}")
         region_ids = {r.get("id") for r in ch.get("regions", [])}
+        # 2026-10-18 分区域：区域地图 / 一级地图坐标；章节一级地图
+        def _pair(v, allow_zero=False):
+            return isinstance(v, list) and len(v) == 2 and all(isinstance(x, (int, float)) and (x >= 0 if allow_zero else x > 0) for x in v)
+        for r in ch.get("regions", []):
+            rctx = f"{cctx}:regions.{r.get('id')}"
+            if "map" in r and not (isinstance(r["map"], str) and r["map"].startswith("res://") and (ROOT.parent / r["map"][6:]).exists()):
+                err(rctx, f"区域地图 {r.get('map')} 不存在")
+            if "map_size" in r and not _pair(r["map_size"]):
+                err(rctx, "map_size 必须是 [宽, 高]（正数）")
+            if "world_pos" in r and not _pair(r["world_pos"], True):
+                err(rctx, "world_pos 必须是 [x, y]")
+        if "world" in ch:
+            w = ch["world"]
+            if not (isinstance(w, dict) and isinstance(w.get("map"), str) and w["map"].startswith("res://") and (ROOT.parent / w["map"][6:]).exists()):
+                err(cctx, "world.map 必须是存在的 res:// 图片")
+            if not _pair((w or {}).get("map_size", [1, 1])):
+                err(cctx, "world.map_size 必须是 [宽, 高]（正数）")
+            for r in ch.get("regions", []):
+                if "world_pos" not in r:
+                    err(f"{cctx}:regions.{r.get('id')}", "有一级地图时每个区域都需要 world_pos")
         ms = ch.get("map_size", [1920, 1080])
         if not (isinstance(ms, list) and len(ms) == 2 and all(isinstance(v, (int, float)) and v > 0 for v in ms)):
             err(cctx, "map_size 必须是 [宽, 高]（正数）")

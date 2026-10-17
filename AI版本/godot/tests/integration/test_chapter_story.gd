@@ -5,6 +5,7 @@ extends GutTest
 const BATTLE_SCENE: PackedScene = preload("res://scenes/battle/battle_root.tscn")
 const SaveManagerScript: GDScript = preload("res://scripts/autoloads/save_manager.gd")
 const SELECT_SCENE: PackedScene = preload("res://scenes/screens/level_select.tscn")
+const SELECT_SCRIPT: GDScript = preload("res://scripts/screens/level_select.gd")
 const STORY_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
 const TMP_DIR: String = "user://test_tmp/stories"
 const ALL_UNLOCKED: Dictionary = {
@@ -28,6 +29,7 @@ func before_each() -> void:
 	_saved_progress = GameState.progress
 	GameState.unlocks = ALL_UNLOCKED
 	DataRegistry.story_dir = DataRegistry.STORY_DIR
+	SELECT_SCRIPT.set("chapter_index", DataRegistry.get_chapters().find(DataRegistry.get_chapter("chapter_01")))   # 第一章（不分区域）的地图测试
 	DirAccess.make_dir_recursive_absolute(TMP_DIR)
 	for f: String in DirAccess.get_files_at(TMP_DIR):
 		DirAccess.remove_absolute(TMP_DIR.path_join(f))
@@ -39,6 +41,7 @@ func after_each() -> void:
 	GameState.unlocks = _saved_unlocks
 	GameState.progress = _saved_progress
 	DataRegistry.story_dir = DataRegistry.STORY_DIR
+	SELECT_SCRIPT.set("chapter_index", -1)
 
 
 ## 把部分正式剧情复制到临时目录（其余视为"已删除"）

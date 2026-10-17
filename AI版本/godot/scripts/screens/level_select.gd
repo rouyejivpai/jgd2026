@@ -10,6 +10,8 @@ extends Control
 ## - 节点：深底金环圆盘 + 名牌胶囊（「01 · 田埂」）；锁定环暗并带锁；Boss 圆盘更大、青底；占位节点（9–25）恒锁定。
 ##   区域图标（整图里的耙子 / 网格 / 盾 / 准星 / 花）缺素材，暂显示关卡编号（docs/P6_MISSING_ASSETS.md）。
 ## - 连线：已完成金、可挑战暗金、锁定暗紫（指向占位节点的按锁定色）。story_on_unlock 行为不变。
+## - 2026-10-18 分区域：章节的区域带区域地图时按区域分屏——只显示当前区域（GameState.current_region_id，缺省 = 最近关卡所在区域）的节点与区域地图，
+##   标题 = 区域名，「返回」回到一级地图（world_map）；跨区域的连线不画。没有区域地图的章节（第一章旧 Demo）仍整章显示。
 
 signal enter_requested(level_id: String)
 
@@ -60,9 +62,9 @@ const NORMAL_ONLY: Array[String] = ["panel_top", "panel_bottom", "moon_orn", "as
 const PLACEHOLDER_ONLY: Array[String] = ["ph_plaque", "ph_panel", "ph_title", "ph_text", "ph_enter"]
 var _node_clip: Control = null           ## 节点与连线的遮罩层：宽 = 地图可见宽（详情面板左缘），节点不露在面板之间的空隙里
 var _node_layer: Control = null          ## 节点 / 连线所在层，随滚动横移（与 MapContent 同步）
-## 多章节（第一章 + 30 关战役）：当前显示第几个章节；-1 = 按最近进入的关卡所在章节决定。整个会话内记住
+## 多章节：指定显示第几个章节（测试 / 调试用）；-1 = 自动（最近关卡所在章节；不在任何章节时取带一级地图的章节）
 static var chapter_index: int = -1
-var _chapter_button: Button = null
+var region_id: String = ""               ## 当前显示的区域（"" = 整章显示）
 
 
 func _ready() -> void:
@@ -71,6 +73,7 @@ func _ready() -> void:
 	AudioManager.stop_ambient()
 	var chapters: Array[ChapterDef] = DataRegistry.get_chapters()
 	chapter = chapters[_pick_chapter(chapters)] if not chapters.is_empty() else null
+	region_id = pick_region()
 	_back_button.text = DataRegistry.get_string("ui.back")
 	_back_button.pressed.connect(_on_back_pressed)
 	_settings_button.text = DataRegistry.get_string("ui.menu_settings")
@@ -82,10 +85,9 @@ func _ready() -> void:
 	for b: BaseButton in [_back_button, _settings_button, _enter_button, _replay_button, _replay_pick] as Array[BaseButton]:
 		b.focus_mode = Control.FOCUS_NONE
 	_apply_skin()
-	_build_chapter_switch(chapters)
 	if chapter == null:
 		return
-	_title.text = chapter.title
+	_title.text = chapter.region_title(region_id) if region_id != "" else chapter.title
 	_node_clip = Control.new()
 	_node_clip.name = "NodeClip"
 	_node_clip.clip_contents = true
@@ -264,7 +266,7 @@ func _build_nodes() -> void:
 	var node_size: float = UiKit.layout_rect(SKIN, "node", vp).size.x
 	var nd: Dictionary = UiKit.layout_element(SKIN, "node").get("data", {}) as Dictionary
 	var plate: Rect2 = UiKit.layout_rect(SKIN, "plate", vp)
-	for n: Dictionary in chapter.nodes:
+	for n: Dictionary in shown_nodes():
 		var nid: String = str(n["id"])
 		var level: LevelDefinition = DataRegistry.get_level(str(n["level"])) if not bool(n["placeholder"]) else null
 		if not bool(n["placeholder"]) and level == null:
@@ -408,7 +410,8 @@ func _restyle_nodes() -> void:
 func default_node() -> String:
 	var playable: String = ""
 	var done: String = ""
-	for n: Dictionary in chapter.nodes:
+	var ns: Array[Dictionary] = shown_nodes()
+	for n: Dictionary in ns:
 		var nid: String = str(n["id"])
 		if not node_buttons.has(nid):
 			continue
@@ -421,7 +424,7 @@ func default_node() -> String:
 		return playable
 	if done != "":
 		return done
-	return str(chapter.nodes[0]["id"]) if not chapter.nodes.is_empty() else ""
+	return str(ns[0]["id"]) if not ns.is_empty() else ""
 
 
 ## 点击节点 = 选中（不进关）
@@ -438,8 +441,8 @@ func _layout() -> void:
 	if chapter == null:
 		return
 	var vp_h: float = maxf(_viewport.size.y, 1.0)
-	_scale = vp_h / chapter.map_size.y
-	_content.size = Vector2(chapter.map_size.x * _scale, vp_h)
+	_scale = vp_h / map_size().y
+	_content.size = Vector2(map_size().x * _scale, vp_h)
 	_node_clip.size = Vector2(visible_width(), vp_h)
 	_node_layer.size = _content.size
 	_build_map_tiles()
@@ -455,7 +458,7 @@ func _build_map_tiles() -> void:
 	for c: Node in _content.get_children():
 		if c.name.begins_with("MapTile"):
 			c.queue_free()
-	var tex: Texture2D = Art.texture(chapter.map)
+	var tex: Texture2D = Art.texture(map_path())
 	if tex == null:
 		return
 	var r := TextureRect.new()
@@ -517,7 +520,17 @@ func center_on(node_id: String) -> void:
 	var n: Dictionary = chapter.node_of(node_id)
 	if n.is_empty():
 		return
-	set_scroll((n["pos"] as Vector2).x * _scale - visible_width() * 0.5)
+	var target: float = (n["pos"] as Vector2).x * _scale - visible_width() * 0.5
+	# 显示中的节点能同时放进可见区时，保证它们全部可见（分区域后每区节点少，不该为了居中把首关挤出左缘）
+	var lo: float = INF
+	var hi: float = -INF
+	for m: Dictionary in shown_nodes():
+		lo = minf(lo, (m["pos"] as Vector2).x * _scale)
+		hi = maxf(hi, (m["pos"] as Vector2).x * _scale)
+	var margin: float = UiKit.layout_rect(SKIN, "plate", get_viewport_rect().size).size.x * 0.6
+	if hi - lo + margin * 2.0 <= visible_width():
+		target = clampf(target, hi + margin - visible_width(), lo - margin)
+	set_scroll(target)
 
 
 ## 节点在视口内的屏幕矩形（测试 / 截图用）
@@ -673,42 +686,55 @@ func _play_unlock_stories() -> void:
 			return
 
 
+## 分区域时回到一级地图，否则回主菜单
 func _on_back_pressed() -> void:
-	SceneRouter.goto_main_menu()
+	if region_id != "" and chapter.has_world():
+		SceneRouter.goto_world_map()
+	else:
+		SceneRouter.goto_main_menu()
 
 
 
-# ---- 多章节切换（30 关战役为 chapter_02）----
+# ---- 章节 / 区域 ----
+## 章节：显式指定（chapter_index）> 最近关卡所在的章节（不带一级地图的旧章节，如第一章 Demo 与其测试）> 带一级地图的章节 > 第一个
 func _pick_chapter(chapters: Array[ChapterDef]) -> int:
 	if chapter_index >= 0 and chapter_index < chapters.size():
 		return chapter_index
 	var last: ChapterDef = DataRegistry.chapter_of(GameState.current_level_id) if GameState.current_level_id != "" else null
-	chapter_index = maxi(0, chapters.find(last)) if last != null else 0
-	return chapter_index
+	if last != null and not last.has_world():
+		return chapters.find(last)
+	var wc: ChapterDef = DataRegistry.world_chapter()
+	if wc != null:
+		return chapters.find(wc)
+	return maxi(0, chapters.find(last)) if last != null else 0
 
 
-## 顶栏「切换章节」：只有一个章节时不显示；点击切到下一章并重新载入选关
-func _build_chapter_switch(chapters: Array[ChapterDef]) -> void:
-	if chapters.size() < 2:
-		return
-	var nxt: ChapterDef = chapters[(chapter_index + 1) % chapters.size()]
-	_chapter_button = Button.new()
-	_chapter_button.name = "ChapterSwitch"
-	_chapter_button.text = DataRegistry.get_string("ui.chapter_switch").format({ "title": nxt.title })
-	_chapter_button.theme_type_variation = _settings_button.theme_type_variation
-	_chapter_button.focus_mode = Control.FOCUS_NONE
-	_chapter_button.clip_text = false
-	add_child(_chapter_button)
-	_chapter_button.pressed.connect(func() -> void:
-		chapter_index = (chapter_index + 1) % chapters.size()
-		SceneRouter.goto_level_select())
-	resized.connect(_place_chapter_switch)
-	_place_chapter_switch.call_deferred()
+## 区域：本章区域没有区域地图 → ""（整章）；否则 GameState.current_region_id > 最近关卡所在区域 > 第一个有地图的区域
+func pick_region() -> String:
+	if chapter == null:
+		return ""
+	var want: String = GameState.current_region_id
+	if want != "" and chapter.region_has_map(want):
+		return want
+	var by_level: String = chapter.region_of_level(GameState.current_level_id)
+	if by_level != "" and chapter.region_has_map(by_level):
+		return by_level
+	for r: Dictionary in chapter.regions:
+		if chapter.region_has_map(str(r["id"])):
+			return str(r["id"])
+	return ""
 
 
-func _place_chapter_switch() -> void:
-	if _chapter_button == null:
-		return
-	var w: float = maxf(_settings_button.size.x * 2.2, 260.0)
-	_chapter_button.size = Vector2(w, _settings_button.size.y)
-	_chapter_button.position = _settings_button.position - Vector2(w + 16.0, 0.0)
+## 当前显示的节点：分区域时只含本区域
+func shown_nodes() -> Array[Dictionary]:
+	if region_id == "":
+		return chapter.nodes
+	return chapter.region_nodes(region_id)
+
+
+func map_path() -> String:
+	return str(chapter.region(region_id).get("map", "")) if region_id != "" else chapter.map
+
+
+func map_size() -> Vector2:
+	return chapter.region(region_id).get("map_size", chapter.map_size) as Vector2 if region_id != "" else chapter.map_size

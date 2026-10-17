@@ -234,6 +234,14 @@ func get_chapters() -> Array[ChapterDef]:
 	return _chapters
 
 
+## 2026-10-18：带一级地图（world）的章节——游戏主线（腐土平原七区域）；没有则 null
+func world_chapter() -> ChapterDef:
+	for c: ChapterDef in _chapters:
+		if c.has_world():
+			return c
+	return null
+
+
 func get_chapter(chapter_id: String) -> ChapterDef:
 	for c: ChapterDef in _chapters:
 		if c.id == chapter_id:

@@ -4,6 +4,8 @@ extends GutTest
 ## 默认选中最新可挑战节点并滚到视口中央；地图宽于视口时能滚到第 25 节点。
 
 const SELECT_SCENE: PackedScene = preload("res://scenes/screens/level_select.tscn")
+const SELECT_SCRIPT: GDScript = preload("res://scripts/screens/level_select.gd")
+## 本文件测第一章（25 节点宽图、不分区域）的地图交互；2026-10-18 起主线为分区域的七区战役，这里显式指定第一章
 
 var _saved_data: Dictionary
 var _saved_progress: Dictionary
@@ -15,12 +17,14 @@ func before_each() -> void:
 	_saved_progress = GameState.progress
 	SaveManager.data["stories_seen"] = {}      # 不依赖本机存档里已看过的剧情（after_each 恢复）
 	_entered.clear()
+	SELECT_SCRIPT.set("chapter_index", DataRegistry.get_chapters().find(DataRegistry.get_chapter("chapter_01")))
 
 
 func after_each() -> void:
 	SaveManager.data = _saved_data
 	GameState.sync_from_save()
 	GameState.progress = _saved_progress
+	SELECT_SCRIPT.set("chapter_index", -1)
 
 
 func _open(completed: Array) -> Control:

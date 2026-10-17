@@ -8,6 +8,7 @@ signal settings_closed()
 
 const MAIN_MENU_SCENE: String = "res://scenes/screens/main_menu.tscn"
 const LEVEL_SELECT_SCENE: String = "res://scenes/screens/level_select.tscn"
+const WORLD_MAP_SCENE: String = "res://scenes/screens/world_map.tscn"   ## 2026-10-18：一级地图（选区域）
 const BATTLE_SCENE: String = "res://scenes/battle/battle_root.tscn"
 const CONFIG_EDITOR_SCENE: String = "res://tools/config_editor.tscn"   ## 第五阶段：教学与解锁配置器（开发工具）
 const SETTINGS_OVERLAY_SCENE: PackedScene = preload("res://scenes/ui/settings_overlay.tscn")
@@ -53,6 +54,17 @@ func goto_level_select() -> void:
 	_change_scene(LEVEL_SELECT_SCENE)
 
 
+## 一级地图（选区域）；没有带一级地图的章节时直接进选关
+func goto_world_map() -> void:
+	_change_scene(WORLD_MAP_SCENE if DataRegistry.world_chapter() != null else LEVEL_SELECT_SCENE)
+
+
+## 进入某区域的选关地图
+func goto_region(region_id: String) -> void:
+	GameState.current_region_id = region_id
+	_change_scene(LEVEL_SELECT_SCENE)
+
+
 ## 契约保留：第三阶段起设置是浮窗，等同 open_settings()
 func goto_settings() -> void:
 	open_settings()
@@ -87,6 +99,9 @@ func goto_config_editor() -> void:
 
 func goto_battle(level_id: String) -> void:
 	GameState.current_level_id = level_id
+	var wc: ChapterDef = DataRegistry.world_chapter()
+	if wc != null and wc.has_level(level_id):
+		GameState.current_region_id = wc.region_of_level(level_id)    # 「下一关」跨区域时，退出后回到新关卡所在区域
 	if not ResourceLoader.exists(BATTLE_SCENE):
 		push_warning("[SceneRouter] battle scene not implemented yet (M2): %s" % level_id)
 		return
