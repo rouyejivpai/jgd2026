@@ -536,3 +536,4 @@
 
 ## Q-093 `BEACONS_EMPTY` 改为提醒
 - 新单位预填「沿信标移动」，没放信标时原地不动。若仍阻止开始，每个新单位都必须先放信标或删掉这条，所以改为非阻塞提醒。
+- 2026-10-18 处理：导出 include_filter 已补 `data/ui_layout/*.json` 与 `assets/*.json`，导出版 pck 核对含全部 JSON。设计参考图仍随 all_resources 打包（体积约 531 MB），需要时再排除。
