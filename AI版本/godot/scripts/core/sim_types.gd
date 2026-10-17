@@ -30,9 +30,13 @@ enum BattleResult { NONE, WIN, LOSE }
 
 enum ConditionType { ALWAYS, SELF_HP_BELOW, ENEMY_VISIBLE, ENEMY_IN_RANGE, TARGET_DISTANCE, RETREAT_POSSIBLE, AT_BEACON, SIGNAL_IS }
 enum ConditionMode { ALL, ANY }
-enum Selector { NEAREST, FARTHEST, LOWEST_HP, FIRST_SEEN, LAST_ATTACKER, HIGHEST_MAX_HP }   ## LAST_ATTACKER：07 §9 预留，未实现、不可解析
+enum Selector { NEAREST, FARTHEST, LOWEST_HP, FIRST_SEEN, LAST_ATTACKER, HIGHEST_MAX_HP, HIGHEST_HP, MOST_DAMAGE, FIRST_IN_RANGE }   ## LAST_ATTACKER：07 §9 预留，未实现、不可解析
+## 第五阶段（2026-10-17 会议）追加：HIGHEST_HP 当前生命最高；MOST_DAMAGE 累计造成伤害最高（同值取最近）；FIRST_IN_RANGE 最先进入射程者
 enum TargetFilter { ANY, UNIT, STRUCTURE }
-enum ActionType { IDLE, ATTACK, CHASE_ATTACK, CHASE, RETREAT, FOLLOW_ROUTE, FOLLOW_BEACONS, WAIT }
+enum ActionType { IDLE, ATTACK, CHASE_ATTACK, CHASE, RETREAT, FOLLOW_ROUTE, FOLLOW_BEACONS, WAIT, HOLD_FIRE }
+## 第五阶段：指令分两组独立求值、同时执行（攻击组 = 攻击 / 停火；移动组 = 沿信标 / 追击 / 撤离 / 停止（IDLE）/ 等待 / 沿路线）。
+## CHASE_ATTACK 只保留给旧数据（单列表口径），迁移时拆成 追击（移动组）+ 攻击（攻击组）。
+enum RuleGroup { MOVE, ATTACK }
 enum TraitType { DELAYED_BLAST, ALERT_BROADCAST, STATUS, ON_HIT_STATUS, AURA_STATUS, TILE_EFFECT, PHASED_BOSS }   ## ALERT_BROADCAST：07 §9 预留，未实现、不可解析
 enum BeaconMode { ONCE, LOOP, PINGPONG }            ## follow_beacons.mode（07 §3.2）
 enum ObjectiveType { ANNIHILATE, DESTROY, SURVIVE, UNIT_DEAD, ALL_ALLIES_DEAD, REACH_ZONE, ESCORT }   ## ESCORT：07 §9
@@ -58,6 +62,8 @@ enum ReasonCode {
 	WAIT_DONE,          ## wait 已执行过（armed = false），离开条件后才会再次等待
 	PARALYZED,          ## 麻痹中：本步攻击不出手（不造成伤害、不进入冷却），仍可移动
 	COND_SIGNAL_OFF,    ## signal_is 未成立（Boss 当前信号不是这个颜色）
+	HOLDING_FIRE,       ## 第五阶段：攻击组执行「停火」
+	NO_TARGET_IN_RANGE, ## 第五阶段：攻击组的指令成立，但射程内没有符合的目标
 }
 
 enum EventType {
@@ -81,13 +87,15 @@ const _COND := {
 	"at_beacon": ConditionType.AT_BEACON, "signal_is": ConditionType.SIGNAL_IS,
 }
 const _MODE := { "all": ConditionMode.ALL, "any": ConditionMode.ANY }
-const _SEL := { "nearest": Selector.NEAREST, "farthest": Selector.FARTHEST, "lowest_hp": Selector.LOWEST_HP, "first_seen": Selector.FIRST_SEEN, "highest_max_hp": Selector.HIGHEST_MAX_HP }
+const _SEL := { "nearest": Selector.NEAREST, "farthest": Selector.FARTHEST, "lowest_hp": Selector.LOWEST_HP, "first_seen": Selector.FIRST_SEEN, "highest_max_hp": Selector.HIGHEST_MAX_HP,
+	"highest_hp": Selector.HIGHEST_HP, "most_damage": Selector.MOST_DAMAGE, "first_in_range": Selector.FIRST_IN_RANGE }
 const _FILTER := { "any": TargetFilter.ANY, "unit": TargetFilter.UNIT, "structure": TargetFilter.STRUCTURE }
 const _ACTION := {
 	"idle": ActionType.IDLE, "attack": ActionType.ATTACK, "chase_attack": ActionType.CHASE_ATTACK,
 	"chase": ActionType.CHASE, "retreat": ActionType.RETREAT, "follow_route": ActionType.FOLLOW_ROUTE,
-	"follow_beacons": ActionType.FOLLOW_BEACONS, "wait": ActionType.WAIT,
+	"follow_beacons": ActionType.FOLLOW_BEACONS, "wait": ActionType.WAIT, "hold_fire": ActionType.HOLD_FIRE,
 }
+const _GROUP := { "move": RuleGroup.MOVE, "attack": RuleGroup.ATTACK }
 const _BEACON_MODE := { "once": BeaconMode.ONCE, "loop": BeaconMode.LOOP, "pingpong": BeaconMode.PINGPONG }
 const _TRAIT := { "delayed_blast": TraitType.DELAYED_BLAST, "status": TraitType.STATUS, "on_hit_status": TraitType.ON_HIT_STATUS,
 	"aura_status": TraitType.AURA_STATUS, "tile_effect": TraitType.TILE_EFFECT, "phased_boss": TraitType.PHASED_BOSS }
@@ -112,6 +120,7 @@ static func parse_action(s: String) -> int: return _parse(_ACTION, s)
 static func parse_trait(s: String) -> int: return _parse(_TRAIT, s)
 static func parse_objective(s: String) -> int: return _parse(_OBJ, s)
 static func parse_beacon_mode(s: String) -> int: return _parse(_BEACON_MODE, s)
+static func parse_group(s: String) -> int: return _parse(_GROUP, s)
 
 ## 反向：枚举 → JSON 字符串（存档与调试用）
 static func _key_of(table: Dictionary, v: int) -> String:
@@ -126,6 +135,16 @@ static func filter_to_string(v: int) -> String: return _key_of(_FILTER, v)
 static func action_to_string(v: int) -> String: return _key_of(_ACTION, v)
 static func beacon_mode_to_string(v: int) -> String: return _key_of(_BEACON_MODE, v)
 static func reason_to_key(v: int) -> String: return ReasonCode.keys()[v]
+static func group_to_string(v: int) -> String: return _key_of(_GROUP, v)
+
+
+## 第五阶段：行为所属的指令组。CHASE_ATTACK（旧数据）同时属于两组，由 in_group() 处理。
+static func action_group(t: int) -> int:
+	return RuleGroup.ATTACK if t == ActionType.ATTACK or t == ActionType.HOLD_FIRE else RuleGroup.MOVE
+
+
+static func action_in_group(t: int, group: int) -> bool:
+	return t == ActionType.CHASE_ATTACK or action_group(t) == group
 
 ## 10 §6.3 信标 id：正整数字符串 "1"、"2"…（不含前导零）
 static func is_beacon_id(s: String) -> bool:

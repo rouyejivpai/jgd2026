@@ -8,6 +8,8 @@ extends RefCounted
 ##   注：未被求值到的低优先级规则不检查条件，因此"由假变真"以该规则下次被求值时看到"假"为准（Q-048）。
 ## 第四阶段「覆盖」（RuleDef.override）：求值顺序 = 覆盖指令（按列表顺序）在前，其余按列表顺序在后；
 ## 没有覆盖指令时与原顺序完全相同。wait 的"被更高优先级抢占"按求值顺序判断。
+## 第五阶段（2026-10-17 会议）：SimUnit.dual_rules = true 的单位（玩家单位）按两组求值——移动组与攻击组各自从上到下取第一条成立者，
+## 同时执行（边走边打）；组内优先级高的覆盖低的，override 字段不再使用。敌人与关卡预置单位仍按上面的旧单列表口径。
 
 static var _default_target: TargetDef = null
 
@@ -21,7 +23,24 @@ static func default_target() -> TargetDef:
 
 static func evaluate(unit: SimUnit, snap: SimSnapshot, world: SimWorld) -> SimDecision:
 	unit.rule_fail_reasons.clear()
-	var order: Array[int] = eval_order(unit.rules)
+	if not unit.dual_rules:
+		var legacy: SimDecision = _evaluate_order(unit, snap, world, eval_order(unit.rules), false)
+		legacy.mirror_attack_part()
+		return legacy
+	# 第五阶段双组口径：移动组与攻击组各自"第一条成立者生效"，结果合并为一个决策（移动部分 + 攻击部分）
+	var d: SimDecision = _evaluate_order(unit, snap, world, RuleDef.group_indices(unit.rules, SimTypes.RuleGroup.MOVE), false)
+	var at: SimDecision = _evaluate_order(unit, snap, world, RuleDef.group_indices(unit.rules, SimTypes.RuleGroup.ATTACK), true)
+	d.attack_rule_index = at.rule_index
+	d.attack_target = at.target
+	d.attack_action = at.action
+	d.attack_reason = at.reason
+	return d
+
+
+## 按 order 依次求值，返回第一条成立的指令。attack_group = true（双组口径的攻击组）时，目标优先在射程内选：
+## 目标 = 按目标选择排序后第一个在射程内的候选，射程内没有则取排序第一的可见候选（本步移动后进入射程即开火）；
+## 成立但没有任何候选 → NO_TARGET_IN_RANGE（不回退）。条件（目标距离等）的候选口径与旧口径相同。
+static func _evaluate_order(unit: SimUnit, snap: SimSnapshot, world: SimWorld, order: Array[int], attack_group: bool) -> SimDecision:
 	for i: int in order:
 		var rule: RuleDef = unit.rules[i]
 		if not rule.enabled:
@@ -38,7 +57,9 @@ static func evaluate(unit: SimUnit, snap: SimSnapshot, world: SimWorld) -> SimDe
 			if c.type == SimTypes.ConditionType.ENEMY_IN_RANGE and not in_range.is_empty():
 				restrict = true
 		var pool: Array[int] = in_range if restrict else cands
-		var chosen: int = pool[0] if not pool.is_empty() else -1
+		var chosen: int = pool[0] if not pool.is_empty() else -1     # 条件（目标距离）按此口径判断（两种口径一致）
+		if attack_group and not in_range.is_empty():   # 攻击组的目标：排序后第一个在射程内的候选；射程内没有时取排序第一的可见候选
+			pool = in_range                              # （本步移动后进入射程即可开火，与旧口径「追击并攻击」一致；是否在射程内由 Combat 判断）
 
 		var ok: bool = rule.conditions.is_empty() or rule.condition_mode == SimTypes.ConditionMode.ALL
 		var first_fail: int = SimTypes.ReasonCode.OK
@@ -82,12 +103,16 @@ static func evaluate(unit: SimUnit, snap: SimSnapshot, world: SimWorld) -> SimDe
 		var d := SimDecision.new()
 		d.rule_index = i
 		d.action = rule.action
-		d.target = chosen if rule.target != null else -1
-		if rule.action.needs_target():
-			if chosen < 0:
-				d.reason = SimTypes.ReasonCode.NO_TARGET_CANDIDATE
+		var tid: int = pool[0] if not pool.is_empty() else -1
+		d.target = tid if rule.target != null else -1
+		if attack_group and rule.action.type == SimTypes.ActionType.HOLD_FIRE:
+			d.target = -1
+			d.reason = SimTypes.ReasonCode.HOLDING_FIRE
+		elif rule.action.needs_target():
+			if tid < 0:
+				d.reason = SimTypes.ReasonCode.NO_TARGET_IN_RANGE if attack_group else SimTypes.ReasonCode.NO_TARGET_CANDIDATE
 			elif rule.action.type == SimTypes.ActionType.ATTACK \
-					and unit.pos.distance_to(snap.get_entry(chosen).pos) > unit.attack_range + SimTypes.DIST_EPS:
+					and unit.pos.distance_to(snap.get_entry(tid).pos) > unit.attack_range + SimTypes.DIST_EPS:
 				d.reason = SimTypes.ReasonCode.TARGET_OUT_OF_RANGE
 		_preempt_waits(unit, i, order)
 		return d

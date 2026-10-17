@@ -42,9 +42,18 @@ static func from_dict(d: Dictionary, ctx: String) -> ActionDef:
 	return a
 
 
-## 该行为是否需要目标（attack / chase_attack / chase）
+## 该行为是否需要目标（attack / chase_attack / chase）。第五阶段：玩家界面的追击只追最近的敌人（目标固定为最近），但数据里仍带 target。
 static func type_needs_target(t: int) -> bool:
 	return t == SimTypes.ActionType.ATTACK or t == SimTypes.ActionType.CHASE_ATTACK or t == SimTypes.ActionType.CHASE
+
+
+## 第五阶段：旧数据的「追击并攻击」被拆成 追击 + 攻击，允许列表里有 chase_attack 时视为两者都允许（就地追加）
+static func expand_allowed(list: Array[int]) -> void:
+	if not list.has(SimTypes.ActionType.CHASE_ATTACK):
+		return
+	for t: int in [SimTypes.ActionType.CHASE, SimTypes.ActionType.ATTACK]:
+		if not list.has(t):
+			list.append(t)
 
 
 func needs_target() -> bool:

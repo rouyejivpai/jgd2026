@@ -4,6 +4,7 @@ extends RefCounted
 
 
 ## 用关卡构建世界。deploy: slot_id -> Vector2i 或 [x, y]；rules_override: slot_id -> Array[RuleDef] 或 Array[Dictionary]
+## 第五阶段：己方单位按双组口径求值；Array[Dictionary] 视为旧单列表写法并经 RuleDef.migrate_legacy() 折算，Array[RuleDef] 原样使用
 ## 未覆盖的槽位使用推荐阵型中的推荐指令（= 第一阶段的槽位初始指令，07 §2）
 static func make_world(level_id: String, deploy: Dictionary, rules_override: Dictionary = {}) -> SimWorld:
 	var level: LevelDefinition = DataRegistry.get_level(level_id)
@@ -19,7 +20,11 @@ static func make_config(level: LevelDefinition, deploy: Dictionary, rules_overri
 		var entry: Dictionary = { "pos": to_cell(deploy[sid]), "form": level.legacy_form(sid), "index": level.legacy_index(sid),
 			"label": RuleText.slot_name(level, sid) if level.get_slot(sid) != null else DataRegistry.get_unit(level.legacy_form(sid)).display_name }
 		if rules_override.has(sid):
-			entry["rules"] = to_rules(rules_override[sid] as Array)
+			var arr: Array = rules_override[sid] as Array
+			var rs: Array[RuleDef] = to_rules(arr)
+			if not arr.is_empty() and arr[0] is Dictionary:
+				rs = RuleDef.migrate_legacy(rs)     # 第五阶段：字典写法 = 旧单列表口径（测试原意），折算为双组；RuleDef 列表原样使用
+			entry["rules"] = rs
 		elif level.get_recommended(sid) != null:
 			entry["rules"] = level.recommended_rules(sid)
 		config[sid] = entry

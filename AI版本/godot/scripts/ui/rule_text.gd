@@ -28,8 +28,14 @@ static func action_name(t: int) -> String:
 	return s("names.actions." + SimTypes.action_to_string(t))
 
 
+static func group_name(g: int) -> String:
+	return s("names.groups." + SimTypes.group_to_string(g))
+
+
 ## 枚举字符串（校验问题里的 what）→ 短名
 static func what_name(what: String) -> String:
+	if what.begins_with("group_") and SimTypes.parse_group(what.trim_prefix("group_")) >= 0:
+		return s("names.groups." + what.trim_prefix("group_"))
 	if SimTypes.parse_condition(what) >= 0:
 		return s("names.conditions." + what)
 	if SimTypes.parse_selector(what) >= 0:

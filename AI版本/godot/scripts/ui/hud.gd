@@ -334,12 +334,14 @@ func _build_cards() -> void:
 	if _level.is_free():
 		for form: String in _controller.card_forms():
 			var card := RosterCard.new()
+			card.name = "Card_" + form          # 第五阶段：引导可按名字高亮某张卡
 			_card_list.add_child(card)
 			card.setup_form(form, _controller)
 			_cards.append(card)
 	else:
 		for uid: String in _controller.uids():
 			var card := RosterCard.new()
+			card.name = "Card_" + uid
 			_card_list.add_child(card)
 			card.setup_slot(uid, _controller)
 			_cards.append(card)

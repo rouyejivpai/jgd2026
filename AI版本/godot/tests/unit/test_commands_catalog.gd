@@ -55,7 +55,19 @@ func _editor(level_id: String, form: String, pos: Vector2i) -> RuleEditor:
 func test_catalog_loads_and_order_is_default() -> void:
 	var cat: CommandCatalog = DataRegistry.get_commands()
 	assert_false(DataRegistry.has_errors, "commands.json 加载无错误")
-	assert_eq(cat.ids("actions"), ["attack", "chase_attack", "chase", "retreat", "idle", "follow_beacons", "wait", "follow_route"] as Array[String])
+	assert_eq(cat.ids("actions"), ["attack", "hold_fire", "follow_beacons", "chase", "retreat", "idle", "wait", "chase_attack", "follow_route"] as Array[String],
+		"第五阶段：攻击组（攻击 / 停火）在前，移动组在后；追击并攻击只留给旧数据")
+	assert_false(cat.is_player("chase_attack"))
+	assert_eq(cat.group_limit(SimTypes.RuleGroup.ATTACK), 5)
+	assert_eq(cat.group_limit(SimTypes.RuleGroup.MOVE), 5)
+	assert_eq(cat.ids("selectors").slice(0, 5), ["nearest", "farthest", "highest_hp", "most_damage", "first_in_range"] as Array[String], "玩家目标选项（会议口径）")
+	for legacy_sel: String in ["lowest_hp", "first_seen", "highest_max_hp"]:
+		assert_false(cat.is_player_selector(legacy_sel), "旧选敌不进玩家菜单：" + legacy_sel)
+	var nur: Array[RuleDef] = cat.new_unit_rules()
+	assert_eq(nur.size(), 2, "新单位预填两条：攻击组 + 移动组")
+	assert_eq(nur[0].action.type, SimTypes.ActionType.ATTACK)
+	assert_true(nur[0].conditions.is_empty(), "攻击组默认「始终」")
+	assert_eq(nur[1].action.type, SimTypes.ActionType.FOLLOW_BEACONS, "移动组默认「沿信标移动」")
 	assert_eq(cat.ids("conditions")[0], "always", "条件默认「始终」")
 	assert_eq(cat.ids("selectors")[0], "nearest", "目标选择默认「最近」")
 	assert_eq(cat.ids("filters")[0], "any")

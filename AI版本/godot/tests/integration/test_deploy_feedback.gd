@@ -194,5 +194,5 @@ func test_clear_units_on_fixed_level_keeps_slots() -> void:
 	assert_true(c.placements.is_empty())
 	assert_eq(c.uids().size(), 3, "fixed 关槽位保留")
 	for uid: String in c.uids():
-		assert_true(c.get_rules(uid).is_empty(), "指令一并清空")
+		assert_eq_deep(RuleDef.to_array(c.get_rules(uid)), RuleDef.to_array(DataRegistry.get_commands().new_unit_rules()))   # 指令一并清空（回到新单位预填指令，第五阶段）
 	assert_true(c.start() == false, "清空后不满足出场要求，不能开始")

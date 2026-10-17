@@ -18,10 +18,11 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 ROOT = Path(__file__).resolve().parent.parent / "data"
 
 CONDITIONS = {"always", "self_hp_below", "enemy_visible", "enemy_in_range", "target_distance", "retreat_possible", "at_beacon", "signal_is"}
-SELECTORS = {"nearest", "farthest", "lowest_hp", "first_seen", "highest_max_hp"}
+SELECTORS = {"nearest", "farthest", "lowest_hp", "first_seen", "highest_max_hp", "highest_hp", "most_damage", "first_in_range"}
 FILTERS = {"any", "unit", "structure"}
-ACTIONS = {"idle", "attack", "chase_attack", "chase", "retreat", "follow_route", "follow_beacons", "wait"}
-UNGATED_ACTIONS = {"follow_beacons", "wait"}   # 07 §3 通用工具：不受形态 allowed_actions 限制（Q-047）
+ACTIONS = {"idle", "attack", "chase_attack", "chase", "retreat", "follow_route", "follow_beacons", "wait", "hold_fire"}
+ATTACK_GROUP_ACTIONS = {"attack", "hold_fire"}   # 第五阶段：攻击组；其余为移动组（chase_attack 为旧数据，两组都算）
+UNGATED_ACTIONS = {"follow_beacons", "wait", "idle", "hold_fire"}   # 07 §3 通用工具：不受形态 allowed_actions 限制（Q-047）；第五阶段追加 停止 / 停火
 BEACON_LETTERS = "ABCDEFGH"   # 10 §6.3：只用于识别旧字母并报 DEPRECATED_FIELD
 BEACON_SOFT_CAP = 64
 
@@ -65,6 +66,96 @@ def load(name):
     except Exception as e:  # noqa
         err(name, f"JSON 解析失败: {e}")
         return None
+
+
+TEACH_TARGET_KINDS = {"none", "ui", "cell", "cells", "deploy_zone", "unit", "ally"}
+TEACH_ADVANCES = {"next", "click", "event"}
+TEACH_EVENTS = {"deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started"}
+TEACH_ARROWS = {"auto", "up", "down", "left", "right", "none"}
+TEACH_PANELS = {"auto", "left", "right", "top", "bottom", "center"}
+TEACH_OVERRIDES = ("allowed", "rewards", "hints", "mechanic_hint")
+TEACH_STYLE = {"dim_color", "highlight_color", "highlight_width", "hole_pad", "arrow_size", "arrow_gap", "arrow_bob", "arrow_bob_hz", "panel_width", "panel_margin"}
+
+
+def apply_teaching_overrides(L, entry):
+    """第五阶段：teaching.json 覆盖关卡字段（与 TeachingDef.apply_overrides 同口径）"""
+    if not entry:
+        return L
+    L = json.loads(json.dumps(L))
+    for key in ("allowed", "rewards"):
+        if isinstance(entry.get(key), dict):
+            merged = dict(L.get(key) or {})
+            merged.update(entry[key])
+            L[key] = merged
+    if isinstance(entry.get("hints"), list):
+        L["hints"] = list(entry["hints"])
+    if isinstance(entry.get("mechanic_hint"), str):
+        L.setdefault("briefing", {})["mechanic_hint"] = entry["mechanic_hint"]
+    return L
+
+
+def check_teaching(doc, level_docs):
+    """第五阶段 data/teaching.json：字段与枚举、第七关冻结、目标地块 / 预置单位存在"""
+    ctx = "teaching.json"
+    for k in (doc.get("style") or {}):
+        if k not in TEACH_STYLE:
+            err(ctx, f"style 未知字段 {k}")
+    for lid, e in (doc.get("levels") or {}).items():
+        lctx = f"{ctx}:levels.{lid}"
+        L = level_docs.get(lid)
+        if L is None:
+            err(lctx, "关卡不存在"); continue
+        for k in e:
+            if k not in ("test", "tutorial", "_comment") + TEACH_OVERRIDES:
+                err(lctx, f"未知字段 {k}")
+        if lid == "level_07" and any(k in e for k in TEACH_OVERRIDES):
+            err(lctx, "第七关数据冻结，只允许配置引导")
+        if "hints" in e and (not isinstance(e["hints"], list) or len(e["hints"]) != 4):
+            err(lctx, "hints 覆盖必须恰好 4 条 (D05)")
+        if "mechanic_hint" in e and not (isinstance(e["mechanic_hint"], str) and e["mechanic_hint"]):
+            err(lctx, "mechanic_hint 覆盖必须是非空字符串")
+        w, h = L.get("grid", {}).get("width", 0), L.get("grid", {}).get("height", 0)
+        spawns = {u.get("id") for u in L.get("initial_units", [])}
+        for i, st in enumerate((e.get("tutorial") or {}).get("steps", [])):
+            sctx = f"{lctx}.tutorial.steps[{i}]"
+            if not isinstance(st.get("text"), str) or not st["text"]:
+                err(sctx, "text 必填")
+            adv = st.get("advance", "next")
+            if adv not in TEACH_ADVANCES:
+                err(sctx, f"advance 非法: {adv}")
+            if adv == "event" and st.get("event") not in TEACH_EVENTS:
+                err(sctx, f"event 非法: {st.get('event')}")
+            if st.get("arrow", "auto") not in TEACH_ARROWS:
+                err(sctx, "arrow 非法")
+            if st.get("panel", "auto") not in TEACH_PANELS:
+                err(sctx, "panel 非法")
+            if st.get("phase", "deploy") not in ("deploy", "running"):
+                err(sctx, "phase 必须是 deploy / running")
+            targets = st.get("targets", [])
+            if adv == "click" and not any(t.get("kind") != "none" for t in targets):
+                err(sctx, "advance = click 需要高亮目标")
+            for t in targets:
+                k = t.get("kind")
+                if k not in TEACH_TARGET_KINDS:
+                    err(sctx, f"target.kind 非法: {k}")
+                if k == "ui" and not t.get("node"):
+                    err(sctx, "ui 目标需要 node")
+                cells = [t.get("cell")] if k == "cell" else (t.get("cells") or []) if k == "cells" else []
+                if k == "cells" and not cells:
+                    err(sctx, "cells 不能为空")
+                for c in cells:
+                    if not (isinstance(c, list) and len(c) == 2 and 0 <= c[0] < w and 0 <= c[1] < h):
+                        err(sctx, f"地块 {c} 越界或格式错误")
+                if k == "unit" and t.get("spawn") not in spawns:
+                    err(sctx, f"预置单位 '{t.get('spawn')}' 不存在")
+
+
+def expand_allowed(actions):
+    """第五阶段：允许 chase_attack（旧数据）即视为允许 追击 + 攻击"""
+    out = set(actions)
+    if "chase_attack" in out:
+        out.update({"chase", "attack"})
+    return out
 
 
 def check_rule(rule, ctx, routes=None, unit_allowed_actions=None, beacon_ids=None):
@@ -257,7 +348,7 @@ def main():
             if a not in ACTIONS:
                 err(ctx, f"allowed_actions 含非法行为 {a}")
         for i, r in enumerate(u.get("default_rules", [])):
-            check_rule(r, f"{ctx}.default_rules[{i}]", routes=None, unit_allowed_actions=set(u.get("allowed_actions", [])))
+            check_rule(r, f"{ctx}.default_rules[{i}]", routes=None, unit_allowed_actions=expand_allowed(u.get("allowed_actions", [])))
         v = u.get("visuals", {})
         for k in ("sprite", "portrait", "projectile", "light_color"):
             if k not in v:
@@ -290,8 +381,12 @@ def main():
             cost = e.get("cost", 0)
             if not (isinstance(cost, int) and not isinstance(cost, bool) and cost >= 0):
                 err(ctx, "cost 必须是非负整数")
-            if "player" in e and (kind != "actions" or not isinstance(e["player"], bool)):
-                err(ctx, "player 只用于 actions，且必须是布尔值")
+            if "player" in e and (kind not in ("actions", "selectors") or not isinstance(e["player"], bool)):
+                err(ctx, "player 只用于 actions / selectors，且必须是布尔值")
+            if kind == "actions" and e.get("group") not in ("attack", "move"):
+                err(ctx, "group 必须是 attack / move（第五阶段）")
+            elif kind == "actions" and cid != "chase_attack" and (e.get("group") == "attack") != (cid in ATTACK_GROUP_ACTIONS):
+                err(ctx, f"group 与行为类型不符：{cid} 属于 {'attack' if cid in ATTACK_GROUP_ACTIONS else 'move'}")
             key = e.get("unlock_key", "")
             if not isinstance(key, str):
                 err(ctx, "unlock_key 必须是字符串（空 = 始终可用）")
@@ -306,6 +401,11 @@ def main():
             if kind == "conditions" and isinstance(e.get("defaults"), dict):
                 check_rule({"conditions": [dict(e["defaults"], type=cid)], "action": {"type": "idle"},
                             "target": {"selector": "nearest", "filter": "any"}}, ctx + ".defaults", routes=None)
+    gl = commands_doc.get("group_limits")
+    if not isinstance(gl, dict) or set(gl.keys()) != {"attack", "move"} or not all(isinstance(v, int) and v >= 1 for v in gl.values()):
+        err("commands.json", "group_limits 必须是 { attack: 正整数, move: 正整数 }（第五阶段）")
+    for i, r in enumerate(commands_doc.get("new_unit_rules", [])):
+        check_rule(r, f"commands.json:new_unit_rules[{i}]", routes=None)
     known_unlock_keys = set()
 
     # biomes（04 §2.5 道具映射）
@@ -349,14 +449,21 @@ def main():
         for lid in prog.get("initial_levels", []):
             if lid not in level_ids:
                 err(ctx, f"initial_levels '{lid}' 不存在")
+    teaching = load("teaching.json") if (ROOT / "teaching.json").exists() else {}
+    teaching = teaching or {}
+    level_docs = {}
     for path in sorted((ROOT / "levels").glob("level_*.json")):
         L = load(f"levels/{path.name}")
         if L is None:
             continue
+        L = apply_teaching_overrides(L, (teaching.get("levels") or {}).get(path.stem, {}))
+        level_docs[path.stem] = L
         ctx = path.name
         for k in ("id", "index", "title", "biome", "scene", "grid", "deploy_zone", "roster", "initial_units", "allowed", "objectives", "briefing", "hints", "fail_feedback", "recommended", "rewards", "verification"):
             if k not in L:
                 err(ctx, f"缺少必填字段 {k}")
+        if L.get("rules_format", "legacy") not in ("legacy", "dual"):
+            err(ctx, "rules_format 必须是 legacy / dual（第五阶段）")
         if "recommended_deploy" in L:
             err(ctx, "DEPRECATED_FIELD recommended_deploy 已废弃，改用 recommended.units")
         if "background" in L:
@@ -467,7 +574,7 @@ def main():
                 err(ctx, f"敌方初始单位 {sid} 位于部署区内")
             udef = units[su["unit"]]
             for i, r in enumerate(su.get("rules", [])):
-                check_rule(r, f"{ctx}:initial_units.{sid}.rules[{i}]", routes=routes, unit_allowed_actions=set(udef.get("allowed_actions", [])))
+                check_rule(r, f"{ctx}:initial_units.{sid}.rules[{i}]", routes=routes, unit_allowed_actions=expand_allowed(udef.get("allowed_actions", [])))
         # 07 §7 modifiers / 07 §9 overrides
         for m in L.get("modifiers", []):
             tgt = str(m.get("target", ""))
@@ -584,7 +691,7 @@ def main():
                 err(ctx, f"recommended.units {key} 的形态 '{form}' 不存在 (D02)"); continue
             rec_beacons = [b.get("id") for b in ru.get("beacons", [])]
             for i, r in enumerate(ru.get("rules", [])):
-                check_rule(r, f"{ctx}:recommended.{key}.rules[{i}]", routes=routes, unit_allowed_actions=set(units[form].get("allowed_actions", [])), beacon_ids=rec_beacons)
+                check_rule(r, f"{ctx}:recommended.{key}.rules[{i}]", routes=routes, unit_allowed_actions=expand_allowed(units[form].get("allowed_actions", [])), beacon_ids=rec_beacons)
             if len(ru.get("beacons", [])) > BEACON_SOFT_CAP:
                 err(ctx, f"recommended.units {key} 信标超过 {BEACON_SOFT_CAP} 个")
             if len(rec_beacons) != len(set(rec_beacons)):
@@ -736,6 +843,24 @@ def main():
             for key in ("illustration", "backdrop"):
                 if key in sc and not isinstance(sc[key], str):
                     err(sctx, f"scenes[{i}] {key} 必须是字符串")
+    check_teaching(teaching, level_docs)
+    # 第五阶段：异常状态粒子参数
+    if (ROOT / "status_fx.json").exists():
+        fx = load("status_fx.json") or {}
+        for sid, spec in (fx.get("statuses") or {}).items():
+            fctx = f"status_fx.json:statuses.{sid}"
+            if sid not in ("vulnerable", "paralysis", "slow"):
+                err(fctx, "未知异常状态")
+            if spec.get("emission", "sphere") not in ("point", "sphere", "ring", "box"):
+                err(fctx, "emission 非法")
+            for k in ("amount", "lifetime"):
+                if not (isinstance(spec.get(k), (int, float)) and spec[k] > 0):
+                    err(fctx, f"{k} 必须 > 0")
+            if not (isinstance(spec.get("energy", 1.0), (int, float)) and spec.get("energy", 1.0) >= 0):
+                err(fctx, "energy 必须 ≥ 0")
+            for k in ("velocity", "scale", "offset", "direction", "gravity"):
+                if k in spec and not (isinstance(spec[k], list) and len(spec[k]) == 2):
+                    err(fctx, f"{k} 必须是 [a, b]")
     return finish()
 
 
@@ -749,7 +874,7 @@ def finish():
         for e in errors:
             print("  " + e)
         return 1
-    print("数据校验通过（units / traits / commands / strings / progression / biomes / levels / chapters / stories / ui_motion / art_text）。")
+    print("数据校验通过（units / traits / commands / strings / progression / biomes / levels / chapters / stories / ui_motion / art_text / teaching / status_fx）。")
     return 0
 
 

@@ -14,6 +14,13 @@ var settings: Dictionary = {}
 var _base_font_sizes: Dictionary = {}
 ## 本次运行中各关失败次数（第二关首败高亮目标连线用，不存档）
 var fail_counts: Dictionary = {}
+## 第五阶段强制引导：总开关（测试 / 截图可关）；配置器预览 { level_id, steps, test }；拾取模式 { active, level_id } 与结果 { kind, node | cell }
+var tutorials_enabled: bool = true
+var tutorial_preview: Dictionary = {}
+var tutorial_pick: Dictionary = {}
+var tutorial_pick_result: Dictionary = {}
+## 配置器的未保存编辑（预览 / 拾取往返战斗场景时保留）
+var config_editor_state: Dictionary = {}
 
 
 func _ready() -> void:

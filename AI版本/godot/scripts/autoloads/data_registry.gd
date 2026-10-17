@@ -17,6 +17,11 @@ var _chapters: Array[ChapterDef] = []
 const STORY_DIR: String = "res://data/stories"
 var story_dir: String = STORY_DIR        ## 剧情目录（测试可指向临时目录以模拟删除剧情文件）
 var _biomes: Dictionary = {}
+var _teaching: TeachingDef = TeachingDef.new()   ## 第五阶段：data/teaching.json（引导步骤 + 解锁 / 提示覆盖）
+var _status_fx: Dictionary = {}                  ## 第五阶段：data/status_fx.json（异常状态粒子参数）
+const STATUS_FX_FILE: String = "status_fx.json"
+const STATUS_IDS: Array[String] = ["vulnerable", "paralysis", "slow"]
+const TEACHING_FILE: String = "teaching.json"
 
 
 func _ready() -> void:
@@ -50,6 +55,9 @@ func load_all(root: String = DATA_ROOT) -> bool:
 
 	_commands = CommandCatalog.from_dict(_load_json(root + "/commands.json"), "commands.json")
 
+	_status_fx = _load_json(root + "/" + STATUS_FX_FILE) if FileAccess.file_exists(root + "/" + STATUS_FX_FILE) else {}
+	_validate_status_fx()
+	_teaching = TeachingDef.from_dict(_load_json(root + "/" + TEACHING_FILE) if FileAccess.file_exists(root + "/" + TEACHING_FILE) else {}, TEACHING_FILE)
 	var level_files: Array[String] = _list_level_files(root + "/levels")
 	var level_ids: Array[String] = []
 	for f: String in level_files:
@@ -57,7 +65,8 @@ func load_all(root: String = DATA_ROOT) -> bool:
 	var levels: Array[LevelDefinition] = []
 	for f: String in level_files:
 		var ctx: String = f
-		var L: LevelDefinition = LevelDefinition.from_dict(_load_json(root + "/levels/" + f), ctx)
+		var raw_level: Dictionary = TeachingDef.apply_overrides(_load_json(root + "/levels/" + f), _teaching.levels.get(f.get_basename(), {}) as Dictionary)
+		var L: LevelDefinition = LevelDefinition.from_dict(raw_level, ctx)
 		if L.id != f.get_basename():
 			DataReader.report(ctx, "id '%s' 与文件名不一致" % L.id)
 		levels.append(L)
@@ -69,6 +78,7 @@ func load_all(root: String = DATA_ROOT) -> bool:
 	for L: LevelDefinition in levels:
 		_level_order.append(L.id)
 
+	_teaching.validate_against(_levels, TEACHING_FILE)
 	_validate_progression(level_ids)
 	_validate_command_unlocks(levels)
 	_validate_biomes(levels)
@@ -82,6 +92,34 @@ func load_all(root: String = DATA_ROOT) -> bool:
 
 	has_errors = DataReader.error_count > errors_before
 	return not has_errors
+
+
+## 第五阶段：教学与解锁配置
+func get_teaching() -> TeachingDef:
+	return _teaching
+
+
+## 第五阶段：异常状态粒子参数
+func get_status_fx() -> Dictionary:
+	return _status_fx
+
+
+func _validate_status_fx() -> void:
+	var ctx: String = STATUS_FX_FILE
+	for sid: String in DataReader.opt_dict(_status_fx, "statuses", ctx).keys():
+		var sctx: String = "%s.statuses.%s" % [ctx, sid]
+		if not STATUS_IDS.has(sid):
+			DataReader.report(sctx, "未知异常状态（应为 %s 之一）" % str(STATUS_IDS))
+		var spec: Dictionary = DataReader.as_dict((_status_fx["statuses"] as Dictionary)[sid], sctx)
+		if not StatusParticles.EMISSION.has(str(spec.get("emission", "sphere"))):
+			DataReader.report(sctx, "emission 必须是 %s 之一" % str(StatusParticles.EMISSION.keys()))
+		for k: String in ["amount", "lifetime"]:
+			if DataReader.req_num(spec, k, sctx) <= 0.0:
+				DataReader.report(sctx, "%s 必须 > 0" % k)
+		for k: String in ["velocity", "scale", "offset", "direction", "gravity"]:
+			var a: Variant = spec.get(k, [0.0, 0.0])
+			if not (a is Array and (a as Array).size() == 2):
+				DataReader.report(sctx, "%s 必须是 [a, b]" % k)
 
 
 func get_unit(id: String) -> UnitDefinition:

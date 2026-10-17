@@ -46,6 +46,16 @@ var last_action: int = SimTypes.ActionType.IDLE
 var wait_state: Dictionary = {}
 ## 异常状态：状态 id（vulnerable / paralysis / slow）-> 剩余秒数。再次施加刷新时长，不叠加。
 var statuses: Dictionary = {}
+## 第五阶段：true = 双组口径（攻击组 / 移动组各自求值、同时执行；玩家单位）；false = 旧单列表口径（敌人与关卡预置单位）
+var dual_rules: bool = false
+## 双组口径下攻击组的当前指令 / 目标 / 原因（旧口径时与攻击类行为的 current_* 相同）
+var current_attack_rule: int = -1
+var current_attack_target: int = -1
+var attack_reason: int = SimTypes.ReasonCode.OK
+## 对立单位 id -> 进入射程序号（first_in_range 选敌；离开射程即移除）
+var range_order: Dictionary = {}
+## 累计造成的伤害（most_damage 选敌读取）
+var damage_dealt: float = 0.0
 
 
 func has_status(s: String) -> bool:
@@ -97,16 +107,32 @@ func wait_remaining() -> float:
 	return float((wait_state[current_rule] as Dictionary)["remaining"])
 
 
+## 表现层显示的目标（目标连线等）：攻击组目标优先，否则为移动目标（追击对象）
+func display_target() -> int:
+	return current_attack_target if current_attack_target >= 0 else current_target
+
+
+## 指令下标 i 当前是否生效（两组任一）
+func is_rule_active(i: int) -> bool:
+	return i >= 0 and (i == current_rule or i == current_attack_rule)
+
+
 ## 记录决策；规则或目标变化时发事件（01 §6.2 第 6 步）
 func apply_decision(d: SimDecision, world: SimWorld) -> void:
 	var prev_rule: int = current_rule
-	var prev_target: int = current_target
+	var prev_attack_rule: int = current_attack_rule
+	var prev_target: int = display_target()
 	last_action = current_action
 	current_rule = d.rule_index
 	current_target = d.target
 	current_action = d.action_type()
 	reason = d.reason
+	current_attack_rule = d.attack_rule_index
+	current_attack_target = d.attack_target
+	attack_reason = d.attack_reason
 	if prev_rule != current_rule:
 		world.emit_event(SimTypes.EventType.RULE_CHANGED, { "unit": id, "rule_index": current_rule, "reason": reason })
-	if prev_target != current_target:
-		world.emit_event(SimTypes.EventType.TARGET_CHANGED, { "unit": id, "target": current_target })
+	if dual_rules and prev_attack_rule != current_attack_rule:
+		world.emit_event(SimTypes.EventType.RULE_CHANGED, { "unit": id, "rule_index": current_attack_rule, "reason": attack_reason, "group": "attack" })
+	if prev_target != display_target():
+		world.emit_event(SimTypes.EventType.TARGET_CHANGED, { "unit": id, "target": display_target() })

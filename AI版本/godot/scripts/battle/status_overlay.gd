@@ -4,6 +4,8 @@ extends Node2D
 ## - Boss 信号：亮起时在 Boss 周围画出本次招式的作用范围（内圈 / 外圈）和一行说明，颜色 = 信号色。
 ## - Boss 换阶段暂停：高亮增援区。
 ## 素材到位前用纯绘制占位（与 GroundLayer 的障碍占位同一思路）。
+## 第五阶段：异常状态另加粒子反馈（StatusParticles，参数 data/status_fx.json）——每个"单位 × 状态"一个发射器，跟随单位，
+## 状态结束 / 单位死亡后停止发射、粒子放完再回收；UI 动效总闸关闭时不发射。
 
 const STATUS_STYLE: Dictionary = {
 	"vulnerable": { "glyph": "易", "color": Color(1.0, 0.47, 0.41) },
@@ -16,11 +18,52 @@ const PIP_RADIUS: float = 20.0
 var controller: BattleController = null
 var grid_height: int = 0
 var _t: float = 0.0
+var _emitters: Dictionary = {}           ## "单位 id:状态" -> CPUParticles2D
 
 
 func _process(delta: float) -> void:
 	_t += delta
+	sync_particles()
 	queue_redraw()
+
+
+## 让发射器与当前异常状态一致：新状态建发射器并跟随单位；已结束的停止发射并在粒子放完后释放
+func sync_particles() -> void:
+	var fx: Dictionary = DataRegistry.get_status_fx()
+	var specs: Dictionary = fx.get("statuses", {}) as Dictionary
+	var live: Dictionary = {}
+	if UiKit.motion_enabled and bool(fx.get("enabled", true)) and controller != null and controller.world != null:
+		for u: SimUnit in controller.world.units:
+			if not u.alive:
+				continue
+			for s: Variant in u.statuses.keys():
+				var sid: String = str(s)
+				if not u.has_status(sid) or not specs.has(sid):
+					continue
+				var key: String = "%d:%s" % [u.id, sid]
+				live[key] = true
+				var e: CPUParticles2D = _emitters.get(key, null) as CPUParticles2D
+				if e == null:
+					e = StatusParticles.make(specs[sid] as Dictionary)
+					e.name = "StatusFx_%d_%s" % [u.id, sid]
+					add_child(e)
+					_emitters[key] = e
+				e.position = SimTypes.sim_to_screen(u.pos, grid_height) + StatusParticles.offset_px(specs[sid] as Dictionary)
+				e.emitting = true
+	for key: String in _emitters.keys():
+		if live.has(key):
+			continue
+		var old: CPUParticles2D = _emitters[key] as CPUParticles2D
+		_emitters.erase(key)
+		old.emitting = false
+		get_tree().create_timer(old.lifetime + 0.1).timeout.connect(old.queue_free)
+
+
+## 当前正在发射的发射器键（测试用）
+func active_fx() -> Array[String]:
+	var out: Array[String] = []
+	out.assign(_emitters.keys())
+	return out
 
 
 func _draw() -> void:

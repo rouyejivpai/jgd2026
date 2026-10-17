@@ -44,6 +44,20 @@ func run(tree: SceneTree) -> void:
 		GameState.sync_from_save()
 		tree.quit(0)
 		return
+	if str(args.get("screen", "battle")) == "config_editor":     # 第五阶段：教学与解锁配置器（--tab=0/1/2，--level=<id>）
+		SceneRouter.goto_config_editor()
+		for i: int in LOAD_FRAMES:
+			await tree.process_frame
+		var ed: Node = tree.current_scene
+		if args.has("level"):
+			ed.call("_select_level", str(args["level"]))
+		(ed.get("_tabs") as TabContainer).current_tab = int(args.get("tab", 0))
+		for i: int in SETTLE_FRAMES:
+			await tree.process_frame
+		_save_shot(tree, out_dir.path_join("config_editor_tab%d.png" % int(args.get("tab", 0))))
+		GameState.unlocks = saved_unlocks
+		tree.quit(0)
+		return
 	if str(args.get("screen", "battle")) == "chapter":
 		await _chapter_shots(tree, out_dir, args)
 		GameState.unlocks = saved_unlocks
@@ -51,7 +65,11 @@ func run(tree: SceneTree) -> void:
 		GameState.sync_from_save()
 		tree.quit(0)
 		return
+	var demo_tutorial: bool = str(args.get("demo", "")) == "tutorial"     # 第五阶段：强制引导截图（只此演示时开启引导）
+	GameState.tutorials_enabled = demo_tutorial
 	for lid: String in levels:
+		if demo_tutorial:
+			(SaveManager.data.get("tutorials_seen", {}) as Dictionary).erase(lid)
 		SaveManager.set_level_config(lid, {})
 		SceneRouter.goto_battle(lid)
 		for i: int in LOAD_FRAMES:
@@ -62,7 +80,21 @@ func run(tree: SceneTree) -> void:
 		var dialogue: Node = root.find_child("DialogueOverlay", true, false)
 		if dialogue != null:
 			(dialogue as CanvasItem).visible = false
-		c.apply_recommended()
+		if not demo_tutorial:
+			c.apply_recommended()
+		else:
+			args["select"] = "none"
+			if args.has("step"):              # --step=N：推进到第 N 步（1 起）再截
+				var td: TutorialDirector = root.get("tutorial") as TutorialDirector
+				for k: int in int(args["step"]) - 1:
+					td.call("_advance")
+		if str(args.get("demo", "")) == "status_fx":          # 第五阶段：给前三名敌人各挂一种异常状态，看圆牌 + 粒子
+			var kinds: Array[String] = ["vulnerable", "paralysis", "slow"]
+			var k2: int = 0
+			for u: SimUnit in c.world.units:
+				if u.faction == SimTypes.Faction.ENEMY and k2 < kinds.size():
+					u.add_status(kinds[k2], 999.0)
+					k2 += 1
 		if str(args.get("demo", "")) == "objectives":         # P6 ui_06：打开「任务」弹窗
 			root.find_child("HUD", true, false).call("_on_objectives_pressed")
 		if str(args.get("demo", "")) == "mechanics":          # P6 ui_07：打开「机制说明」弹窗
@@ -160,6 +192,7 @@ func run(tree: SceneTree) -> void:
 		print("[shots] %s t=%.2f -> %s (%dx%d)" % [lid, c.world.clock.time, path, img.get_width(), img.get_height()])
 	GameState.unlocks = saved_unlocks
 	SaveManager.data = saved
+	GameState.tutorials_enabled = true
 	tree.quit(0)
 
 

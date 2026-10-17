@@ -18,6 +18,7 @@ const ALL_UNLOCKED: Dictionary = {
 }
 
 var _library: Dictionary = {}
+var _rules_format: String = "legacy"     ## 场景文件的指令口径（第五阶段；缺省 legacy = 旧单列表，运行前折算）
 
 
 func run() -> int:
@@ -26,6 +27,7 @@ func run() -> int:
 	var update: bool = args.has("--update-baseline")
 	var root: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SCENARIOS_PATH)) as Dictionary
 	_library = root.get("rule_library", {}) as Dictionary
+	_rules_format = str(root.get("rules_format", "legacy"))
 	var out_dir: String = ProjectSettings.globalize_path("res://").path_join("../docs/playtests").simplify_path()
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var saved_unlocks: Dictionary = GameState.unlocks
@@ -151,6 +153,8 @@ func _play(sc: Dictionary, speed: int) -> Dictionary:
 				r.enabled = true
 			if (sc.get("disable_actions", []) as Array).has(SimTypes.action_to_string(r.action.type)):
 				r.enabled = false
+		if _rules_format != "dual":
+			rules = RuleDef.migrate_legacy(rules)     # 第五阶段：场景按旧单列表口径编写，折算为双组口径
 		c.set_rules(uid, rules)
 	c.set_speed(speed)
 	if not c.start():

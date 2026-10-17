@@ -1123,3 +1123,31 @@ ui_geom_check battle_hud（level_03 部署）：共 36 项，未通过 0 项（7
 - 新增 `tests/unit/test_override_rules.gd`（8）、`tests/integration/test_side_panel_beacon_mode.gd`（5）、`test_rule_editor.gd` +2（覆盖勾选、距离下拉）、`test_camera_pan.gd` 改写触边用例 + Ctrl 缩放 / 平移用例；`test_hud_layout.gd`、`test_deploy_feedback.gd` 按侧栏更新；`test_scroll_text.gd` 补存档隔离（本机已看提示层数曾使其失败）。
 - GUT 普通 / 严格：292 / 288 / 4 pending，0 失败；`run_playtests -- --check` 25 场景全等；`validate_data.py`、`check_ui_literals.py` 通过。
 - 已知：本机 `godot/export_presets.cfg` 在本阶段开始前已被改写（丢了 `data/ui_layout/*.json` 包含与设计稿排除），本阶段未动，导出前需恢复（见 Q-088）。
+
+
+## 第五阶段（2026-10-17 会议纪要 + 用户补充决定）—— 指令双组 / 强制引导 / 配置器 / 状态粒子，完成，等待用户目视
+规格与口径见 `docs/14_第五阶段_指令双组与引导.md`；逐关解锁总览 `docs/15_指令解锁表.md`（配置器导出）。
+
+### 任务拆分与完成情况
+1. **模拟核心：两组求值**（`sim_types` 追加 `HOLD_FIRE` / `RuleGroup` / 3 种选敌 / 2 个原因码；`rule_def.migrate_legacy`；`rule_evaluator` 双组；`sim_decision` 攻击部分；`combat`；`sim_unit` 攻击组状态、`range_order`、`damage_dealt`；`sim_world`；`target_selector`）—— 完成
+2. **数据与解锁**（`commands.json` group / group_limits / new_unit_rules / 选敌 player；`progression.json` 初始解锁测试内容；`strings.json`；`level_definition` rules_format 与推荐指令折算；`deployment_validator` 通用指令、组上限、BEACONS_EMPTY 改提醒；`save_manager` v5；`validate_data.py`；`run_playtests` 折算）—— 完成
+3. **指令编辑 UI**（`rule_editor` 两组分区 + 组内拖拽 + 上限；`rule_row` 去覆盖、追击固定最近、组内优先级；`battle_controller` 新单位预填）—— 完成（暂用版式，待拼 UI）
+4. **统一强制引导**（`teaching_def`、`tutorial_overlay`、`tutorial_director`、`data/teaching.json` 测试内容 c01–c05、battle_root / hud / data_registry / game_state / scene_router 接入）—— 完成
+5. **配置器**（`tools/config_editor.tscn/.gd`：引导步骤 / 解锁表 / 提示文案，拾取、预览、校验、保存、导出解锁表；主菜单 F10 与 `-- --config-editor`；`tools/export_unlock_table.gd`）—— 完成
+6. **状态粒子**（`data/status_fx.json`、`status_particles.gd`、`status_overlay.sync_particles`）—— 完成
+7. **回归与文档** —— 完成
+
+### 验证（2026-10-17 本机复跑）
+- `run_playtests -- --check`：**25 场景全部与第四阶段基线一致**（八关推荐 / 替代 / 预期失败解经「旧单列表 → 折算 → 双组求值」，结果、用时、阵亡、state_hash 全等）。
+- GUT 普通：Tests 329 / Passing 325 / Pending 4 / 0 失败；严格警告（`tools/strict_warnings.cfg` → `override.cfg`）：同样 325 / 4 pending / 0 失败、无脚本错误。
+  - 注：开工前在干净的 HEAD 上复跑严格模式为 272 通过 / 20 失败（`chapter_def.gd` 参数 `level_ids` 与同名函数重名，4.7.2 视为错误），本阶段已改名修正。
+- `validate_data.py`：通过（新增 teaching / status_fx 校验）。
+- `check_ui_literals.py`：报 `status_overlay.gd` 5 处中文字面量——均为开工前已有的代码（第 11–13、82、124 行），本阶段未新增。
+- 截图（`docs/screenshots/p5/`）：引导第 1 步（level_c01、level_c04）、指令两组分区（level_c03）、状态粒子（level_c05）、配置器三页。
+
+### 新增 / 修改的测试
+- 新增 `tests/unit/test_dual_rules.gd`（13）、`tests/integration/test_tutorial.gd`（8）、`test_config_editor.gd`（7）、`test_status_particles.gd`（2）；`test_save_manager` +1（v4→v5）、`test_rule_editor` +2（分组上限、追击）。
+- 按新口径更新：`test_rule_editor`、`test_commands_catalog`、`test_data_registry`、`test_deployment_validator`、`test_hint_recommend`、`test_levels_headless`、`test_deploy_feedback`、`test_side_panel_beacon_mode`、`test_save_manager`；`tests/helpers/sim_factory.gd` 把字典写法的指令视为旧口径并折算。
+
+### 已知 / 待确认
+- QUESTIONS Q-089～Q-093。现有关卡提示里的旧口径说法待统一配置时改写（配置器「提示文案」页）。

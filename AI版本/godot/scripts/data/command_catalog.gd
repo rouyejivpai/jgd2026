@@ -4,10 +4,13 @@ extends RefCounted
 ## 四类条目：actions / conditions / selectors / filters，每条 { id, unlock_key, cost, player（仅行为）, defaults（可选） }。
 ## 数组顺序 = 菜单顺序 = 默认项（第一项为默认）。unlock_key 为空 = 始终可用；否则需在已解锁的 presets 键中（progression / 关卡 rewards）。
 ## 指令 Cost = Σ 每条指令 (action.cost + Σ condition.cost)（10 §5.5）；选敌 / 目标类型不计 Cost。
+## 第五阶段：行为带 group（attack / move）；group_limits = 每组条数上限；new_unit_rules = 新放置单位的预填指令；选敌也可 player: false（不进玩家菜单）。
 
 const KINDS: Array[String] = ["actions", "conditions", "selectors", "filters"]
 
 var _entries: Dictionary = {}            ## kind -> Array[Dictionary]
+var group_limits: Dictionary = {}        ## SimTypes.RuleGroup -> int
+var _new_unit_rules: Array[RuleDef] = []
 
 
 static func from_dict(d: Dictionary, ctx: String) -> CommandCatalog:
@@ -32,9 +35,14 @@ static func from_dict(d: Dictionary, ctx: String) -> CommandCatalog:
 				"unlock_key": DataReader.opt_str(e, "unlock_key", "", ectx),
 				"cost": c,
 				"player": DataReader.opt_bool(e, "player", true, ectx),
+				"group": DataReader.opt_str(e, "group", "", ectx),
 				"defaults": DataReader.opt_dict(e, "defaults", ectx).duplicate(true),
 			})
 		cat._entries[kind] = list
+	var gl: Dictionary = DataReader.opt_dict(d, "group_limits", ctx)
+	for gk: String in ["attack", "move"]:
+		cat.group_limits[SimTypes.parse_group(gk)] = int(DataReader.opt_num(gl, gk, 5.0, ctx + ".group_limits"))
+	cat._new_unit_rules = RuleDef.from_array(DataReader.opt_array(d, "new_unit_rules", ctx), ctx + ".new_unit_rules")
 	return cat
 
 
@@ -81,6 +89,21 @@ func cost(kind: String, id: String) -> int:
 ## 行为是否进玩家菜单（player: false 的只给敌人数据用）
 func is_player(action_id: String) -> bool:
 	return bool(entry("actions", action_id).get("player", false))
+
+
+## 第五阶段：选敌是否进玩家菜单
+func is_player_selector(selector_id: String) -> bool:
+	return bool(entry("selectors", selector_id).get("player", false))
+
+
+## 第五阶段：某组指令条数上限（默认 5）
+func group_limit(group: int) -> int:
+	return int(group_limits.get(group, 5))
+
+
+## 第五阶段：新放置单位的预填指令（副本）
+func new_unit_rules() -> Array[RuleDef]:
+	return RuleDef.clone_array(_new_unit_rules)
 
 
 ## 新建该条件 / 行为时的参数（可能为空）

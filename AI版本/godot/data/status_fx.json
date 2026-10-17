@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "_comment": "第五阶段（2026-10-17 会议）：异常状态的粒子反馈，与头顶状态圆牌（status_overlay.gd）并存。坐标在地图像素空间（1 格 = 96 px，随镜头缩放）；offset 以格为单位、相对单位脚下中心（y 向上为负）。velocity / scale 为 [最小, 最大]。设计：易伤 = 红色碎片从身上迸出后下落（「破甲」感）；麻痹 = 短促跳动的黄白电火花（「打不出手」）；减速 = 脚边缓慢下沉的蓝色微粒（「沉重」）。energy = 颜色亮度倍数（战斗场景开启 HDR 2D 与辉光，并有整体压暗的 CanvasModulate，>1 才能透出来并带一点辉光）。UI 动效总闸（UiKit.motion_enabled）关闭时不发射。",
+  "enabled": true,
+  "statuses": {
+    "vulnerable": {
+      "color": "#FF6A5C", "color_end": "#7A1410", "energy": 2.6, "amount": 12, "lifetime": 0.9, "explosiveness": 0.0,
+      "emission": "sphere", "radius": 0.32, "offset": [0.0, -0.7],
+      "direction": [0.0, -1.0], "spread": 70.0, "velocity": [50.0, 90.0], "gravity": [0.0, 160.0], "damping": 0.0,
+      "scale": [7.0, 12.0]
+    },
+    "paralysis": {
+      "color": "#FFF2A0", "color_end": "#FFC83A", "energy": 3.2, "amount": 16, "lifetime": 0.32, "explosiveness": 0.35,
+      "emission": "ring", "radius": 0.42, "offset": [0.0, -0.75],
+      "direction": [0.0, -1.0], "spread": 180.0, "velocity": [70.0, 140.0], "gravity": [0.0, 0.0], "damping": 260.0,
+      "scale": [5.0, 9.0]
+    },
+    "slow": {
+      "color": "#8FB6FF", "color_end": "#2E4C9A", "energy": 2.4, "amount": 10, "lifetime": 1.4, "explosiveness": 0.0,
+      "emission": "box", "radius": 0.36, "offset": [0.0, -0.15],
+      "direction": [0.0, 1.0], "spread": 25.0, "velocity": [8.0, 20.0], "gravity": [0.0, 18.0], "damping": 0.0,
+      "scale": [7.0, 11.0]
+    }
+  }
+}

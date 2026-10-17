@@ -2,6 +2,7 @@ extends GutTest
 ## 10 §5 指令编辑重构：「添加指令」弹出行为列表 → 末尾新增（条件「始终」、目标「最近 / 任意」）；
 ## 条件一 / 条件二（二默认「无」），加第二条件后「与 / 或」可见并写入 condition_mode；两条件上限；删除（A01）；拖拽排序；
 ## 无启用勾选（旧配置 enabled:false 读作 true）；敌人只读面板同布局、3 条件全显。
+## 第五阶段：攻击 / 移动两组分区、组内拖拽、每组条数上限、行为下拉不跨组、追击不选目标、玩家行无「覆盖」。
 
 const RULE_EDITOR_SCENE: PackedScene = preload("res://scenes/ui/rule_editor.tscn")
 const LEVEL_ID: String = "level_01"
@@ -26,6 +27,7 @@ func before_each() -> void:
 	add_child_autofree(_c)
 	_c.setup(level)
 	SLOT = _c.add_unit("striker", Vector2i(2, 2))
+	_c.set_rules(SLOT, [] as Array[RuleDef])           # 第五阶段：新单位有预填指令，测试从空列表开始
 	var other: String = _c.add_unit("striker", Vector2i(2, 4))
 	assert_eq([SLOT, other], ["u1", "u2"])
 	_c.set_rules(other, level.recommended_rules("slot_striker_b"))
@@ -72,18 +74,25 @@ func _pick(o: OptionButton, value: String) -> void:
 	fail_test("下拉中没有 %s" % value)
 
 
+## 第五阶段：两组旧行为「追击并攻击」不进菜单，第一关 allowed 的 chase_attack 视为允许 追击 + 攻击
+func _dual_rules() -> Array[RuleDef]:
+	return SimFactory.to_rules([SimFactory.r_attack_in_range(),
+		{ "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase" } },
+		SimFactory.r_idle()])
+
+
 func test_add_menu_lists_actions_only() -> void:
 	await wait_process_frames(1)
-	assert_eq(_editor.menu_actions(), ["attack", "chase_attack", "idle", "follow_beacons", "wait"] as Array[String],
-		"目录顺序；第一关 allowed 不含追击 / 撤离；沿路线 player:false 不进菜单；信标 / 等待始终可用")
+	assert_eq(_editor.menu_actions(), ["attack", "hold_fire", "follow_beacons", "chase", "idle", "wait"] as Array[String],
+		"目录顺序（攻击组在前）；第一关 allowed 不含撤离；追击并攻击 / 沿路线 player:false 不进菜单；停火 / 信标 / 停止 / 等待始终可用")
 	_editor.toggle_picker()
 	assert_true(_editor.picker_open(), "「添加指令」打开行为列表（批准整图 ui_15）")
 	var picker: Node = _editor.get("_picker")
 	var buttons: Array = picker.get_children().filter(func(n: Node) -> bool: return n is Button)
-	assert_eq(buttons.size(), 6, "5 个行为 + 取消")
+	assert_eq(buttons.size(), 7, "6 个行为 + 取消")
 	assert_eq((buttons[0] as Button).text, RuleText.action_name(SimTypes.ActionType.ATTACK), "列出的是行为名，不是预组合指令")
 	assert_false((_editor.get("_list") as Control).visible, "打开时隐藏指令列表")
-	(buttons[5] as Button).pressed.emit()
+	(buttons[6] as Button).pressed.emit()
 	assert_false(_editor.picker_open(), "「取消」关闭")
 	assert_true((_editor.get("_list") as Control).visible)
 
@@ -168,30 +177,33 @@ func test_second_condition_on_always_keeps_first_slot() -> void:
 
 
 func test_delete_button_removes_row() -> void:
-	_c.set_rules(SLOT, DataRegistry.get_level(LEVEL_ID).recommended_rules("slot_striker_a"))
+	_c.set_rules(SLOT, _dual_rules())
 	await wait_process_frames(1)
 	var rows: Array[RuleRow] = _rows()
 	assert_eq(rows.size(), 3)
+	assert_eq(rows.map(func(r: RuleRow) -> int: return r.index), [0, 1, 2], "攻击组分区在上：行 = 攻击(0)、追击(1)、停止(2)")
 	var del: Button = rows[1].get("_delete") as Button
 	assert_false(del.disabled, "部署阶段可删除")
 	del.pressed.emit()
-	assert_eq(_actions(), ["attack", "idle"] as Array[String], "删除第 2 条（追击）")
+	assert_eq(_actions(), ["attack", "idle"] as Array[String], "删除追击")
 	await wait_process_frames(1)
 	assert_eq(_rows().size(), 2, "行列表随之重建")
 
 
+## 第五阶段：组内拖拽排序；跨组不可放下
 func test_drag_reorder() -> void:
-	_c.set_rules(SLOT, DataRegistry.get_level(LEVEL_ID).recommended_rules("slot_striker_a"))
+	_c.set_rules(SLOT, _dual_rules())
 	await wait_process_frames(1)
 	var rows: Array[RuleRow] = _rows()
-	var data: Dictionary = { "rule_from": 0, "editor": _editor.get_instance_id() }    # = RuleRow._get_drag_data 的载荷
-	assert_true(bool(rows[2].call("_can_drop_data", Vector2.ZERO, data)))
-	rows[2].call("_drop_data", Vector2.ZERO, data)
-	assert_eq(_actions(), ["chase_attack", "idle", "attack"] as Array[String], "第 1 条拖到第 3 条位置")
+	var data: Dictionary = rows[2].call("_drag_payload") as Dictionary      # 停止（移动组第 2 条）
+	assert_true(bool(rows[1].call("_can_drop_data", Vector2.ZERO, data)), "同组可放下")
+	assert_false(bool(rows[0].call("_can_drop_data", Vector2.ZERO, data)), "不能拖进攻击组")
+	rows[1].call("_drop_data", Vector2.ZERO, data)
+	assert_eq(_actions(), ["attack", "idle", "chase"] as Array[String], "停止拖到追击之上（移动组内优先级互换）")
 
 
 func test_delete_to_empty_allows_start_with_warning() -> void:
-	_c.set_rules(SLOT, DataRegistry.get_level(LEVEL_ID).recommended_rules("slot_striker_a"))
+	_c.set_rules(SLOT, _dual_rules())
 	for i: int in 3:
 		_editor.delete_rule(0)
 	assert_eq(_c.get_rules(SLOT).size(), 0)
@@ -203,7 +215,7 @@ func test_delete_to_empty_allows_start_with_warning() -> void:
 
 
 func test_delete_disabled_while_running() -> void:
-	_c.set_rules(SLOT, DataRegistry.get_level(LEVEL_ID).recommended_rules("slot_striker_a"))
+	_c.set_rules(SLOT, _dual_rules())
 	assert_true(_c.start())
 	await wait_process_frames(2)
 	var rows: Array[RuleRow] = _rows()
@@ -252,18 +264,45 @@ func test_disabled_rules_from_old_save_read_as_enabled() -> void:
 	assert_true(bool(rule0["enabled"]), "下次保存写回 true")
 
 
-## 第四阶段「覆盖」勾选：写入 RuleDef.override，取消勾选写回 false；敌人只读面板不显示未勾选的勾
-func test_override_toggle_writes_rule() -> void:
+## 第五阶段：「覆盖」= 组内优先级（高覆盖低），玩家行不再显示覆盖勾选
+func test_override_toggle_hidden_for_player() -> void:
 	_add("attack")
 	await wait_process_frames(1)
 	var toggle: TextureButton = _rows()[0].get("_override") as TextureButton
 	assert_not_null(toggle)
-	assert_false(_c.get_rules(SLOT)[0].override)
-	toggle.button_pressed = true
-	assert_true(_c.get_rules(SLOT)[0].override, "勾选 = 覆盖")
+	assert_false(toggle.visible, "玩家行无覆盖勾选")
+
+
+## 第五阶段：两组标题带条数；每组上限（commands.json group_limits）满后本组添加按钮禁用、再加无效
+func test_group_sections_and_limit() -> void:
+	var limit: int = DataRegistry.get_commands().group_limit(SimTypes.RuleGroup.ATTACK)
+	for i: int in limit:
+		_add("attack")
+	_add("idle")
 	await wait_process_frames(1)
-	(_rows()[0].get("_override") as TextureButton).button_pressed = false
-	assert_false(_c.get_rules(SLOT)[0].override, "取消勾选")
+	var sections: Dictionary = _editor.get("_sections") as Dictionary
+	var atk: Dictionary = sections[SimTypes.RuleGroup.ATTACK] as Dictionary
+	var mv: Dictionary = sections[SimTypes.RuleGroup.MOVE] as Dictionary
+	assert_string_contains((atk["title"] as Label).text, "%d/%d" % [limit, limit])
+	assert_string_contains((mv["title"] as Label).text, "1/%d" % DataRegistry.get_commands().group_limit(SimTypes.RuleGroup.MOVE))
+	assert_true((atk["add"] as Button).disabled, "攻击组已满：添加按钮禁用")
+	assert_false((mv["add"] as Button).disabled)
+	assert_true(_editor.group_full(SimTypes.RuleGroup.ATTACK))
+	_editor.open_picker(SimTypes.RuleGroup.ATTACK)
+	assert_eq(_editor.menu_actions(), ["attack", "hold_fire"] as Array[String], "按组打开只列本组行为")
+	_editor.call("_on_add_action", 0)
+	assert_eq(RuleDef.group_indices(_c.get_rules(SLOT), SimTypes.RuleGroup.ATTACK).size(), limit, "满了不再添加")
+	assert_eq((_rows()[limit].get("_action") as OptionButton).item_count, 4, "移动行的行为下拉只列移动组（沿信标 / 追击 / 停止 / 等待）")
+
+
+## 第五阶段：追击只追最近的敌人——不显示目标选择，数据目标固定为最近 / 任意
+func test_chase_has_no_target_choice() -> void:
+	_add("chase")
+	await wait_process_frames(1)
+	var r: RuleDef = _c.get_rules(SLOT)[0]
+	assert_eq(r.target.selector, SimTypes.Selector.NEAREST)
+	assert_eq(r.target.filter, SimTypes.TargetFilter.ANY)
+	assert_null(_rows()[0].get("_selector"), "追击行无目标选择下拉")
 
 
 ## 第四阶段：目标距离为一个「< N」下拉（比较与距离合成），选中写回 op 与 value

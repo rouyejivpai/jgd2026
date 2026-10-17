@@ -2,7 +2,7 @@
   "schema_version": 1,
   "reason": {
     "OK": "",
-    "NO_RULE_MATCHED": "没有成立的指令，待机中",
+    "NO_RULE_MATCHED": "没有成立的指令",
     "COND_HP_NOT_BELOW": "生命未低于阈值",
     "COND_NO_VISIBLE_ENEMY": "视野内没有敌人",
     "COND_NO_ENEMY_IN_RANGE": "射程内没有敌人",
@@ -19,7 +19,9 @@
     "COND_NOT_AT_BEACON": "不在该信标上",
     "WAIT_DONE": "本次已等待过，离开后再到达才会重新等待",
     "PARALYZED": "麻痹中，攻击不出手",
-    "COND_SIGNAL_OFF": "当前信号不是这个颜色"
+    "COND_SIGNAL_OFF": "当前信号不是这个颜色",
+    "HOLDING_FIRE": "按指令停火",
+    "NO_TARGET_IN_RANGE": "射程内没有符合的目标"
   },
   "condition_text": {
     "always": "始终",
@@ -31,17 +33,18 @@
     "at_beacon": "到达信标 {beacon} 时",
     "signal_is": "Boss 信号为{signal}时"
   },
-  "selector_text": { "nearest": "最近的", "farthest": "最远的", "lowest_hp": "生命最低的", "first_seen": "首个进入视野的", "highest_max_hp": "生命上限最高的" },
+  "selector_text": { "nearest": "最近的", "farthest": "最远的", "lowest_hp": "生命最低的", "first_seen": "首个进入视野的", "highest_max_hp": "生命上限最高的", "highest_hp": "生命最高的", "most_damage": "造成伤害最高的", "first_in_range": "最先进入射程的" },
   "filter_text": { "any": "敌人", "unit": "敌方单位", "structure": "建筑" },
   "action_text": {
-    "idle": "原地待机",
+    "idle": "停止移动",
     "attack": "攻击{target}",
     "chase_attack": "追击并攻击{target}",
-    "chase": "追击{target}（不攻击）",
+    "chase": "追击最近的敌人（不攻击）",
     "retreat": "远离威胁撤离",
     "follow_route": "沿路线「{route}」前进",
     "follow_beacons": "从信标 {from} 起沿我的信标前进（{mode}）",
-    "wait": "原地等待 {seconds} 秒"
+    "wait": "原地等待 {seconds} 秒",
+    "hold_fire": "停火"
   },
   "ui": {
     "start": "开始", "pause": "暂停", "resume": "继续", "speed_1x": "1×", "speed_2x": "2×",
@@ -93,7 +96,7 @@
     "recommend_formation": "推荐阵型", "recommend_confirm": "将覆盖当前部署与指令，确定摆放推荐阵型？",
     "recommend_apply": "摆放", "cancel": "取消", "recommend_deploy_only": "推荐阵型只能在部署阶段摆放",
     "recommend_applied": "已摆放推荐阵型", "recommend_problems": "推荐阵型已摆放，但有以下问题：",
-    "chapter_switch": "切换章节 ▸ {title}", "boss_phase_pause": "第 {n} 阶段：信号含义已变。改指令、在增援区补人，再按「继续」", "reinforce_budget": "增援预算", "beacons": "信标", "beacon_hint": "部署阶段：点「信标」或按单位编号数字键进入信标模式，左键点地块依次放置（1、2、3…），右键撤销最后一个；也可在地图上右键放置 / 删除、拖动移动", "rule_override": "覆盖", "rule_override_tip": "勾选后：条件成立时无视上方指令的优先级，直接接管（例：始终沿信标走 + 覆盖的「有敌人时撤离」）", "rule_action_label": "行为", "add_action_button": "＋ 添加指令", "distance_unit": "格", "rule_priority_note_side": "越靠上，优先级越高；勾选「覆盖」的指令条件成立时优先接管", "beacon_mode_button": "信标", "beacon_mode_button_tip": "进入信标模式：在地图上点击地块放置本单位的信标（也可按单位编号数字键）", "beacon_mode_title": "信标模式 · {n} 号  {name}", "beacon_mode_hint": "左键点击地块放置信标，右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_mode_auto": "自动寻路", "beacon_mode_auto_tip": "自动寻路：待定（尚未开放）", "beacon_mode_done": "完成", "beacon_mode_applied": "已设为「{mode}」：{name} 沿信标移动", "beacon_footer_mode": "信标：{n} 个 · {mode}",
+    "chapter_switch": "切换章节 ▸ {title}", "boss_phase_pause": "第 {n} 阶段：信号含义已变。改指令、在增援区补人，再按「继续」", "reinforce_budget": "增援预算", "beacons": "信标", "beacon_hint": "部署阶段：点「信标」或按单位编号数字键进入信标模式，左键点地块依次放置（1、2、3…），右键撤销最后一个；也可在地图上右键放置 / 删除、拖动移动", "rule_override": "覆盖", "rule_override_tip": "勾选后：条件成立时无视上方指令的优先级，直接接管（例：始终沿信标走 + 覆盖的「有敌人时撤离」）", "rule_action_label": "行为", "add_action_button": "＋ 添加指令", "distance_unit": "格", "rule_priority_note_side": "攻击与移动分两组同时执行；组内越靠上优先级越高", "beacon_mode_button": "信标", "beacon_mode_button_tip": "进入信标模式：在地图上点击地块放置本单位的信标（也可按单位编号数字键）", "beacon_mode_title": "信标模式 · {n} 号  {name}", "beacon_mode_hint": "左键点击地块放置信标，右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_mode_auto": "自动寻路", "beacon_mode_auto_tip": "自动寻路：待定（尚未开放）", "beacon_mode_done": "完成", "beacon_mode_applied": "已设为「{mode}」：{name} 沿信标移动", "beacon_footer_mode": "信标：{n} 个 · {mode}",
     "beacon_none": "尚无信标", "beacon_footer_none": "信标：尚无信标", "beacon_footer_n": "信标：{n} 个", "enemy_rules_footer": "敌方指令 · 只读", "beacon_soft_cap": "信标数量过多（最多 {n} 个）", "beacon_blocked": "信标不能放在障碍格上",
     "beacon_cell": "{id}  ({x}, {y})", "copy_route": "复制为我的信标", "copy_route_label": "预设路线",
     "copy_route_done": "已把「{route}」复制为信标", "wait_remaining": "等待中 {seconds} 秒",
@@ -109,7 +112,10 @@
     "cost_breakdown": "形态 {form} ＋ 指令 {commands}",
     "settings_close": "关闭", "objectives_popup": "任务",
     "node_placeholder": "未开放", "node_enter": "进入", "node_locked_by": "需先通关：{levels}", "detail_region": "区域", "detail_state": "状态",
-    "replay_story": "回放剧情", "replay_intro": "开场剧情", "replay_win": "胜利剧情", "replay_lose": "失败剧情"
+    "replay_story": "回放剧情", "replay_intro": "开场剧情", "replay_win": "胜利剧情", "replay_lose": "失败剧情",
+    "rule_group_title": "{group}（{n}/{max}）", "rule_group_note_attack": "攻击：在射程内选目标开火；越靠上优先级越高", "rule_group_note_move": "移动：与攻击同时执行；越靠上优先级越高",
+    "add_rule_attack": "＋ 攻击指令", "add_rule_move": "＋ 移动指令", "rule_group_full": "本组最多 {max} 条指令", "rule_group_empty": "（无指令）", "add_action_group": "添加{group}指令", "chase_target_fixed": "最近的敌人",
+    "tutorial_next": "下一步", "tutorial_skip": "跳过引导", "tutorial_step": "{n}/{total}", "tutorial_test_tag": "【测试】", "tutorial_back": "返回配置器", "tutorial_pick_title": "拾取目标", "tutorial_pick_hint": "点击要高亮的界面元素或地块；Esc 取消并返回配置器。"
   },
   "validation": {
     "SLOT_NOT_PLACED": "「{slot}」尚未部署",
@@ -129,6 +135,7 @@
     "TOO_FEW_UNITS": "至少需要出场 {what} 名单位",
     "FORM_NOT_AVAILABLE": "「{slot}」的形态「{what}」在本关不可用",
     "SAVE_MIGRATION_FAILED": "旧存档中本关的部分配置无法转换（原数据已保留）",
+    "RULES_OVER_LIMIT": "「{slot}」的{what}超过 {index} 条上限",
     "cannot_place": {
       "format": "无法放置：{reason}",
       "OUT_OF_ZONE": "不在部署区内",
@@ -139,7 +146,7 @@
       "FORM_NOT_AVAILABLE": "该形态在本关不可用"
     }
   },
-  "names": { "signals": {"red": "红", "yellow": "黄", "blue": "蓝"},"conditions": {"always": "始终", "self_hp_below": "自身生命", "enemy_visible": "可见敌人", "enemy_in_range": "射程内敌人", "target_distance": "目标距离", "retreat_possible": "存在退路", "at_beacon": "到达信标", "signal_is": "Boss 信号" }, "selectors": {"nearest": "最近", "farthest": "最远", "lowest_hp": "生命最低", "first_seen": "首个入视野", "highest_max_hp": "生命上限最高" }, "traits": {"delayed_blast": "延迟爆炸", "status": "异常状态", "on_hit_status": "命中附加", "aura_status": "光环", "tile_effect": "地形效果", "phased_boss": "多阶段首领" }, "actions": {"idle": "待机", "attack": "攻击", "chase_attack": "追击并攻击", "chase": "追击", "retreat": "撤离", "follow_route": "沿路线", "follow_beacons": "沿我的信标", "wait": "等待"}, "beacon_modes": {"once": "沿路径", "loop": "循环", "pingpong": "往返"}, "filters": {"any": "任意目标", "unit": "单位", "structure": "建筑"}},
+  "names": { "signals": {"red": "红", "yellow": "黄", "blue": "蓝"},"conditions": {"always": "始终", "self_hp_below": "自身生命", "enemy_visible": "可见敌人", "enemy_in_range": "射程内敌人", "target_distance": "目标距离", "retreat_possible": "存在退路", "at_beacon": "到达信标", "signal_is": "Boss 信号" }, "selectors": {"nearest": "最近", "farthest": "最远", "lowest_hp": "生命最低", "first_seen": "首个入视野", "highest_max_hp": "生命上限最高", "highest_hp": "HP最高", "most_damage": "造成伤害最高", "first_in_range": "第一个进入射程" }, "traits": {"delayed_blast": "延迟爆炸", "status": "异常状态", "on_hit_status": "命中附加", "aura_status": "光环", "tile_effect": "地形效果", "phased_boss": "多阶段首领" }, "groups": {"attack": "攻击策略", "move": "移动策略"}, "actions": {"idle": "停止", "hold_fire": "停火", "attack": "攻击", "chase_attack": "追击并攻击", "chase": "追击", "retreat": "撤离", "follow_route": "沿路线", "follow_beacons": "沿信标移动", "wait": "等待"}, "beacon_modes": {"once": "沿路径", "loop": "循环", "pingpong": "往返"}, "filters": {"any": "任意目标", "unit": "单位", "structure": "建筑"}},
   "objective": {"annihilate": "消灭全部敌方单位", "destroy": "摧毁：{targets}", "survive": "保护{target}存活 {seconds} 秒", "unit_dead": "{target}被摧毁", "all_allies_dead": "分裂体全部倒下", "reach_zone": "{target}抵达逃离区", "reach_zone_win": "{target}抵达目标区域", "escort": "护送{target}抵达目标区域"},
   "mechanics": [
     "单位从上到下检查指令，执行第一条条件成立的；之后的指令本次不再看。每次决策都从顶部重新检查。",

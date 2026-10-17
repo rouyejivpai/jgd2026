@@ -19,6 +19,7 @@ const NODE_NAMES: Dictionary = {
 }
 
 var nodes: Dictionary = {}               ## 元素 id → Control
+static var _opened_editor_once: bool = false   ## 命令行 --config-editor 只在启动时跳转一次
 
 
 func _ready() -> void:
@@ -39,10 +40,19 @@ func _ready() -> void:
 		UiKit.attach_button_motion(nodes[id] as Button, MOTION_PROFILE)
 	if not start.disabled:
 		start.grab_focus()
+	if OS.get_cmdline_user_args().has("--config-editor") and ResourceLoader.exists(SceneRouter.CONFIG_EDITOR_SCENE) and not _opened_editor_once:
+		_opened_editor_once = true
+		SceneRouter.goto_config_editor.call_deferred()
 
 
 ## 键盘导航：鼠标离开按钮会交还焦点（焦点跟随鼠标），此时按上 / 下 / Tab 先回到第一个可用按钮
+## 第五阶段：F10 打开教学与解锁配置器（开发工具，导出包内不存在时忽略）
 func _unhandled_input(event: InputEvent) -> void:
+	var key: InputEventKey = event as InputEventKey
+	if key != null and key.pressed and key.keycode == KEY_F10 and ResourceLoader.exists(SceneRouter.CONFIG_EDITOR_SCENE):
+		get_viewport().set_input_as_handled()
+		SceneRouter.goto_config_editor()
+		return
 	if get_viewport().gui_get_focus_owner() != null:
 		return
 	for action: String in KEY_NAV_ACTIONS:

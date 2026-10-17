@@ -136,7 +136,7 @@ func region_title(region_id: String) -> String:
 
 
 ## 数据校验：节点 id 不重复、关卡存在且不重复、连线指向本章节点、区域存在
-func validate(level_ids: Array[String], ctx: String) -> void:
+func validate(known_levels: Array[String], ctx: String) -> void:
 	var seen: Array[String] = []
 	var seen_levels: Array[String] = []
 	var region_ids: Array[String] = []
@@ -152,7 +152,7 @@ func validate(level_ids: Array[String], ctx: String) -> void:
 			if seen_levels.has(lid):
 				DataReader.report(ctx, "关卡 %s 出现在多个节点" % lid)
 			seen_levels.append(lid)
-			if not level_ids.has(lid):
+			if not known_levels.has(lid):
 				DataReader.report(ctx, "节点关卡 '%s' 不存在" % lid)
 		if str(n["region"]) != "" and not region_ids.has(str(n["region"])):
 			DataReader.report(ctx, "节点 %s 的区域 '%s' 不存在" % [nid, n["region"]])

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "_comment": "第五阶段（2026-10-17 会议）教学与解锁配置：强制引导步骤 + 各关解锁 / 提示文案的覆盖项。由配置器（tools/config_editor.tscn）统一编辑；字段说明见 scripts/data/teaching_def.gd 与 docs/14_第五阶段_指令双组与引导.md。下面 test: true 的条目全部是开发期测试内容，待统一配置时替换。关卡编号保持现有 1、2、3、4… 顺序。",
+  "style": {
+    "dim_color": "#05030Acc",
+    "highlight_color": "#E8C46A",
+    "highlight_width": 3.0,
+    "hole_pad": 10.0,
+    "arrow_size": 34.0,
+    "arrow_gap": 14.0,
+    "arrow_bob": 8.0,
+    "arrow_bob_hz": 1.4,
+    "panel_width": 460.0,
+    "panel_margin": 24.0
+  },
+  "levels": {
+    "level_c01": {
+      "test": true,
+      "tutorial": {
+        "steps": [
+          { "title": "部署", "text": "从下方出场卡把人偶拖进左侧发光的部署区。", "targets": [{ "kind": "ui", "node": "Card_striker" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
+          { "title": "查看单位", "text": "点一下刚放下的人偶，打开它的详情与指令。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
+          { "title": "两组指令", "text": "指令分「攻击策略」和「移动策略」两组，同时执行。新单位已预填：攻击组「始终 → 攻击·最近」，移动组「始终 → 沿信标移动」。", "targets": [{ "kind": "ui", "node": "SidePanel" }], "advance": "next", "panel": "center" },
+          { "title": "放信标", "text": "点「信标」进入信标模式，在地图上依次点出路线。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }], "advance": "event", "event": "beacon_mode" },
+          { "title": "放信标", "text": "左键点地块放下第一个信标（右键撤销）。", "targets": [{ "kind": "cells", "cells": [[4, 3], [5, 3], [6, 3]] }], "advance": "event", "event": "beacon_placed", "block": false },
+          { "title": "开始", "text": "准备好后按「开始」。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started" }
+        ]
+      }
+    },
+    "level_c02": {
+      "test": true,
+      "tutorial": {
+        "steps": [
+          { "title": "信标与路径", "text": "信标要用 Cost 买：1 Cost = 5 个。先部署单位。", "targets": [{ "kind": "ui", "node": "Card_striker" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
+          { "title": "选择单位", "text": "选中单位后点「信标」，把信标沿路线摆成一条路。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
+          { "title": "沿路径移动", "text": "移动组的「沿信标移动」可选 沿路径 / 循环 / 往返。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }], "advance": "event", "event": "beacon_mode" },
+          { "title": "终点", "text": "物资箱在这里，把路线引过去。", "targets": [{ "kind": "unit", "spawn": "GOAL" }], "advance": "next", "block": false }
+        ]
+      }
+    },
+    "level_c03": {
+      "test": true,
+      "mechanic_hint": "【测试】攻击与移动同时执行：沿信标走的同时会自动开火；想停下来打，就在移动组加「射程内有敌人 → 停止」并放在沿信标上面。",
+      "tutorial": {
+        "steps": [
+          { "title": "边走边打", "text": "攻击组和移动组各自从上到下取第一条成立的指令，两者同时执行。", "targets": [{ "kind": "none" }], "advance": "next", "panel": "center" },
+          { "title": "攻击策略", "text": "部署并选中单位后，这里是攻击组：决定打谁、何时停火。", "targets": [{ "kind": "ui", "node": "Card_striker" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
+          { "title": "移动策略", "text": "移动组：沿信标、追击、撤离、停止、等待。上面的覆盖下面的。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
+          { "title": "试一试", "text": "开始后观察：单位沿信标前进，同时向射程内的人偶开火。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started" },
+          { "title": "射程", "text": "人偶进入射程，攻击组开始开火，移动并没有停下。", "targets": [{ "kind": "unit", "spawn": "T1" }], "advance": "next", "phase": "running", "after": 1.5, "block": false }
+        ]
+      }
+    },
+    "level_c04": {
+      "test": true,
+      "tutorial": {
+        "steps": [
+          { "title": "敌人的视野", "text": "点一下巡逻的敌人，看它的视野圈和射程圈。", "targets": [{ "kind": "unit", "spawn": "P1" }], "advance": "event", "event": "enemy_selected" },
+          { "title": "看见 ≠ 打到", "text": "进入视野圈会被发现并被追击；进入射程圈才会挨打。绕开视野圈就不会惊动它。", "targets": [{ "kind": "ui", "node": "SidePanel" }], "advance": "next", "panel": "center" }
+        ]
+      }
+    },
+    "level_c05": {
+      "test": true,
+      "allowed": { "selectors": ["nearest", "farthest", "highest_hp", "most_damage", "first_in_range"] },
+      "tutorial": {
+        "steps": [
+          { "title": "目标选择", "text": "攻击指令可以选目标：最近、最远、HP最高、造成伤害最高、第一个进入射程。都只在射程内挑。", "targets": [{ "kind": "unit", "spawn": "P1" }, { "kind": "unit", "spawn": "W1" }], "advance": "next", "block": false },
+          { "title": "先打后排", "text": "把攻击组的目标改成「最远」，射程够到时就会先打后排的祭司。", "targets": [{ "kind": "ui", "node": "Card_striker" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" }
+        ]
+      }
+    }
+  }
+}

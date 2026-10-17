@@ -45,6 +45,8 @@ var routes: Dictionary = {}             ## route_id -> RouteDef
 var allowed_conditions: Array[int] = []
 var allowed_selectors: Array[int] = []
 var allowed_actions: Array[int] = []
+## 第五阶段：玩家指令数据口径。"legacy"（缺省，旧单列表）= 推荐指令在加载时经 RuleDef.migrate_legacy() 折算为双组；"dual" = 已按双组编写
+var rules_format: String = "legacy"
 var modifiers: Array[ModifierDef] = []  ## 07 §7 静态关卡加成（可选）
 var win: Array[ObjectiveDef] = []
 var lose: Array[ObjectiveDef] = []
@@ -182,6 +184,7 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 		L.allowed_selectors.append(DataReader.enum_value(SimTypes.parse_selector(raw), raw, "选敌", actx))
 	for raw: String in DataReader.string_array(DataReader.req_array(allowed, "actions", actx), actx):
 		L.allowed_actions.append(DataReader.enum_value(SimTypes.parse_action(raw), raw, "行为类型", actx))
+	ActionDef.expand_allowed(L.allowed_actions)
 
 	var obj: Dictionary = DataReader.opt_dict(d, "objectives", ctx)
 	var octx: String = ctx + ".objectives"
@@ -204,6 +207,9 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 	L.fail_feedback = DataReader.opt_dict(d, "fail_feedback", ctx)
 	if d.has("recommended_deploy"):
 		DataReader.report(ctx, "DEPRECATED_FIELD recommended_deploy 已废弃，改用 recommended.units")
+	L.rules_format = DataReader.opt_str(d, "rules_format", "legacy", ctx)
+	if L.rules_format != "legacy" and L.rules_format != "dual":
+		DataReader.report(ctx, "rules_format 必须是 legacy 或 dual")
 	var rec: Dictionary = DataReader.opt_dict(d, "recommended", ctx)
 	var rec_ctx: String = ctx + ".recommended"
 	L.recommended_phase2 = DataReader.opt_dict(rec, "phase2", rec_ctx)
@@ -211,6 +217,7 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 		var rec_arr: Array = DataReader.req_array(rec, "units", rec_ctx)
 		for i: int in rec_arr.size():
 			var ru: RecommendedUnitDef = RecommendedUnitDef.from_dict(DataReader.as_dict(rec_arr[i], "%s.units[%d]" % [rec_ctx, i]), rec_ctx + ".units")
+			ru.rules = L.player_rules(ru.rules)
 			L.recommended_units.append(ru)
 			if ru.slot_id != "":
 				L.recommended_deploy[ru.slot_id] = ru.pos
@@ -219,6 +226,11 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 		DataReader.report(ctx, "DEPRECATED_FIELD rewards.story_id 已废弃：剧情按 <level_id>_intro / _win / _lose 约定查找（07 §10.2）")
 	L.verification = DataReader.opt_dict(d, "verification", ctx)
 	return L
+
+
+## 第五阶段：本关数据里的玩家指令 → 双组口径（legacy 关卡折算，dual 关卡原样）
+func player_rules(rules: Array[RuleDef]) -> Array[RuleDef]:
+	return RuleDef.migrate_legacy(rules) if rules_format == "legacy" else RuleDef.clone_array(rules)
 
 
 func in_bounds(c: Vector2i) -> bool:

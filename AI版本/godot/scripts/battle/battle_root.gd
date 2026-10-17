@@ -47,6 +47,7 @@ var pan_y: float = 0.0
 var cam_zoom: float = 1.0
 var _drag_source: int = -1               ## 部署拖动中的单位（原位置变淡）
 var _status_overlay: Node2D = null       ## 30 关战役：异常状态 / Boss 信号 / 增援区提示（status_overlay.gd）
+var tutorial: TutorialDirector = null    ## 第五阶段：强制引导
 
 
 func _ready() -> void:
@@ -98,6 +99,10 @@ func _ready() -> void:
 	AudioManager.play_bgm(level.bgm)
 	AudioManager.play_ambient(str(AMBIENT_BY_BIOME.get(level.biome, AMBIENT_DEFAULT)))
 	_hud.call("begin")
+	tutorial = TutorialDirector.new()          # 第五阶段：统一强制引导（本关有引导且未看过 / 配置器预览 / 拾取模式时才建遮罩）
+	tutorial.name = "TutorialDirector"
+	add_child(tutorial)
+	tutorial.setup(self, _hud)
 
 
 ## 战斗快捷键在 GUI 之前处理（A02）：否则空格（开始，也是 ui_accept）会先按下当前有焦点的按钮，
@@ -292,6 +297,14 @@ func screen_to_cell(screen_pos: Vector2) -> Vector2i:
 func cell_top_screen(cell: Vector2i) -> Vector2:
 	var local: Vector2 = Vector2((cell.x + 0.5) * SimTypes.TILE_SIZE, (level.height - 1 - cell.y) * SimTypes.TILE_SIZE)
 	return _map_layer.get_global_transform_with_canvas() * local
+
+
+## 第五阶段（强制引导）：某格在屏幕上的矩形（随镜头平移 / 缩放）
+func cell_screen_rect(cell: Vector2i) -> Rect2:
+	var t: Transform2D = _map_layer.get_global_transform_with_canvas()
+	var a: Vector2 = t * Vector2(cell.x * SimTypes.TILE_SIZE, (level.height - 1 - cell.y) * SimTypes.TILE_SIZE)
+	var b: Vector2 = t * Vector2((cell.x + 1) * SimTypes.TILE_SIZE, (level.height - cell.y) * SimTypes.TILE_SIZE)
+	return Rect2(a, Vector2.ZERO).expand(b)
 
 
 ## 屏幕坐标处的存活单位 id（距单位中心 ≤ 0.5 格，取最近者），无则 -1；玩法矩形外恒为 -1

@@ -62,7 +62,8 @@ func _assert_config_is_recommended(c: BattleController) -> void:
 func test_new_unit_rules_are_empty() -> void:
 	var uid: String = _c.add_unit("bulwark", Vector2i(3, 3))
 	assert_ne(uid, "")
-	assert_eq(_c.get_rules(uid).size(), 0, "新放置单位指令为空")
+	assert_eq(_c.get_rules(uid).size(), DataRegistry.get_commands().new_unit_rules().size(), "第五阶段：新放置单位预填默认指令")
+	assert_true(_c.set_rules(uid, [] as Array[RuleDef]), "删光指令仍允许")
 	var problems: Array[Dictionary] = DeploymentValidator.validate(_level, _c.build_config(), GameState.unlocks, DataRegistry.get_units())
 	var empty: Array[Dictionary] = []
 	for p: Dictionary in problems:

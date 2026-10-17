@@ -93,8 +93,12 @@ func test_recommended_units_parsed() -> void:
 	var ru: RecommendedUnitDef = L.get_recommended("slot_bulwark")
 	assert_eq(ru.form, "bulwark")
 	assert_eq(ru.pos, Vector2i(3, 3))
-	assert_eq(ru.rules.size(), 3, "推荐指令 = 第一阶段槽位初始指令")
-	assert_false(ru.rules[1].enabled, "第二关推荐指令中的追击默认关闭")
+	# 第五阶段：旧单列表推荐指令在加载时折算为双组——攻击(射程内) + 停止镜像、追击 + 攻击（关闭）、停止 + 停火镜像
+	assert_eq(L.rules_format, "legacy")
+	var types: Array = ru.rules.map(func(r: RuleDef) -> String: return SimTypes.action_to_string(r.action.type))
+	assert_eq(types, ["attack", "idle", "chase", "attack", "idle", "hold_fire"], "推荐指令折算为双组")
+	assert_false(ru.rules[2].enabled, "第二关推荐指令中的追击默认关闭（拆分后两条都关闭）")
+	assert_false(ru.rules[3].enabled)
 	assert_eq(L.recommended_deploy.get("slot_bulwark"), Vector2i(3, 3), "派生的推荐部署")
 	for s: SlotDef in DataRegistry.get_level("level_07").slots:
 		assert_false("rules" in s, "SlotDef 不再携带指令")

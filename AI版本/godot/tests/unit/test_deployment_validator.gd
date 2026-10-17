@@ -100,14 +100,14 @@ func test_overlap() -> void:
 func test_rule_not_allowed_in_level() -> void:
 	var farthest: Dictionary = SimFactory.r_attack_in_range("farthest")
 	var problems: Array[Dictionary] = _validate("level_01", { "slot_striker_a": Vector2i(2, 2), "slot_striker_b": Vector2i(2, 4) },
-		_all_unlocked(), { "slot_striker_a": [farthest] })
+		_all_unlocked(), { "slot_striker_a": SimFactory.to_rules([farthest]) })
 	assert_eq(str(_codes(problems)), str(["RULE_NOT_ALLOWED"]), "第一关只允许 nearest")
 	assert_eq(str(problems[0]["what"]), "farthest")
 	assert_eq(int(problems[0]["index"]), 1)
 
 
 func test_rule_locked() -> void:
-	# 第三关允许 target_distance / retreat / chase / follow_route，但初始解锁中没有
+	# 第三关允许 target_distance / retreat / chase / follow_route，但初始解锁中没有（第五阶段起「追击」进入初始解锁，测试内容）
 	var unlocks: Dictionary = DataRegistry.get_initial_unlocks()
 	unlocks["forms"] = ["striker", "swift"]          # 只测指令解锁，形态视为已解锁
 	var problems: Array[Dictionary] = _validate("level_03", DataRegistry.get_level("level_03").recommended_deploy, unlocks)
@@ -117,7 +117,7 @@ func test_rule_locked() -> void:
 		whats.append(str(p["what"]))
 	assert_true(whats.has("target_distance"))
 	assert_true(whats.has("retreat"))
-	assert_true(whats.has("chase"))
+	assert_false(whats.has("chase"), "第五阶段：追击初始已解锁")
 	assert_true(whats.has("follow_route"))
 
 

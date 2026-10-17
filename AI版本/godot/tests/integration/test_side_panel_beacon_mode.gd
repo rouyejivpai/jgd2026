@@ -166,6 +166,8 @@ func test_set_beacon_follow_mode_appends_rule_when_missing() -> void:
 	var c: BattleController = root.get_node("BattleController") as BattleController
 	var uid: String = c.add_unit("striker", (root.get("level") as LevelDefinition).deploy_cells[0])
 	assert_ne(uid, "")
+	assert_eq(c.beacon_follow_mode(uid), SimTypes.BeaconMode.ONCE, "第五阶段：新单位预填「始终 → 沿信标移动」")
+	assert_true(c.set_rules(uid, [] as Array[RuleDef]))
 	assert_eq(c.beacon_follow_mode(uid), -1)
 	c.add_beacon(uid, Vector2i(5, 2))
 	assert_true(c.set_beacon_follow_mode(uid, SimTypes.BeaconMode.ONCE))

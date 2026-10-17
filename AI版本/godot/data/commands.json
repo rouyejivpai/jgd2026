@@ -1,15 +1,21 @@
 {
   "schema_version": 1,
-  "_comment": "10 §5.1 指令目录（取代 presets.json 的菜单角色）。数组顺序 = 菜单顺序 = 默认项（第一项为默认）。unlock_key 复用 progression / 关卡 rewards 中的 preset.* 键，空 = 始终可用（Q-047）；关卡 allowed 仍按 action / condition / selector 过滤。player:false 的行为不进玩家菜单（预设路线只给敌人数据）。cost 为指令 Cost（指令 Cost = Σ 每条 (action.cost + Σ condition.cost)），本阶段全部为 0（决策 ⑧）。defaults（可选）= 新建该条件 / 行为时的参数（原取自 presets.json 的同类预设）。",
+  "_comment": "10 §5.1 指令目录（取代 presets.json 的菜单角色）。数组顺序 = 菜单顺序 = 默认项（第一项为默认）。unlock_key 复用 progression / 关卡 rewards 中的 preset.* 键，空 = 始终可用（Q-047）；关卡 allowed 仍按 action / condition / selector 过滤。player:false 的行为 / 选敌不进玩家菜单（只给敌人与旧数据用）。cost 为指令 Cost（指令 Cost = Σ 每条 (action.cost + Σ condition.cost)），本阶段全部为 0（决策 ⑧）。defaults（可选）= 新建该条件 / 行为时的参数。第五阶段（2026-10-17 会议）：group = 行为所属指令组（attack 攻击组 / move 移动组，两组各自求值、同时执行）；group_limits = 每组指令条数上限（暂定各 5）；new_unit_rules = 新放置单位的预填指令（移动组「沿信标」、攻击组「攻击·最近」，均为「始终」）。",
+  "group_limits": { "attack": 5, "move": 5 },
+  "new_unit_rules": [
+    { "conditions": [], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
+    { "conditions": [], "action": { "type": "follow_beacons", "mode": "once", "from": "1" } }
+  ],
   "actions": [
-    { "id": "attack",         "unlock_key": "preset.attack_nearest_in_range",      "cost": 0, "player": true },
-    { "id": "chase_attack",   "unlock_key": "preset.chase_attack_nearest_visible", "cost": 0, "player": true },
-    { "id": "chase",          "unlock_key": "preset.chase_nearest_visible",        "cost": 0, "player": true },
-    { "id": "retreat",        "unlock_key": "preset.retreat_when_close",           "cost": 0, "player": true },
-    { "id": "idle",           "unlock_key": "preset.idle_always",                  "cost": 0, "player": true },
-    { "id": "follow_beacons", "unlock_key": "",                                    "cost": 0, "player": true },
-    { "id": "wait",           "unlock_key": "",                                    "cost": 0, "player": true },
-    { "id": "follow_route",   "unlock_key": "preset.follow_route",                 "cost": 0, "player": false }
+    { "id": "attack",         "group": "attack", "unlock_key": "preset.attack_nearest_in_range",      "cost": 0, "player": true },
+    { "id": "hold_fire",      "group": "attack", "unlock_key": "",                                    "cost": 0, "player": true },
+    { "id": "follow_beacons", "group": "move",   "unlock_key": "",                                    "cost": 0, "player": true },
+    { "id": "chase",          "group": "move",   "unlock_key": "preset.chase_nearest_visible",        "cost": 0, "player": true },
+    { "id": "retreat",        "group": "move",   "unlock_key": "preset.retreat_when_close",           "cost": 0, "player": true },
+    { "id": "idle",           "group": "move",   "unlock_key": "",                                    "cost": 0, "player": true },
+    { "id": "wait",           "group": "move",   "unlock_key": "",                                    "cost": 0, "player": true },
+    { "id": "chase_attack",   "group": "move",   "unlock_key": "preset.chase_attack_nearest_visible", "cost": 0, "player": false },
+    { "id": "follow_route",   "group": "move",   "unlock_key": "preset.follow_route",                 "cost": 0, "player": false }
   ],
   "conditions": [
     { "id": "always",           "unlock_key": "",                                   "cost": 0 },
@@ -19,14 +25,17 @@
     { "id": "self_hp_below",    "unlock_key": "preset.retreat_low_hp",              "cost": 0, "defaults": { "ratio": 0.3 } },
     { "id": "retreat_possible", "unlock_key": "preset.retreat_when_close",          "cost": 0 },
     { "id": "at_beacon",        "unlock_key": "",                                   "cost": 0 },
-    {"id": "signal_is", "unlock_key": "preset.boss_signal", "cost": 0, "defaults": {"signal": "red"}}
+    { "id": "signal_is",        "unlock_key": "preset.boss_signal",                 "cost": 0, "defaults": { "signal": "red" } }
   ],
   "selectors": [
-    { "id": "nearest",    "unlock_key": "" },
-    { "id": "farthest",   "unlock_key": "preset.attack_farthest_in_range" },
-    { "id": "lowest_hp",  "unlock_key": "preset.attack_lowest_hp_in_range" },
-    { "id": "first_seen", "unlock_key": "preset.chase_attack_first_seen" },
-    {"id": "highest_max_hp", "unlock_key": "preset.attack_highest_max_hp_in_range"}
+    { "id": "nearest",        "unlock_key": "" },
+    { "id": "farthest",       "unlock_key": "preset.attack_farthest_in_range" },
+    { "id": "highest_hp",     "unlock_key": "" },
+    { "id": "most_damage",    "unlock_key": "" },
+    { "id": "first_in_range", "unlock_key": "" },
+    { "id": "lowest_hp",      "unlock_key": "preset.attack_lowest_hp_in_range",      "player": false },
+    { "id": "first_seen",     "unlock_key": "preset.chase_attack_first_seen",        "player": false },
+    { "id": "highest_max_hp", "unlock_key": "preset.attack_highest_max_hp_in_range", "player": false }
   ],
   "filters": [
     { "id": "any", "unlock_key": "" }, { "id": "unit", "unlock_key": "" },

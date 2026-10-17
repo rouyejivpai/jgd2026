@@ -39,8 +39,8 @@ func _l1_attacks_disabled() -> Dictionary:
 	for ru: RecommendedUnitDef in level.recommended_units:
 		var rules: Array[RuleDef] = level.recommended_rules(ru.slot_id)
 		for r: RuleDef in rules:
-			if r.action.type == SimTypes.ActionType.ATTACK or r.action.type == SimTypes.ActionType.CHASE_ATTACK:
-				r.enabled = false
+			if r.action.type in [SimTypes.ActionType.ATTACK, SimTypes.ActionType.CHASE_ATTACK, SimTypes.ActionType.CHASE]:
+				r.enabled = false            # 第五阶段：推荐指令已折算为双组，「追击并攻击」= 追击 + 攻击，一并关闭
 		out[ru.slot_id] = rules
 	return out
 
@@ -66,7 +66,8 @@ func test_level_01_expected_fail() -> void:
 	for u: SimUnit in w2.units:
 		if u.faction == SimTypes.Faction.ALLY:
 			assert_eq(u.current_action, SimTypes.ActionType.IDLE)
-			assert_eq(u.current_rule, 2, "落到兜底待机")
+			assert_true(u.current_rule >= 0 and u.rules[u.current_rule].action.type == SimTypes.ActionType.IDLE, "移动组停止（攻击 / 追击关闭后落到停止）")
+			assert_true(u.current_attack_rule < 0 or u.rules[u.current_attack_rule].action.type == SimTypes.ActionType.HOLD_FIRE, "攻击组不出手（停火）")
 
 
 func test_level_01_speed_1x_2x_consistent() -> void:
@@ -158,9 +159,10 @@ func test_controller_config_save_roundtrip() -> void:
 	var u1: String = c.add_unit("bulwark", Vector2i(3, 3))
 	var u2: String = c.add_unit("striker", Vector2i(1, 2))
 	assert_eq([u1, u2], ["u1", "u2"], "uid 递增分配")
-	assert_eq(c.get_rules(u2).size(), 0, "新放置单位指令为空（07 §2）")
+	assert_eq_deep(RuleDef.to_array(c.get_rules(u2)), RuleDef.to_array(DataRegistry.get_commands().new_unit_rules()))   # 新放置单位预填默认指令（第五阶段）
 	var rules: Array[RuleDef] = level.recommended_rules("slot_striker_a")
-	rules[1].enabled = true                              # 打开推荐指令中关闭的追击
+	for r: RuleDef in rules:
+		r.enabled = true                                 # 打开推荐指令中关闭的追击（折算后为 追击 + 攻击 两条）
 	var moved: RuleDef = rules[2]
 	rules.remove_at(2)
 	rules.insert(0, moved)                               # 调整顺序

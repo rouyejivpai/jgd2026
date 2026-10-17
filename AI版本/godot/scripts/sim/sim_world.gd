@@ -15,6 +15,7 @@ var next_blast_id: int = 1
 var damage_queue: Array[Dictionary] = []
 var events: Array[Dictionary] = []
 var seen_counter: int = 0
+var range_counter: int = 0              ## 第五阶段：进入射程序号（first_in_range）
 var result: int = SimTypes.BattleResult.NONE
 var result_objective: String = ""       ## 决出胜负的 objective id（失败说明用）
 var objective_progress: Dictionary = {} ## time_left / target_hp / target_max_hp / threat_cleared
@@ -76,6 +77,7 @@ static func from_level(level: LevelDefinition, unit_defs: Dictionary, trait_defs
 			for r: RuleDef in entry["rules"] as Array:
 				rules.append(r.clone())
 		var u: SimUnit = SimUnit.create(udef, SimTypes.Faction.ALLY, SimTypes.cell_center(entry["pos"] as Vector2i), rules)
+		u.dual_rules = str(entry.get("rules_format", "dual")) != "legacy"   # 第五阶段：玩家单位双组口径（"legacy" 仅供测试对照）
 		u.id = SimTypes.ALLY_ID_BASE + int(item["index"])
 		u.spawn_id = uid
 		if entry.has("label"):
@@ -220,6 +222,9 @@ func _resolve_damage() -> void:
 			continue
 		var amount: float = float(entry["damage"]) * StatusSystem.damage_mult(self, t)
 		var was_alive: bool = t.alive
+		var src: SimUnit = get_unit(int(entry["source"]))
+		if src != null and was_alive:
+			src.damage_dealt += amount        # 第五阶段 most_damage 选敌
 		t.hp -= amount
 		emit_event(SimTypes.EventType.DAMAGE_APPLIED, { "target": t.id, "amount": amount, "source": int(entry["source"]), "hp_after": t.hp })
 		if was_alive and t.hp <= 0.0:
@@ -239,6 +244,7 @@ func _resolve_damage() -> void:
 
 
 ## 进入视野顺序（01 §6.5）：新进入者取全局递增序号，离开视野者移除（并清除对其的锁定）
+## 第五阶段：同时维护进入射程顺序（射程内且可见；离开即移除）
 func _update_seen() -> void:
 	for obs: SimUnit in units:
 		if not obs.alive:
@@ -246,6 +252,13 @@ func _update_seen() -> void:
 		for other: SimUnit in units:
 			var visible: bool = other.alive and TargetSelector.is_hostile(obs.faction, other.faction) \
 				and obs.pos.distance_to(other.pos) <= obs.vision + SimTypes.DIST_EPS
+			var in_range: bool = visible and obs.pos.distance_to(other.pos) <= obs.attack_range + SimTypes.DIST_EPS
+			if in_range:
+				if not obs.range_order.has(other.id):
+					obs.range_order[other.id] = range_counter
+					range_counter += 1
+			elif obs.range_order.has(other.id):
+				obs.range_order.erase(other.id)
 			if visible:
 				if not obs.seen_order.has(other.id):
 					obs.seen_order[other.id] = seen_counter

@@ -3,7 +3,7 @@ extends Node
 ## 启动时读取（无存档则按 data/progression.json 新建，不立即写盘）；退出关卡、关卡结束时写入。
 
 const SAVE_PATH: String = "user://save.json"
-const SAVE_VERSION: int = 4              ## 2：level_configs 改为单位列表（07 §4.2），unlocks.slots 废弃；3：stories_seen（07 §10）；4：信标数字编号（10 §6.3）
+const SAVE_VERSION: int = 5              ## 2：level_configs 改为单位列表（07 §4.2），unlocks.slots 废弃；3：stories_seen（07 §10）；4：信标数字编号（10 §6.3）；5：指令双组口径 + tutorials_seen（第五阶段）
 const TMP_SUFFIX: String = ".tmp"
 const UNLOCK_LISTS: Array[String] = ["forms", "presets", "conditions", "selectors", "actions"]
 
@@ -55,6 +55,18 @@ func get_invalid_problems(level_id: String) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	out.assign(invalid_configs.get(level_id, []) as Array)
 	return out
+
+
+## 第五阶段：某关的强制引导是否已完成（完成或跳过都算）
+func is_tutorial_seen(level_id: String) -> bool:
+	return bool((data.get("tutorials_seen", {}) as Dictionary).get(level_id, false))
+
+
+func mark_tutorial_seen(level_id: String) -> void:
+	if not data.get("tutorials_seen", null) is Dictionary:
+		data["tutorials_seen"] = {}
+	(data["tutorials_seen"] as Dictionary)[level_id] = true
+	save()
 
 
 func get_hints_seen(level_id: String) -> int:
@@ -110,6 +122,7 @@ static func new_save(initial_unlocks: Dictionary, initial_levels: Array[String])
 		"recommend_used": {},
 		"stories_seen": {},
 		"settings": {},
+		"tutorials_seen": {},
 	}
 
 
@@ -169,7 +182,7 @@ func migrate(d: Dictionary) -> Dictionary:
 	var version: int = int(out.get("version", 1))
 	if version > SAVE_VERSION:
 		push_warning("[SaveManager] save version newer than game: %s" % str(out.get("version")))
-	for key: String in ["progress", "unlocks", "level_configs", "hints_seen", "recommend_used", "stories_seen", "settings"]:
+	for key: String in ["progress", "unlocks", "level_configs", "hints_seen", "recommend_used", "stories_seen", "settings", "tutorials_seen"]:
 		if not out.get(key, null) is Dictionary:
 			out[key] = {}
 	if version < 2:
@@ -186,8 +199,52 @@ func migrate(d: Dictionary) -> Dictionary:
 		for lid: String in configs4.keys():
 			if configs4[lid] is Dictionary:
 				migrate_beacon_ids(configs4[lid] as Dictionary)
+	if version < 5:
+		var configs5: Dictionary = out["level_configs"] as Dictionary
+		for lid: String in configs5.keys():
+			if configs5[lid] is Dictionary:
+				migrate_rules_v5(configs5[lid] as Dictionary)
+		migrate_unlocks_v5(out["unlocks"] as Dictionary, DataRegistry.get_initial_unlocks())
 	out["version"] = SAVE_VERSION
 	return out
+
+
+## 存档 v4 → v5（第五阶段）：各关玩家指令（旧单列表口径）经 RuleDef.migrate_legacy() 折算为双组口径。
+## 某个单位的指令有无法解析的条目时，该单位原样保留（读档校验照常报 RULE_INVALID）。
+static func migrate_rules_v5(config: Dictionary) -> void:
+	var units: Array = config.get("units", []) as Array if config.get("units", null) is Array else []
+	var was_silent: bool = DataReader.silent
+	DataReader.silent = true
+	for u: Variant in units:
+		if not u is Dictionary or not (u as Dictionary).get("rules", null) is Array:
+			continue
+		var ud: Dictionary = u as Dictionary
+		var before: int = DataReader.error_count
+		var rules: Array[RuleDef] = []
+		for r: Variant in ud["rules"] as Array:
+			rules.append(RuleDef.from_dict(r as Dictionary if r is Dictionary else {}, "save.v5"))
+		if DataReader.error_count == before:
+			ud["rules"] = RuleDef.to_array(RuleDef.migrate_legacy(rules))
+	DataReader.silent = was_silent
+
+
+## 第五阶段解锁折算：已解锁「追击并攻击」→ 同时解锁「追击」「攻击」及追击的解锁键；并补上新版初始解锁中新增的条目（新选敌等）
+static func migrate_unlocks_v5(unlocks: Dictionary, initial: Dictionary) -> void:
+	for kind: String in initial.keys():
+		var have: Array = unlocks.get(kind, []) as Array if unlocks.get(kind, null) is Array else []
+		for v: Variant in initial[kind] as Array:
+			if not have.has(v):
+				have.append(v)
+		unlocks[kind] = have
+	var actions: Array = unlocks.get("actions", []) as Array
+	if actions.has("chase_attack"):
+		for a: String in ["chase", "attack"]:
+			if not actions.has(a):
+				actions.append(a)
+	var presets: Array = unlocks.get("presets", []) as Array if unlocks.get("presets", null) is Array else []
+	if presets.has("preset.chase_attack_nearest_visible") and not presets.has("preset.chase_nearest_visible"):
+		presets.append("preset.chase_nearest_visible")
+	unlocks["presets"] = presets
 
 
 ## 存档 v3 → v4（10 §6.3）：某关配置中的旧字母信标 id（A–H）就地改为数字（"1"–"8"）——信标列表的 id、

@@ -22,15 +22,24 @@ const TOO_FEW_UNITS: String = "TOO_FEW_UNITS"           ## 出场人数 < min_un
 const FORM_NOT_AVAILABLE: String = "FORM_NOT_AVAILABLE" ## 形态不在本关 available_forms 或未解锁（what = 形态 id）
 const SAVE_MIGRATION_FAILED: String = "SAVE_MIGRATION_FAILED"  ## 存档 v1→v2 迁移有条目无法转换（原数据保留在 legacy_v1）
 const ROSTER_FULL: String = "ROSTER_FULL"               ## 10 §4：放置时出场人数已满（仅 place_problem 使用）
+const RULES_OVER_LIMIT: String = "RULES_OVER_LIMIT"     ## 第五阶段：某组指令超过条数上限（what = group_attack / group_move，index = 上限；不阻止开始）
 
 
 ## 07 §3 的个人信标 / 到点 / 等待是每个单位都有的通用工具，不受关卡 allowed、解锁与形态 allowed_actions 限制（Q-047）
+## 第五阶段：「停止」（idle）与「停火」（hold_fire）同样是通用工具（两组都需要一个"什么都不做"的选项；旧数据迁移会生成它们）
 static func condition_gated(t: int) -> bool:
 	return t != SimTypes.ConditionType.AT_BEACON
 
 
 static func action_gated(t: int) -> bool:
-	return t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT
+	return t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT 		and t != SimTypes.ActionType.IDLE and t != SimTypes.ActionType.HOLD_FIRE
+
+
+## 第五阶段：已解锁「追击并攻击」（旧存档 / 旧初始解锁）视为已解锁「追击」与「攻击」
+static func action_unlocked(unlocked_actions: Array, name: String) -> bool:
+	if unlocked_actions.has(name):
+		return true
+	return (name == "chase" or name == "attack") and unlocked_actions.has("chase_attack")
 
 
 ## config: slot_id -> { "pos": Vector2i（可选，缺省 = 未部署）, "rules": Array[RuleDef]（可选）, "unit": String（可选）,
@@ -54,7 +63,7 @@ static func validate(level: LevelDefinition, config: Dictionary, unlocks: Dictio
 		if not entry.has("pos"):
 			problems.append(_problem(SLOT_NOT_PLACED, slot.id))   # 存档中只保存了指令、尚未部署
 		var udef: UnitDefinition = unit_defs.get(str(entry.get("form", entry.get("unit", slot.unit_id))), null) as UnitDefinition
-		_validate_unit(level, slot.id, entry, unlocks, udef, problems, occupied)
+		_validate_unit(level, slot.id, entry, unlocks, udef, problems, occupied, commands)
 	return problems
 
 
@@ -74,7 +83,7 @@ static func _validate_free(level: LevelDefinition, config: Dictionary, unlocks: 
 		total += unit_cost(entry, unit_defs, commands, form)
 		if udef == null or not udef.is_ally_form() or (level.has_available_forms and not level.available_forms.has(form)) or not unlocked_forms.has(form):
 			problems.append(_named(_problem(FORM_NOT_AVAILABLE, uid, 0, form), entry))
-		_validate_unit(level, uid, entry, unlocks, udef, problems, occupied)
+		_validate_unit(level, uid, entry, unlocks, udef, problems, occupied, commands)
 	if placed < level.min_units:
 		problems.append(_problem(TOO_FEW_UNITS, "", 0, str(level.min_units)))
 	if total > level.roster_budget:
@@ -133,7 +142,7 @@ static func unit_cost(entry: Dictionary, unit_defs: Dictionary, commands: Comman
 
 
 ## 单个己方单位：格子（障碍/禁放/部署区/重叠）、空指令提醒、指令可用性、信标
-static func _validate_unit(level: LevelDefinition, uid: String, entry: Dictionary, unlocks: Dictionary, udef: UnitDefinition, problems: Array[Dictionary], occupied: Dictionary) -> void:
+static func _validate_unit(level: LevelDefinition, uid: String, entry: Dictionary, unlocks: Dictionary, udef: UnitDefinition, problems: Array[Dictionary], occupied: Dictionary, commands: CommandCatalog = null) -> void:
 	var before: int = problems.size()
 	if entry.has("pos"):
 		var pos: Vector2i = entry["pos"] as Vector2i
@@ -160,8 +169,18 @@ static func _validate_unit(level: LevelDefinition, uid: String, entry: Dictionar
 	for i: int in rules.size():
 		check_rule(rules[i], i + 1, uid, level, unlocks, udef, problems)
 		check_beacon_refs(rules[i], i + 1, uid, beacon_ids, problems)
+	if commands != null:
+		check_group_limits(rules, uid, commands, problems)
 	for k: int in range(before, problems.size()):
 		_named(problems[k], entry)
+
+
+## 第五阶段：每组指令条数上限（commands.json group_limits）；超出时提醒，不阻止开始（旧存档折算后可能超出）
+static func check_group_limits(rules: Array[RuleDef], uid: String, commands: CommandCatalog, problems: Array[Dictionary]) -> void:
+	for g: int in [SimTypes.RuleGroup.ATTACK, SimTypes.RuleGroup.MOVE]:
+		var limit: int = commands.group_limit(g)
+		if RuleDef.group_indices(rules, g).size() > limit:
+			problems.append(_problem(RULES_OVER_LIMIT, uid, limit, "group_" + SimTypes.group_to_string(g), false))
 
 
 ## 条目带显示名时写入问题（UI 用于 free 关的 u1/u2 等 uid）
@@ -179,8 +198,8 @@ static func check_beacon_refs(rule: RuleDef, index: int, slot_id: String, beacon
 		if c.type == SimTypes.ConditionType.AT_BEACON and not beacon_ids.has(c.beacon):
 			problems.append(_problem(BEACON_MISSING, slot_id, index, c.beacon))
 	if rule.action != null and rule.action.type == SimTypes.ActionType.FOLLOW_BEACONS:
-		if beacon_ids.is_empty():
-			problems.append(_problem(BEACONS_EMPTY, slot_id, index))
+		if beacon_ids.is_empty():           # 第五阶段：新单位预填「沿信标移动」，没放信标时原地不动——只提醒，不阻止开始
+			problems.append(_problem(BEACONS_EMPTY, slot_id, index, "", false))
 		elif not beacon_ids.has(rule.action.from):
 			problems.append(_problem(BEACON_MISSING, slot_id, index, rule.action.from))
 
@@ -208,7 +227,7 @@ static func check_rule(rule: RuleDef, index: int, slot_id: String, level: LevelD
 		var name_a: String = SimTypes.action_to_string(rule.action.type)
 		if not level.allowed_actions.has(rule.action.type) or (udef != null and not udef.allowed_actions.has(rule.action.type)):
 			problems.append(_problem(RULE_NOT_ALLOWED, slot_id, index, name_a))
-		elif not unlocked_actions.has(name_a):
+		elif not action_unlocked(unlocked_actions, name_a):
 			problems.append(_problem(RULE_LOCKED, slot_id, index, name_a))
 		if rule.action.type == SimTypes.ActionType.FOLLOW_ROUTE and not level.routes.has(rule.action.route_id):
 			problems.append(_problem(ROUTE_MISSING, slot_id, index, rule.action.route_id))

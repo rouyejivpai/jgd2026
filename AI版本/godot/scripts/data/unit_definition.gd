@@ -43,6 +43,7 @@ static func from_dict(unit_id: String, d: Dictionary, ctx: String) -> UnitDefini
 	u.traits = DataReader.string_array(DataReader.opt_array(d, "traits", ctx), ctx + ".traits")
 	for raw_action: String in DataReader.string_array(DataReader.req_array(d, "allowed_actions", ctx), ctx + ".allowed_actions"):
 		u.allowed_actions.append(DataReader.enum_value(SimTypes.parse_action(raw_action), raw_action, "行为类型", ctx))
+	ActionDef.expand_allowed(u.allowed_actions)
 	u.default_rules = RuleDef.from_array(DataReader.req_array(d, "default_rules", ctx), ctx + ".default_rules")
 	u.visuals = DataReader.req_dict(d, "visuals", ctx)
 	for key: String in ["sprite", "portrait", "projectile", "light_color"]:

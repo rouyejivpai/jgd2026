@@ -69,9 +69,10 @@ func setup(p_level: LevelDefinition, saved_raw: Dictionary = {}) -> void:
 
 
 func _load_entry(uid: String, entry: Dictionary) -> void:
-	var rules: Array[RuleDef] = []
-	rules.assign(entry.get("rules", []) as Array)
-	slot_rules[uid] = rules
+	if entry.has("rules"):                # 无存档指令 = 保留注册时的预填指令（第五阶段）
+		var rules: Array[RuleDef] = []
+		rules.assign(entry["rules"] as Array)
+		slot_rules[uid] = rules
 	var beacons: Array[Dictionary] = []
 	beacons.assign(entry.get("beacons", []) as Array)
 	slot_beacons[uid] = beacons
@@ -89,10 +90,11 @@ func _clear_units() -> void:
 	next_uid = 1
 
 
+## 第五阶段：新单位预填 commands.json new_unit_rules（攻击组「始终 → 攻击·最近」、移动组「始终 → 沿信标」），取代 07 §2 的空指令
 func _register(uid: String, form: String, index: int) -> void:
 	unit_forms[uid] = form
 	unit_index[uid] = index
-	slot_rules[uid] = [] as Array[RuleDef]
+	slot_rules[uid] = DataRegistry.get_commands().new_unit_rules()
 	var none: Array[Dictionary] = []
 	slot_beacons[uid] = none
 
@@ -254,7 +256,7 @@ func clear_units() -> int:
 			_unregister(uid)
 		else:
 			placements.erase(uid)
-			slot_rules[uid] = [] as Array[RuleDef]
+			slot_rules[uid] = DataRegistry.get_commands().new_unit_rules()
 			var none: Array[Dictionary] = []
 			slot_beacons[uid] = none
 	_rebuild_world()
@@ -723,6 +725,7 @@ func _add_reinforcement(form: String, cell: Vector2i) -> String:
 	placements[uid] = cell
 	reinforce_uids.append(uid)
 	var u: SimUnit = SimUnit.create(DataRegistry.get_unit(form), SimTypes.Faction.ALLY, SimTypes.cell_center(cell), [] as Array[RuleDef])
+	u.dual_rules = true
 	u.id = unit_id_of_slot(uid)
 	u.spawn_id = uid
 	u.display_name = label_of(uid)
@@ -732,11 +735,11 @@ func _add_reinforcement(form: String, cell: Vector2i) -> String:
 	return uid
 
 
-static func _rules_from(arr: Array) -> Array[RuleDef]:
+func _rules_from(arr: Array) -> Array[RuleDef]:
 	var out: Array[RuleDef] = []
 	for d: Variant in arr:
 		out.append(RuleDef.from_dict(d as Dictionary, "recommended.phase2"))
-	return out
+	return level.player_rules(out)
 
 
 ## 暂停时的「推荐」：按关卡 recommended.phase2 重新编程存活单位并放置增援

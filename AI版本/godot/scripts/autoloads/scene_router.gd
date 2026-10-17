@@ -9,6 +9,7 @@ signal settings_closed()
 const MAIN_MENU_SCENE: String = "res://scenes/screens/main_menu.tscn"
 const LEVEL_SELECT_SCENE: String = "res://scenes/screens/level_select.tscn"
 const BATTLE_SCENE: String = "res://scenes/battle/battle_root.tscn"
+const CONFIG_EDITOR_SCENE: String = "res://tools/config_editor.tscn"   ## 第五阶段：教学与解锁配置器（开发工具）
 const SETTINGS_OVERLAY_SCENE: PackedScene = preload("res://scenes/ui/settings_overlay.tscn")
 const SETTINGS_LAYER: int = 100
 const FADE_SECONDS: float = 0.25
@@ -76,6 +77,12 @@ func is_settings_open() -> bool:
 
 func settings_overlay() -> SettingsOverlay:
 	return _settings
+
+
+## 第五阶段：打开配置器（主菜单 F10 / 命令行 -- --config-editor；预览、拾取结束后返回）
+func goto_config_editor() -> void:
+	GameState.tutorial_preview = {}
+	_change_scene(CONFIG_EDITOR_SCENE)
 
 
 func goto_battle(level_id: String) -> void:

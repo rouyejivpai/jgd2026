@@ -44,7 +44,19 @@ static func sort_candidates(unit: SimUnit, ids: Array[int], selector: int, snap:
 static func _less(unit: SimUnit, a: int, b: int, selector: int, snap: SimSnapshot) -> bool:
 	var ea: SimSnapshot.Entry = snap.get_entry(a)
 	var eb: SimSnapshot.Entry = snap.get_entry(b)
-	if selector != SimTypes.Selector.FIRST_SEEN:
+	if selector == SimTypes.Selector.FIRST_IN_RANGE:    # 第五阶段：最先进入射程者在前；未进射程的排后
+		var ra: int = int(unit.range_order.get(a, _UNSEEN))
+		var rb: int = int(unit.range_order.get(b, _UNSEEN))
+		if ra != rb:
+			return ra < rb
+	elif selector == SimTypes.Selector.MOST_DAMAGE:     # 第五阶段：累计伤害高者在前，同值取最近
+		if not is_equal_approx(ea.damage_dealt, eb.damage_dealt):
+			return ea.damage_dealt > eb.damage_dealt
+		var da: float = unit.pos.distance_to(ea.pos)
+		var db: float = unit.pos.distance_to(eb.pos)
+		if not is_equal_approx(da, db):
+			return da < db
+	elif selector != SimTypes.Selector.FIRST_SEEN:
 		var ka: float = 0.0
 		var kb: float = 0.0
 		match selector:
@@ -60,6 +72,9 @@ static func _less(unit: SimUnit, a: int, b: int, selector: int, snap: SimSnapsho
 			SimTypes.Selector.HIGHEST_MAX_HP:   # 按血量上限（不随受伤变化）→ 锁定大目标后不转火
 				ka = -ea.max_hp
 				kb = -eb.max_hp
+			SimTypes.Selector.HIGHEST_HP:       # 第五阶段：当前生命最高
+				ka = -ea.hp
+				kb = -eb.hp
 		if not is_equal_approx(ka, kb):
 			return ka < kb
 	var sa: int = int(unit.seen_order.get(a, _UNSEEN))
@@ -82,3 +97,12 @@ static func resolve(unit: SimUnit, target: TargetDef, snap: SimSnapshot) -> Arra
 		unit.lock_target = cands[0]
 		return [cands[0]]
 	return sort_candidates(unit, visible_candidates(unit, target.filter, snap), target.selector, snap)
+
+
+## 第五阶段攻击组：resolve() 的结果中在射程内者（保持排序）
+static func in_range_of(unit: SimUnit, ids: Array[int], snap: SimSnapshot) -> Array[int]:
+	var out: Array[int] = []
+	for cid: int in ids:
+		if unit.pos.distance_to(snap.get_entry(cid).pos) <= unit.attack_range + SimTypes.DIST_EPS:
+			out.append(cid)
+	return out

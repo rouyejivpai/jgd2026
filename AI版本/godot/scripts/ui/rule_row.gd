@@ -20,6 +20,7 @@ const SKIN: String = DetailKit.SKIN
 
 var editor: RuleEditor = null
 var index: int = 0
+var order: int = -1                      ## 第五阶段：组内序号（显示「优先级 N」）；-1 = 用列表下标
 var rule: RuleDef = null
 
 var _action: OptionButton
@@ -29,7 +30,8 @@ var _mode: OptionButton
 var _from: OptionButton
 var _seconds: SpinBox
 var _route: OptionButton
-var _override: TextureButton            ## 第四阶段「覆盖」勾选（条件成立时无视上方非覆盖指令的优先级）
+var _override: TextureButton            ## 第四阶段「覆盖」勾选（条件成立时无视上方非覆盖指令的优先级）；第五阶段起玩家行不显示
+var _override_label: Label
 var _delete: Button
 var _logic: Button                       ## 与 / 或切换
 var _cond_options: Array[OptionButton] = []   ## 每个条件行的类型下拉（条件一、条件二…）
@@ -108,7 +110,8 @@ func setup(p_editor: RuleEditor, p_index: int, p_rule: RuleDef) -> void:
 		_logic.disabled = true
 		_logic.add_theme_color_override("font_disabled_color", _logic.get_theme_color("font_color"))
 		_controls.erase(_logic)
-	_override.visible = not editor.read_only or rule.override        # 敌人只读：只在勾选时显示
+	_override.visible = editor.read_only and rule.override           # 第五阶段：玩家不再有「覆盖」（组内优先级即覆盖）；敌人只读面板只在旧数据勾选时显示
+	_override_label.visible = _override.visible
 	for ctl: Control in _controls:
 		if ctl is BaseButton:
 			(ctl as BaseButton).disabled = not editable
@@ -144,7 +147,7 @@ func _build_action_line() -> void:
 	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	handle.visible = not editor.read_only
 	_place(handle, rel("det_handle"))
-	_text(DataRegistry.get_string("ui.rule_priority").format({ "n": index + 1 }), "det_prio", rel("det_prio"))
+	_text(DataRegistry.get_string("ui.rule_priority").format({ "n": (order if order >= 0 else index) + 1 }), "det_prio", rel("det_prio"))
 	_override = UiKit.node_for(UiKit.layout_element(SKIN, "det_override")) as TextureButton
 	_override.name = "OverrideToggle"
 	_override.toggle_mode = true
@@ -153,8 +156,8 @@ func _build_action_line() -> void:
 	_override.focus_mode = Control.FOCUS_NONE
 	_override.toggled.connect(_on_override)
 	_place(_override, rel("det_override"))
-	_controls.append(_override)
 	var ovl: Label = _text(DataRegistry.get_string("ui.rule_override"), "det_override_label", rel("det_override_label"))
+	_override_label = ovl
 	ovl.mouse_filter = Control.MOUSE_FILTER_STOP              # 点文字也能切换
 	ovl.gui_input.connect(func(e: InputEvent) -> void:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
@@ -165,7 +168,11 @@ func _build_action_line() -> void:
 	_action = _option(editor.action_items(act_key), act_key, _on_action, "det_action")
 	_place(_action, rel("det_action"))
 	var t: int = rule.action.type
-	if rule.action.needs_target() or (rule.has_condition(SimTypes.ConditionType.TARGET_DISTANCE) and t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT and t != SimTypes.ActionType.FOLLOW_ROUTE):
+	if t == SimTypes.ActionType.CHASE and not editor.read_only:
+		# 第五阶段：追击只追最近的敌人（不选目标）
+		_text(DataRegistry.get_string("ui.chase_target_fixed"), "det_c1_label", rel("det_p1").merge(rel("det_p2")))
+	elif rule.action.needs_target() or (rule.has_condition(SimTypes.ConditionType.TARGET_DISTANCE) and t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT and t != SimTypes.ActionType.FOLLOW_ROUTE \
+			and t != SimTypes.ActionType.IDLE and t != SimTypes.ActionType.HOLD_FIRE and t != SimTypes.ActionType.RETREAT):
 		_add_target_options()
 	elif t == SimTypes.ActionType.FOLLOW_BEACONS:
 		_mode = _option(editor.beacon_mode_items(), SimTypes.beacon_mode_to_string(rule.action.mode), _on_mode, "det_p1")
@@ -371,7 +378,9 @@ func _normalize(r: RuleDef) -> void:
 	if r.conditions.size() < UI_MAX_CONDITIONS:
 		r.condition_mode = SimTypes.ConditionMode.ALL
 	var needs: bool = r.action.needs_target() or r.has_condition(SimTypes.ConditionType.TARGET_DISTANCE)
-	if needs and r.target == null:
+	if r.action.type == SimTypes.ActionType.CHASE:
+		r.target = RuleEditor.chase_target()       # 第五阶段：追击只追最近的敌人
+	elif needs and r.target == null:
 		r.target = editor.default_target()
 	elif not needs:
 		r.target = null
@@ -496,14 +505,20 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	var preview: Label = UiKit.label(_sentence.text)
 	preview.modulate = Color(1.0, 1.0, 1.0, 0.7)
 	set_drag_preview(preview)
-	return { "rule_from": index, "editor": editor.get_instance_id() }
+	return _drag_payload()
 
 
+func _drag_payload() -> Dictionary:
+	return { "rule_from": index, "editor": editor.get_instance_id(), "group": SimTypes.action_group(rule.action.type) }
+
+
+## 第五阶段：只能在同一组内拖动排序
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if not data is Dictionary:
 		return false
 	var d: Dictionary = data as Dictionary
-	return d.has("rule_from") and int(d.get("editor", 0)) == editor.get_instance_id() and editor.editable()
+	return d.has("rule_from") and int(d.get("editor", 0)) == editor.get_instance_id() and editor.editable() \
+		and int(d.get("group", -1)) == SimTypes.action_group(rule.action.type)
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
