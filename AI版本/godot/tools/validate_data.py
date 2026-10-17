@@ -73,7 +73,7 @@ TEACH_ADVANCES = {"next", "click", "event"}
 TEACH_EVENTS = {"deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started"}
 TEACH_ARROWS = {"auto", "up", "down", "left", "right", "none"}
 TEACH_PANELS = {"auto", "left", "right", "top", "bottom", "center"}
-TEACH_OVERRIDES = ("allowed", "rewards", "hints", "mechanic_hint")
+TEACH_OVERRIDES = ("allowed", "rewards", "hints", "mechanic_hint", "roster", "deploy_zone", "initial_units", "objectives", "modifiers")
 TEACH_STYLE = {"dim_color", "highlight_color", "highlight_width", "hole_pad", "arrow_size", "arrow_gap", "arrow_bob", "arrow_bob_hz", "panel_width", "panel_margin"}
 
 
@@ -82,11 +82,14 @@ def apply_teaching_overrides(L, entry):
     if not entry:
         return L
     L = json.loads(json.dumps(L))
-    for key in ("allowed", "rewards"):
+    for key in ("allowed", "rewards", "roster", "objectives"):
         if isinstance(entry.get(key), dict):
             merged = dict(L.get(key) or {})
             merged.update(entry[key])
             L[key] = merged
+    for key in ("deploy_zone", "initial_units", "modifiers"):
+        if key in entry:
+            L[key] = json.loads(json.dumps(entry[key]))
     if isinstance(entry.get("hints"), list):
         L["hints"] = list(entry["hints"])
     if isinstance(entry.get("mechanic_hint"), str):
@@ -112,6 +115,9 @@ def check_teaching(doc, level_docs):
             err(lctx, "第七关数据冻结，只允许配置引导")
         if "hints" in e and (not isinstance(e["hints"], list) or len(e["hints"]) != 4):
             err(lctx, "hints 覆盖必须恰好 4 条 (D05)")
+        for k, typ in (("roster", dict), ("objectives", dict), ("deploy_zone", dict), ("initial_units", list), ("modifiers", list)):
+            if k in e and not isinstance(e[k], typ):
+                err(lctx, f"{k} 覆盖类型错误（应为 {'对象' if typ is dict else '数组'}）")
         if "mechanic_hint" in e and not (isinstance(e["mechanic_hint"], str) and e["mechanic_hint"]):
             err(lctx, "mechanic_hint 覆盖必须是非空字符串")
         w, h = L.get("grid", {}).get("width", 0), L.get("grid", {}).get("height", 0)

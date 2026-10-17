@@ -1,11 +1,14 @@
 extends Control
-## 第五阶段（2026-10-17 会议）教学与解锁配置器（开发工具，不进导出包）：统一编辑 data/teaching.json。
+## 第五阶段（2026-10-17 会议）关卡与教学配置器（开发工具，不进导出包）：统一编辑 data/teaching.json。
 ## 打开：主菜单按 F10，或命令行 `Godot --path . -- --config-editor`。
-## 左侧选关卡（顺序 = 现有关卡编号），右侧三页：
+## 左侧选关卡（顺序 = 现有关卡编号），右侧四页：
+##   关卡配置：出场 / 部署区 / 胜负数值 / 敌方与预置单位 / 关卡加成（tools/config_level_page.gd）；「试玩本关」用未保存的配置进入该关
 ##   引导步骤：步骤增删 / 排序、文字、推进方式、高亮目标；「拾取」进入该关点选界面元素或地块；「预览」带当前未保存的步骤进入该关
 ##   解锁表：本关 allowed（行为 / 条件 / 目标选择）与通关奖励解锁；覆盖写入 teaching.json，可一键恢复关卡原值；全部关卡总览，可导出 Markdown
 ##   提示文案：机制提示（briefing.mechanic_hint）与四层提示，可用关卡原文
 ## 「保存」写 teaching.json 并重新加载全部数据校验；第七关数据冻结，只能配置引导。UI 为开发工具用默认主题，文案直接写在本工具里（不进游戏）。
+## 配置包（数值策划 → 程序）：「导出配置包」把当前 teaching.json 内容（须校验通过）连同备注写成 ../exports/关卡配置包_<时间>.json；
+## 「导入配置包」读包 → 校验 → 列出各关改动 → 确认后备份现有 teaching.json（../exports/备份/）、写入、重新加载，并在 docs/CHANGELOG.md 记一行。
 
 const TEACHING_PATH: String = "res://data/teaching.json"
 const LEVEL_DIR: String = "res://data/levels/"
@@ -16,8 +19,15 @@ const EVENT_LABELS: Dictionary = { "deployed": "放下单位", "ally_selected": 
 const BLOCK_LABELS: Array[String] = ["自动", "只放行高亮处", "不拦截"]
 const KIND_LABELS: Dictionary = { "ui": "界面元素", "cell": "地块", "cells": "多个地块", "deploy_zone": "部署区", "unit": "预置单位", "ally": "第一名己方", "none": "无高亮" }
 const REWARD_KEYS: Array[String] = ["unlock_actions", "unlock_conditions", "unlock_selectors", "unlock_forms", "unlock_presets"]
+const LEVEL_PAGE: GDScript = preload("res://tools/config_level_page.gd")
+const PACK_FORMAT: String = "rengong-shenling-level-config"
+const PACK_VERSION: int = 1
+const EXPORT_DIR: String = "../exports"
 
 var teaching_path: String = TEACHING_PATH   ## 测试可改到 user://
+var export_dir: String = ""                 ## 配置包导出目录（绝对路径；空 = 项目旁的 exports/）
+var backup_dir: String = ""                 ## 导入前备份目录（空 = exports/备份/）
+var changelog_path: String = ""             ## 导入后追加记录的文件（空 = docs/CHANGELOG.md；测试可指向临时文件）
 var doc: Dictionary = {}
 var level_ids: Array[String] = []
 var raw_levels: Dictionary = {}           ## level_id -> 关卡 JSON 原值（不含覆盖）
@@ -30,6 +40,11 @@ var _filling: bool = false                ## 回填控件时不触发写回
 var _status: Label
 var _levels: ItemList
 var _tabs: TabContainer
+var _level_page: ScrollContainer
+var _pack_note: LineEdit
+var _import_dialog: FileDialog
+var _confirm: ConfirmationDialog
+var _pending_pack: Dictionary = {}
 # 引导页
 var _test: CheckBox
 var _steps: ItemList
@@ -60,6 +75,8 @@ var _hint_texts: Array[TextEdit] = []
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	if DataRegistry.preview_active:          # 从「试玩本关」回来：还原被临时替换的关卡定义
+		DataRegistry.load_all()
 	level_ids = DataRegistry.get_level_list()
 	for lid: String in level_ids:
 		raw_levels[lid] = _read_json(LEVEL_DIR + lid + ".json")
@@ -102,8 +119,17 @@ func _build() -> void:
 	var bar := HBoxContainer.new()
 	col.add_child(bar)
 	var title := Label.new()
-	title.text = "教学与解锁配置器（data/teaching.json）"
+	title.text = "关卡与教学配置器（data/teaching.json）"
 	bar.add_child(title)
+	_pack_note = LineEdit.new()
+	_pack_note.placeholder_text = "配置包备注（作者 / 改了什么）"
+	_pack_note.custom_minimum_size = Vector2(260, 0)
+	bar.add_child(_pack_note)
+	bar.add_child(_btn("导出配置包", func() -> void: export_pack()))
+	bar.add_child(_btn("导入配置包", open_import_dialog))
+	bar.add_child(_btn("打开导出文件夹", func() -> void:
+		DirAccess.make_dir_recursive_absolute(export_dir_abs())
+		OS.shell_open(export_dir_abs())))
 	_status = Label.new()
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -122,10 +148,27 @@ func _build() -> void:
 	_tabs = TabContainer.new()
 	_tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(_tabs)
+	_level_page = LEVEL_PAGE.new() as ScrollContainer
+	_level_page.call("setup", self)
+	_tabs.add_child(_level_page)
 	_build_tutorial_tab()
 	_build_unlock_tab()
 	_build_hint_tab()
 	_fill_level_list()
+	_import_dialog = FileDialog.new()
+	_import_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	_import_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	_import_dialog.filters = PackedStringArray(["*.json ; 关卡配置包"])
+	_import_dialog.title = "选择关卡配置包"
+	_import_dialog.size = Vector2i(1100, 700)
+	_import_dialog.file_selected.connect(_on_pack_selected)
+	add_child(_import_dialog)
+	_confirm = ConfirmationDialog.new()
+	_confirm.title = "导入关卡配置包"
+	_confirm.ok_button_text = "确认导入"
+	_confirm.size = Vector2i(900, 600)
+	_confirm.confirmed.connect(func() -> void: apply_pack(_pending_pack))
+	add_child(_confirm)
 
 
 func _btn(text: String, cb: Callable) -> Button:
@@ -386,6 +429,7 @@ func _select_level(lid: String) -> void:
 	_refresh_steps()
 	_fill_unlocks()
 	_fill_hints()
+	_level_page.call("fill", lid)
 
 
 ## teaching.json 中本关条目；create = 没有时新建
@@ -726,6 +770,20 @@ func _apply_pick_result(st: Dictionary) -> void:
 	_set_status("已拾取：" + target_label(res))
 
 
+## 关卡配置页「试玩本关」：用本关未保存的覆盖项临时替换关卡定义后进入（不出现引导；回到配置器时还原）
+func play_level() -> bool:
+	if cur_level == "":
+		return false
+	var msgs: Array[String] = DataRegistry.preview_level(cur_level, _clean(_entry(false)) as Dictionary)
+	if not msgs.is_empty():
+		_set_status("本关配置有问题，不能试玩：%s" % msgs[0])
+		return false
+	_stash()
+	GameState.tutorial_preview = { "level_id": cur_level, "steps": [] }
+	SceneRouter.goto_battle(cur_level)
+	return true
+
+
 func preview_level() -> void:
 	if cur_level == "":
 		return
@@ -891,16 +949,9 @@ func _write_hints() -> void:
 
 
 # ---- 校验 / 保存 ----
-## 只解析当前编辑（不写盘）：返回错误信息
+## 只解析当前编辑（不写盘）：引导字段 + 覆盖后的关卡按正式加载口径校验；返回错误信息
 func validate_doc() -> Array[String]:
-	var before: int = DataReader.messages.size()
-	var was: bool = DataReader.silent
-	DataReader.silent = true
-	var t: TeachingDef = TeachingDef.from_dict(_clean(doc), "teaching.json")
-	t.validate_against(_level_defs(), "teaching.json")
-	DataReader.silent = was
-	var msgs: Array[String] = []
-	msgs.assign(DataReader.messages.slice(before))
+	var msgs: Array[String] = DataRegistry.validate_teaching_doc(_clean(doc) as Dictionary)
 	_set_status("校验通过" if msgs.is_empty() else "校验：%d 处问题 —— %s" % [msgs.size(), msgs[0]])
 	return msgs
 
@@ -958,3 +1009,182 @@ func _reload() -> void:
 	_fill_level_list()
 	_select_level(cur_level)
 	_set_status("已重新载入")
+
+
+# ---- 配置包：导出 / 导入 ----
+func export_dir_abs() -> String:
+	return export_dir if export_dir != "" else ProjectSettings.globalize_path("res://").path_join(EXPORT_DIR).simplify_path()
+
+
+func _backup_dir_abs() -> String:
+	return backup_dir if backup_dir != "" else export_dir_abs().path_join("备份")
+
+
+func _changelog_abs() -> String:
+	return changelog_path if changelog_path != "" else ProjectSettings.globalize_path("res://").path_join("../docs/CHANGELOG.md").simplify_path()
+
+
+static func _stamp() -> String:
+	return Time.get_datetime_string_from_system(false, true).replace("-", "").replace(":", "").replace(" ", "_")
+
+
+## 有覆盖或引导的关卡 id（按关卡顺序）
+func _configured_levels(d: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	var lv: Dictionary = d.get("levels", {}) as Dictionary
+	for lid: String in level_ids:
+		if lv.has(lid) and not (lv[lid] as Dictionary).is_empty():
+			out.append(lid)
+	return out
+
+
+## 导出：校验通过后把当前编辑（含未保存的修改）写成配置包，返回文件路径（失败 ""）
+func export_pack() -> String:
+	if not validate_doc().is_empty():
+		return ""
+	var dir: String = export_dir_abs()
+	DirAccess.make_dir_recursive_absolute(dir)
+	var path: String = dir.path_join("关卡配置包_%s.json" % _stamp())
+	var clean: Dictionary = _clean(doc) as Dictionary
+	var pack: Dictionary = {
+		"format": PACK_FORMAT, "version": PACK_VERSION,
+		"exported_at": Time.get_datetime_string_from_system(false, true),
+		"note": _pack_note.text.strip_edges(),
+		"levels": _configured_levels(clean),
+		"teaching": clean,
+	}
+	var f: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		_set_status("导出失败：" + path)
+		return ""
+	f.store_string(JSON.stringify(pack, "  ", false) + "\n")
+	f.close()
+	_set_status("已导出配置包：" + path)
+	return path
+
+
+func open_import_dialog() -> void:
+	_import_dialog.current_dir = export_dir_abs()
+	_import_dialog.popup_centered()
+
+
+func _on_pack_selected(path: String) -> void:
+	var pack: Dictionary = read_pack(path)
+	if not bool(pack["ok"]):
+		_set_status("不能导入：" + str(pack["error"]))
+		return
+	_pending_pack = pack
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("文件：%s" % path.get_file())
+	lines.append("导出时间：%s　备注：%s" % [str(pack["exported_at"]), str(pack["note"]) if str(pack["note"]) != "" else "（无）"])
+	if dirty:
+		lines.append("注意：配置器里未保存的修改会被导入内容替换。")
+	lines.append("")
+	lines.append("改动：")
+	lines.append_array(pack["summary"] as PackedStringArray)
+	_confirm.dialog_text = "\n".join(lines)
+	_confirm.popup_centered()
+
+
+## 读配置包：格式检查 + 校验 + 与当前 teaching.json（已保存的）比对。返回 { ok, error, teaching, note, exported_at, summary, path }
+func read_pack(path: String) -> Dictionary:
+	var out: Dictionary = { "ok": false, "error": "", "teaching": {}, "note": "", "exported_at": "", "summary": PackedStringArray(), "path": path }
+	if not FileAccess.file_exists(path):
+		out["error"] = "文件不存在"
+		return out
+	var v: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not v is Dictionary or str((v as Dictionary).get("format", "")) != PACK_FORMAT or not (v as Dictionary).get("teaching", null) is Dictionary:
+		out["error"] = "不是关卡配置包（format 应为 %s）" % PACK_FORMAT
+		return out
+	var pack: Dictionary = v as Dictionary
+	if int(pack.get("version", 0)) > PACK_VERSION:
+		out["error"] = "配置包版本 %d 比配置器新，请先更新工程" % int(pack.get("version", 0))
+		return out
+	var teaching: Dictionary = pack["teaching"] as Dictionary
+	var msgs: Array[String] = DataRegistry.validate_teaching_doc(teaching)
+	if not msgs.is_empty():
+		out["error"] = "校验未通过（%d 处），第一处：%s" % [msgs.size(), msgs[0]]
+		return out
+	out["ok"] = true
+	out["teaching"] = teaching
+	out["note"] = str(pack.get("note", ""))
+	out["exported_at"] = str(pack.get("exported_at", ""))
+	out["summary"] = diff_summary(_read_json(teaching_path), teaching)
+	return out
+
+
+## 两份 teaching.json 的差异：逐关列出 新增 / 删除 / 修改的字段
+func diff_summary(old_doc: Dictionary, new_doc: Dictionary) -> PackedStringArray:
+	var lines: PackedStringArray = PackedStringArray()
+	var ol: Dictionary = old_doc.get("levels", {}) as Dictionary
+	var nl: Dictionary = new_doc.get("levels", {}) as Dictionary
+	for lid: String in level_ids:
+		var a: Dictionary = _clean(ol.get(lid, {})) as Dictionary
+		var b: Dictionary = _clean(nl.get(lid, {})) as Dictionary
+		if JSON.stringify(a, "", true) == JSON.stringify(b, "", true):
+			continue
+		var keys: PackedStringArray = PackedStringArray()
+		var all: Array = a.keys()
+		for k: Variant in b.keys():
+			if not all.has(k):
+				all.append(k)
+		for k: Variant in all:
+			if JSON.stringify(a.get(k, null), "", true) != JSON.stringify(b.get(k, null), "", true):
+				keys.append(("+" if not a.has(k) else ("-" if not b.has(k) else "")) + _field_label(str(k)))
+		var L: LevelDefinition = DataRegistry.get_level(lid)
+		lines.append("· 第%d关 %s（%s）：%s" % [L.display_index, L.title, lid, "、".join(keys)])
+	if JSON.stringify(_clean(old_doc.get("style", {})), "", true) != JSON.stringify(_clean(new_doc.get("style", {})), "", true):
+		lines.append("· 引导样式（style）")
+	if lines.is_empty():
+		lines.append("（与当前 teaching.json 相同）")
+	return lines
+
+
+static func _field_label(k: String) -> String:
+	var names: Dictionary = { "tutorial": "引导步骤", "test": "测试标记", "allowed": "可用指令", "rewards": "通关解锁", "hints": "四层提示",
+		"mechanic_hint": "机制提示", "roster": "出场", "deploy_zone": "部署区", "initial_units": "敌方与预置单位", "objectives": "胜负条件", "modifiers": "关卡加成" }
+	return str(names.get(k, k))
+
+
+## 导入：备份 → 写入 teaching.json → 重新加载 → 记 CHANGELOG。返回是否成功
+func apply_pack(pack: Dictionary) -> bool:
+	if not bool(pack.get("ok", false)):
+		return false
+	var bdir: String = _backup_dir_abs()
+	DirAccess.make_dir_recursive_absolute(bdir)
+	if FileAccess.file_exists(teaching_path):
+		var bak: FileAccess = FileAccess.open(bdir.path_join("teaching_导入前_%s.json" % _stamp()), FileAccess.WRITE)
+		if bak != null:
+			bak.store_string(FileAccess.get_file_as_string(teaching_path))
+			bak.close()
+	var teaching: Dictionary = _clean(pack["teaching"]) as Dictionary
+	var f: FileAccess = FileAccess.open(teaching_path, FileAccess.WRITE)
+	if f == null:
+		_set_status("写入失败：" + ProjectSettings.globalize_path(teaching_path))
+		return false
+	f.store_string(JSON.stringify(teaching, "  ", false) + "\n")
+	f.close()
+	var ok: bool = DataRegistry.load_all() if teaching_path == TEACHING_PATH else true
+	doc = teaching.duplicate(true)
+	if not doc.get("levels", null) is Dictionary:
+		doc["levels"] = {}
+	dirty = false
+	_append_changelog(pack)
+	_fill_level_list()
+	_select_level(cur_level)
+	_set_status("已导入配置包 %s：%s（已备份原 teaching.json；请运行测试与试玩复核）" % [str(pack["path"]).get_file(), "数据校验通过" if ok else "有数据错误，见日志"])
+	return true
+
+
+func _append_changelog(pack: Dictionary) -> void:
+	var path: String = _changelog_abs()
+	if not FileAccess.file_exists(path):
+		return
+	var text: String = FileAccess.get_file_as_string(path).rstrip("\n")
+	var summary: String = "；".join(pack["summary"] as PackedStringArray).replace("|", "/")
+	text += "\n| %s | data/teaching.json | 导入关卡配置包 `%s`（导出于 %s；备注：%s）：%s | 数值策划配置 | 导入时校验通过；需复跑 GUT / run_playtests |\n" % [
+		Time.get_date_string_from_system(), str(pack["path"]).get_file(), str(pack["exported_at"]), str(pack["note"]) if str(pack["note"]) != "" else "无", summary]
+	var f: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	if f != null:
+		f.store_string(text)
+		f.close()

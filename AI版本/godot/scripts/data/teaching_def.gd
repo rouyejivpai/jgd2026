@@ -5,6 +5,7 @@ extends RefCounted
 ##   test           true = 测试内容（引导标题前加「【测试】」，待统一配置时替换）
 ##   tutorial.steps 强制引导步骤（见 normalize_step）
 ##   allowed / rewards / hints / mechanic_hint  可选：覆盖关卡 JSON 中的同名字段（allowed、rewards 按键覆盖；hints 整组；mechanic_hint = briefing.mechanic_hint）
+##   roster / objectives（按键覆盖）、deploy_zone / initial_units / modifiers（整体替换）  可选：关卡配置（数值策划），配置器「关卡配置」页编辑
 ## 第七关数据冻结（00 §1 铁律 5）：只允许配置引导，不允许覆盖 allowed / rewards / hints / mechanic_hint。
 ## style：引导遮罩 / 高亮 / 箭头 / 文字框的表现参数（数值不进代码）。
 
@@ -16,7 +17,9 @@ const EVENTS: Array[String] = ["deployed", "ally_selected", "enemy_selected", "b
 const ARROWS: Array[String] = ["auto", "up", "down", "left", "right", "none"]
 const PANELS: Array[String] = ["auto", "left", "right", "top", "bottom", "center"]
 const PHASES: Array[String] = ["deploy", "running"]
-const OVERRIDE_KEYS: Array[String] = ["allowed", "rewards", "hints", "mechanic_hint"]
+const OVERRIDE_KEYS: Array[String] = ["allowed", "rewards", "hints", "mechanic_hint", "roster", "deploy_zone", "initial_units", "objectives", "modifiers"]
+const LEVEL_CONFIG_KEYS: Array[String] = ["roster", "deploy_zone", "initial_units", "objectives", "modifiers"]   ## 关卡配置页负责的覆盖项
+const MERGED_KEYS: Array[String] = ["allowed", "rewards", "roster", "objectives"]                              ## 按键合并；其余整体替换
 const FROZEN_LEVEL: String = "level_07"
 const DEFAULT_STYLE: Dictionary = {
 	"dim_color": "#05030Acc", "highlight_color": "#E8C46A", "highlight_width": 3.0, "hole_pad": 10.0,
@@ -159,13 +162,22 @@ static func apply_overrides(raw_level: Dictionary, entry: Dictionary) -> Diction
 	if entry.is_empty():
 		return raw_level
 	var out: Dictionary = raw_level.duplicate(true)
-	for key: String in ["allowed", "rewards"]:
+	for key: String in MERGED_KEYS:
 		if entry.get(key, null) is Dictionary:
 			var merged: Dictionary = (out.get(key, {}) as Dictionary).duplicate(true) if out.get(key, null) is Dictionary else {}
 			var src: Dictionary = entry[key] as Dictionary
 			for k: String in src.keys():
 				merged[k] = src[k]
 			out[key] = merged
+	for key: String in ["deploy_zone", "initial_units", "modifiers"]:
+		if entry.has(key):
+			var v: Variant = entry[key]
+			if v is Array:
+				out[key] = (v as Array).duplicate(true)
+			elif v is Dictionary:
+				out[key] = (v as Dictionary).duplicate(true)
+			else:
+				out[key] = v
 	if entry.get("hints", null) is Array:
 		out["hints"] = (entry["hints"] as Array).duplicate()
 	if entry.get("mechanic_hint", null) is String:

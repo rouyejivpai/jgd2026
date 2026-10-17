@@ -28,6 +28,7 @@ func after_each() -> void:
 	GameState.unlocks = _saved_unlocks
 	GameState.tutorial_preview = {}
 	GameState.tutorial_pick = {}
+	GameState.config_editor_state = {}
 
 
 func _battle(level_id: String) -> Node2D:
@@ -153,13 +154,14 @@ func test_deploy_steps_dropped_after_battle_starts_and_running_step_pauses() -> 
 
 
 func test_preview_uses_given_steps_and_does_not_mark_seen() -> void:
+	GameState.config_editor_state = { "level": "level_01" }          # 从配置器进入
 	GameState.tutorial_preview = { "level_id": "level_01", "test": true, "steps": [{ "title": "预览", "text": "开始", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "click" }] }
 	var root: Node2D = _battle("level_01")
 	await wait_process_frames(3)
 	var d: TutorialDirector = _director(root)
 	assert_true(d.preview)
 	assert_true(d.active())
-	assert_true((d.overlay.find_child("BackButton", true, false) as Button).visible, "预览显示「返回配置器」")
+	assert_not_null(d.back_button, "从配置器进入：显示「返回配置器」")
 	assert_string_contains((d.overlay.find_child("Title", true, false) as Label).text, DataRegistry.get_string("ui.tutorial_test_tag"))
 	var r: Rect2 = d.overlay.holes[0]
 	var e := InputEventMouseButton.new()

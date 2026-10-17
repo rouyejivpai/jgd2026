@@ -30,6 +30,7 @@ func _ready() -> void:
 
 ## 加载并校验全部数据；返回是否无错误。可重复调用（测试用）。
 func load_all(root: String = DATA_ROOT) -> bool:
+	preview_active = false
 	_units.clear()
 	_traits.clear()
 	_levels.clear()
@@ -97,6 +98,43 @@ func load_all(root: String = DATA_ROOT) -> bool:
 ## 第五阶段：教学与解锁配置
 func get_teaching() -> TeachingDef:
 	return _teaching
+
+
+## 第五阶段（配置器）：按一份 teaching.json 内容重建涉及的关卡并做与正式加载相同的关卡校验，返回问题列表（不改当前数据）
+func validate_teaching_doc(doc: Dictionary, root: String = DATA_ROOT) -> Array[String]:
+	var before: int = DataReader.messages.size()
+	var was: bool = DataReader.silent
+	DataReader.silent = true
+	var t: TeachingDef = TeachingDef.from_dict(doc, TEACHING_FILE)
+	var built: Dictionary = _levels.duplicate()
+	for lid: String in t.levels.keys():
+		var path: String = root + "/levels/" + lid + ".json"
+		if not FileAccess.file_exists(path):
+			continue
+		var L: LevelDefinition = LevelDefinition.from_dict(TeachingDef.apply_overrides(_load_json(path), t.levels[lid] as Dictionary), lid + ".json")
+		DataValidator.validate_level(L, _units, _level_order)
+		built[lid] = L
+	t.validate_against(built, TEACHING_FILE)
+	DataReader.silent = was
+	var out: Array[String] = []
+	out.assign(DataReader.messages.slice(before))
+	return out
+
+
+var preview_active: bool = false         ## 配置器「试玩本关」替换了某关的定义；回到配置器时 load_all() 还原
+
+
+## 第五阶段（配置器）：用未保存的覆盖项临时替换某关定义（校验不通过则不替换），返回问题列表
+func preview_level(level_id: String, entry: Dictionary, root: String = DATA_ROOT) -> Array[String]:
+	var msgs: Array[String] = validate_teaching_doc({ "levels": { level_id: entry } }, root)
+	if not msgs.is_empty():
+		return msgs
+	var was: bool = DataReader.silent
+	DataReader.silent = true
+	_levels[level_id] = LevelDefinition.from_dict(TeachingDef.apply_overrides(_load_json(root + "/levels/" + level_id + ".json"), entry), level_id + ".json")
+	DataReader.silent = was
+	preview_active = true
+	return msgs
 
 
 ## 第五阶段：异常状态粒子参数

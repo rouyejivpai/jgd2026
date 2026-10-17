@@ -2,3 +2,5 @@
 work/meeting/recording/
 work/meeting/gpu/
 work/meeting/audio.wav
+# 第五阶段：配置器导出的关卡配置包与导入备份（传递用文件；正式数据在 godot/data/teaching.json）
+exports/

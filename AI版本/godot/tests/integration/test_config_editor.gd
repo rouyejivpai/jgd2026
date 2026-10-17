@@ -136,3 +136,140 @@ func test_save_writes_clean_json() -> void:
 	assert_true((saved["levels"] as Dictionary).has("level_02"))
 	assert_false(text.contains("14.0"), "整数写成整数（坐标 / 数值）")
 	assert_false(bool(e.get("dirty")))
+
+
+# ---- 关卡配置页 / 配置包（数值策划 → 程序）----
+func _page(e: Control) -> ScrollContainer:
+	return e.get("_level_page") as ScrollContainer
+
+
+func _lv_entry(e: Control, lid: String) -> Dictionary:
+	return ((e.get("doc") as Dictionary)["levels"] as Dictionary).get(lid, {}) as Dictionary
+
+
+func test_level_config_roster_override_and_revert() -> void:
+	var e: Control = _editor()
+	e.call("_select_level", "level_c05")
+	var budget: SpinBox = (_page(e).get("_roster_spins") as Dictionary)["budget"] as SpinBox
+	assert_eq(int(budget.value), 6, "回填关卡原值")
+	budget.value = 9
+	assert_eq(_lv_entry(e, "level_c05")["roster"], { "budget": 9 }, "只记录有差异的键")
+	budget.value = 6
+	assert_false(_lv_entry(e, "level_c05").has("roster"), "改回原值 = 移除覆盖")
+	assert_eq(e.call("validate_doc"), [] as Array[String])
+
+
+func test_level_config_units_and_validation() -> void:
+	var e: Control = _editor()
+	e.call("_select_level", "level_c05")
+	var page: ScrollContainer = _page(e)
+	assert_eq(int(page.get("cur_unit")), 0)
+	var on: CheckBox = (page.get("_u_stat_on") as Dictionary)["attack"] as CheckBox
+	var val: SpinBox = (page.get("_u_stat_val") as Dictionary)["attack"] as SpinBox
+	on.button_pressed = true
+	val.value = 30
+	var units: Array = _lv_entry(e, "level_c05")["initial_units"] as Array
+	assert_eq(float(((units[0] as Dictionary)["overrides"] as Dictionary)["attack"]), 30.0, "属性覆盖写入")
+	assert_eq(float(((units[0] as Dictionary)["overrides"] as Dictionary)["max_hp"]), 130.0, "原有覆盖保留")
+	assert_eq(((units[0] as Dictionary)["rules"] as Array).size(), 2, "敌人指令原样保留")
+	page.call("add_unit")
+	assert_eq((_lv_entry(e, "level_c05")["initial_units"] as Array).size(), 3, "新增单位")
+	assert_eq(e.call("validate_doc"), [] as Array[String], "新增单位合法（用形态默认指令）")
+	(page.get("_u_x") as SpinBox).value = 99
+	var msgs: Array[String] = e.call("validate_doc") as Array[String]
+	assert_gt(msgs.size(), 0, "单位放到地图外被指出")
+	page.call("delete_unit")
+	assert_eq(e.call("validate_doc"), [] as Array[String])
+
+
+func test_level_config_objective_numbers() -> void:
+	var e: Control = _editor()
+	e.call("_select_level", "level_c09")
+	var box: VBoxContainer = _page(e).get("_obj_box") as VBoxContainer
+	await wait_process_frames(1)
+	var spins: Array = box.find_children("*", "SpinBox", true, false)
+	assert_gt(spins.size(), 0, "survive 显示坚持秒数")
+	(spins[0] as SpinBox).value = 77
+	var win: Array = (_lv_entry(e, "level_c09")["objectives"] as Dictionary)["win"] as Array
+	assert_eq(float((win[0] as Dictionary)["seconds"]), 77.0)
+	assert_eq(e.call("validate_doc"), [] as Array[String])
+
+
+func test_frozen_level_is_read_only() -> void:
+	var e: Control = _editor()
+	e.call("_select_level", "level_07")
+	assert_false((_page(e).get("_u_x") as SpinBox).editable, "第七关只读")
+	assert_true(((_page(e).get("_forms") as Dictionary).values()[0] as CheckBox).disabled)
+
+
+func test_preview_level_uses_unsaved_override() -> void:
+	assert_eq(DataRegistry.preview_level("level_c05", { "roster": { "budget": 9 } }), [] as Array[String])
+	assert_eq(DataRegistry.get_level("level_c05").roster_budget, 9, "试玩用未保存的配置")
+	assert_true(DataRegistry.preview_active)
+	assert_gt(DataRegistry.preview_level("level_c05", { "deploy_zone": { "rect": [0, 0, 99, 99] } }).size(), 0, "非法配置不替换")
+	DataRegistry.load_all()
+	assert_eq(DataRegistry.get_level("level_c05").roster_budget, 6, "回到配置器即还原")
+	assert_false(DataRegistry.preview_active)
+
+
+func test_export_then_import_pack() -> void:
+	var dir: String = ProjectSettings.globalize_path("user://test_packs")
+	DirAccess.make_dir_recursive_absolute(dir)
+	var e: Control = _editor()
+	e.set("export_dir", dir)
+	e.call("_select_level", "level_c05")
+	((_page(e).get("_roster_spins") as Dictionary)["budget"] as SpinBox).value = 8
+	(e.get("_pack_note") as LineEdit).text = "测试：第5关预算 8"
+	var path: String = str(e.call("export_pack"))
+	assert_true(FileAccess.file_exists(path), "导出配置包")
+	var pack: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path)) as Dictionary
+	assert_eq(str(pack["format"]), "rengong-shenling-level-config")
+	assert_true((pack["levels"] as Array).has("level_c05"))
+	# 程序侧导入：teaching_path 指向临时副本，备份与 CHANGELOG 也用临时位置
+	var tmp_teaching: String = "user://test_teaching_import.json"
+	var f: FileAccess = FileAccess.open(tmp_teaching, FileAccess.WRITE)
+	f.store_string(FileAccess.get_file_as_string("res://data/teaching.json"))
+	f.close()
+	var log_path: String = ProjectSettings.globalize_path("user://test_changelog.md")
+	var lf: FileAccess = FileAccess.open(log_path, FileAccess.WRITE)
+	lf.store_string("| 日期 | 文件 | 改动 | 原因 | 结果 |\n")
+	lf.close()
+	var e2: Control = _editor()
+	e2.set("teaching_path", tmp_teaching)
+	e2.set("backup_dir", dir.path_join("备份"))
+	e2.set("changelog_path", log_path)
+	var read: Dictionary = e2.call("read_pack", path) as Dictionary
+	assert_true(bool(read["ok"]), str(read["error"]))
+	var summary: String = "\n".join(read["summary"] as PackedStringArray)
+	assert_string_contains(summary, "level_c05")
+	assert_string_contains(summary, "出场")
+	assert_true(bool(e2.call("apply_pack", read)))
+	var applied: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(tmp_teaching)) as Dictionary
+	assert_eq(int(((applied["levels"] as Dictionary)["level_c05"] as Dictionary)["roster"]["budget"]), 8, "写入 teaching.json")
+	assert_eq(DirAccess.get_files_at(dir.path_join("备份")).size(), 1, "导入前备份")
+	assert_string_contains(FileAccess.get_file_as_string(log_path), "测试：第5关预算 8", "CHANGELOG 记一行")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp_teaching))
+	DirAccess.remove_absolute(log_path)
+	for d: String in [dir.path_join("备份"), dir]:
+		for fn: String in DirAccess.get_files_at(d):
+			DirAccess.remove_absolute(d.path_join(fn))
+		DirAccess.remove_absolute(d)
+
+
+func test_import_rejects_bad_packs() -> void:
+	var e: Control = _editor()
+	var p1: String = ProjectSettings.globalize_path("user://bad_pack_1.json")
+	var f: FileAccess = FileAccess.open(p1, FileAccess.WRITE)
+	f.store_string("{\"hello\": 1}")
+	f.close()
+	assert_false(bool((e.call("read_pack", p1) as Dictionary)["ok"]), "不是配置包")
+	var p2: String = ProjectSettings.globalize_path("user://bad_pack_2.json")
+	f = FileAccess.open(p2, FileAccess.WRITE)
+	f.store_string(JSON.stringify({ "format": "rengong-shenling-level-config", "version": 1,
+		"teaching": { "levels": { "level_c05": { "deploy_zone": { "rect": [0, 0, 99, 99] } } } } }))
+	f.close()
+	var r: Dictionary = e.call("read_pack", p2) as Dictionary
+	assert_false(bool(r["ok"]), "校验不通过的配置包拒绝导入")
+	assert_string_contains(str(r["error"]), "校验未通过")
+	DirAccess.remove_absolute(p1)
+	DirAccess.remove_absolute(p2)

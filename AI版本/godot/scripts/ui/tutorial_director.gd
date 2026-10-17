@@ -27,6 +27,7 @@ var _placed: int = 0
 var _beacons: Dictionary = {}             ## unit id -> 信标数
 var _in_beacon_mode: bool = false
 var _layer: CanvasLayer = null
+var back_button: Button = null            ## 从配置器进入（预览 / 拾取 / 试玩本关）时的「返回配置器」
 
 
 func setup(p_root: Node2D, p_hud: Control) -> void:
@@ -35,6 +36,8 @@ func setup(p_root: Node2D, p_hud: Control) -> void:
 	controller = root.get("controller") as BattleController
 	level = root.get("level") as LevelDefinition
 	var teaching: TeachingDef = DataRegistry.get_teaching()
+	if not GameState.config_editor_state.is_empty():
+		_add_back_button()
 	var pv: Dictionary = GameState.tutorial_preview
 	pick_mode = bool(GameState.tutorial_pick.get("active", false)) and str(GameState.tutorial_pick.get("level_id", "")) == level.id
 	if str(pv.get("level_id", "")) == level.id:
@@ -60,7 +63,7 @@ func setup(p_root: Node2D, p_hud: Control) -> void:
 	overlay.next_pressed.connect(_on_next)
 	overlay.skip_pressed.connect(skip)
 	overlay.back_pressed.connect(_back_to_editor)
-	overlay.set_back_visible(preview or pick_mode)
+	overlay.set_back_visible(false)               # 「返回配置器」统一用独立按钮（_add_back_button）
 	_placed = controller.placements.size()
 	EventBus.deployment_changed.connect(_on_deployment_changed)
 	EventBus.unit_selected.connect(_on_unit_selected)
@@ -242,6 +245,22 @@ func finish(skipped: bool) -> void:
 	finished.emit(skipped)
 
 
+## 屏幕顶部居中的「返回配置器」（层级高于引导遮罩，不受遮罩拦截）
+func _add_back_button() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "ConfigBackLayer"
+	layer.layer = OVERLAY_LAYER + 1
+	root.add_child(layer)
+	back_button = Button.new()
+	back_button.name = "ConfigBackButton"
+	back_button.text = DataRegistry.get_string("ui.tutorial_back")
+	back_button.focus_mode = Control.FOCUS_NONE
+	back_button.position = Vector2(root.get_viewport_rect().size.x * 0.5 - 90.0, 140.0)
+	back_button.custom_minimum_size = Vector2(180.0, 44.0)
+	back_button.pressed.connect(_back_to_editor)
+	layer.add_child(back_button)
+
+
 func _back_to_editor() -> void:
 	GameState.tutorial_pick = {}
 	SceneRouter.goto_config_editor()
@@ -293,8 +312,8 @@ func _input(event: InputEvent) -> void:
 	var mb: InputEventMouseButton = event as InputEventMouseButton
 	if mb == null or not mb.pressed or mb.button_index != MOUSE_BUTTON_LEFT:
 		return
-	if overlay.panel_rect().has_point(mb.position):
-		return                              # 说明框里的按钮照常
+	if overlay.panel_rect().has_point(mb.position) or (back_button != null and back_button.get_global_rect().has_point(mb.position)):
+		return                              # 说明框里的按钮、返回按钮照常
 	var picked: Dictionary = pick_at(mb.position, get_viewport().gui_get_hovered_control())
 	if picked.is_empty():
 		return

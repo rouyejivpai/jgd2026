@@ -73,3 +73,4 @@
 | 2026-10-17 | data/status_fx.json、status_particles.gd（新）、status_overlay.gd | 异常状态粒子（易伤碎片 / 麻痹电火花 / 减速沉降微粒） | 用户：粒子方案自行设计 | `test_status_particles` 2 项；截图 `p5/status_fx/` |
 | 2026-10-17 | scripts/data/chapter_def.gd | `validate()` 参数 `level_ids` 改名 `known_levels`（与同名函数重名，严格警告模式下为错误；开工前严格模式即 20 项失败） | 恢复严格模式全绿 | 严格 325 / 4 pending / 0 失败 |
 | 2026-10-17 | tools/take_screenshots_impl.gd | 新增 `--demo=tutorial [--step=N]`、`--demo=status_fx`、`--screen=config_editor`；其余截图默认关闭引导 | 第五阶段目视 | — |
+| 2026-10-17 | tools/config_level_page.gd（新）、tools/config_editor.gd、tools/bake_teaching.py（新）、teaching_def / data_registry / tutorial_director、tools/validate_data.py、.gitignore（exports/） | **配置器加「关卡配置」页 + 配置包导出 / 导入**：出场、部署区、胜负数值、敌方与预置单位（属性覆盖）、关卡加成；试玩本关（未保存配置）；导出 `exports/关卡配置包_<时间>.json`，导入时逐关列改动、备份、写入并记 CHANGELOG；可选固化进关卡文件 | 用户：数值策划配置后发导出文件，程序配进正式游戏 | `test_config_editor` 14 项；GUT 普通 / 严格全绿；playtests 全等 |
