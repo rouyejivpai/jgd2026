@@ -237,5 +237,5 @@
     "lose_all_dead": "全员倒下了。信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。",
     "default": "信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。"
   },
-  "bgm": "battle_01"
+  "bgm": "region_bone_workshop"
 }

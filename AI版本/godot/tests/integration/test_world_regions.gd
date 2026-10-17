@@ -123,3 +123,16 @@ func test_level_select_region_follows_last_level() -> void:
 	await wait_process_frames(2)
 	assert_eq(str(sel.get("region_id")), "bone_greenhouse", "从关卡返回：显示该关所在区域")
 	assert_eq((sel.get("node_buttons") as Dictionary).size(), 4)
+
+
+## 2026-10-18 BGM：主界面 / 一级地图 / 选关共用 menu_main；每个区域的普通关用 region_<区域 id>，首领关（c30）用 boss_01
+func test_bgm_per_region_and_menu() -> void:
+	assert_not_null(load(AudioManager.BGM_DIR + "menu_main.mp3") as AudioStream, "主界面 / 选关曲")
+	var wc: ChapterDef = DataRegistry.world_chapter()
+	for rid: String in ORDER:
+		var track: String = "region_" + rid
+		assert_not_null(load(AudioManager.BGM_DIR + track + ".mp3") as AudioStream, "区域曲：" + track)
+		for lid: String in wc.region_level_ids(rid):
+			var L: LevelDefinition = DataRegistry.get_level(lid)
+			var expect: String = "boss_01" if bool(wc.node_of_level(lid).get("boss", false)) else track
+			assert_eq(L.bgm, expect, "%s 的 BGM" % lid)

@@ -287,5 +287,5 @@
     "lose_all_dead": "全员倒下了。默认打最近。但有时候该先打最远的——顺序是你决定的。",
     "default": "默认打最近。但有时候该先打最远的——顺序是你决定的。"
   },
-  "bgm": "battle_01"
+  "bgm": "region_bone_workshop"
 }

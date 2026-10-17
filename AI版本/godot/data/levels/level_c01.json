@@ -181,5 +181,5 @@
     "lose_all_dead": "全员倒下了。靠「信标」把单位送出去。没有敌人，不会失败。",
     "default": "靠「信标」把单位送出去。没有敌人，不会失败。"
   },
-  "bgm": "battle_01"
+  "bgm": "region_bone_workshop"
 }

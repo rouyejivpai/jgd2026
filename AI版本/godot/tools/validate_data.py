@@ -468,6 +468,9 @@ def main():
         for k in ("id", "index", "title", "biome", "scene", "grid", "deploy_zone", "roster", "initial_units", "allowed", "objectives", "briefing", "hints", "fail_feedback", "recommended", "rewards", "verification"):
             if k not in L:
                 err(ctx, f"缺少必填字段 {k}")
+        bgm = L.get("bgm", "")
+        if bgm and not (ROOT.parent / "assets" / "audio" / "bgm" / f"{bgm}.mp3").exists():
+            err(ctx, f"bgm '{bgm}' 对应的 assets/audio/bgm/{bgm}.mp3 不存在")
         if L.get("rules_format", "legacy") not in ("legacy", "dual"):
             err(ctx, "rules_format 必须是 legacy / dual（第五阶段）")
         if "recommended_deploy" in L:
