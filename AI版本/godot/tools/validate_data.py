@@ -553,6 +553,11 @@ def main():
                 err(ctx, "free 模式不使用 fixed_slots")
         elif mode == "fixed" and not ro.get("fixed_slots"):
             err(ctx, "fixed 模式需要 fixed_slots")
+        # 信标购买：beacon_cost Cost 一包、每包 beacon_bundle 个（缺省 0 = 免费、5 个一包）
+        bcost, bbundle = ro.get("beacon_cost", 0), ro.get("beacon_bundle", 5)
+        if not (isinstance(bcost, int) and bcost >= 0 and isinstance(bbundle, int) and bbundle >= 1):
+            err(ctx, "roster 需要整数 beacon_cost ≥ 0、beacon_bundle ≥ 1")
+            bcost, bbundle = 0, 5
         mn, mx = ro.get("min_units", 1), ro.get("max_units", len(ro.get("fixed_slots", [])))
         if not (1 <= mn <= mx):
             err(ctx, "roster 需要 1 ≤ min_units ≤ max_units")
@@ -714,6 +719,8 @@ def main():
             err(ctx, "recommended.units 存在重叠格")
         if mode == "free":
             total = sum(units.get(ru.get("form"), {}).get("cost", 0) for ru in rec_units)
+            rec_beacon_n = sum(len(ru.get("beacons", [])) for ru in rec_units)
+            total += -(-rec_beacon_n // bbundle) * bcost          # 信标包（向上取整）
             if total > ro.get("budget", 0):
                 err(ctx, f"推荐阵型 Cost {total} 超出预算 {ro.get('budget')}")
             if not (mn <= len(rec_units) <= mx):

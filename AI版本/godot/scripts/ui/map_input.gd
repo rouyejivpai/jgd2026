@@ -183,8 +183,10 @@ func _place_beacon_at(screen_pos: Vector2) -> void:
 	elif not _controller.can_place_beacon(sid, cell):
 		if str(_root.call("beacon_at_screen", sid, screen_pos)) == "":
 			EventBus.toast_at.emit(DataRegistry.get_string("ui.beacon_blocked"), _root.call("cell_top_screen", cell) as Vector2)
-	elif _controller.add_beacon(sid, cell) != "":
-		AudioManager.play_sfx("deploy_place")
+	elif not _controller.can_afford_beacon():
+		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
+	else:
+		_add_beacon(sid, cell)
 
 
 func _undo_beacon() -> void:
@@ -192,8 +194,7 @@ func _undo_beacon() -> void:
 	var bs: Array[Dictionary] = _controller.get_beacons(sid)
 	if bs.is_empty() or not _controller.can_edit_beacons(sid):
 		return
-	_controller.remove_beacon(sid, str(bs[bs.size() - 1]["id"]))
-	AudioManager.play_sfx("deploy_remove")
+	_remove_beacon(sid, str(bs[bs.size() - 1]["id"]))
 
 
 # ---- 信标（07 §3.1）----
@@ -203,16 +204,47 @@ func _on_right_click(screen_pos: Vector2) -> void:
 		return
 	var existing: String = str(_root.call("beacon_at_screen", sid, screen_pos))
 	if existing != "":
-		_controller.remove_beacon(sid, existing)
-		AudioManager.play_sfx("deploy_remove")
+		_remove_beacon(sid, existing)
 		return
 	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
 	if _controller.next_beacon_id(sid) == "":
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_soft_cap").format({ "n": SimTypes.BEACON_SOFT_CAP }))
 	elif not _controller.can_place_beacon(sid, cell):
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_blocked"))
-	elif _controller.add_beacon(sid, cell) != "":
-		AudioManager.play_sfx("deploy_place")
+	elif not _controller.can_afford_beacon():
+		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
+	else:
+		_add_beacon(sid, cell)
+
+
+## 放一个信标；用完库存时自动买了一包 → 提示扣费
+func _add_beacon(sid: String, cell: Vector2i) -> void:
+	var stock: int = _controller.beacon_stock()
+	if _controller.add_beacon(sid, cell) == "":
+		return
+	AudioManager.play_sfx("deploy_place")
+	if _controller.beacon_stock() > stock:
+		EventBus.toast.emit(beacon_pack_text(_controller, "ui.beacon_pack_bought"))
+
+
+## 删一个信标；整包用不着时自动退回 → 提示返还
+func _remove_beacon(sid: String, beacon_id: String) -> void:
+	var stock: int = _controller.beacon_stock()
+	if not _controller.remove_beacon(sid, beacon_id):
+		return
+	AudioManager.play_sfx("deploy_remove")
+	if _controller.beacon_stock() < stock:
+		EventBus.toast.emit(beacon_pack_text(_controller, "ui.beacon_pack_refunded"))
+
+
+## 「预算不足：再买一包信标需要 N Cost」
+static func beacon_budget_text(c: BattleController) -> String:
+	return DataRegistry.get_string("ui.beacon_pack_unaffordable").format({ "cost": c.level.beacon_cost, "bundle": c.level.beacon_bundle })
+
+
+static func beacon_pack_text(c: BattleController, key: String) -> String:
+	return DataRegistry.get_string(key).format({ "cost": c.level.beacon_cost, "bundle": c.level.beacon_bundle,
+		"used": c.beacon_total(), "stock": c.beacon_stock() })
 
 
 func _try_begin_beacon_drag(screen_pos: Vector2) -> bool:

@@ -165,9 +165,12 @@ static func validate_level(L: LevelDefinition, units: Dictionary, level_ids: Arr
 	# 07 §4 / P3：推荐阵型在预算与人数上限内可放下（free 模式）
 	if L.is_free():
 		var total: int = 0
+		var beacon_n: int = 0
 		for ru: RecommendedUnitDef in L.recommended_units:
 			var ud: UnitDefinition = units.get(ru.form, null) as UnitDefinition
 			total += ud.cost if ud != null else 0
+			beacon_n += ru.beacons.size()
+		total += L.beacon_packs(beacon_n) * L.beacon_cost          # 信标包
 		if total > L.roster_budget:
 			DataReader.report(ctx, "推荐阵型 Cost %d 超出预算 %d" % [total, L.roster_budget])
 		if L.recommended_units.size() > L.max_units or L.recommended_units.size() < L.min_units:

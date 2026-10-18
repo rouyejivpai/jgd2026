@@ -40,6 +40,9 @@ var available_forms: Array[String] = []
 var max_units: int = 0
 var min_units: int = 1
 var slots: Array[SlotDef] = []          ## roster.fixed_slots（仅 fixed 模式）
+## 信标购买：全场共用一个池，每 beacon_bundle 个为一包、每包 beacon_cost Cost，放置时按需自动买包（beacon_cost = 0 = 信标免费）
+var beacon_cost: int = 0
+var beacon_bundle: int = 5
 var initial_units: Array[SpawnDef] = []
 var routes: Dictionary = {}             ## route_id -> RouteDef
 var allowed_conditions: Array[int] = []
@@ -153,6 +156,10 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 		for i: int in slot_arr.size():
 			L.slots.append(SlotDef.from_dict(DataReader.as_dict(slot_arr[i], "%s.fixed_slots[%d]" % [ro_ctx, i]), ro_ctx + ".fixed_slots"))
 		L.max_units = int(DataReader.opt_num(roster, "max_units", float(L.slots.size()), ro_ctx))
+		L.beacon_cost = int(DataReader.opt_num(roster, "beacon_cost", 0.0, ro_ctx))
+		L.beacon_bundle = int(DataReader.opt_num(roster, "beacon_bundle", 5.0, ro_ctx))
+		if L.beacon_cost < 0 or L.beacon_bundle < 1:
+			DataReader.report(ro_ctx, "需要 beacon_cost ≥ 0、beacon_bundle ≥ 1")
 		if L.is_free():
 			if L.roster_budget <= 0:
 				DataReader.report(ro_ctx, "free 模式 budget 必须为正")
@@ -247,6 +254,16 @@ func is_deploy_cell(c: Vector2i) -> bool:
 
 func is_free() -> bool:
 	return roster_mode == ROSTER_FREE
+
+
+## 信标是否收费（只在 free 关按 Cost 计价）
+func beacons_priced() -> bool:
+	return is_free() and beacon_cost > 0
+
+
+## 放 n 个信标需要买几包（不收费为 0）
+func beacon_packs(n: int) -> int:
+	return ceili(float(maxi(n, 0)) / float(beacon_bundle)) if beacons_priced() else 0
 
 
 ## 旧格式配置 / 测试中的槽位名 → 形态：fixed 关取槽位形态；free 关取 recommended.units 中同名条目的形态（无则 ""）

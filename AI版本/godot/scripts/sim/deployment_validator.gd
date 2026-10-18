@@ -67,7 +67,7 @@ static func validate(level: LevelDefinition, config: Dictionary, unlocks: Dictio
 	return problems
 
 
-## 07 §4.1 free 模式：人数下限、Cost 预算（10 §5.5：形态 Cost + 指令 Cost）、形态可用（available_forms ∩ 已解锁），
+## 07 §4.1 free 模式：人数下限、Cost 预算（10 §5.5：形态 Cost + 指令 Cost + 信标包 Cost）、形态可用（available_forms ∩ 已解锁），
 ## 以及逐单位的格子/指令/信标检查。未部署（无 pos）的条目不算出场。
 static func _validate_free(level: LevelDefinition, config: Dictionary, unlocks: Dictionary, unit_defs: Dictionary, problems: Array[Dictionary], occupied: Dictionary, commands: CommandCatalog) -> void:
 	var placed: int = 0
@@ -86,6 +86,7 @@ static func _validate_free(level: LevelDefinition, config: Dictionary, unlocks: 
 		_validate_unit(level, uid, entry, unlocks, udef, problems, occupied, commands)
 	if placed < level.min_units:
 		problems.append(_problem(TOO_FEW_UNITS, "", 0, str(level.min_units)))
+	total += beacon_cost(level, config)
 	if total > level.roster_budget:
 		problems.append(_problem(BUDGET_EXCEEDED, "", 0, "%d/%d" % [total, level.roster_budget]))
 
@@ -107,7 +108,7 @@ static func place_problem(level: LevelDefinition, config: Dictionary, form_or_ui
 				placed += 1
 		if placed >= level.max_units:
 			return ROSTER_FULL
-		if total_cost(config, unit_defs, commands) + maxi(udef.cost, 0) > level.roster_budget:   # 新单位指令为空（07 §2）
+		if total_cost(config, unit_defs, commands) + beacon_cost(level, config) + maxi(udef.cost, 0) > level.roster_budget:   # 新单位指令为空（07 §2）
 			return BUDGET_EXCEEDED
 	if level.is_blocked(cell):
 		return CELL_BLOCKED
@@ -130,6 +131,21 @@ static func total_cost(config: Dictionary, unit_defs: Dictionary, commands: Comm
 		if entry.has("pos"):
 			total += unit_cost(entry, unit_defs, commands, str(entry.get("form", entry.get("unit", ""))))
 	return total
+
+
+## 已部署单位的信标总数（全场共用一个池）
+static func beacon_count(config: Dictionary) -> int:
+	var n: int = 0
+	for uid: String in config.keys():
+		var entry: Dictionary = config[uid] as Dictionary
+		if entry.has("pos"):
+			n += (entry.get("beacons", []) as Array).size()
+	return n
+
+
+## 信标包 Cost = 包数 × roster.beacon_cost（每 beacon_bundle 个一包；不收费的关卡为 0）
+static func beacon_cost(level: LevelDefinition, config: Dictionary) -> int:
+	return level.beacon_packs(beacon_count(config)) * level.beacon_cost
 
 
 ## 单位总 Cost = 形态 cost + 指令 Cost（Σ 每条 action.cost + Σ condition.cost；commands 为 null 时指令按 0）

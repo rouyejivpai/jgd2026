@@ -122,6 +122,7 @@ func setup(root: Node2D) -> void:
 	# 预算铭牌：free 关 = 「预算」+ 已用 / 预算；fixed 关 = 「固定出场」（批准整图 ui_04）
 	_budget_title.visible = _level.is_free()
 	_budget_label.visible = _level.is_free()
+	_budget_label.mouse_filter = Control.MOUSE_FILTER_PASS if _level.beacons_priced() else Control.MOUSE_FILTER_IGNORE   # 悬停看信标包明细
 	_budget_fixed_label().visible = not _level.is_free()
 	_skin_objective_popup()
 	_skin_detail()
@@ -153,6 +154,7 @@ func setup(root: Node2D) -> void:
 	EventBus.battle_speed_changed.connect(_on_speed_changed)
 	EventBus.deployment_changed.connect(_on_config_changed)
 	EventBus.rules_changed.connect(func(_id: int) -> void: _on_config_changed())
+	EventBus.beacons_changed.connect(func(_id: int) -> void: _on_config_changed())     # 信标包计入预算
 	EventBus.validation_failed.connect(_on_validation_failed)
 	EventBus.unit_selected.connect(_on_unit_selected)
 	EventBus.toast.connect(show_toast)
@@ -374,12 +376,23 @@ func _update_budget() -> void:
 	elif _level.is_free():
 		_budget_title.text = DataRegistry.get_string("ui.budget")
 		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": _controller.budget_used(), "budget": _level.roster_budget })
+		_budget_label.tooltip_text = _budget_breakdown()
 		if _controller.budget_used() > _level.roster_budget:          # 超出预算：批准整图 ui_05 的红色
 			_budget_label.add_theme_color_override("font_color", Color(str((UiKit.layout_element(SKIN, "budget_value").get("data", {}) as Dictionary).get("over_color", "#FF0000"))))
 		else:
 			_budget_label.remove_theme_color_override("font_color")
 	for c: RosterCard in _cards:
 		c.refresh()
+	_refresh_beacon_bar()
+
+
+## 预算悬停明细（信标收费的关卡）：单位与指令 + 信标包
+func _budget_breakdown() -> String:
+	if not _level.beacons_priced():
+		return ""
+	var packs: int = _controller.beacon_packs()
+	return DataRegistry.get_string("ui.budget_breakdown").format({ "units": _controller.budget_used() - _controller.beacon_packs_cost(),
+		"packs": packs, "cost": _level.beacon_cost, "total": _controller.budget_used(), "used": _controller.beacon_total(), "stock": _controller.beacon_stock() })
 
 
 # ---- 角色 / 敌人详情侧栏（第四阶段：批准整图 side_detail/design.png，居中弹窗改为停靠一侧）----
@@ -732,8 +745,11 @@ func _refresh_beacon_bar() -> void:
 	if _beacon_slot == "" or _beacon_bar == null:
 		return
 	var n: int = _controller.deployed_uids().find(_beacon_slot) + 1
-	_label_of(_beacon_nodes["beacon_bar_title"]).text = DataRegistry.get_string("ui.beacon_mode_title").format({ "n": n, "name": _controller.label_of(_beacon_slot) })
-	_label_of(_beacon_nodes["beacon_bar_hint"]).text = DataRegistry.get_string("ui.beacon_mode_hint").format({ "max": maxi(_controller.deployed_uids().size(), 1) })
+	var priced: bool = _level.beacons_priced()       # 信标收费：标题带全场信标池「已放 / 已买」，说明带价格
+	var fmt: Dictionary = { "n": n, "name": _controller.label_of(_beacon_slot), "max": maxi(_controller.deployed_uids().size(), 1),
+		"used": _controller.beacon_total(), "stock": _controller.beacon_stock(), "cost": _level.beacon_cost, "bundle": _level.beacon_bundle }
+	_label_of(_beacon_nodes["beacon_bar_title"]).text = DataRegistry.get_string("ui.beacon_mode_title_priced" if priced else "ui.beacon_mode_title").format(fmt)
+	_label_of(_beacon_nodes["beacon_bar_hint"]).text = DataRegistry.get_string("ui.beacon_mode_hint_priced" if priced else "ui.beacon_mode_hint").format(fmt)
 	var mode: int = _controller.beacon_follow_mode(_beacon_slot)
 	for id: String in BEACON_MODE_BUTTONS.keys():
 		(_beacon_nodes[id] as Button).set_pressed_no_signal(int(BEACON_MODE_BUTTONS[id]) == mode)

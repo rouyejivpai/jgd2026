@@ -32,6 +32,7 @@ var reinforce_zone: Rect2i = Rect2i()    ## 格矩形（含两端）
 var reinforce_uids: Array[String] = []
 var _phase1_rules: Dictionary = {}       ## 暂停前的指令 / 信标快照：重开或结束时还原，存档里保留第一阶段的编程
 var _phase1_beacons: Dictionary = {}
+var _phase1_beacon_packs: int = 0        ## 暂停时已买的信标包（暂停期间多出的包从增援预算里扣）
 
 
 ## saved_raw：存档中该关的配置（07 §4.2）{ "units": [ { uid, form, slot?, pos?, rules, beacons } ], "next_uid": n }；
@@ -300,14 +301,63 @@ func cost_of(form: String) -> int:
 	return udef.cost if udef != null else 0
 
 
-## 10 §5.5：已用 = Σ 已部署单位的（形态 Cost + 指令 Cost）
+## 10 §5.5：已用 = Σ 已部署单位的（形态 Cost + 指令 Cost）+ 信标包 Cost
 func budget_used() -> int:
 	var total: int = 0
 	if level != null and level.is_free():
 		for uid: String in placements.keys():
 			if not reinforce_uids.has(uid):           # Boss 换阶段增援另有预算（reinforce_cost）
 				total += cost_of(form_of(uid)) + command_cost(uid)
+		total += beacon_packs_cost()
 	return total
+
+
+# ---- 信标购买（roster.beacon_cost / beacon_bundle）：全场共用一个池，放置时按需自动买包、删到用不着时自动退包 ----
+## 已部署单位的信标总数
+func beacon_total() -> int:
+	var n: int = 0
+	for uid: String in placements.keys():
+		n += (slot_beacons.get(uid, []) as Array).size()
+	return n
+
+
+## 当前已买的信标包数（Boss 暂停期间为第一阶段买下的包数，多出的包算在增援预算里）
+func beacon_packs() -> int:
+	if level == null:
+		return 0
+	return _phase1_beacon_packs if boss_pending else level.beacon_packs(beacon_total())
+
+
+func beacon_packs_cost() -> int:
+	return beacon_packs() * level.beacon_cost if level != null else 0
+
+
+## 池容量 = 已买包数 × 每包个数（暂停期间含增援预算买的包）
+func beacon_stock() -> int:
+	if level == null or not level.beacons_priced():
+		return 0
+	return maxi(level.beacon_packs(beacon_total()), beacon_packs()) * level.beacon_bundle
+
+
+## 暂停期间超出第一阶段包数的信标包 Cost
+func _reinforce_beacon_cost() -> int:
+	if not boss_pending or level == null:
+		return 0
+	return maxi(level.beacon_packs(beacon_total()) - _phase1_beacon_packs, 0) * level.beacon_cost
+
+
+## 再放一个信标是否要新买一包
+func beacon_needs_pack() -> bool:
+	return level != null and level.beacons_priced() and beacon_total() >= beacon_stock()
+
+
+## 再放一个信标的 Cost 是否付得起（不需新包时恒为 true）
+func can_afford_beacon() -> bool:
+	if not beacon_needs_pack():
+		return true
+	if boss_pending:
+		return reinforce_cost() + level.beacon_cost <= reinforce_budget
+	return budget_used() + level.beacon_cost <= level.roster_budget
 
 
 ## 该单位的指令 Cost（Σ 每条 action.cost + Σ condition.cost，data/commands.json）
@@ -455,10 +505,10 @@ func next_beacon_id(slot_id: String) -> String:
 	return str(top + 1)
 
 
-## 追加信标；返回新编号，失败返回 ""
+## 追加信标（需要时自动买一包）；返回新编号，失败返回 ""（含预算不够买新包）
 func add_beacon(slot_id: String, cell: Vector2i) -> String:
 	var id: String = next_beacon_id(slot_id)
-	if id == "" or not can_place_beacon(slot_id, cell):
+	if id == "" or not can_place_beacon(slot_id, cell) or not can_afford_beacon():
 		return ""
 	var beacons: Array[Dictionary] = get_beacons(slot_id)
 	beacons.append({ "id": id, "cell": cell })
@@ -677,12 +727,13 @@ func _enter_boss_pause() -> void:
 	reinforce_uids.clear()
 	_phase1_rules = slot_rules.duplicate()
 	_phase1_beacons = slot_beacons.duplicate()
+	_phase1_beacon_packs = level.beacon_packs(beacon_total())
 	_set_phase(SimTypes.Phase.PAUSED)
 	boss_phase_paused.emit(world.phase + 1)
 
 
 func reinforce_cost() -> int:
-	var total: int = 0
+	var total: int = _reinforce_beacon_cost()
 	for uid: String in reinforce_uids:
 		total += cost_of(form_of(uid))
 	return total
@@ -801,4 +852,5 @@ func _clear_boss_state() -> void:
 			slot_beacons[uid] = _phase1_beacons.get(uid, [] as Array[Dictionary])
 	_phase1_rules.clear()
 	_phase1_beacons.clear()
+	_phase1_beacon_packs = 0
 	boss_pending = false
