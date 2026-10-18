@@ -64,7 +64,7 @@
     },
     "boss_phases": {
       "type": "phased_boss",
-      "public_text": "**三阶段 Boss。** 每失去三分之一血量就换一种异常状态：孢裂（易伤）→ 钟缚（麻痹）→ 泥沼（减速）。阶段 3 才开始移动。",
+      "public_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝钟缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两只残骸行者）。",
       "params": {"phases": [{"phase": 1, "name": "孢裂", "hp_ratio": 0.34, "mechanic": "vulnerable", "applies_status": "vulnerable", "summon": ["spitter", "spitter", "marrow_hulk"]}, {"phase": 2, "name": "钟缚", "hp_ratio": 0.33, "mechanic": "paralysis", "applies_status": "paralysis", "summon": ["hex_priest", "hex_priest", "bone_guard"]}, {"phase": 3, "name": "泥沼", "hp_ratio": 0.33, "mechanic": "slow", "applies_status": "slow", "summon": ["bone_weaver", "marrow_hulk"], "move_speed_override": 1.2}], "on_phase_change": "清自身状态 / 召唤 / 改地形效果"},
       "_why": "三阶段的机制分别对应灰棘林 / 圣钟城废墟 / 肉巢沼泽，所以玩家在前面已经各自学过一遍。最终战考的是**串起来用**，而不是新机制 —— 这是「最终 Boss 应该考什么」的答案。"
     }

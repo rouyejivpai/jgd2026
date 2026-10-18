@@ -69,7 +69,8 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_retry = _button(DataRegistry.get_string("ui.retry"), controller.reset)
 	_next = _button(DataRegistry.get_string("ui.next_level"), _on_next)
 	_back = _button(DataRegistry.get_string("ui.back"), controller.exit)
-	for l: Label in [_title, _level_name, _survivors]:
+	# 标题不包 ScrollText、不裁剪：艺术字是标题的子节点，裁剪会把光晕切成硬边（2026-10-18）；标题文字固定且短
+	for l: Label in [_level_name, _survivors]:
 		l.clip_text = true
 		_scrolls[l] = ScrollText.wrap(l, ScrollText.Mode.AUTO, Rect2(Vector2.ZERO, Vector2.ONE))
 	_body_scroll = ScrollText.wrap_box(_body, ScrollText.Mode.MANUAL, Rect2(Vector2.ZERO, Vector2.ONE))
@@ -161,6 +162,12 @@ func _apply_layout(won: bool) -> void:
 	_body_scroll.size = Vector2(body_top.size.x, body_h)
 	for l: Label in [_reason, _last_hit, _rewards]:
 		l.custom_minimum_size = Vector2(body_top.size.x, 0.0)
+	var extra: float = _fit_body(body_top.size.x, body_h)
+	if extra > 0.0:                      # 正文放不下：框体向下加高（保持居中），按钮随之下移
+		position.y -= extra * 0.5
+		size.y += extra
+		_bg.size.y += extra
+		_body_scroll.size.y += extra
 	var buttons: Array[Button] = [_retry, _back]
 	var ids: Array[String] = ["lose_retry", "lose_back"]        # 无「下一关」时两个按钮，按失败整图的两键位置
 	if _next.visible:
@@ -168,7 +175,48 @@ func _apply_layout(won: bool) -> void:
 		ids = ["win_retry", "win_next", "win_back"]
 	for i: int in buttons.size():
 		put.call(buttons[i], _r(ids[i]))
+		buttons[i].position.y += extra
 		buttons[i].theme_type_variation = _tt(ids[i])
+
+
+## 结算页不翻页（2026-10-18）：正文（解锁 / 失败原因）按实际字体与换行宽度量高，超出按钮上方的区域时先把框体向下加高
+## （不超过视口留边），仍放不下再逐级缩小字号（最小 BODY_MIN_SCALE 倍），保证全部内容一屏显示、不需要滚动。返回框体加高量。
+const BODY_MIN_SCALE: float = 0.6
+const SCREEN_MARGIN: float = 24.0
+
+
+func _fit_body(width: float, max_h: float) -> float:
+	var labels: Array[Label] = []
+	for l: Label in [_reason, _last_hit, _rewards]:
+		l.remove_theme_font_size_override("font_size")
+		if l.visible and l.text != "":
+			labels.append(l)
+	if labels.is_empty():
+		return 0.0
+	var base: int = labels[0].get_theme_font_size("font_size")
+	var gap: float = float(_body.get_theme_constant("separation"))
+	var room: float = maxf(get_viewport_rect().size.y - size.y - SCREEN_MARGIN * 2.0, 0.0)
+	var extra: float = clampf(_body_height(labels, width, base, gap) - max_h, 0.0, room)
+	var fs: int = base
+	while fs > int(base * BODY_MIN_SCALE) and _body_height(labels, width, fs, gap) > max_h + extra:
+		fs -= 1
+	if fs != base:
+		for l: Label in labels:
+			l.add_theme_font_size_override("font_size", fs)
+	return ceilf(extra)
+
+
+func _body_height(labels: Array[Label], width: float, size: int, gap: float) -> float:
+	var h: float = gap * float(labels.size() - 1)
+	for l: Label in labels:
+		var font: Font = l.get_theme_font("font")
+		var lines: int = 0
+		for para: String in l.text.split("
+"):
+			var w: float = font.get_string_size(para, HORIZONTAL_ALIGNMENT_LEFT, -1.0, size).x
+			lines += maxi(1, ceili(w / maxf(width, 1.0)))
+		h += float(lines) * (font.get_height(size) + float(l.get_theme_constant("line_spacing")))
+	return h
 
 
 func _on_phase_changed(phase: int) -> void:

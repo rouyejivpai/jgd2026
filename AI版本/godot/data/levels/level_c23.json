@@ -452,7 +452,7 @@
               }
             ],
             "target": {
-              "selector": "lowest_hp",
+              "selector": "nearest",
               "filter": "unit"
             },
             "action": {
@@ -527,11 +527,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_07.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8ccd8",
+    "backdrop": "res://assets/backdrops/regions/warped_corridor.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 9405,
   "schema_version": 1,

@@ -267,7 +267,7 @@
         {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "nearest", "filter": "unit"}, "action": {"type": "attack"}},
         {"conditions": [], "action": {"type": "idle"}}
       ],
-      "public_rule_text": "**光环**：半径 3 格内的我方单位移速 -40%。",
+      "public_rule_text": "光环：半径 3 格内的我方单位移速 -40%。",
       "description": "一边爬一边吐丝的东西。它自己不追人，但凡是靠近它的东西都会变得迈不开腿。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
       "visuals": {"sprite": "res://assets/sprites/units/spitter.png", "portrait": "res://assets/sprites/portraits/spitter.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
@@ -315,7 +315,7 @@
         {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "farthest", "filter": "unit"}, "action": {"type": "attack"}},
         {"conditions": [], "action": {"type": "idle"}}
       ],
-      "public_rule_text": "**三阶段 Boss。** 每失去三分之一血量就换一种异常状态：孢裂（易伤）→ 钟缚（麻痹）→ 泥沼（减速）。阶段 3 才开始移动。",
+      "public_rule_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝钟缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两只残骸行者）。",
       "description": "骨花温室最深处的东西。她不是植物，也不完全是骨头——她把整片温室的根都连在自己身上。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
       "visuals": {"sprite": "res://assets/sprites/units/bone_core.png", "portrait": "res://assets/sprites/portraits/bone_core.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg"}

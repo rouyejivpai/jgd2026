@@ -260,7 +260,7 @@ func new_rule(action_key: String) -> RuleDef:
 	return r
 
 
-## 第五阶段：追击只追最近的敌人
+## 追击的默认目标：最近（2026-10-18 起可在追击行改选目标）
 static func chase_target() -> TargetDef:
 	return TargetDef.create(SimTypes.Selector.NEAREST, SimTypes.TargetFilter.ANY)
 

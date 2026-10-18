@@ -21,7 +21,7 @@
         "steps": [
           { "title": "预算", "text": "左下角是本关的预算。放置单位要花预算，单位卡下方的数字就是它占用的预算。", "targets": [{ "kind": "ui", "node": "Skin_budget" }, { "kind": "ui", "node": "Card_striker/Text_card_cost_value" }], "advance": "tap" },
           { "title": "单位", "text": "这是你的单位「基础攻击形态」。按住单位卡，把它拖到场上。", "targets": [{ "kind": "ui", "node": "Card_striker", "zoom": 1.15 }], "advance": "event", "event": "drag_started" },
-          { "title": "可部署区", "text": "发光的格子是可部署区，单位只能放在这里。把人偶放到中间的通关器旁边。", "targets": [{ "kind": "deploy_zone" }, { "kind": "ui", "node": "Card_striker" }], "advance": "event", "event": "deployed" },
+          { "title": "可部署区", "text": "金色发光的格子是可部署区，单位只能放在这里。把人偶放到通关器周围紧挨着的紫色目标格里（上下左右和四个斜角，共 8 格）。", "targets": [{ "kind": "deploy_zone" }, { "kind": "ui", "node": "Card_striker" }], "advance": "event", "event": "deployed" },
           { "title": "开始", "text": "布置好了！点「开始」进入战斗阶段。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started", "deselect": true }
         ]
       }
@@ -32,31 +32,34 @@
         "steps": [
           { "title": "部署", "text": "和上一关一样，把单位卡拖进可部署区。", "targets": [{ "kind": "ui", "node": "Card_striker", "zoom": 1.15 }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
           { "title": "购买信标", "text": "信标要用预算购买：1 Cost 一包（5 个），放下第一个信标时自动买下，预算会扣掉 1。点「信标」开始放置。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }, { "kind": "ui", "node": "Skin_budget" }], "advance": "event", "event": "beacon_mode" },
-          { "title": "障碍物", "text": "暗红色的格子是障碍物：单位走不过去，信标也放不上去。", "targets": [{ "kind": "blocked" }], "advance": "next" },
+          { "title": "障碍物", "text": "暗红色的格子是障碍物：单位走不过去，信标也放不上去。", "targets": [{ "kind": "blocked" }], "advance": "tap" },
           { "title": "放置信标", "text": "左键点击亮起的地块，放下第 1 个信标。", "targets": [{ "kind": "cell", "cell": [4, 0] }], "advance": "event", "event": "beacon_placed", "count": 1 },
           { "title": "放置信标", "text": "再点这里，放下第 2 个信标。", "targets": [{ "kind": "cell", "cell": [6, 6] }], "advance": "event", "event": "beacon_placed", "count": 2 },
           { "title": "放置信标", "text": "最后一个放在物资箱这里。", "targets": [{ "kind": "cell", "cell": [8, 0] }], "advance": "event", "event": "beacon_placed", "count": 3 },
           { "title": "完成", "text": "三个信标放好了，点「完成」退出信标模式。", "targets": [{ "kind": "ui", "node": "Beacon_beacon_done" }], "advance": "event", "event": "beacon_mode_exit" },
           { "title": "设置指令", "text": "点击人偶，查看并设置它的指令。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
-          { "title": "移动策略", "text": "移动策略里已经有「沿信标移动」：人偶会按 1 → 2 → 3 的顺序走过信标。", "targets": [{ "kind": "ui", "node": "Group_move" }], "advance": "next" },
+          { "title": "移动策略", "text": "移动策略里已经有「沿信标移动」：人偶会按 1 → 2 → 3 的顺序走过信标。", "targets": [{ "kind": "ui", "node": "Group_move" }], "advance": "tap" },
           { "title": "开始", "text": "点「开始」，看人偶沿信标走到物资箱。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started", "deselect": true }
         ]
       }
     },
     "level_c03": {
-      "_comment": "PPT 第 3 关：学会「攻击」策略与条件；认识敌人信息、视野与攻击范围。",
+      "_comment": "PPT 第 3 关：学会「攻击」策略与条件；认识敌人信息、视野与攻击范围。2026-10-18 用户试玩：信标改为在人偶旁亮起的区域放下才推进（不再一上来高亮「完成」）；插入「关闭敌人信息」（侧栏挡住己方单位）；本关允许「追击」；最后一个信标限定在两具人偶中间（(10,4) / (11,3)，承伤形态射程 2 内同时够到甲乙），照引导走即可获胜，追击作为补充说明。",
       "tutorial": {
         "steps": [
           { "title": "部署", "text": "这次派「承伤形态」上场：把它放进可部署区。", "targets": [{ "kind": "ui", "node": "Card_bulwark" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
           { "title": "购买信标", "text": "和上一关一样：点「信标」，用预算买一包信标。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }, { "kind": "ui", "node": "Skin_budget" }], "advance": "event", "event": "beacon_mode" },
-          { "title": "放置信标", "text": "在两具试作人偶旁边放下信标，让单位顺路经过它们。", "targets": [{ "kind": "unit", "spawn": "T1" }, { "kind": "unit", "spawn": "T2" }], "advance": "event", "event": "beacon_placed", "block": false },
-          { "title": "放置信标", "text": "可以继续放信标；放好后点「完成」。", "targets": [{ "kind": "ui", "node": "Beacon_beacon_done" }], "advance": "event", "event": "beacon_mode_exit", "block": false },
+          { "title": "放置信标", "text": "在试作人偶·甲旁边亮起的区域里，点一下放下信标。", "targets": [{ "kind": "cells", "cells": [[7, 4], [8, 4], [9, 4], [7, 5], [8, 5], [9, 5]] }], "advance": "event", "event": "beacon_in_area" },
+          { "title": "最后一个信标", "text": "最后一个信标放在两具人偶中间亮起的格子上：单位走到这里停下，两具人偶都在它的攻击范围里，能一直打到拆完。", "targets": [{ "kind": "cell", "cell": [10, 4] }, { "kind": "cell", "cell": [11, 3] }], "advance": "event", "event": "beacon_in_area" },
+          { "title": "完成", "text": "信标放好了，点「完成」退出信标模式。", "targets": [{ "kind": "ui", "node": "Beacon_beacon_done" }], "advance": "event", "event": "beacon_mode_exit" },
           { "title": "敌人信息", "text": "点一下试作人偶，查看敌人的信息。", "targets": [{ "kind": "unit", "spawn": "T1" }], "advance": "event", "event": "enemy_selected" },
-          { "title": "敌人的策略", "text": "这里是敌人的信息和它的策略（只读）。行动前先看清敌人会做什么——试作人偶不会反击。", "targets": [{ "kind": "ui", "node": "EnemyPanel" }], "advance": "next" },
+          { "title": "敌人的策略", "text": "这里是敌人的信息和它的策略（只读）。行动前先看清敌人会做什么——试作人偶不会反击。", "targets": [{ "kind": "ui", "node": "EnemyPanel" }], "advance": "tap" },
+          { "title": "关闭敌人信息", "text": "敌人信息挡住了你的单位：点「关闭」把它收起来。", "targets": [{ "kind": "ui", "node": "DetailClose" }], "advance": "event", "event": "panel_closed" },
           { "title": "选中单位", "text": "点击你的单位，地图上会出现它的两个圆环。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
-          { "title": "视野与攻击范围", "text": "虚线大圈是视野：敌人进入视野才会被发现。实心小圈是攻击范围：敌人进入这里才会被攻击。", "targets": [{ "kind": "ring", "ring": "vision" }, { "kind": "ring", "ring": "attack" }], "advance": "next" },
-          { "title": "攻击策略", "text": "攻击策略已预填「始终 → 攻击·最近」：攻击范围内有敌人就打最近的。条件和目标都可以点下拉框修改。", "targets": [{ "kind": "ui", "node": "Group_attack" }], "advance": "next" },
-          { "title": "开始", "text": "点「开始」：单位沿信标前进，同时攻击范围内的人偶。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started", "deselect": true }
+          { "title": "视野与攻击范围", "text": "虚线大圈是视野：敌人进入视野才会被发现。实心小圈是攻击范围：敌人进入这里才会被攻击。", "targets": [{ "kind": "ring", "ring": "vision" }, { "kind": "ring", "ring": "attack" }], "advance": "tap" },
+          { "title": "攻击策略", "text": "攻击策略已预填「始终 → 攻击·最近」：攻击范围内有敌人就打最近的。条件和目标都可以点下拉框修改。", "targets": [{ "kind": "ui", "node": "Group_attack" }], "advance": "tap" },
+          { "title": "移动策略", "text": "移动策略是「沿信标移动」：单位按信标顺序走，边走边打，走到最后一个信标停下。以后遇到够不着的敌人，也可以点「＋ 移动指令」添加「追击」并拖到最上面，让单位主动追上去。", "targets": [{ "kind": "ui", "node": "Group_move" }], "advance": "tap" },
+          { "title": "开始", "text": "点「开始」：单位沿信标走到两具人偶中间，把它们都拆掉。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started", "deselect": true }
         ]
       }
     },
@@ -73,14 +76,16 @@
       "_comment": "PPT 第 5 关：学会筛选敌人（目标选择「最远」）；依次介绍指令界面的 行为 / 优先级 / 对象 / 条件。",
       "tutorial": {
         "steps": [
-          { "title": "部署", "text": "把单位放进可部署区。", "targets": [{ "kind": "ui", "node": "Card_striker" }, { "kind": "ui", "node": "Card_swift" }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
-          { "title": "指令界面", "text": "点击刚放下的人偶，打开它的指令界面。", "targets": [{ "kind": "ally" }], "advance": "event", "event": "ally_selected" },
-          { "title": "行为", "text": "每条指令由 行为、优先级、对象、条件 组成。「行为」决定做什么——这里是「攻击」。", "targets": [{ "kind": "ui", "node": "Group_attack/RuleAction" }], "advance": "next" },
-          { "title": "优先级", "text": "「优先级」决定攻击范围内有多个敌人时先打谁：最近，或者最远。", "targets": [{ "kind": "ui", "node": "Group_attack/RuleSelector" }], "advance": "next" },
-          { "title": "对象", "text": "「对象」决定打哪一类目标：任意目标、单位或建筑。", "targets": [{ "kind": "ui", "node": "Group_attack/RuleFilter" }], "advance": "next" },
-          { "title": "条件", "text": "「条件」满足时这条指令才生效；条件一、条件二可以同时使用。", "targets": [{ "kind": "ui", "node": "Group_attack/RuleCond1" }, { "kind": "ui", "node": "Group_attack/RuleCond2" }], "advance": "next" },
-          { "title": "先打后排", "text": "守卫挡在前面，祭司躲在后排放冷箭。把优先级改成「最远」，先打祭司。", "targets": [{ "kind": "ui", "node": "Group_attack/RuleSelector" }], "advance": "event", "event": "rules_changed" },
-          { "title": "开始", "text": "设置好了，点「开始」。", "targets": [{ "kind": "ui", "node": "StartButton" }], "advance": "event", "event": "battle_started", "deselect": true }
+          {"title": "部署", "text": "把两个「基础攻击形态」放进可部署区（拖两次卡片）。", "targets": [{"kind": "ui", "node": "Card_striker"}, {"kind": "deploy_zone"}], "advance": "event", "event": "deployed"},
+          {"title": "指令界面", "text": "点击刚放下的人偶，打开它的指令界面。", "targets": [{"kind": "ally"}], "advance": "event", "event": "ally_selected"},
+          {"title": "行为", "text": "每条指令由 行为、优先级、对象、条件 组成。「行为」决定做什么——这里是「攻击」。", "targets": [{"kind": "ui", "node": "Group_attack/RuleAction"}], "advance": "tap"},
+          {"title": "优先级", "text": "「优先级」决定攻击范围内有多个敌人时先打谁：最近，或者最远。", "targets": [{"kind": "ui", "node": "Group_attack/RuleSelector"}], "advance": "tap"},
+          {"title": "对象", "text": "「对象」决定打哪一类目标：任意目标、单位或建筑。", "targets": [{"kind": "ui", "node": "Group_attack/RuleFilter"}], "advance": "tap"},
+          {"title": "条件", "text": "「条件」满足时这条指令才生效；条件一、条件二可以同时使用。", "targets": [{"kind": "ui", "node": "Group_attack/RuleCond1"}, {"kind": "ui", "node": "Group_attack/RuleCond2"}], "advance": "tap"},
+          {"title": "先打后排", "text": "守卫挡在前面，祭司躲在后排放冷箭。把攻击的优先级改成「最远」，先打祭司。", "targets": [{"kind": "ui", "node": "Group_attack/RuleSelector"}], "advance": "event", "event": "rules_changed"},
+          {"title": "追过去", "text": "光会打还不够：单位不会自己走到射程里。把移动策略里的「沿信标移动」换成「追击」。", "targets": [{"kind": "ui", "node": "Group_move/RuleAction"}], "advance": "event", "event": "rules_changed"},
+          {"title": "追最远的", "text": "追击也能选目标。把它的优先级也改成「最远」，人偶就会直奔祭司。", "targets": [{"kind": "ui", "node": "Group_move/RuleSelector"}], "advance": "event", "event": "rules_changed"},
+          {"title": "开始", "text": "另一个人偶也照这样改一遍，然后点「开始」。", "targets": [{"kind": "ui", "node": "StartButton"}], "advance": "event", "event": "battle_started", "deselect": true}
         ]
       }
     },
@@ -88,7 +93,7 @@
       "_comment": "PPT 第 6 关：综合测试。",
       "tutorial": {
         "steps": [
-          { "title": "综合测试", "text": "这一关是综合测试：放置单位 → 放置信标 → 观察敌人 → 设置指令 → 完成任务！", "targets": [{ "kind": "none" }], "advance": "next", "panel": "center" }
+          { "title": "综合测试", "text": "这一关是综合测试：放置单位 → 放置信标 → 观察敌人 → 设置指令 → 完成任务！", "targets": [{ "kind": "none" }], "advance": "tap", "panel": "center" }
         ]
       }
     }

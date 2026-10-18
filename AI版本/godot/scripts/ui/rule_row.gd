@@ -169,10 +169,7 @@ func _build_action_line() -> void:
 	_action.name = "RuleAction"                # 固定名字供引导 / 配置器拾取（如 Group_attack/RuleAction）
 	_place(_action, rel("det_action"))
 	var t: int = rule.action.type
-	if t == SimTypes.ActionType.CHASE and not editor.read_only:
-		# 第五阶段：追击只追最近的敌人（不选目标）
-		_text(DataRegistry.get_string("ui.chase_target_fixed"), "det_c1_label", rel("det_p1").merge(rel("det_p2")))
-	elif rule.action.needs_target() or (rule.has_condition(SimTypes.ConditionType.TARGET_DISTANCE) and t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT and t != SimTypes.ActionType.FOLLOW_ROUTE \
+	if rule.action.needs_target() or (rule.has_condition(SimTypes.ConditionType.TARGET_DISTANCE) and t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT and t != SimTypes.ActionType.FOLLOW_ROUTE \
 			and t != SimTypes.ActionType.IDLE and t != SimTypes.ActionType.HOLD_FIRE and t != SimTypes.ActionType.RETREAT):
 		_add_target_options()
 	elif t == SimTypes.ActionType.FOLLOW_BEACONS:
@@ -384,8 +381,8 @@ func _normalize(r: RuleDef) -> void:
 	if r.conditions.size() < UI_MAX_CONDITIONS:
 		r.condition_mode = SimTypes.ConditionMode.ALL
 	var needs: bool = r.action.needs_target() or r.has_condition(SimTypes.ConditionType.TARGET_DISTANCE)
-	if r.action.type == SimTypes.ActionType.CHASE:
-		r.target = RuleEditor.chase_target()       # 第五阶段：追击只追最近的敌人
+	if r.action.type == SimTypes.ActionType.CHASE and r.target == null:
+		r.target = RuleEditor.chase_target()       # 2026-10-18：追击像攻击一样可选目标，默认最近
 	elif needs and r.target == null:
 		r.target = editor.default_target()
 	elif not needs:

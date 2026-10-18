@@ -62,7 +62,7 @@ func _gui_input(event: InputEvent) -> void:
 		_end_beacon_drag(mb.global_position)
 		accept_event()
 		return
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _try_begin_beacon_drag(mb.global_position):
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and not _hits_other_unit(mb.global_position) and _try_begin_beacon_drag(mb.global_position):
 		accept_event()
 		return
 	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and beacon_mode_slot() != "":
@@ -245,6 +245,15 @@ static func beacon_budget_text(c: BattleController) -> String:
 static func beacon_pack_text(c: BattleController, key: String) -> String:
 	return DataRegistry.get_string(key).format({ "cost": c.level.beacon_cost, "bundle": c.level.beacon_bundle,
 		"used": c.beacon_total(), "stock": c.beacon_stock() })
+
+
+## 非信标模式下点中了另一个单位（敌人或别的己方）：优先切换选中，不去拖身后格子上的信标
+## （用户 2026-10-18：信标放在人偶旁，点人偶身体却拖起了信标、侧栏不切换）
+func _hits_other_unit(screen_pos: Vector2) -> bool:
+	if beacon_mode_slot() != "":
+		return false
+	var id: int = int(_root.call("unit_at_screen", screen_pos))
+	return id >= 0 and id != int(_root.get("selected_id"))
 
 
 func _try_begin_beacon_drag(screen_pos: Vector2) -> bool:

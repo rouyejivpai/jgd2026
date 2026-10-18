@@ -3,6 +3,8 @@ extends Node2D
 
 const UNIT_VIEW_SCENE: PackedScene = preload("res://scenes/battle/unit_view.tscn")
 const STATUS_OVERLAY_SCRIPT: Script = preload("res://scripts/battle/status_overlay.gd")
+const UNIT_HIT_RADIUS: float = 0.5        ## 单位点击命中：离身体线段的距离（格）
+const UNIT_HIT_BODY_CELLS: float = 0.9    ## 身体线段高度（格，脚底 → 胸口；精灵约 1.2 格高）
 
 var level: LevelDefinition = null
 var selected_id: int = -1
@@ -307,17 +309,20 @@ func cell_screen_rect(cell: Vector2i) -> Rect2:
 	return Rect2(a, Vector2.ZERO).expand(b)
 
 
-## 屏幕坐标处的存活单位 id（距单位中心 ≤ 0.5 格，取最近者），无则 -1；玩法矩形外恒为 -1
+## 屏幕坐标处的存活单位 id，无则 -1；玩法矩形外恒为 -1。
+## 命中区 = 脚底到头顶的竖直线段（UNIT_HIT_BODY_CELLS 高）外扩 UNIT_HIT_RADIUS 格：精灵站在格中心往上约 1.2 格，
+## 点在身体上也算点中（用户 2026-10-18「点击试作人偶无反应」）；多名重叠取离线段最近者。
 func unit_at_screen(screen_pos: Vector2) -> int:
 	if not in_playfield(screen_pos):
 		return -1
 	var p: Vector2 = screen_to_sim(screen_pos)
 	var best: int = -1
-	var best_d: float = 0.5
+	var best_d: float = UNIT_HIT_RADIUS
 	for u: SimUnit in controller.world.units:
 		if not u.alive:
 			continue
-		var d: float = u.pos.distance_to(p)
+		var head: Vector2 = u.pos + Vector2(0.0, UNIT_HIT_BODY_CELLS)
+		var d: float = p.distance_to(Geometry2D.get_closest_point_to_segment(p, u.pos, head))
 		if d <= best_d:
 			best_d = d
 			best = u.id

@@ -35,20 +35,34 @@ func test_chase_stops_within_range() -> void:
 	assert_eq(a.pos, stopped, "射程内停止移动")
 
 
-func test_chase_path_avoids_blocked() -> void:
+## 用户 2026-10-18：不寻路——直线追击被墙挡住就卡在墙前（不绕行、不穿墙）
+func test_chase_straight_line_stuck_at_wall() -> void:
 	var wall: Array[Vector2i] = []
 	for y: int in range(0, 9):
 		wall.append(Vector2i(5, y))
 	var w: SimWorld = SimFactory.make_empty_world(10, 10, wall)
 	var a: SimUnit = SimFactory.add(w, "swift", ALLY, Vector2i(2, 2), [SimFactory.r_chase_attack_visible()])
 	var e: SimUnit = SimFactory.add(w, "raider", ENEMY, Vector2i(8, 2))
+	e.move_speed = 0.0
 	var visited_blocked: bool = false
 	for i: int in 300:
 		w.step()
 		if not w.grid.is_walkable(a.cell()):
 			visited_blocked = true
-	assert_false(visited_blocked, "路径不穿障碍")
-	assert_lte(a.pos.distance_to(e.pos), a.attack_range + 0.01, "绕过墙到达射程内")
+	assert_false(visited_blocked, "不穿障碍")
+	assert_gt(a.pos.x, 4.9, "直线走到墙前")
+	assert_lt(a.pos.x, 5.0, "停在墙前")
+	assert_almost_eq(a.pos.y, 2.5, 1e-6, "不绕行（只走直线）")
+	assert_eq(a.reason, SimTypes.ReasonCode.PATH_BLOCKED)
+
+
+func test_move_toward_cell_is_straight_line() -> void:
+	var w: SimWorld = SimFactory.make_empty_world(12, 12)
+	_route(w, "diag", [Vector2i(9, 9)])
+	var a: SimUnit = SimFactory.add(w, "striker", ALLY, Vector2i(1, 1), [_route_rule("diag")])
+	SimFactory.run_steps(w, 20)
+	assert_almost_eq(a.pos.x, a.pos.y, 1e-4, "斜向直线（不走四方向折线）")
+	assert_gt(a.pos.x, 1.5)
 
 
 func test_unreachable_sets_path_blocked() -> void:
@@ -56,11 +70,11 @@ func test_unreachable_sets_path_blocked() -> void:
 	var w: SimWorld = SimFactory.make_empty_world(12, 12, cage)
 	var a: SimUnit = SimFactory.add(w, "swift", ALLY, Vector2i(1, 5), [SimFactory.r_chase_attack_visible()])
 	SimFactory.add(w, "raider", ENEMY, Vector2i(5, 5))
-	var start: Vector2 = a.pos
-	SimFactory.run_steps(w, 10)
+	SimFactory.run_steps(w, 60)
 	assert_eq(a.current_rule, 0)
 	assert_eq(a.reason, SimTypes.ReasonCode.PATH_BLOCKED)
-	assert_eq(a.pos, start, "原地等待")
+	assert_lt(a.pos.x, 4.0, "卡在笼子外的障碍前")
+	assert_gt(a.pos.x, 3.9)
 
 
 func test_retreat_maximizes_min_distance() -> void:

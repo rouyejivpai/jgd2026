@@ -148,7 +148,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "让分裂体沿 N 字形走到物资箱旁。信标要花 Cost 买：1 Cost 一包（5 个）",
+    "objective_text": "让分裂体沿 N 字形走到物资箱所在的那一格（紫色目标格）。信标要花 Cost 买：1 Cost 一包（5 个）",
     "win": [
       {
         "id": "win_reach_crate",
@@ -181,11 +181,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_01.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8ccd8",
+    "backdrop": "res://assets/backdrops/regions/bone_workshop.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 2,
   "schema_version": 1,
@@ -229,8 +227,8 @@
   ],
   "hints": [
     "信标要用 Cost 买（1 Cost = 5 个）。摆成一条路，单位会照着走。",
-    "让分裂体沿 N 字形走到物资箱旁。信标要花 Cost 买：1 Cost 一包（5 个）",
-    "基础形态 3 + 1 包信标 1 = 4 / 预算 4。沿 4 个信标走 N 字，约 8 秒到物资箱。",
+    "让分裂体沿 N 字形走到物资箱所在的那一格（紫色目标格）。信标要花 Cost 买：1 Cost 一包（5 个）",
+    "基础形态 3 + 1 包信标 1 = 4，正好用完预算。沿信标走 N 字，最后一个信标放在物资箱那一格上——停在箱子旁边不算。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

@@ -69,7 +69,7 @@
         13,
         2
       ],
-      "display_name": "骨喉·上",
+      "display_name": "骨喉·下",
       "overrides": {
         "max_hp": 120
       }
@@ -82,7 +82,7 @@
         13,
         6
       ],
-      "display_name": "骨喉·下",
+      "display_name": "骨喉·上",
       "overrides": {
         "max_hp": 120
       }
@@ -227,11 +227,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_01.png",
-    "ground": "res://assets/grounds/wailing_wall_a.png",
-    "ground_tint": "#c8ccd8",
+    "backdrop": "res://assets/backdrops/regions/bone_workshop.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 6,
   "schema_version": 1,
@@ -288,7 +286,7 @@
   "hints": [
     "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
     "拆掉两具骨喉。骨浆专砸视野内最远的分裂体——派一个人在远处绕圈，替站桩输出的人挨砸。",
-    "基础形态走到 (10,4)（离两具骨喉都 3.6 格）站定输出；快速形态在 (3..6, 2..6) 绕圈，始终是骨浆的最远目标且一直在动，骨浆全部落空。",
+    "基础形态走到两具骨喉正前方、两具都在射程内的位置站定输出；快速形态在部署区前方来回绕圈，一直是最远的那个而且一直在动，骨浆全部落空。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

@@ -42,7 +42,7 @@ static func from_dict(d: Dictionary, ctx: String) -> ActionDef:
 	return a
 
 
-## 该行为是否需要目标（attack / chase_attack / chase）。第五阶段：玩家界面的追击只追最近的敌人（目标固定为最近），但数据里仍带 target。
+## 该行为是否需要目标（attack / chase_attack / chase）。2026-10-18 起玩家界面的追击与攻击一样可选目标（默认最近）。
 static func type_needs_target(t: int) -> bool:
 	return t == SimTypes.ActionType.ATTACK or t == SimTypes.ActionType.CHASE_ATTACK or t == SimTypes.ActionType.CHASE
 

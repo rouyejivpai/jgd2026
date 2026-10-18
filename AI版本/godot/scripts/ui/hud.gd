@@ -886,6 +886,9 @@ func show_toast(text: String) -> void:
 ## 结算：结算面板 + 结束剧情（胜利 <level_id>_win / 失败 <level_id>_lose，不存在则不触发，07 §10.2）
 func show_result(result: int, delay: float) -> void:
 	_hint_panel.close_panel()
+	var banner: Node = get_node_or_null("BattleStartBanner")     # 「战斗开始」还没播完就结算：立即移除，免得压在结算窗口上
+	if banner != null:
+		banner.queue_free()
 	_result_panel.call("show_result", result, delay)
 	if result == SimTypes.BattleResult.WIN:
 		_play_and_mark(story_id("win"))
@@ -914,7 +917,7 @@ func show_battle_start() -> void:
 	var old: Node = get_node_or_null("BattleStartBanner")
 	if old != null:
 		old.free()
-	if not UiKit.motion_enabled:
+	if not UiKit.motion_enabled or (_controller != null and _controller.phase == SimTypes.Phase.ENDED):   # 开局即结束（如第一关部署即通关）不再弹「战斗开始」
 		return
 	var p: Dictionary = UiKit.motion_params("art_banner")
 	var text: String = DataRegistry.get_string("ui.battle_start_banner")

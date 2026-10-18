@@ -15,7 +15,8 @@ const LEVEL_DIR: String = "res://data/levels/"
 const UNLOCK_TABLE_PATH: String = "../docs/15_指令解锁表.md"
 const ADVANCE_LABELS: Dictionary = { "next": "下一步按钮", "click": "点击高亮处", "tap": "点击任意处", "event": "等待事件" }
 const EVENT_LABELS: Dictionary = { "deployed": "放下单位", "ally_selected": "选中己方", "enemy_selected": "选中敌人", "beacon_placed": "放置信标",
-	"beacon_mode": "进入信标模式", "rules_changed": "修改指令", "battle_started": "开始战斗", "drag_started": "开始拖动出场卡", "beacon_mode_exit": "退出信标模式" }
+	"beacon_mode": "进入信标模式", "rules_changed": "修改指令", "battle_started": "开始战斗", "drag_started": "开始拖动出场卡", "beacon_mode_exit": "退出信标模式",
+	"beacon_in_area": "在高亮地块放信标", "panel_closed": "关闭详情侧栏" }
 const BLOCK_LABELS: Array[String] = ["自动", "只放行高亮处", "不拦截"]
 const KIND_LABELS: Dictionary = { "ui": "界面元素", "cell": "地块", "cells": "多个地块", "deploy_zone": "部署区", "unit": "预置单位", "ally": "第一名己方",
 	"blocked": "全部障碍格", "ring": "视野 / 射程圈", "none": "无高亮" }
@@ -273,7 +274,7 @@ func _build_tutorial_tab() -> void:
 	_f_text.text_changed.connect(_write_step)
 	_f_advance = _row(_form, "推进方式", _option(_pairs(ADVANCE_LABELS), _write_step)) as OptionButton
 	_f_event = _row(_form, "等待的事件", _option(_pairs(EVENT_LABELS), _write_step)) as OptionButton
-	_f_count = _row(_form, "累计数量（放下单位 / 放置信标）", SpinBox.new()) as SpinBox
+	_f_count = _row(_form, "累计数量（放下单位 / 放置信标 / 区域内信标）", SpinBox.new()) as SpinBox
 	_f_count.min_value = 1.0
 	_f_count.max_value = 99.0
 	_f_count.value_changed.connect(func(_v: float) -> void: _write_step())
@@ -513,7 +514,7 @@ func _step() -> Dictionary:
 
 func add_step() -> void:
 	var steps: Array = _steps_of(true)
-	steps.insert(cur_step + 1, { "title": "", "text": "新步骤说明", "targets": [], "advance": "next" })
+	steps.insert(cur_step + 1, { "title": "", "text": "新步骤说明", "targets": [], "advance": "tap" })   # 用户 2026-10-18：默认点任意处继续
 	cur_step += 1
 	_refresh_steps()
 	_changed()

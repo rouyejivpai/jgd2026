@@ -120,13 +120,14 @@
     "actions": [
       "attack",
       "chase_attack",
-      "idle"
+      "idle",
+      "chase"
     ]
   },
   "recommended": {
     "units": [
       {
-        "slot": "slot_striker",
+        "slot": "slot_striker_a",
         "form": "striker",
         "pos": [
           1,
@@ -138,17 +139,27 @@
             "conditions": [],
             "target": {
               "selector": "farthest",
-              "filter": "unit"
+              "filter": "any"
             },
             "action": {
-              "type": "chase_attack"
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "target": {
+              "selector": "farthest",
+              "filter": "any"
+            },
+            "action": {
+              "type": "chase"
             }
           }
         ]
       },
       {
-        "slot": "slot_swift",
-        "form": "swift",
+        "slot": "slot_striker_b",
+        "form": "striker",
         "pos": [
           1,
           7
@@ -156,37 +167,23 @@
         "beacons": [],
         "rules": [
           {
-            "conditions": [
-              {
-                "type": "enemy_in_range"
-              }
-            ],
+            "conditions": [],
             "target": {
-              "selector": "nearest",
-              "filter": "unit"
+              "selector": "farthest",
+              "filter": "any"
             },
             "action": {
               "type": "attack"
             }
           },
           {
-            "conditions": [
-              {
-                "type": "enemy_visible"
-              }
-            ],
+            "conditions": [],
             "target": {
-              "selector": "nearest",
-              "filter": "unit"
+              "selector": "farthest",
+              "filter": "any"
             },
             "action": {
-              "type": "chase_attack"
-            }
-          },
-          {
-            "conditions": [],
-            "action": {
-              "type": "idle"
+              "type": "chase"
             }
           }
         ]
@@ -209,22 +206,22 @@
     ]
   },
   "verification": {
-    "expected_win": "基础形态用「追击攻击·最远」直接走到够得着后排祭司的位置，先点掉祭司（50 血）；快速形态顶住守卫。注意「射程内有敌人 → 攻击最远」只在**已经在射程内的**敌人里挑最远，守卫先进射程时它会停下来打守卫——这一关顺带教这个区别。",
+    "expected_win": "两名基础形态都用「追击攻击·最远」，直接走到够得着后排祭司的位置，先点掉祭司（50 血），再一起回头收拾守卫。注意「射程内有敌人 → 攻击最远」只在**已经在射程内的**敌人里挑最远，守卫先进射程时它会停下来打守卫——这一关顺带教这个区别。（约 8.4s 胜，两人存活）",
     "expected_fail": [
-      "全部按「最近」：先磨 130 血的守卫，祭司在后面持续输出，两人都倒下。"
+      "基础形态 + 快速形态：从部署区直线追祭司的停点在守卫 2 格射程内，守卫与祭司同时输出，任何站位、按「最近」或「最远」都会两人倒下。"
     ],
     "alternatives": [
-      "带两个基础形态（3+3）：火力够大，按最近打也能赢——这是「火力优势」的解法，允许。"
+      "两名基础形态都按「最近」打也能赢（约 9s）——这是「火力优势」的解法，允许。"
     ],
     "risks": [],
-    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
+    "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》",
+    "_note_20261018": "移动改为直线（不寻路）后，从部署区直线追向祭司的停点必然落在守卫 2 格射程内，基础形态 + 快速形态在所有站位下都会输（加信标也不够）；推荐解改为原「alternatives」里的两名基础形态，均为「追击攻击·最远」（约 8.4s 胜，两人存活）。",
+    "_note_20261018b": "「追击」改为可选目标后，推荐解改成玩家能手搭的两条指令（双组口径）：攻击·最远 + 追击·最远（均为「始终」），两名基础形态 8.4s 胜；只改攻击、追击保持最近也能 9.2s 胜；单人或基础 + 快速形态均失败（tools/_raw/hint_check 实测）。"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_01.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8ccd8",
+    "backdrop": "res://assets/backdrops/regions/bone_workshop.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 159,
   "schema_version": 1,
@@ -280,12 +277,13 @@
   "hints": [
     "默认打最近。但有时候该先打最远的——顺序是你决定的。",
     "守卫挡在前面，祭司躲在后面放冷箭。先打远的那个。",
-    "基础形态用「追击攻击·最远」直接走到够得着后排祭司的位置，先点掉祭司（50 血）；快速形态顶住守卫。注意「射程内有敌人 → 攻击最远」只在已经在射程内的敌人里挑最远，守卫先进射程时它会停下来打守卫——这一关顺带教这个区别。",
+    "两名基础形态都改两处：攻击的优先级改成「最远」；移动策略把「沿信标移动」换成「追击」，目标也选「最远」。它们会直奔祭司，祭司一进射程就先点掉它（50 血），再回头收拾守卫。只派一个人，或者换成快速形态，都扛不住。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {
     "lose_all_dead": "全员倒下了。默认打最近。但有时候该先打最远的——顺序是你决定的。",
-    "default": "默认打最近。但有时候该先打最远的——顺序是你决定的。"
+    "default": "默认打最近。但有时候该先打最远的——两名基础形态都把攻击和追击的目标改成「最远」，直奔后排的祭司。"
   },
-  "bgm": "region_bone_workshop"
+  "bgm": "region_bone_workshop",
+  "rules_format": "dual"
 }

@@ -61,8 +61,10 @@ func test_teaching_data_parsed_and_overrides_applied() -> void:
 	assert_true(bool(steps[1]["block"]), "有高亮且不是「下一步」：默认只放行高亮处")
 	assert_eq(float((steps[1]["targets"] as Array[Dictionary])[0]["zoom"]), 1.15, "单位卡放大")
 	var c02: Array[Dictionary] = t.tutorial_steps("level_c02")
-	assert_false(bool(c02[2]["block"]), "「下一步」步骤默认不拦截")
 	assert_eq(int(c02[5]["count"]), 3, "第三个信标")
+	for i: int in range(1, 7):
+		for s: Dictionary in t.tutorial_steps("level_c0%d" % i):
+			assert_ne(str(s["advance"]), "next", "用户 2026-10-18：不再用「下一步」按钮，改为点任意处继续（第 %d 关「%s」）" % [i, str(s["title"])])
 	var c05: LevelDefinition = DataRegistry.get_level("level_c05")
 	assert_true(c05.allowed_selectors.has(SimTypes.Selector.FARTHEST))
 	assert_false(c05.allowed_selectors.has(SimTypes.Selector.MOST_DAMAGE), "测试用的 allowed 覆盖已移除")
@@ -115,8 +117,11 @@ func _assert_targets_found(d: TutorialDirector) -> void:
 	assert_true(d.overlay.visible, "第 %d 步显示" % (d.index + 1))
 
 
+## 点屏幕任意处（说明框外）继续
 func _next(d: TutorialDirector) -> void:
-	(d.overlay.find_child("NextButton", true, false) as Button).pressed.emit()
+	assert_eq(str(d.current()["advance"]), "tap", "第 %d 步点任意处继续" % (d.index + 1))
+	assert_false((d.overlay.find_child("NextButton", true, false) as Button).visible, "不显示「下一步」")
+	_click(d, Vector2(5, 5))
 	await wait_process_frames(2)
 
 
@@ -216,33 +221,94 @@ func test_c03_enemy_info_and_rings() -> void:
 	await wait_process_frames(2)
 	assert_eq(d.index, 2)
 	await _assert_targets_found(d)
-	assert_false(d.overlay._has_point(Vector2(5, 5)), "放信标步骤不拦截")
-	c.add_beacon(uid, Vector2i(8, 3))
+	# 用户 2026-10-18：先点亮人偶旁的区域引导放信标，放对了才推进（不再一上来高亮「完成」）
+	assert_true(d.overlay._has_point(Vector2(5, 5)), "放信标步骤只放行亮起的区域")
+	assert_false(d.overlay._has_point(d.overlay.holes[0].get_center()), "亮起的区域可点")
+	c.add_beacon(uid, Vector2i(3, 6))
 	await wait_process_frames(2)
-	assert_eq(d.index, 3)
+	assert_eq(d.index, 2, "放在区域外：不推进")
+	c.add_beacon(uid, Vector2i(9, 4))
+	await wait_process_frames(2)
+	assert_eq(d.index, 3, "人偶·甲旁放好 → 最后一个信标")
+	await _assert_targets_found(d)
+	assert_eq(d.target_rects(d.current()).size(), 2, "两具人偶中间两格分别高亮")
+	c.add_beacon(uid, Vector2i(12, 5))
+	await wait_process_frames(2)
+	assert_eq(d.index, 3, "只够得着人偶·乙的格子：不推进")
+	c.remove_beacon(uid, str(c.get_beacons(uid).back()["id"]))
+	c.add_beacon(uid, Vector2i(10, 4))
+	await wait_process_frames(2)
+	assert_eq(d.index, 4, "两具人偶中间放好 → 完成")
 	await _assert_targets_found(d)
 	hud.call("exit_beacon_mode")
 	await wait_process_frames(2)
-	assert_eq(d.index, 4, "完成 → 敌人信息")
+	assert_eq(d.index, 5, "完成 → 敌人信息")
 	await _assert_targets_found(d)
-	EventBus.unit_selected.emit(c.world.get_spawn("T1").id)
+	# 点人偶身体（脚底往上将近一格）也算点中，且在高亮框内（用户 2026-10-18「点击试作人偶无反应」）
+	var t1: SimUnit = c.world.get_spawn("T1")
+	var cell_px: float = (root.call("cell_screen_rect", t1.cell()) as Rect2).size.y
+	var body: Vector2 = (root.call("unit_screen_pos", t1.id) as Vector2) + Vector2(0.0, -cell_px * 0.9)
+	assert_true(d.overlay.in_hole(body), "高亮框盖住人偶身体")
+	assert_eq(int(root.call("unit_at_screen", body)), t1.id, "点身体选中人偶")
+	EventBus.unit_selected.emit(t1.id)
 	await wait_process_frames(2)
-	assert_eq(d.index, 5, "选中敌人 → 敌人的策略")
+	assert_eq(d.index, 6, "选中敌人 → 敌人的策略")
+	assert_true(bool(hud.call("side_visible")))
 	await _assert_targets_found(d)
 	await _next(d)
+	assert_eq(d.index, 7, "→ 关闭敌人信息")
+	await _assert_targets_found(d)
+	(hud.find_child("DetailClose", true, false) as Button).pressed.emit()
+	await wait_process_frames(2)
+	assert_eq(d.index, 8, "关闭侧栏 → 选中单位")
 	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
 	await wait_process_frames(2)
-	assert_eq(d.index, 7, "选中己方 → 圆环")
+	assert_eq(d.index, 9, "选中己方 → 圆环")
 	await _assert_targets_found(d)
 	var rings: Array[Rect2] = d.target_rects(d.current())
 	assert_gt(rings[0].size.x, rings[1].size.x, "视野圈大于射程圈")
 	await _next(d)
 	await _assert_targets_found(d)
 	await _next(d)
+	assert_eq(str(d.current()["title"]), "移动策略")
 	await _assert_targets_found(d)
-	assert_true(c.start())
+	await _next(d)
+	await _assert_targets_found(d)
+	# 用户 2026-10-18「第三关按照教程走无法获胜」：不改预填指令、不加追击，照引导放的信标就能拆掉两具人偶
+	assert_true(c.start(), str(c.last_problems))
 	await wait_process_frames(2)
 	assert_false(d.active())
+	for i: int in 3000:
+		if c.phase == SimTypes.Phase.ENDED:
+			break
+		c.advance_tick()
+	assert_eq(c.world.result, SimTypes.BattleResult.WIN, "照引导走（预填指令 + 引导信标）能赢")
+
+
+## 引导允许的两个终点格 × 第一块区域的每一格：只用预填指令都能赢（承伤形态射程 2 恰好同时够到甲乙）
+func test_c03_every_guided_beacon_choice_wins() -> void:
+	var level: LevelDefinition = DataRegistry.get_level("level_c03")
+	var steps: Array[Dictionary] = DataRegistry.get_teaching().tutorial_steps("level_c03")
+	var firsts: Array = (steps[2]["targets"] as Array[Dictionary])[0]["cells"] as Array
+	var lasts: Array[Vector2i] = []
+	for t: Dictionary in steps[3]["targets"] as Array[Dictionary]:
+		lasts.append_array(t["cells"] as Array)
+	assert_eq(lasts.size(), 2)
+	for first: Vector2i in firsts:
+		for last: Vector2i in lasts:
+			var c := BattleController.new()
+			c.persist = false
+			c.setup(level)
+			var uid: String = c.add_unit("bulwark", Vector2i(1, 7))
+			assert_ne(c.add_beacon(uid, first), "")
+			assert_ne(c.add_beacon(uid, last), "")
+			assert_true(c.start(), str(c.last_problems))
+			for i: int in 3000:
+				if c.phase == SimTypes.Phase.ENDED:
+					break
+				c.advance_tick()
+			assert_eq(c.world.result, SimTypes.BattleResult.WIN, "信标 %s → %s 能赢" % [str(first), str(last)])
+			c.free()
 
 
 func test_c05_rule_parts_and_farthest() -> void:
@@ -295,7 +361,7 @@ func test_c04_and_c06_steps_show() -> void:
 	assert_false(d6.active())
 
 
-func test_skip_marks_seen_and_does_not_repeat() -> void:
+func test_skip_marks_seen_and_restarts_on_reenter() -> void:
 	var root: Node2D = _battle(LEVEL)
 	await wait_process_frames(3)
 	var d: TutorialDirector = _director(root)
@@ -306,7 +372,10 @@ func test_skip_marks_seen_and_does_not_repeat() -> void:
 	await wait_process_frames(2)
 	var root2: Node2D = _battle(LEVEL)
 	await wait_process_frames(3)
-	assert_null(_director(root2).overlay, "看过的引导不再出现（不建遮罩）")
+	var d2: TutorialDirector = _director(root2)
+	assert_not_null(d2.overlay, "重进关卡重新开始新手教程（看过也播放）")
+	assert_true(d2.active(), "引导从头开始")
+	assert_eq(d2.index, 0, "从第一步开始")
 
 
 func test_deploy_steps_dropped_after_battle_starts_and_running_step_pauses() -> void:
@@ -328,7 +397,7 @@ func test_deploy_steps_dropped_after_battle_starts_and_running_step_pauses() -> 
 	await wait_process_frames(2)
 	assert_true(d.overlay.visible, "到点出现")
 	assert_eq(c.phase, SimTypes.Phase.PAUSED, "战斗中的步骤暂停战斗")
-	(d.overlay.find_child("NextButton", true, false) as Button).pressed.emit()
+	(d.overlay.find_child("NextButton", true, false) as Button).pressed.emit()       # 配置器仍可选「下一步按钮」
 	await wait_process_frames(2)
 	assert_eq(c.phase, SimTypes.Phase.RUNNING, "推进后恢复")
 	assert_false(d.active())

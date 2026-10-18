@@ -295,14 +295,22 @@ func test_group_sections_and_limit() -> void:
 	assert_eq((_rows()[limit].get("_action") as OptionButton).item_count, 4, "移动行的行为下拉只列移动组（沿信标 / 追击 / 停止 / 等待）")
 
 
-## 第五阶段：追击只追最近的敌人——不显示目标选择，数据目标固定为最近 / 任意
-func test_chase_has_no_target_choice() -> void:
+## 2026-10-18：追击像攻击一样可选目标——默认最近 / 任意，改选后写回并保留
+func test_chase_target_choice_defaults_nearest() -> void:
+	(GameState.unlocks["selectors"] as Array).append("farthest")
+	var lv: LevelDefinition = DataRegistry.get_level(LEVEL_ID)          # 本关只允许「最近」：临时放开「最远」，测完恢复
+	lv.allowed_selectors.append(SimTypes.Selector.FARTHEST)
 	_add("chase")
 	await wait_process_frames(1)
 	var r: RuleDef = _c.get_rules(SLOT)[0]
-	assert_eq(r.target.selector, SimTypes.Selector.NEAREST)
+	assert_eq(r.target.selector, SimTypes.Selector.NEAREST, "默认追最近")
 	assert_eq(r.target.filter, SimTypes.TargetFilter.ANY)
-	assert_null(_rows()[0].get("_selector"), "追击行无目标选择下拉")
+	var sel: OptionButton = _rows()[0].get("_selector") as OptionButton
+	assert_not_null(sel, "追击行有目标选择下拉")
+	_pick(sel, "farthest")
+	assert_eq(_c.get_rules(SLOT)[0].target.selector, SimTypes.Selector.FARTHEST, "改选最远后写回")
+	assert_eq(_c.get_rules(SLOT)[0].action.type, SimTypes.ActionType.CHASE, "仍是追击")
+	lv.allowed_selectors.erase(SimTypes.Selector.FARTHEST)
 
 
 ## 第四阶段：目标距离为一个「< N」下拉（比较与距离合成），选中写回 op 与 value

@@ -48,13 +48,13 @@
   },
   "recommended": {
     "units": [
-      { "slot": "slot_bulwark", "form": "bulwark", "pos": [2, 4], "beacons": [],
+      { "slot": "slot_bulwark", "form": "bulwark", "pos": [1, 4], "beacons": [],
         "rules": [
           { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
           { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
           { "conditions": [], "action": { "type": "idle" } }
         ] },
-      { "slot": "slot_striker", "form": "striker", "pos": [1, 4], "beacons": [],
+      { "slot": "slot_striker", "form": "striker", "pos": [2, 0], "beacons": [],
         "rules": [
           { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } },
           { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "chase_attack" } },
@@ -78,6 +78,7 @@
     "expected_win": "快速形态巡回 (x 2–6) 始终是视野内最远者，4.5 格/秒在 2 秒预警内远离 1.5 格半径；承伤+基础攻击形态击杀袭击者（55）后依次摧毁两株骨喉（60），全程约 15–20 秒。",
     "expected_fail": "快速形态不动或不部署：最远者变成推进中的承伤，连续承受 30 伤害爆炸；或推进单位停在红圈内。",
     "alternatives": "全员硬吃爆炸正面冲锋：承伤 160 可承受数次，也可能险胜，不禁止。",
-    "risks": "延迟 2.0 / 半径 1.5 / 冷却 4.0 仅为试调起点；需验证重新部署改变最远者；已标记爆炸不因目标死亡取消。"
+    "risks": "延迟 2.0 / 半径 1.5 / 冷却 4.0 仅为试调起点；需验证重新部署改变最远者；已标记爆炸不因目标死亡取消。",
+    "_note_20261018": "移动改为直线（不寻路）后，从 (1,4) 出发的基础攻击形态与承伤一起直线追向骨喉会卡在骨墙 (7,4) 前、看不见骨喉而原地挨炸，打不完；改为承伤 (1,4)、基础攻击形态 (2,0)，从骨墙上方直线推进（约 17.9s 胜，三人存活；快速形态不动时仍 23s 失败）。"
   }
 }

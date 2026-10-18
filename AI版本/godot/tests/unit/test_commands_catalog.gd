@@ -61,8 +61,8 @@ func test_catalog_loads_and_order_is_default() -> void:
 	assert_eq(cat.group_limit(SimTypes.RuleGroup.ATTACK), 5)
 	assert_eq(cat.group_limit(SimTypes.RuleGroup.MOVE), 5)
 	assert_eq(cat.ids("selectors").slice(0, 5), ["nearest", "farthest", "highest_hp", "most_damage", "first_in_range"] as Array[String], "玩家目标选项（会议口径）")
-	for legacy_sel: String in ["lowest_hp", "first_seen", "highest_max_hp"]:
-		assert_false(cat.is_player_selector(legacy_sel), "旧选敌不进玩家菜单：" + legacy_sel)
+	for sel: String in ["lowest_hp", "first_seen", "highest_max_hp"]:     # 2026-10-18：用户决定开放给玩家（按关卡解锁 + allowed 显示）
+		assert_true(cat.is_player_selector(sel), "生命最低 / 首见 / 生命上限最高 进玩家菜单：" + sel)
 	var nur: Array[RuleDef] = cat.new_unit_rules()
 	assert_eq(nur.size(), 2, "新单位预填两条：攻击组 + 移动组")
 	assert_eq(nur[0].action.type, SimTypes.ActionType.ATTACK)

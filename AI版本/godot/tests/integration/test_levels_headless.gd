@@ -115,7 +115,8 @@ func test_level_02_recommended_wins() -> void:
 
 func test_level_02_expected_fail_front_back_swapped() -> void:
 	# verification.expected_fail：前后排倒置——攻击形态在前、承伤在后
-	var deploy: Dictionary = { "slot_bulwark": Vector2i(1, 3), "slot_striker_a": Vector2i(3, 2), "slot_striker_b": Vector2i(3, 4) }
+	# 2026-10-18 移动改直线后，攻击形态放 (3,2)/(3,4) 不再掉人；改放 (3,1)/(3,5)（用户 2026-10-18：改反例站位）
+	var deploy: Dictionary = { "slot_bulwark": Vector2i(1, 3), "slot_striker_a": Vector2i(3, 1), "slot_striker_b": Vector2i(3, 5) }
 	var w: SimWorld = SimFactory.make_world("level_02", deploy)
 	var result: int = SimFactory.run_until_end(w, LEVEL_SECONDS)
 	var losses: int = _ally_losses(w)
@@ -438,7 +439,8 @@ func test_level_06_fail_categories_mapping() -> void:
 	var idle: Array = [SimFactory.r_idle()]
 	assert_eq(_diagnose({ "slot_bulwark": Vector2i(2, 8), "slot_striker": Vector2i(6, 8), "slot_lancer": Vector2i(7, 8) }).category(),
 		FailDiagnosis.FRONT_NOT_HELD, "残骸咬住后排 → 前排未留住")
-	assert_eq(_diagnose({ "slot_bulwark": Vector2i(7, 8), "slot_striker": Vector2i(4, 8), "slot_lancer": Vector2i(2, 8) },
+	# 2026-10-18 直线移动后：基础攻击形态放 (4,8) 会被残骸打到（归为「前排未留住」），后移到 (3,8)
+	assert_eq(_diagnose({ "slot_bulwark": Vector2i(7, 8), "slot_striker": Vector2i(3, 8), "slot_lancer": Vector2i(2, 8) },
 		{ "slot_striker": idle, "slot_lancer": idle }).category(), FailDiagnosis.OUT_OF_RANGE, "祭司从未进入出手单位射程")
 	assert_eq(_diagnose({ "slot_lancer": Vector2i(2, 8), "slot_striker": Vector2i(3, 8), "slot_bulwark": Vector2i(4, 8) }).category(),
 		FailDiagnosis.WRONG_TARGET, "进过射程但火力不足 / 选中别的敌人")

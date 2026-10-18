@@ -15,6 +15,7 @@ const STATUS_STYLE: Dictionary = {
 const SIGNAL_COLOR: Dictionary = { "red": Color(1.0, 0.35, 0.3), "yellow": Color(1.0, 0.85, 0.3), "blue": Color(0.45, 0.65, 1.0) }
 const PIP_RADIUS: float = 20.0
 
+const REINFORCE_COLOR: Color = Color(0.85, 1.4, 1.1, 1.0)   ## 增援区青绿（提亮抵消 CanvasModulate）
 var controller: BattleController = null
 var grid_height: int = 0
 var _t: float = 0.0
@@ -73,10 +74,13 @@ func _draw() -> void:
 	var font: Font = ThemeDB.fallback_font
 	var tile: float = float(SimTypes.TILE_SIZE)
 	if controller.boss_pending:
-		for c: Vector2i in controller.reinforce_cells():
-			var r := Rect2(SimTypes.sim_to_screen(Vector2(c.x, c.y + 1), grid_height), Vector2(tile, tile))
-			draw_rect(r.grow(-2.0), Color(0.59, 0.96, 0.76, 0.22 + 0.08 * sin(_t * 4.0)))
-			draw_rect(r.grow(-2.0), Color(0.59, 0.96, 0.76, 0.8), false, 2.0)
+		# 增援区（Boss 换阶段的出生点）：与部署区同为特殊地块——发光边线（光晕呼吸）+ 每格半透明出生点标志，不填色
+		var rcells: Array[Vector2i] = controller.reinforce_cells()
+		GlowLines.draw_cells(self, GlowLines.cell_set(rcells), grid_height, REINFORCE_COLOR, 1.6 + 0.8 * sin(_t * 4.0), true, 0.3, GlowLines.CORE_WIDTH * 1.4)
+		var mark: Texture2D = GlowLines.mark_texture("spawn")
+		if mark != null:
+			for c: Vector2i in rcells:
+				GlowLines.draw_mark(self, mark, c, grid_height, REINFORCE_COLOR)
 		var first: Vector2i = controller.reinforce_zone.position
 		var at: Vector2 = SimTypes.sim_to_screen(Vector2(first.x, controller.reinforce_zone.end.y), grid_height)
 		var zl: String = "增援区 · 剩余 %d Cost" % (controller.reinforce_budget - controller.reinforce_cost())

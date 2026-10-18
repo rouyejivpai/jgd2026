@@ -6,6 +6,10 @@ extends Sprite2D
 ## 10 §7（P7，R4）：关卡有障碍块清单（scene.obstacles）时 backdrop 是按玩法矩形标线图画的对齐底图，按设计坐标 1:1 居中铺
 ## （与 Playfield 同一换算，地面与网格逐格对齐），不再为镜头横移放大；横移时两侧露出底色。
 
+## 2026-10-18 区域底图：整张图同时承担地面，LightLayer 的 CanvasModulate（约 0.35 倍亮度）会把它压到几乎全黑，
+## 这里只对底图提亮补偿，单位光照与场景氛围不变
+const BRIGHTNESS: float = 1.45
+
 var level: LevelDefinition = null
 var pan_x: float = 0.0
 ## 第四阶段：与地图层同一视图变换（BattleRoot.set_view）：缩放中心 c、倍率 zoom、偏移 pan
@@ -26,6 +30,7 @@ func setup(p_level: LevelDefinition) -> bool:
 	centered = true
 	region_enabled = false
 	material = null
+	self_modulate = Color(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS, 1.0)
 	if not get_viewport().size_changed.is_connected(fit):
 		get_viewport().size_changed.connect(fit)
 	fit()

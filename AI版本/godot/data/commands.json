@@ -33,9 +33,9 @@
     { "id": "highest_hp",     "unlock_key": "" },
     { "id": "most_damage",    "unlock_key": "" },
     { "id": "first_in_range", "unlock_key": "" },
-    { "id": "lowest_hp",      "unlock_key": "preset.attack_lowest_hp_in_range",      "player": false },
-    { "id": "first_seen",     "unlock_key": "preset.chase_attack_first_seen",        "player": false },
-    { "id": "highest_max_hp", "unlock_key": "preset.attack_highest_max_hp_in_range", "player": false }
+    { "id": "lowest_hp",      "unlock_key": "preset.attack_lowest_hp_in_range" },
+    { "id": "first_seen",     "unlock_key": "preset.chase_attack_first_seen" },
+    { "id": "highest_max_hp", "unlock_key": "preset.attack_highest_max_hp_in_range" }
   ],
   "filters": [
     { "id": "any", "unlock_key": "" }, { "id": "unit", "unlock_key": "" },

@@ -3,7 +3,7 @@
 """04 §4.4 导入设置：按目录改写 .import 的压缩与 mipmap 参数（需先由 Godot --import 生成 .import 文件）。
 用法（在 godot/ 目录）：python tools/apply_import_presets.py   之后再运行一次 Godot --import 让改动生效。
   backgrounds/、backdrops/、grounds/    VRAM Compressed (2)，mipmaps 开（07 §1：backdrops、grounds 为第二阶段新增）
-  sprites/units、props、portraits、illustrations、ground_marks   Lossless (0)，mipmaps 开
+  sprites/units、props、portraits、illustrations、ground_marks、tile_marks   Lossless (0)，mipmaps 开
   sprites/ui、vfx、projectiles          Lossless (0)，mipmaps 关
   sprites/ui/icons/*.svg               svg/scale = 2.0
 只改上述键，其他参数保持不变；输出改动文件数。"""
@@ -21,6 +21,7 @@ RULES = [
     ("grounds", {"compress/mode": "2", "mipmaps/generate": "true"}),
     ("sprites/units", {"compress/mode": "0", "mipmaps/generate": "true"}),
     ("sprites/ground_marks", {"compress/mode": "0", "mipmaps/generate": "true"}),
+    ("sprites/tile_marks", {"compress/mode": "0", "mipmaps/generate": "true"}),
     ("sprites/props", {"compress/mode": "0", "mipmaps/generate": "true"}),
     ("sprites/portraits", {"compress/mode": "0", "mipmaps/generate": "true"}),
     ("sprites/illustrations", {"compress/mode": "0", "mipmaps/generate": "true"}),

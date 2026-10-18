@@ -49,16 +49,16 @@ HOUND_RULES = [
     {"conditions": [], "action": {"type": "idle"}},
 ]
 
-# 地区 → 章节区域、节点图标、占位背景
+# 地区 → 章节区域、节点图标、局内地图底图（2026-10-18 区域底图，tools/region_map_post.py 产出）
 REGIONS = [
-    ("bone_workshop", "织骸工坊", "rake", "res://assets/backdrops/level_01.png"),
-    ("withered_farm", "枯骨农田", "rake", "res://assets/backdrops/level_02.png"),
-    ("grey_thorn", "灰棘林", "shield", "res://assets/backdrops/level_03.png"),
-    ("holy_bell", "圣钟城废墟", "grid", "res://assets/backdrops/level_06.png"),
-    ("flesh_swamp", "肉巢沼泽", "wolf_head", "res://assets/backdrops/level_04.png"),
-    ("warped_corridor", "畸变回廊", "crosshair", "res://assets/backdrops/level_07.png"),
-    ("bone_greenhouse", "骨花温室", "flower", "res://assets/backdrops/level_08.png"),
-    ("final_battle", "最终战", "flower", "res://assets/backdrops/level_08.png"),
+    ("bone_workshop", "织骸工坊", "rake", "res://assets/backdrops/regions/bone_workshop.png"),
+    ("withered_farm", "枯骨农田", "rake", "res://assets/backdrops/regions/withered_farm.png"),
+    ("grey_thorn", "灰棘林", "shield", "res://assets/backdrops/regions/grey_thorn.png"),
+    ("holy_bell", "圣钟城废墟", "grid", "res://assets/backdrops/regions/holy_bell.png"),
+    ("flesh_swamp", "肉巢沼泽", "wolf_head", "res://assets/backdrops/regions/flesh_swamp.png"),
+    ("warped_corridor", "畸变回廊", "crosshair", "res://assets/backdrops/regions/warped_corridor.png"),
+    ("bone_greenhouse", "骨花温室", "flower", "res://assets/backdrops/regions/bone_greenhouse.png"),
+    ("final_battle", "最终战", "flower", "res://assets/backdrops/regions/bone_greenhouse.png"),
 ]
 REGION = {r[0]: r for r in REGIONS}
 # 地区 → BGM（assets/audio/bgm/<id>.mp3）；地区场景曲来自「游戏场景bgm.zip」，没有专曲的地区沿用原型已有曲目（Boss 战用 boss_01）
@@ -200,10 +200,8 @@ def convert(d: dict, n: int) -> dict:
             fb[lo["id"]] = hint
     fb.setdefault("default", hint)
     d["fail_feedback"] = fb
-    sc = d.get("scene") or {}
-    d["scene"] = {"backdrop": REGION[d["region"]][3], "ground": sc.get("ground") or "res://assets/grounds/bone_farm_a.png",
-                  "ground_tint": sc.get("ground_tint") or "#c8ccd8", "playfield_rect": None,
-                  "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"}
+    d["scene"] = {"backdrop": REGION[d["region"]][3], "playfield_rect": None,
+                  "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"}
     d["biome"] = GAME_BIOME.get(d.get("biome"), d.get("biome"))
     d["bgm"] = REGION_BGM[d["region"]]
     (d.get("grid") or {}).pop("empty", None)

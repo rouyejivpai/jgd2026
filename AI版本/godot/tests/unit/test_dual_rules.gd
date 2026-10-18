@@ -1,6 +1,6 @@
 extends GutTest
 ## 第五阶段（2026-10-17 会议）：攻击 / 移动两组指令独立求值、同时执行；组内优先级高的覆盖低的；
-## 停火、追击（只追最近、不攻击）；攻击目标 最近 / 最远 / HP最高 / 造成伤害最高 / 第一个进入射程；旧单列表 → 双组折算。
+## 停火、追击（可选目标、不攻击）；攻击目标 最近 / 最远 / HP最高 / 造成伤害最高 / 第一个进入射程；旧单列表 → 双组折算。
 
 const ATK_ALWAYS: Dictionary = { "conditions": [], "target": { "selector": "nearest", "filter": "any" }, "action": { "type": "attack" } }
 const FOLLOW: Dictionary = { "conditions": [], "action": { "type": "follow_beacons", "mode": "once", "from": "1" } }
@@ -72,7 +72,7 @@ func test_priority_within_each_group() -> void:
 	assert_lt(u.pos.x, 4.5 - 0.5, "进入射程后停下")
 
 
-## 追击只追最近的敌人，本身不攻击；配合攻击组才开火
+## 追击本身不攻击；配合攻击组才开火
 func test_chase_does_not_attack_by_itself() -> void:
 	var w: SimWorld = SimFactory.make_empty_world(14, 6)
 	var u: SimUnit = _ally(w, Vector2i(1, 2), [CHASE])

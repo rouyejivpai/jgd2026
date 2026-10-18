@@ -333,11 +333,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_02.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8b090",
+    "backdrop": "res://assets/backdrops/regions/withered_farm.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 8285,
   "schema_version": 1,
@@ -400,7 +398,7 @@
   "hints": [
     "时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。",
     "祭司正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
-    "远射形态先沿上廊走到 (7,10)（约 5 秒），从那里隔墙能打到整条中廊和出口；按「血量最低」点祭司，约 13 秒击杀。",
+    "远射先沿上廊走到中段，到位后才开火（「到达信标 1 + 射程内敌人 → 攻击·生命最低」）：从那里隔墙能盯住整条中廊和出口。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

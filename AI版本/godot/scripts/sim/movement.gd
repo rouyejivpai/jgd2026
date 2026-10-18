@@ -2,6 +2,7 @@ class_name Movement
 extends RefCounted
 ## 行为的移动部分（01 §6.7）：chase / chase_attack / retreat / follow_route；07 §3.2 follow_beacons（wait 不移动）。
 ## 目标位置一律读本步快照；单位之间不堵路，仅障碍格不可走。
+## 用户 2026-10-18：移动一律直线朝目标走，不寻路绕障；路上有障碍格就卡在障碍前（预期行为）。
 
 
 static func apply(unit: SimUnit, d: SimDecision, snap: SimSnapshot, world: SimWorld) -> void:
@@ -22,12 +23,7 @@ static func _chase(unit: SimUnit, d: SimDecision, snap: SimSnapshot, world: SimW
 	var tpos: Vector2 = snap.get_entry(d.target).pos
 	if unit.pos.distance_to(tpos) <= unit.attack_range + SimTypes.DIST_EPS:
 		return  # 已在射程内：不再移动
-	var goal: Vector2i = world.grid.nearest_cell_within(unit.cell(), tpos, unit.attack_range - SimTypes.RANGE_MARGIN)
-	if goal.x < 0:
-		unit.reason = SimTypes.ReasonCode.PATH_BLOCKED
-		unit.path.clear()
-		return
-	move_toward_cell(unit, goal, world)
+	move_toward_point(unit, tpos, world, unit.attack_range - SimTypes.RANGE_MARGIN)   # 直线追，遇障卡住（用户 2026-10-18）
 
 
 ## 撤离规划：威胁 = threat_radius 内可见敌人。在 BFS search_depth 步内的可达格中
@@ -145,6 +141,7 @@ static func _follow_route(unit: SimUnit, a: ActionDef, world: SimWorld) -> void:
 			if a.loop:
 				unit.route_index = 0
 			else:
+				unit.pos = SimTypes.cell_center(route.points[n - 1])     # 停在终点正中（同 follow_beacons）
 				unit.reason = SimTypes.ReasonCode.ROUTE_FINISHED
 				unit.path.clear()
 				return
@@ -177,6 +174,8 @@ static func follow_beacons(unit: SimUnit, a: ActionDef, world: SimWorld) -> void
 	while guard <= last + 1 and unit.pos.distance_to(SimTypes.cell_center(unit.beacons[unit.beacon_index]["cell"] as Vector2i)) < SimTypes.ARRIVE_EPS:
 		guard += 1
 		if not _advance_beacon(unit, a.mode, start, last):
+			# 停在终点信标正中（到点容差 ARRIVE_EPS 内会差几百分之一格，正好卡在射程边上时够不着——用户 2026-10-18 第 3 关）
+			unit.pos = SimTypes.cell_center(unit.beacons[unit.beacon_index]["cell"] as Vector2i)
 			unit.reason = SimTypes.ReasonCode.ROUTE_FINISHED
 			unit.path.clear()
 			return
@@ -238,33 +237,31 @@ static func _advance_beacon(unit: SimUnit, mode: int, start: int, last: int) -> 
 	return true
 
 
-## 沿四方向路径朝 goal 格中心移动 move_speed * SIM_DT（跨路点保留剩余距离）。
-## 路径在目标格变化、每 PATH_REFRESH_STEPS 步或走完时重算。
+## 朝 goal 格中心直线移动 move_speed * SIM_DT。
+## 用户 2026-10-18：不寻路、不绕障——直线上遇到障碍格就停在障碍前（PATH_BLOCKED），卡住是预期行为。
 static func move_toward_cell(unit: SimUnit, goal: Vector2i, world: SimWorld) -> void:
+	move_toward_point(unit, SimTypes.cell_center(goal), world)
+
+
+## 朝 point 直线移动，离 point 还剩 stop_dist 时停下；下一小段会进入障碍格（或出界）时停在障碍前并记 PATH_BLOCKED。
+## unit.path 只留终点格（调试层画线用）。
+static func move_toward_point(unit: SimUnit, point: Vector2, world: SimWorld, stop_dist: float = 0.0) -> void:
 	if unit.move_speed <= 0.0:
 		return
-	if goal != unit.path_goal or unit.path_age >= SimTypes.PATH_REFRESH_STEPS or unit.path.is_empty():
-		var full: Array[Vector2i] = world.grid.find_path(unit.cell(), goal)
-		if full.is_empty():
+	unit.path_goal = SimTypes.pos_to_cell(point)
+	unit.path = [unit.path_goal] as Array[Vector2i]
+	var dist: float = unit.pos.distance_to(point) - maxf(stop_dist, 0.0)
+	if dist <= 0.0:
+		return
+	var remaining: float = minf(unit.move_speed * StatusSystem.speed_mult(world, unit) * SimTypes.SIM_DT, dist)
+	var dir: Vector2 = unit.pos.direction_to(point)
+	while remaining > 0.0:
+		var seg: float = minf(remaining, SimTypes.STRAIGHT_STEP)
+		var nxt: Vector2 = unit.pos + dir * seg
+		if not world.grid.is_walkable(SimTypes.pos_to_cell(nxt)):
 			unit.reason = SimTypes.ReasonCode.PATH_BLOCKED
-			unit.path.clear()
-			unit.path_goal = Vector2i(-1, -1)
 			return
-		if full.size() > 1:
-			full.remove_at(0)   # 去掉当前格：直接朝下一格中心走（线段只经过当前格与下一格）
-		unit.path = full
-		unit.path_goal = goal
-		unit.path_age = 0
-	else:
-		unit.path_age += 1
-	var remaining: float = unit.move_speed * StatusSystem.speed_mult(world, unit) * SimTypes.SIM_DT
-	while remaining > 0.0 and not unit.path.is_empty():
-		var wp: Vector2 = SimTypes.cell_center(unit.path[0])
-		var dist: float = unit.pos.distance_to(wp)
-		if dist <= remaining:
-			unit.pos = wp
-			remaining -= dist
-			unit.path.remove_at(0)
-		else:
-			unit.pos = unit.pos.move_toward(wp, remaining)
-			remaining = 0.0
+		unit.pos = nxt
+		remaining -= seg
+	if unit.pos.distance_to(point) < SimTypes.DIST_EPS:
+		unit.pos = point                  # 消掉累加误差，保证到点判定稳定

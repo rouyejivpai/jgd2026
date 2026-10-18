@@ -71,8 +71,8 @@ def load(name):
 TEACH_TARGET_KINDS = {"none", "ui", "cell", "cells", "deploy_zone", "unit", "ally", "blocked", "ring"}
 TEACH_ADVANCES = {"next", "click", "tap", "event"}
 TEACH_EVENTS = {"deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started",
-                "drag_started", "beacon_mode_exit"}
-TEACH_COUNTED_EVENTS = {"deployed", "beacon_placed"}
+                "drag_started", "beacon_mode_exit", "beacon_in_area", "panel_closed"}
+TEACH_COUNTED_EVENTS = {"deployed", "beacon_placed", "beacon_in_area"}
 TEACH_RINGS = {"vision", "attack"}
 TEACH_ARROWS = {"auto", "up", "down", "left", "right", "none"}
 TEACH_PANELS = {"auto", "left", "right", "top", "bottom", "center"}

@@ -1,7 +1,7 @@
 class_name FloorHighlight
 extends Node2D
 ## 地板高亮（10 §7，取代第二阶段的 ObstacleHighlight）：部署阶段选中己方单位、拖拽单位或布 / 拖信标时，
-## 玩法矩形内可行走格叠淡骨白、不可移动格（障碍）叠红（决策 ⑬：alpha 0.18 / 0.45，最终按 R5 贴片），常显直到取消选中 / 交互结束；
+## 玩法矩形内可行走格的格线加骨白光晕、不可移动格（障碍）画红色发光边线（决策 ⑬ 的 alpha 0.18 / 0.45 换算为光晕强度；格内不填色），常显直到取消选中 / 交互结束；
 ## 运行中不显示。部署阶段另在敌方初始位置画红色地面标记（删除预设路线显示后标识敌人从哪里来）。
 ## 只画地板，不改单位表现；坐标为 MapLayer 局部（每格 TILE_SIZE），受玩法矩形裁剪。只读关卡数据。
 
@@ -79,11 +79,14 @@ func _draw() -> void:
 	if level == null or not deploy:
 		return
 	var t: float = float(SimTypes.TILE_SIZE)
-	if is_showing():
+	if is_showing():                     # 2026-10-18：不填色，只给格线加光晕（可行走骨白、障碍红色发光边线）
+		var walk: Dictionary = {}
 		for y: int in level.height:
 			for x: int in level.width:
-				var cell := Vector2i(x, y)
-				draw_rect(Rect2(SimTypes.sim_to_screen(Vector2(x, y + 1), level.height), Vector2(t, t)), cell_color(cell))
+				if not level.is_blocked(Vector2i(x, y)):
+					walk[Vector2i(x, y)] = true
+		GlowLines.draw_cells(self, walk, level.height, Palette.BONE, WALKABLE_ALPHA * 12.0, false)
+		GlowLines.draw_cells(self, GlowLines.cell_set(level.blocked), level.height, Palette.WARN_RED, BLOCKED_ALPHA * 6.0, true, 0.15)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	for cell: Vector2i in enemy_cells():
 		var c: Vector2 = SimTypes.sim_to_screen(SimTypes.cell_center(cell), level.height)

@@ -8,11 +8,9 @@
   "subtitle": "新单位：咒术师",
   "biome": "bone_greenhouse",
   "scene": {
-    "backdrop": "res://assets/backdrops/level_03.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#b090b8",
+    "backdrop": "res://assets/backdrops/regions/grey_thorn.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "bgm": "region_grey_thorn",
   "seed": 7403,
@@ -62,7 +60,7 @@
         9,
         2
       ],
-      "display_name": "重甲护卫·上",
+      "display_name": "重甲护卫·下",
       "overrides": {
         "attack": 16,
         "max_hp": 250
@@ -76,7 +74,7 @@
         9,
         6
       ],
-      "display_name": "重甲护卫·下",
+      "display_name": "重甲护卫·上",
       "overrides": {
         "attack": 16,
         "max_hp": 250
@@ -213,8 +211,8 @@
         "slot": "slot_lancer",
         "form": "lancer",
         "pos": [
-          0,
-          4
+          2,
+          3
         ],
         "beacons": [],
         "rules": [

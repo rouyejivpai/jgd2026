@@ -311,11 +311,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_02.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8b090",
+    "backdrop": "res://assets/backdrops/regions/withered_farm.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 8174,
   "schema_version": 1,
@@ -389,7 +387,7 @@
   "hints": [
     "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。",
     "信使（不能被指挥）会自己沿走廊走向右侧出口。伏击者会扑向离它们最近的人——别让那个人是信使。",
-    "承伤形态先走到信使前方吸引伏击者，远射形态跟在信使身后点射；信使约 15 秒走到出口。",
+    "承伤形态先走到信使前方吸引伏击者，远射形态跟在信使身后点射；信使会自己走到出口。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

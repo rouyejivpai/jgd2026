@@ -77,8 +77,9 @@ func test_corner_pinned_bites_back() -> void:
 
 
 ## 场景 1b：远程追击者（射程 4）逼角——猎犬够不着（射程 1.5），按规则待机，在角落被远程击杀，不抖动
+## 2026-10-18 移动改直线：从 (5,5) 沿对角线直追会卡在骨桩 (8,8) 前、够不着猎犬，起点改为 (5,6)
 func test_corner_stall_ranged_chaser() -> void:
-	var m: Dictionary = _scenario(Vector2i(10, 10), [Vector2i(5, 5)], _chase())
+	var m: Dictionary = _scenario(Vector2i(10, 10), [Vector2i(5, 6)], _chase())
 	_report("角落停滞（远程追击）", m)
 	assert_eq(int(m["blocked"]), 0)
 	assert_lte(int(m["reversals"]), MAX_REVERSALS, "无高频抖动")

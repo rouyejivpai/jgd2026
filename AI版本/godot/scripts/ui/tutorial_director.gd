@@ -11,6 +11,8 @@ signal finished(skipped: bool)
 
 const OVERLAY_LAYER: int = 3              ## 高于 HUD（UI 层 2），低于设置浮窗（100）
 const AUTO_NAME_PREFIX: String = "@"
+const UNIT_HOLE_UP: float = 1.35          ## 单位高亮框：脚底以上的格数（盖住精灵头顶）
+const UNIT_HOLE_DOWN: float = 0.5         ## 单位高亮框：脚底以下的格数（底座）
 
 var root: Node2D = null                   ## BattleRoot
 var hud: Control = null
@@ -48,7 +50,7 @@ func setup(p_root: Node2D, p_hud: Control) -> void:
 			steps.append(TeachingDef.normalize_step((pv["steps"] as Array)[i] as Dictionary, "preview"))
 		DataReader.silent = was
 		is_test = bool(pv.get("test", false))
-	elif not SaveManager.is_tutorial_seen(level.id) and GameState.tutorials_enabled:
+	elif GameState.tutorials_enabled:      # 2026-10-18：每次进关都从头播放新手教程（不再因「已看过」跳过；存档仍记录看过）
 		steps = teaching.tutorial_steps(level.id)
 		is_test = teaching.is_test(level.id)
 	if steps.is_empty() and not pick_mode:
@@ -116,12 +118,14 @@ func _process(_delta: float) -> void:
 		_show(step)
 	overlay.set_targets(target_rects(step))
 	if str(step["advance"]) == "event":
-		# 信标模式按状态推进：已在信标模式（或已退出）时直接成立
+		# 信标模式 / 侧栏按状态推进：已在信标模式（或已退出）、侧栏已收起时直接成立
 		var on: bool = str(hud.call("beacon_mode_slot")) != ""
 		if str(step["event"]) == "beacon_mode" and on:
 			_fire("beacon_mode")
 		elif str(step["event"]) == "beacon_mode_exit" and not on:
 			_fire("beacon_mode_exit")
+		elif str(step["event"]) == "panel_closed" and not bool(hud.call("side_visible")):
+			_fire("panel_closed")
 
 
 func _show(step: Dictionary) -> void:
@@ -262,13 +266,15 @@ func _cells_rect(cells: Array) -> Rect2:
 	return r
 
 
+## 单位高亮框：脚底锚点往上盖住整个精灵（约 1.2 格高），点在身体任何位置都能穿过遮罩点中（用户 2026-10-18）
 func _unit_rect(u: SimUnit) -> Rect2:
 	if u == null or not u.alive:
 		return Rect2()
 	var cr: Rect2 = root.call("cell_screen_rect", u.cell()) as Rect2
 	var center: Variant = root.call("unit_screen_pos", u.id)
 	var c: Vector2 = center as Vector2 if center != null else cr.get_center()
-	return Rect2(c - cr.size * 0.6, cr.size * 1.2)
+	var top_left := Vector2(c.x - cr.size.x * 0.6, c.y - cr.size.y * UNIT_HOLE_UP)
+	return Rect2(top_left, Vector2(cr.size.x * 1.2, cr.size.y * (UNIT_HOLE_UP + UNIT_HOLE_DOWN)))
 
 
 ## 单位视野圈 / 射程圈的外接矩形（半径按格 × 屏幕上的格宽，与 RangeLayer 同口径）
@@ -302,14 +308,30 @@ func _fire(event: String) -> void:
 	_advance_from.call_deferred(index)
 
 
-## count 对应的累计数量：已部署单位数 / 全场信标数；其他事件恒为 1
+## count 对应的累计数量：已部署单位数 / 全场信标数 / 本步高亮地块内的信标数；其他事件恒为 1
 func _counted(event: String) -> int:
 	match event:
 		"deployed":
 			return controller.placements.size()
 		"beacon_placed":
 			return controller.beacon_total()
+		"beacon_in_area":
+			return beacons_in_area(current())
 	return 1
+
+
+## 某步高亮地块（cell / cells 目标）内的信标数（全部己方单位合计）
+func beacons_in_area(step: Dictionary) -> int:
+	var area: Dictionary = {}
+	for t: Dictionary in step.get("targets", []) as Array[Dictionary]:
+		for c: Vector2i in t.get("cells", []) as Array:
+			area[c] = true
+	var n: int = 0
+	for uid: String in controller.uids():
+		for b: Dictionary in controller.get_beacons(uid):
+			if area.has(b["cell"] as Vector2i):
+				n += 1
+	return n
 
 
 ## 只推进第 i 步（同一帧内多次触发只推进一次）
@@ -392,6 +414,7 @@ func _on_beacons_changed(unit_id: int) -> void:
 	if n > int(_beacons.get(unit_id, 0)):
 		_fire("beacon_placed")
 	_beacons[unit_id] = n
+	_fire("beacon_in_area")                 # 拖动信标进区域也算；数量按本步区域内的信标数判断
 
 
 func _on_phase_changed(phase: int) -> void:

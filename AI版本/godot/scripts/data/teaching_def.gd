@@ -13,10 +13,11 @@ const TARGET_KINDS: Array[String] = ["none", "ui", "cell", "cells", "deploy_zone
 const ADVANCES: Array[String] = ["next", "click", "tap", "event"]
 ## 推进事件：deployed 放下一名单位；ally_selected / enemy_selected 选中己方 / 敌方；beacon_placed 放置信标；
 ## beacon_mode 进入信标模式；rules_changed 改了指令；battle_started 开始战斗；
-## drag_started 开始拖动出场卡；beacon_mode_exit 退出信标模式（教程关引导 PPT，2026-10-18）
+## drag_started 开始拖动出场卡；beacon_mode_exit 退出信标模式（教程关引导 PPT，2026-10-18）；
+## beacon_in_area 本步高亮地块（cell / cells）内放下信标——放在别处不推进；panel_closed 收起单位 / 敌人详情侧栏（用户 2026-10-18）
 const EVENTS: Array[String] = ["deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started",
-	"drag_started", "beacon_mode_exit"]
-const COUNTED_EVENTS: Array[String] = ["deployed", "beacon_placed"]       ## 可带 count（累计数量）的事件
+	"drag_started", "beacon_mode_exit", "beacon_in_area", "panel_closed"]
+const COUNTED_EVENTS: Array[String] = ["deployed", "beacon_placed", "beacon_in_area"]       ## 可带 count（累计数量）的事件
 const RINGS: Array[String] = ["vision", "attack"]
 const ARROWS: Array[String] = ["auto", "up", "down", "left", "right", "none"]
 const PANELS: Array[String] = ["auto", "left", "right", "top", "bottom", "center"]
@@ -74,7 +75,7 @@ static func from_dict(d: Dictionary, ctx: String) -> TeachingDef:
 ##             ui 目标可带 zoom（> 1 时该元素放大显示，如出场卡 1.15）
 ##   advance   next（按「下一步」）/ click（点高亮处）/ tap（点屏幕任意处）/ event（等事件，见 EVENTS）
 ##   event     advance = event 时的事件名
-##   count     event 为 deployed / beacon_placed 时：已部署单位数 / 全场信标数累计达到 count 才推进（默认 1）
+##   count     event 为 deployed / beacon_placed / beacon_in_area 时：已部署单位数 / 全场信标数 / 本步高亮地块内信标数达到 count 才推进（默认 1）
 ##   block     true = 只允许点高亮处（默认：有高亮且不是 next 时为 true）
 ##   arrow     auto / up / down / left / right / none（箭头从哪一侧指向目标；auto = 自动）
 ##   panel     文字框位置 auto / left / right / top / bottom / center（机制说明可放右侧）
@@ -102,6 +103,8 @@ static func normalize_step(d: Dictionary, ctx: String) -> Dictionary:
 		DataReader.report(ctx, "count 只用于 %s 事件" % str(COUNTED_EVENTS))
 	if s["advance"] == "click" and targets.filter(func(t: Dictionary) -> bool: return str(t["kind"]) != "none").is_empty():
 		DataReader.report(ctx, "advance = click 需要至少一个高亮目标")
+	if s["advance"] == "event" and s["event"] == "beacon_in_area" and not targets.any(func(t: Dictionary) -> bool: return str(t["kind"]) == "cell" or str(t["kind"]) == "cells"):
+		DataReader.report(ctx, "beacon_in_area 需要 cell / cells 高亮目标（信标要放进的区域）")
 	var has_hole: bool = targets.any(func(t: Dictionary) -> bool: return str(t["kind"]) != "none")
 	s["block"] = DataReader.opt_bool(d, "block", has_hole and s["advance"] != "next", ctx)
 	s["arrow"] = DataReader.opt_str(d, "arrow", "auto", ctx)

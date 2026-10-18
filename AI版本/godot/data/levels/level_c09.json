@@ -493,7 +493,7 @@
   ],
   "routes": {
     "lane_mid": {
-      "name": "lane_mid",
+      "name": "中路",
       "points": [
         [
           18,
@@ -506,7 +506,7 @@
       ]
     },
     "lane_top": {
-      "name": "lane_top",
+      "name": "上路",
       "points": [
         [
           18,
@@ -523,7 +523,7 @@
       ]
     },
     "lane_bot": {
-      "name": "lane_bot",
+      "name": "下路",
       "points": [
         [
           18,
@@ -692,11 +692,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_02.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8b090",
+    "backdrop": "res://assets/backdrops/regions/withered_farm.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 8248,
   "schema_version": 1,

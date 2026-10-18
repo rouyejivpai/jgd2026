@@ -32,7 +32,7 @@
       "id": "P1",
       "unit": "raider",
       "faction": "enemy",
-      "display_name": "夜巡·上",
+      "display_name": "夜巡·下",
       "pos": [
         5,
         1
@@ -83,13 +83,13 @@
           }
         }
       ],
-      "public_rule_text": "沿上巡道 y=1（x=5..13）来回走。夜巡只带一盏暗灯，视野只有 3 格——你待在 y=4..6 的走廊里它看不见你；贴近 y=1 才会被发现。"
+      "public_rule_text": "沿下巡道 y=1（x=5..13）来回走。夜巡只带一盏暗灯，视野只有 3 格——你待在 y=4..6 的走廊里它看不见你；贴近 y=1 才会被发现。"
     },
     {
       "id": "P2",
       "unit": "raider",
       "faction": "enemy",
-      "display_name": "夜巡·下",
+      "display_name": "夜巡·上",
       "pos": [
         13,
         9
@@ -140,7 +140,7 @@
           }
         }
       ],
-      "public_rule_text": "沿下巡道 y=9（x=5..13）来回走。视野 3 格，规则同上巡道。"
+      "public_rule_text": "沿上巡道 y=9（x=5..13）来回走。视野 3 格，规则同下巡道。"
     },
     {
       "id": "G1",
@@ -155,7 +155,7 @@
   ],
   "routes": {
     "north_patrol": {
-      "name": "上巡道",
+      "name": "下巡道",
       "points": [
         [
           5,
@@ -168,7 +168,7 @@
       ]
     },
     "south_patrol": {
-      "name": "下巡道",
+      "name": "上巡道",
       "points": [
         [
           13,
@@ -248,7 +248,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "摧毁林间的回响骸柱。两条巡道横在中间",
+    "objective_text": "摧毁林间的回响骸柱。两条巡道贴着上下两边，中间那条路它们看不见",
     "win": [
       {
         "id": "win_destroy_pillar",
@@ -277,11 +277,9 @@
     "_engine_check": "2026-10-14 用原型模拟核心（AI版本/godot，补状态系统后）无头实跑，结果见《关卡修改报告》"
   },
   "scene": {
-    "backdrop": "res://assets/backdrops/level_01.png",
-    "ground": "res://assets/grounds/bone_farm_a.png",
-    "ground_tint": "#c8ccd8",
+    "backdrop": "res://assets/backdrops/regions/bone_workshop.png",
     "playfield_rect": null,
-    "_note": "占位背景（借用第一阶段背景）；编辑器里的 review_r4 障碍块清单与新地形不对应，已去掉"
+    "_note": "区域局内地图（2026-10-18）：整张底图 + 程序发光格线，不铺地面贴图"
   },
   "seed": 12,
   "schema_version": 1,
@@ -355,8 +353,8 @@
   ],
   "hints": [
     "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。",
-    "摧毁林间的回响骸柱。两条巡道横在中间",
-    "沿 y=5 中线走，离两条巡道各 4 格 > 巡逻视野 3，不会被发现；到 (10,5) 后打骸柱。",
+    "摧毁林间的回响骸柱。两条巡道贴着上下两边，中间那条路它们看不见",
+    "沿地图正中间那条横线走：离上下两条巡道都隔着 4 格，夜巡只看得见 3 格，发现不了你；走到骸柱跟前再打。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

@@ -6,6 +6,7 @@ const SIM_DT: float = 1.0 / 30.0          ## 固定模拟步长（30 步/秒）
 const PATH_REFRESH_STEPS: int = 6          ## 追击路径重算间隔（步）
 const RANGE_MARGIN: float = 0.15           ## 追击停下时与射程的安全余量（格）
 const ARRIVE_EPS: float = 0.05             ## 到达路点判定距离（格）
+const STRAIGHT_STEP: float = 0.05          ## 直线移动的障碍检测步长（格）：遇障停在障碍前不超过这一距离（用户 2026-10-18 取消寻路）
 const RETREAT_MIN_GAIN: float = 0.5        ## retreat_possible 条件要求的最小距离改善（格）
 const TILE_SIZE: int = 96                  ## 表现层每格像素
 
