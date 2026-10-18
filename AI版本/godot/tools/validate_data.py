@@ -68,13 +68,17 @@ def load(name):
         return None
 
 
-TEACH_TARGET_KINDS = {"none", "ui", "cell", "cells", "deploy_zone", "unit", "ally"}
-TEACH_ADVANCES = {"next", "click", "event"}
-TEACH_EVENTS = {"deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started"}
+TEACH_TARGET_KINDS = {"none", "ui", "cell", "cells", "deploy_zone", "unit", "ally", "blocked", "ring"}
+TEACH_ADVANCES = {"next", "click", "tap", "event"}
+TEACH_EVENTS = {"deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started",
+                "drag_started", "beacon_mode_exit"}
+TEACH_COUNTED_EVENTS = {"deployed", "beacon_placed"}
+TEACH_RINGS = {"vision", "attack"}
 TEACH_ARROWS = {"auto", "up", "down", "left", "right", "none"}
 TEACH_PANELS = {"auto", "left", "right", "top", "bottom", "center"}
 TEACH_OVERRIDES = ("allowed", "rewards", "hints", "mechanic_hint", "roster", "deploy_zone", "initial_units", "objectives", "modifiers")
-TEACH_STYLE = {"dim_color", "highlight_color", "highlight_width", "hole_pad", "arrow_size", "arrow_gap", "arrow_bob", "arrow_bob_hz", "panel_width", "panel_margin"}
+TEACH_STYLE = {"dim_color", "highlight_color", "highlight_width", "hole_pad", "arrow_size", "arrow_gap", "arrow_bob", "arrow_bob_hz", "panel_width", "panel_margin",
+               "zoom_seconds"}
 
 
 def apply_teaching_overrides(L, entry):
@@ -131,6 +135,13 @@ def check_teaching(doc, level_docs):
                 err(sctx, f"advance 非法: {adv}")
             if adv == "event" and st.get("event") not in TEACH_EVENTS:
                 err(sctx, f"event 非法: {st.get('event')}")
+            if not isinstance(st.get("deselect", False), bool):
+                err(sctx, "deselect 必须是 true / false")
+            cnt = st.get("count", 1)
+            if not isinstance(cnt, int) or cnt < 1:
+                err(sctx, "count 必须是 ≥ 1 的整数")
+            elif cnt > 1 and st.get("event") not in TEACH_COUNTED_EVENTS:
+                err(sctx, f"count 只用于 {sorted(TEACH_COUNTED_EVENTS)} 事件")
             if st.get("arrow", "auto") not in TEACH_ARROWS:
                 err(sctx, "arrow 非法")
             if st.get("panel", "auto") not in TEACH_PANELS:
@@ -154,6 +165,15 @@ def check_teaching(doc, level_docs):
                         err(sctx, f"地块 {c} 越界或格式错误")
                 if k == "unit" and t.get("spawn") not in spawns:
                     err(sctx, f"预置单位 '{t.get('spawn')}' 不存在")
+                if k == "ring":
+                    if t.get("ring", "vision") not in TEACH_RINGS:
+                        err(sctx, f"ring 必须是 {sorted(TEACH_RINGS)} 之一")
+                    if t.get("spawn", "") and t.get("spawn") not in spawns:
+                        err(sctx, f"预置单位 '{t.get('spawn')}' 不存在")
+                if k == "ui" and "zoom" in t and not (isinstance(t["zoom"], (int, float)) and t["zoom"] > 0):
+                    err(sctx, "zoom 必须大于 0")
+                if k == "blocked" and not L.get("grid", {}).get("blocked"):
+                    err(sctx, "本关没有障碍格")
 
 
 def expand_allowed(actions):

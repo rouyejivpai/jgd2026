@@ -9,7 +9,7 @@ signal next_pressed()
 signal skip_pressed()
 signal back_pressed()                     ## 配置器预览：返回配置器
 
-const MAX_HOLES: int = 8
+const MAX_HOLES: int = 12
 const PANEL_PAD: int = 16
 
 var style: Dictionary = TeachingDef.DEFAULT_STYLE.duplicate()
@@ -91,12 +91,14 @@ func set_style(s: Dictionary) -> void:
 	_deco.queue_redraw()
 
 
-## 显示一步。rects 为目标的屏幕矩形（未加留白），空 = 只有说明框
-func show_step(title: String, text: String, step_n: int, total: int, show_next: bool, p_block: bool, p_arrow: String, p_panel: String) -> void:
+## 显示一步。rects 为目标的屏幕矩形（未加留白），空 = 只有说明框；tap = 点屏幕任意处继续（步骤计数旁加提示）
+func show_step(title: String, text: String, step_n: int, total: int, show_next: bool, p_block: bool, p_arrow: String, p_panel: String, tap: bool = false) -> void:
 	_title.text = title
 	_title.visible = title != ""
 	_body.text = text
 	_step.text = DataRegistry.get_string("ui.tutorial_step").format({ "n": step_n, "total": total })
+	if tap:
+		_step.text += DataRegistry.get_string("ui.tutorial_tap")
 	_next.visible = show_next
 	block = p_block
 	arrow = p_arrow

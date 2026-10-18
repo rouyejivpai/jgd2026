@@ -166,6 +166,7 @@ func _build_action_line() -> void:
 	_text(DataRegistry.get_string("ui.rule_action_label"), "det_act_label", rel("det_act_label"))
 	var act_key: String = SimTypes.action_to_string(rule.action.type)
 	_action = _option(editor.action_items(act_key), act_key, _on_action, "det_action")
+	_action.name = "RuleAction"                # 固定名字供引导 / 配置器拾取（如 Group_attack/RuleAction）
 	_place(_action, rel("det_action"))
 	var t: int = rule.action.type
 	if t == SimTypes.ActionType.CHASE and not editor.read_only:
@@ -176,8 +177,10 @@ func _build_action_line() -> void:
 		_add_target_options()
 	elif t == SimTypes.ActionType.FOLLOW_BEACONS:
 		_mode = _option(editor.beacon_mode_items(), SimTypes.beacon_mode_to_string(rule.action.mode), _on_mode, "det_p1")
+		_mode.name = "RuleMode"
 		_place(_mode, rel("det_p1"))
 		_from = _option(editor.beacon_items(rule.action.from), rule.action.from, _on_from, "det_p2")
+		_from.name = "RuleFrom"
 		_place(_from, rel("det_p2"))
 	elif t == SimTypes.ActionType.WAIT:
 		_text(DataRegistry.get_string("ui.wait_duration"), "det_wait_label", rel("det_wait_label"))
@@ -205,8 +208,10 @@ func _add_target_options() -> void:
 	var sel_key: String = SimTypes.selector_to_string(rule.target.selector) if rule.target != null else ""
 	var fil_key: String = SimTypes.filter_to_string(rule.target.filter) if rule.target != null else ""
 	_selector = _option(editor.selector_items(sel_key), sel_key, _on_selector, "det_p1")
+	_selector.name = "RuleSelector"
 	_place(_selector, rel("det_p1"))
 	_filter = _option(editor.filter_items(fil_key), fil_key, _on_filter, "det_p2")
+	_filter.name = "RuleFilter"
 	_place(_filter, rel("det_p2"))
 
 
@@ -246,6 +251,7 @@ func _build_condition_line(k: int, c: ConditionDef) -> void:
 		items.push_front([DataRegistry.get_string("ui.condition_none"), NONE_KEY])
 	var has_param: bool = c != null and c.type in [SimTypes.ConditionType.SELF_HP_BELOW, SimTypes.ConditionType.TARGET_DISTANCE, SimTypes.ConditionType.AT_BEACON, SimTypes.ConditionType.SIGNAL_IS]
 	var opt: OptionButton = _option(items, key, _on_cond.bind(k), "det_c1")
+	opt.name = "RuleCond%d" % (k + 1)
 	_place(opt, _shift(rel("det_c1_narrow", "det_row2"), dy, rel("det_c1").position.y) if has_param else _shift(rel("det_c1"), dy))
 	_cond_options.append(opt)
 	_content_h = maxf(_content_h, opt.position.y + opt.size.y)

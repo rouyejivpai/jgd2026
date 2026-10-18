@@ -9,11 +9,15 @@ extends RefCounted
 ## 第七关数据冻结（00 §1 铁律 5）：只允许配置引导，不允许覆盖 allowed / rewards / hints / mechanic_hint。
 ## style：引导遮罩 / 高亮 / 箭头 / 文字框的表现参数（数值不进代码）。
 
-const TARGET_KINDS: Array[String] = ["none", "ui", "cell", "cells", "deploy_zone", "unit", "ally"]
-const ADVANCES: Array[String] = ["next", "click", "event"]
+const TARGET_KINDS: Array[String] = ["none", "ui", "cell", "cells", "deploy_zone", "unit", "ally", "blocked", "ring"]
+const ADVANCES: Array[String] = ["next", "click", "tap", "event"]
 ## 推进事件：deployed 放下一名单位；ally_selected / enemy_selected 选中己方 / 敌方；beacon_placed 放置信标；
-## beacon_mode 进入信标模式；rules_changed 改了指令；battle_started 开始战斗
-const EVENTS: Array[String] = ["deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started"]
+## beacon_mode 进入信标模式；rules_changed 改了指令；battle_started 开始战斗；
+## drag_started 开始拖动出场卡；beacon_mode_exit 退出信标模式（教程关引导 PPT，2026-10-18）
+const EVENTS: Array[String] = ["deployed", "ally_selected", "enemy_selected", "beacon_placed", "beacon_mode", "rules_changed", "battle_started",
+	"drag_started", "beacon_mode_exit"]
+const COUNTED_EVENTS: Array[String] = ["deployed", "beacon_placed"]       ## 可带 count（累计数量）的事件
+const RINGS: Array[String] = ["vision", "attack"]
 const ARROWS: Array[String] = ["auto", "up", "down", "left", "right", "none"]
 const PANELS: Array[String] = ["auto", "left", "right", "top", "bottom", "center"]
 const PHASES: Array[String] = ["deploy", "running"]
@@ -24,6 +28,7 @@ const FROZEN_LEVEL: String = "level_07"
 const DEFAULT_STYLE: Dictionary = {
 	"dim_color": "#05030Acc", "highlight_color": "#E8C46A", "highlight_width": 3.0, "hole_pad": 10.0,
 	"arrow_size": 34.0, "arrow_gap": 14.0, "arrow_bob": 8.0, "arrow_bob_hz": 1.4, "panel_width": 460.0, "panel_margin": 24.0,
+	"zoom_seconds": 0.25,
 }
 
 var style: Dictionary = DEFAULT_STYLE.duplicate()
@@ -63,14 +68,19 @@ static func from_dict(d: Dictionary, ctx: String) -> TeachingDef:
 ##   text      文字说明（必填）           title  标题（可空）
 ##   targets   高亮目标数组；第一个是箭头指向的目标。每项 { kind, node | cell | cells | spawn }：
 ##             ui = HUD 中的节点（node：节点名，或「名字/子路径」）；cell / cells = 地块；deploy_zone = 部署区；
-##             unit = 关卡预置单位（spawn：initial_units 的 id）；ally = 第一名已部署的己方单位；none = 无高亮（只有文字框）
-##   advance   next（按「下一步」）/ click（点高亮处）/ event（等事件，见 EVENTS）
+##             unit = 关卡预置单位（spawn：initial_units 的 id）；ally = 第一名已部署的己方单位；none = 无高亮（只有文字框）；
+##             blocked = 全部障碍格（相连的障碍格合成一处高亮）；ring = 单位的视野圈 / 射程圈（ring：vision / attack；
+##             spawn：预置单位 id，省略 = 第一名己方）
+##             ui 目标可带 zoom（> 1 时该元素放大显示，如出场卡 1.15）
+##   advance   next（按「下一步」）/ click（点高亮处）/ tap（点屏幕任意处）/ event（等事件，见 EVENTS）
 ##   event     advance = event 时的事件名
+##   count     event 为 deployed / beacon_placed 时：已部署单位数 / 全场信标数累计达到 count 才推进（默认 1）
 ##   block     true = 只允许点高亮处（默认：有高亮且不是 next 时为 true）
 ##   arrow     auto / up / down / left / right / none（箭头从哪一侧指向目标；auto = 自动）
 ##   panel     文字框位置 auto / left / right / top / bottom / center（机制说明可放右侧）
 ##   phase     deploy（部署阶段）/ running（战斗中，出现时暂停战斗）
 ##   after     phase = running 时，战斗进行到第几秒才出现（默认 0）
+##   deselect  true = 出现时取消选中单位（收起侧栏，露出被它盖住的「开始」等按钮）
 static func normalize_step(d: Dictionary, ctx: String) -> Dictionary:
 	var s: Dictionary = {}
 	s["text"] = DataReader.req_str(d, "text", ctx)
@@ -85,6 +95,11 @@ static func normalize_step(d: Dictionary, ctx: String) -> Dictionary:
 	s["event"] = DataReader.opt_str(d, "event", "", ctx)
 	if s["advance"] == "event" and not EVENTS.has(str(s["event"])):
 		DataReader.report(ctx, "advance = event 时 event 必须是 %s 之一" % str(EVENTS))
+	s["count"] = int(DataReader.opt_num(d, "count", 1.0, ctx))
+	if int(s["count"]) < 1:
+		DataReader.report(ctx, "count 至少为 1")
+	elif int(s["count"]) > 1 and not COUNTED_EVENTS.has(str(s["event"])):
+		DataReader.report(ctx, "count 只用于 %s 事件" % str(COUNTED_EVENTS))
 	if s["advance"] == "click" and targets.filter(func(t: Dictionary) -> bool: return str(t["kind"]) != "none").is_empty():
 		DataReader.report(ctx, "advance = click 需要至少一个高亮目标")
 	var has_hole: bool = targets.any(func(t: Dictionary) -> bool: return str(t["kind"]) != "none")
@@ -99,6 +114,7 @@ static func normalize_step(d: Dictionary, ctx: String) -> Dictionary:
 	if not PHASES.has(str(s["phase"])):
 		DataReader.report(ctx, "phase 必须是 deploy / running")
 	s["after"] = DataReader.opt_num(d, "after", 0.0, ctx)
+	s["deselect"] = DataReader.opt_bool(d, "deselect", false, ctx)
 	return s
 
 
@@ -107,6 +123,14 @@ static func _target(d: Dictionary, ctx: String) -> Dictionary:
 	match str(t["kind"]):
 		"ui":
 			t["node"] = DataReader.req_str(d, "node", ctx)
+			t["zoom"] = DataReader.opt_num(d, "zoom", 1.0, ctx)
+			if float(t["zoom"]) <= 0.0:
+				DataReader.report(ctx, "zoom 必须大于 0")
+		"ring":
+			t["spawn"] = DataReader.opt_str(d, "spawn", "", ctx)
+			t["ring"] = DataReader.opt_str(d, "ring", "vision", ctx)
+			if not RINGS.has(str(t["ring"])):
+				DataReader.report(ctx, "ring 必须是 %s 之一" % str(RINGS))
 		"cell":
 			t["cells"] = [DataReader.cell(d.get("cell", null), ctx + ".cell")] as Array[Vector2i]
 		"cells":
@@ -118,7 +142,7 @@ static func _target(d: Dictionary, ctx: String) -> Dictionary:
 			t["cells"] = cs
 		"unit":
 			t["spawn"] = DataReader.req_str(d, "spawn", ctx)
-		"none", "deploy_zone", "ally":
+		"none", "deploy_zone", "ally", "blocked":
 			pass
 		_:
 			DataReader.report(ctx, "kind 必须是 %s 之一" % str(TARGET_KINDS))
@@ -139,8 +163,10 @@ func validate_against(level_defs: Dictionary, ctx: String) -> void:
 				for c: Vector2i in t.get("cells", []) as Array:
 					if not L.in_bounds(c):
 						DataReader.report(sctx, "地块 %s 越界" % str(c))
-				if str(t["kind"]) == "unit" and L.get_spawn(str(t["spawn"])) == null:
+				if (str(t["kind"]) == "unit" or (str(t["kind"]) == "ring" and str(t["spawn"]) != "")) and L.get_spawn(str(t["spawn"])) == null:
 					DataReader.report(sctx, "预置单位 '%s' 不存在" % str(t["spawn"]))
+				if str(t["kind"]) == "blocked" and L.blocked.is_empty():
+					DataReader.report(sctx, "本关没有障碍格")
 
 
 func has_tutorial(level_id: String) -> bool:

@@ -13,11 +13,13 @@ extends Control
 const TEACHING_PATH: String = "res://data/teaching.json"
 const LEVEL_DIR: String = "res://data/levels/"
 const UNLOCK_TABLE_PATH: String = "../docs/15_指令解锁表.md"
-const ADVANCE_LABELS: Dictionary = { "next": "下一步按钮", "click": "点击高亮处", "event": "等待事件" }
+const ADVANCE_LABELS: Dictionary = { "next": "下一步按钮", "click": "点击高亮处", "tap": "点击任意处", "event": "等待事件" }
 const EVENT_LABELS: Dictionary = { "deployed": "放下单位", "ally_selected": "选中己方", "enemy_selected": "选中敌人", "beacon_placed": "放置信标",
-	"beacon_mode": "进入信标模式", "rules_changed": "修改指令", "battle_started": "开始战斗" }
+	"beacon_mode": "进入信标模式", "rules_changed": "修改指令", "battle_started": "开始战斗", "drag_started": "开始拖动出场卡", "beacon_mode_exit": "退出信标模式" }
 const BLOCK_LABELS: Array[String] = ["自动", "只放行高亮处", "不拦截"]
-const KIND_LABELS: Dictionary = { "ui": "界面元素", "cell": "地块", "cells": "多个地块", "deploy_zone": "部署区", "unit": "预置单位", "ally": "第一名己方", "none": "无高亮" }
+const KIND_LABELS: Dictionary = { "ui": "界面元素", "cell": "地块", "cells": "多个地块", "deploy_zone": "部署区", "unit": "预置单位", "ally": "第一名己方",
+	"blocked": "全部障碍格", "ring": "视野 / 射程圈", "none": "无高亮" }
+const RING_LABELS: Dictionary = { "vision": "视野圈", "attack": "射程圈" }
 const REWARD_KEYS: Array[String] = ["unlock_actions", "unlock_conditions", "unlock_selectors", "unlock_forms", "unlock_presets"]
 const LEVEL_PAGE: GDScript = preload("res://tools/config_level_page.gd")
 const PACK_FORMAT: String = "rengong-shenling-level-config"
@@ -58,10 +60,15 @@ var _f_arrow: OptionButton
 var _f_panel: OptionButton
 var _f_phase: OptionButton
 var _f_after: SpinBox
+var _f_count: SpinBox
+var _f_deselect: CheckBox
 var _targets: ItemList
 var _t_node: LineEdit
+var _t_zoom: SpinBox
 var _t_cells: LineEdit
 var _t_spawn: OptionButton
+var _t_ring: OptionButton
+var _t_ring_of: OptionButton
 # 解锁页
 var _unlock_note: Label
 var _unlock_boxes: Dictionary = {}        ## "allowed.actions" / "rewards.unlock_actions" … -> { id: CheckBox }
@@ -266,6 +273,10 @@ func _build_tutorial_tab() -> void:
 	_f_text.text_changed.connect(_write_step)
 	_f_advance = _row(_form, "推进方式", _option(_pairs(ADVANCE_LABELS), _write_step)) as OptionButton
 	_f_event = _row(_form, "等待的事件", _option(_pairs(EVENT_LABELS), _write_step)) as OptionButton
+	_f_count = _row(_form, "累计数量（放下单位 / 放置信标）", SpinBox.new()) as SpinBox
+	_f_count.min_value = 1.0
+	_f_count.max_value = 99.0
+	_f_count.value_changed.connect(func(_v: float) -> void: _write_step())
 	_f_block = _row(_form, "点击限制", _option(_plain(BLOCK_LABELS), _write_step)) as OptionButton
 	_f_arrow = _row(_form, "箭头", _option(_plain(TeachingDef.ARROWS), _write_step)) as OptionButton
 	_f_panel = _row(_form, "说明框位置", _option(_plain(TeachingDef.PANELS), _write_step)) as OptionButton
@@ -274,6 +285,9 @@ func _build_tutorial_tab() -> void:
 	_f_after.max_value = 600.0
 	_f_after.step = 0.5
 	_f_after.value_changed.connect(func(_v: float) -> void: _write_step())
+	_f_deselect = _row(_form, "收起侧栏", CheckBox.new()) as CheckBox
+	_f_deselect.text = "出现时取消选中单位（露出被侧栏盖住的「开始」）"
+	_f_deselect.toggled.connect(func(_on: bool) -> void: _write_step())
 	var tl := Label.new()
 	tl.text = "高亮目标（第一个 = 箭头指向）"
 	_form.add_child(tl)
@@ -285,14 +299,21 @@ func _build_tutorial_tab() -> void:
 	_form.add_child(_targets)
 	var kinds := HBoxContainer.new()
 	_form.add_child(kinds)
-	for k: String in ["ui", "cell", "cells", "deploy_zone", "unit", "ally", "none"]:
+	for k: String in ["ui", "cell", "cells", "deploy_zone", "unit", "ally", "blocked", "ring", "none"]:
 		kinds.add_child(_btn("+" + str(KIND_LABELS[k]), add_target.bind(k)))
 	_t_node = _row(_form, "界面元素名", LineEdit.new()) as LineEdit
-	_t_node.placeholder_text = "如 StartButton / Card_striker / SidePanel / BeaconModeButton / Group_attack"
+	_t_node.placeholder_text = "如 StartButton / Card_striker / BudgetBox / BeaconModeButton / Group_attack/RuleSelector / Beacon_beacon_done"
 	_t_node.text_changed.connect(func(_t: String) -> void: _write_target())
+	_t_zoom = _row(_form, "放大倍数（1 = 不放大）", SpinBox.new()) as SpinBox
+	_t_zoom.min_value = 0.5
+	_t_zoom.max_value = 2.0
+	_t_zoom.step = 0.05
+	_t_zoom.value_changed.connect(func(_v: float) -> void: _write_target())
 	_t_cells = _row(_form, "地块 x,y; x,y", LineEdit.new()) as LineEdit
 	_t_cells.text_changed.connect(func(_t: String) -> void: _write_target())
 	_t_spawn = _row(_form, "预置单位", _option([], _write_target)) as OptionButton
+	_t_ring = _row(_form, "圆环", _option(_pairs(RING_LABELS), _write_target)) as OptionButton
+	_t_ring_of = _row(_form, "圆环所属", _option([], _write_target)) as OptionButton
 	var tb := HBoxContainer.new()
 	_form.add_child(tb)
 	tb.add_child(_btn("拾取目标（进入该关点选）", pick_target))
@@ -421,10 +442,14 @@ func _select_level(lid: String) -> void:
 	_filling = true
 	_test.button_pressed = bool(_entry(false).get("test", false))
 	_t_spawn.clear()
+	_t_ring_of.clear()
+	_t_ring_of.add_item("第一名己方")
+	_t_ring_of.set_item_metadata(0, "")
 	for s: Variant in (raw_levels[lid] as Dictionary).get("initial_units", []) as Array:
 		var sid: String = str((s as Dictionary).get("id", ""))
-		_t_spawn.add_item("%s（%s）" % [sid, str((s as Dictionary).get("unit", ""))])
-		_t_spawn.set_item_metadata(_t_spawn.item_count - 1, sid)
+		for o: OptionButton in [_t_spawn, _t_ring_of]:
+			o.add_item("%s（%s）" % [sid, str((s as Dictionary).get("unit", ""))])
+			o.set_item_metadata(o.item_count - 1, sid)
 	_filling = false
 	_refresh_steps()
 	_fill_unlocks()
@@ -553,7 +578,10 @@ func _fill_step_form() -> void:
 	_select_meta(_f_panel, str(s.get("panel", "auto")))
 	_select_meta(_f_phase, str(s.get("phase", "deploy")))
 	_f_after.value = float(s.get("after", 0.0))
+	_f_count.value = float(s.get("count", 1))
+	_f_deselect.button_pressed = bool(s.get("deselect", false))
 	_f_event.disabled = str(s.get("advance", "next")) != "event"
+	_f_count.editable = _counted_event(s)
 	_filling = false
 	_refresh_targets()
 
@@ -589,10 +617,23 @@ func _write_step() -> void:
 		s["after"] = _f_after.value
 	else:
 		s.erase("after")
+	if _f_deselect.button_pressed:
+		s["deselect"] = true
+	else:
+		s.erase("deselect")
+	if _counted_event(s) and int(_f_count.value) > 1:
+		s["count"] = int(_f_count.value)
+	else:
+		s.erase("count")
 	_f_event.disabled = s["advance"] != "event"
+	_f_count.editable = _counted_event(s)
 	var keep: int = cur_step
 	_changed()
 	_steps.set_item_text(keep, "%d. %s  [%s]" % [keep + 1, str(s["title"]) if str(s["title"]) != "" else str(s["text"]).left(16), str(ADVANCE_LABELS.get(str(s["advance"]), ""))])
+
+
+static func _counted_event(s: Dictionary) -> bool:
+	return str(s.get("advance", "")) == "event" and TeachingDef.COUNTED_EVENTS.has(str(s.get("event", "")))
 
 
 # ---- 目标 ----
@@ -611,6 +652,10 @@ static func target_label(t: Dictionary) -> String:
 	match k:
 		"ui":
 			detail = str(t.get("node", ""))
+			if float(t.get("zoom", 1.0)) != 1.0:
+				detail += " ×%s" % str(t["zoom"])
+		"ring":
+			detail = "%s %s" % [str(RING_LABELS.get(str(t.get("ring", "vision")), "")), str(t.get("spawn", "")) if str(t.get("spawn", "")) != "" else "第一名己方"]
 		"cell":
 			detail = str(t.get("cell", []))
 		"cells":
@@ -642,6 +687,12 @@ func _fill_target_fields() -> void:
 	_filling = true
 	_t_node.editable = k == "ui"
 	_t_node.text = str(t.get("node", ""))
+	_t_zoom.editable = k == "ui"
+	_t_zoom.value = float(t.get("zoom", 1.0))
+	_t_ring.disabled = k != "ring"
+	_select_meta(_t_ring, str(t.get("ring", "vision")))
+	_t_ring_of.disabled = k != "ring"
+	_select_meta(_t_ring_of, str(t.get("spawn", "")) if k == "ring" else "")
 	_t_cells.editable = k == "cell" or k == "cells"
 	_t_cells.text = cells_to_text([t["cell"]] if k == "cell" and t.has("cell") else (t.get("cells", []) as Array if k == "cells" else []))
 	_t_spawn.disabled = k != "unit"
@@ -680,6 +731,8 @@ func add_target(kind: String) -> void:
 			t["cells"] = [[0, 0]]
 		"unit":
 			t["spawn"] = _meta(_t_spawn) if _t_spawn.item_count > 0 else ""
+		"ring":
+			t["ring"] = "vision"
 	var ts: Array = _targets_of()
 	ts.append(t)
 	cur_target = ts.size() - 1
@@ -696,6 +749,16 @@ func _write_target() -> void:
 	match str(t["kind"]):
 		"ui":
 			t["node"] = _t_node.text.strip_edges()
+			if is_equal_approx(_t_zoom.value, 1.0):
+				t.erase("zoom")
+			else:
+				t["zoom"] = _t_zoom.value
+		"ring":
+			t["ring"] = _meta(_t_ring)
+			if _meta(_t_ring_of) == "":
+				t.erase("spawn")
+			else:
+				t["spawn"] = _meta(_t_ring_of)
 		"cell":
 			var cs: Array = text_to_cells(_t_cells.text)
 			if not cs.is_empty():

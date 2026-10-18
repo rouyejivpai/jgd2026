@@ -95,9 +95,23 @@ func _clear_units() -> void:
 func _register(uid: String, form: String, index: int) -> void:
 	unit_forms[uid] = form
 	unit_index[uid] = index
-	slot_rules[uid] = DataRegistry.get_commands().new_unit_rules()
+	slot_rules[uid] = usable_new_unit_rules(form)
 	var none: Array[Dictionary] = []
 	slot_beacons[uid] = none
+
+
+## 新放置单位的预填指令（commands.json new_unit_rules），去掉本关禁止 / 未解锁 / 形态不可用的条目——
+## 例：第 2 关只允许沿信标，预填的「始终 → 攻击·最近」会让开始被 RULE_NOT_ALLOWED 拦下（教程关引导 PPT 2026-10-18 发现）
+func usable_new_unit_rules(form: String) -> Array[RuleDef]:
+	var out: Array[RuleDef] = []
+	var udef: UnitDefinition = DataRegistry.get_unit(form) as UnitDefinition
+	for r: RuleDef in DataRegistry.get_commands().new_unit_rules():
+		var problems: Array[Dictionary] = []
+		if level != null:
+			DeploymentValidator.check_rule(r, out.size() + 1, "", level, GameState.unlocks, udef, problems)
+		if problems.is_empty():
+			out.append(r)
+	return out
 
 
 func _unregister(uid: String) -> void:
