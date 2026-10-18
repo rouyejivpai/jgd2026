@@ -37,7 +37,7 @@ func run(tree: SceneTree) -> void:
 		GameState.unlocks = saved_unlocks
 		tree.quit(0)
 		return
-	if str(args.get("screen", "battle")) in ["main_menu", "main_menu_error", "settings_overlay"]:
+	if str(args.get("screen", "battle")) in ["main_menu", "main_menu_error", "main_menu_confirm", "settings_overlay"]:
 		await _ui_shot(tree, out_dir, str(args["screen"]))
 		GameState.unlocks = saved_unlocks
 		SaveManager.data = saved
@@ -518,6 +518,7 @@ func _push_mouse(tree: SceneTree, act: String, pos: Vector2) -> void:
 
 
 ## P5 换皮比对（--screen=main_menu|main_menu_error|settings_overlay）：输出 <screen>_actual.png，与 assets/ui/<screen>/design.png 用 tools/ui_diff.py 比对。
+## --screen=main_menu_confirm：主菜单打开「新游戏」清档确认框（只打开，不清档）。
 ## 设置浮窗的数值按设计图样例临时设定（主音量 100%、音乐 80%、音效 85%、全屏关、目标连线开、字体 100%、模拟日志关），不写存档、不应用显示设置；
 ## 错误态临时置 DataRegistry.has_errors。
 func _ui_shot(tree: SceneTree, out_dir: String, screen: String) -> void:
@@ -531,6 +532,9 @@ func _ui_shot(tree: SceneTree, out_dir: String, screen: String) -> void:
 		await tree.process_frame
 	if screen == "settings_overlay":
 		SceneRouter.open_settings()
+	if screen == "main_menu_confirm":
+		(tree.current_scene.find_child("NewGameConfirm", true, false) as ConfirmDialog).open(
+			"ui.new_game_confirm_title", "ui.new_game_confirm_body", "ui.new_game_confirm_ok", "ui.new_game_confirm_cancel")
 	for i: int in SETTLE_FRAMES:
 		await tree.process_frame
 	_save_shot(tree, out_dir.path_join("%s_actual.png" % screen))

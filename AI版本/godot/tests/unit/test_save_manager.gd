@@ -131,3 +131,41 @@ func test_v4_to_v5_migrates_rules_and_unlocks() -> void:
 	var reloaded: Dictionary = JSON.parse_string(JSON.stringify(out)) as Dictionary
 	var again: Dictionary = _sm.call("migrate", reloaded.duplicate(true)) as Dictionary
 	assert_eq_deep(again["level_configs"], reloaded["level_configs"])   # v5 不再重复折算
+
+
+## 主菜单「继续游戏」：只改过设置不算进度；通关、关卡配置、已播剧情任一非空即有进度
+func test_has_progress() -> void:
+	_sm.set("data", _new_save())
+	assert_false(bool(_sm.call("has_progress")), "新存档无进度")
+	((_sm.get("data") as Dictionary)["settings"] as Dictionary)["music"] = 0.3
+	assert_false(bool(_sm.call("has_progress")), "只改设置不算进度")
+	((_sm.get("data") as Dictionary)["stories_seen"] as Dictionary)["story_intro"] = true
+	assert_true(bool(_sm.call("has_progress")), "看过剧情算进度")
+	_sm.set("data", _new_save())
+	SaveManagerScript.call("apply_rewards", _sm.get("data"), "level_01", DataRegistry.get_level("level_01").rewards)
+	assert_true(bool(_sm.call("has_progress")), "通关算进度")
+
+
+## 主菜单「新游戏」：删除存档（含残留 .tmp）后按初始解锁新建并写盘，设置保留
+func test_clear_all_wipes_progress_keeps_settings() -> void:
+	var d: Dictionary = _new_save()
+	SaveManagerScript.call("apply_rewards", d, "level_02", DataRegistry.get_level("level_02").rewards)
+	(d["level_configs"] as Dictionary)["level_02"] = { "units": [], "next_uid": 1 }
+	(d["hints_seen"] as Dictionary)["level_02"] = 2
+	(d["recommend_used"] as Dictionary)["level_02"] = true
+	(d["stories_seen"] as Dictionary)["story_intro"] = true
+	d["settings"] = { "master": 0.4, "fullscreen": false }
+	assert_eq(int(_sm.call("save_to", d, TEST_PATH)), OK)
+	assert_eq(int(_sm.call("write_tmp", d, TEST_PATH)), OK)       # 残留的 .tmp 也要清掉，否则读档时会被拿来恢复
+	_sm.set("data", _sm.call("load_from", TEST_PATH))
+	_sm.set("invalid_configs", { "level_02": [{}] })
+	assert_true(bool(_sm.call("has_progress")))
+	assert_eq(int(_sm.call("clear_all", TEST_PATH)), OK)
+	assert_false(bool(_sm.call("has_progress")), "清档后无进度")
+	assert_true((_sm.get("invalid_configs") as Dictionary).is_empty(), "失效配置标记一并清除")
+	assert_false(FileAccess.file_exists(TEST_PATH + ".tmp"), "不留临时文件")
+	var loaded: Dictionary = _sm.call("load_from", TEST_PATH) as Dictionary
+	var fresh: Dictionary = _new_save()
+	for key: String in ["progress", "unlocks", "level_configs", "hints_seen", "recommend_used", "stories_seen"]:
+		assert_eq_deep(loaded[key], fresh[key])
+	assert_eq_deep(loaded["settings"], { "master": 0.4, "fullscreen": false })

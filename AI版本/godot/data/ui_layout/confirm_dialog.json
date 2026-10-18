@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "screen": "confirm_dialog",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "mask",
+      "kind": "image",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/mask.png"
+    },
+    {
+      "id": "panel",
+      "kind": "ninepatch",
+      "rect": [
+        610,
+        340,
+        700,
+        400
+      ],
+      "ninepatch": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/panel.png",
+      "theme_type": "confirm_dialog__panel"
+    },
+    {
+      "id": "title",
+      "kind": "text_style",
+      "rect": [
+        650,
+        372,
+        620,
+        60
+      ],
+      "text_rect": [
+        0,
+        0,
+        620,
+        60
+      ],
+      "align": "center",
+      "theme_type": "confirm_dialog__title"
+    },
+    {
+      "id": "separator",
+      "kind": "image",
+      "rect": [
+        650,
+        446,
+        620,
+        1
+      ],
+      "file": "res://assets/ui/settings_overlay/slices/separator_header.png"
+    },
+    {
+      "id": "body",
+      "kind": "text_style",
+      "rect": [
+        670,
+        466,
+        580,
+        140
+      ],
+      "text_rect": [
+        0,
+        0,
+        580,
+        140
+      ],
+      "align": "center",
+      "theme_type": "confirm_dialog__body"
+    },
+    {
+      "id": "btn_ok",
+      "kind": "button",
+      "rect": [
+        690,
+        640,
+        240,
+        64
+      ],
+      "text_rect": [
+        16,
+        8,
+        208,
+        48
+      ],
+      "align": "center",
+      "ninepatch": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "states": {
+        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
+        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
+        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
+        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+      },
+      "theme_type": "confirm_dialog__btn_ok"
+    },
+    {
+      "id": "btn_cancel",
+      "kind": "button",
+      "rect": [
+        990,
+        640,
+        240,
+        64
+      ],
+      "text_rect": [
+        16,
+        8,
+        208,
+        48
+      ],
+      "align": "center",
+      "ninepatch": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "states": {
+        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
+        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
+        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
+        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+      },
+      "theme_type": "confirm_dialog__btn_cancel"
+    }
+  ],
+  "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/confirm_dialog/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
+}

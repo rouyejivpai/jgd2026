@@ -47,11 +47,11 @@
       "theme_type": "main_menu__subtitle"
     },
     {
-      "id": "btn_start",
+      "id": "btn_continue",
       "kind": "button",
       "rect": [
         148,
-        560,
+        524,
         500,
         116
       ],
@@ -62,7 +62,38 @@
         72
       ],
       "align": "center",
-      "key": "ui.menu_start",
+      "key": "ui.menu_continue",
+      "ninepatch": [
+        64,
+        32,
+        64,
+        32
+      ],
+      "states": {
+        "normal": "res://assets/ui/main_menu/slices/btn_start_normal.png",
+        "hover": "res://assets/ui/main_menu/slices/btn_start_hover.png",
+        "pressed": "res://assets/ui/main_menu/slices/btn_start_pressed.png",
+        "disabled": "res://assets/ui/main_menu/slices/btn_start_disabled.png"
+      },
+      "theme_type": "main_menu__btn_continue"
+    },
+    {
+      "id": "btn_start",
+      "kind": "button",
+      "rect": [
+        148,
+        642,
+        500,
+        116
+      ],
+      "text_rect": [
+        64,
+        22,
+        372,
+        72
+      ],
+      "align": "center",
+      "key": "ui.menu_new_game",
       "ninepatch": [
         64,
         32,
@@ -82,7 +113,7 @@
       "kind": "button",
       "rect": [
         148,
-        702,
+        760,
         500,
         116
       ],
@@ -113,7 +144,7 @@
       "kind": "button",
       "rect": [
         148,
-        844,
+        878,
         500,
         116
       ],

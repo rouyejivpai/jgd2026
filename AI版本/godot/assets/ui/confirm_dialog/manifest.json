@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "screen": "confirm_dialog",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "_comment": "通用确认弹窗（主菜单「新游戏」清档确认）。无独立切片：遮罩 / 底板 / 分隔线复用设置浮窗，按钮复用设置浮窗「关闭」按钮四态。",
+  "elements": [
+    {
+      "id": "mask",
+      "kind": "image",
+      "file": "../settings_overlay/slices/mask.png",
+      "rect": [0, 0, 1920, 1080]
+    },
+    {
+      "id": "panel",
+      "kind": "ninepatch",
+      "file": "../settings_overlay/slices/panel.png",
+      "rect": [610, 340, 700, 400],
+      "ninepatch": [32, 32, 32, 32]
+    },
+    {
+      "id": "title",
+      "kind": "text_style",
+      "rect": [650, 372, 620, 60],
+      "text_rect": [0, 0, 620, 60],
+      "align": "center",
+      "font": {"family": "NotoSerifSC-Bold", "size": 36, "color": "#E8DCC4"}
+    },
+    {
+      "id": "separator",
+      "kind": "image",
+      "file": "../settings_overlay/slices/separator_header.png",
+      "rect": [650, 446, 620, 1]
+    },
+    {
+      "id": "body",
+      "kind": "text_style",
+      "rect": [670, 466, 580, 140],
+      "text_rect": [0, 0, 580, 140],
+      "align": "center",
+      "font": {"family": "NotoSerifSC", "size": 24, "color": "#B8AA8E"}
+    },
+    {
+      "id": "btn_ok",
+      "kind": "button",
+      "rect": [690, 640, 240, 64],
+      "states": {
+        "normal": "../settings_overlay/slices/btn_close_normal.png",
+        "hover": "../settings_overlay/slices/btn_close_hover.png",
+        "pressed": "../settings_overlay/slices/btn_close_pressed.png",
+        "disabled": "../settings_overlay/slices/btn_close_disabled.png"
+      },
+      "text_rect": [16, 8, 208, 48],
+      "align": "center",
+      "font": {"family": "NotoSerifSC", "size": 26, "color": "#E3A48E"},
+      "ninepatch": [25, 25, 25, 25]
+    },
+    {
+      "id": "btn_cancel",
+      "kind": "button",
+      "rect": [990, 640, 240, 64],
+      "states": {
+        "normal": "../settings_overlay/slices/btn_close_normal.png",
+        "hover": "../settings_overlay/slices/btn_close_hover.png",
+        "pressed": "../settings_overlay/slices/btn_close_pressed.png",
+        "disabled": "../settings_overlay/slices/btn_close_disabled.png"
+      },
+      "text_rect": [16, 8, 208, 48],
+      "align": "center",
+      "font": {"family": "NotoSerifSC", "size": 26, "color": "#E8DCC4"},
+      "ninepatch": [25, 25, 25, 25]
+    }
+  ]
+}

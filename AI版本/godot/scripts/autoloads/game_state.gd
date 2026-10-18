@@ -37,6 +37,16 @@ func sync_from_save() -> void:
 	settings = SaveManager.data.get("settings", {}) as Dictionary
 
 
+## 新游戏（主菜单）：清空全部存档（保留设置）并重置本次运行的状态
+func start_new_game(path: String = SaveManager.SAVE_PATH) -> Error:
+	var err: Error = SaveManager.clear_all(path)
+	sync_from_save()
+	current_level_id = ""
+	current_region_id = ""
+	fail_counts.clear()
+	return err
+
+
 ## 07 §10.1：在章节中的关卡按"存在一条已完成的前驱连线"解锁（没有前驱的节点看初始关卡）；不在任何章节的关卡沿用存档解锁列表
 func is_level_unlocked(level_id: String) -> bool:
 	var ch: ChapterDef = DataRegistry.chapter_of(level_id)

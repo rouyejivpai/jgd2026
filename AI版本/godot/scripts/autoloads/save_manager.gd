@@ -107,6 +107,31 @@ func complete_level(level_id: String, rewards: Dictionary) -> void:
 	save()
 
 
+## 是否已有游戏进度（主菜单「继续游戏」可用的依据）：通关记录、各关配置、提示 / 推荐阵型、已播剧情、已看引导任一非空。
+## 只改过设置不算进度（设置浮窗关闭时也会写盘）。
+func has_progress() -> bool:
+	for key: String in ["level_configs", "hints_seen", "recommend_used", "stories_seen", "tutorials_seen"]:
+		if not (data.get(key, {}) as Dictionary).is_empty():
+			return true
+	return not ((data.get("progress", {}) as Dictionary).get("completed", []) as Array).is_empty()
+
+
+## 新游戏：删除存档文件（含 .tmp），按初始解锁新建存档并立即写盘。设置项（音量、全屏等）保留，不算存档进度。
+## 调用方需随后让 GameState 重新指向新字典（GameState.start_new_game 负责）。
+func clear_all(path: String = SAVE_PATH) -> Error:
+	var settings: Dictionary = (data.get("settings", {}) as Dictionary).duplicate(true)
+	for p: String in [path, path + TMP_SUFFIX]:
+		if FileAccess.file_exists(p):
+			var rm: Error = DirAccess.remove_absolute(p)
+			if rm != OK:
+				push_error("[SaveManager] remove failed (%s): %s" % [error_string(rm), p])
+				return rm
+	data = new_save(DataRegistry.get_initial_unlocks(), DataRegistry.get_initial_levels())
+	data["settings"] = settings
+	invalid_configs = {}
+	return save(path)
+
+
 ## 新存档：写入初始解锁（data/progression.json）
 static func new_save(initial_unlocks: Dictionary, initial_levels: Array[String]) -> Dictionary:
 	var unlocks: Dictionary = initial_unlocks.duplicate(true)

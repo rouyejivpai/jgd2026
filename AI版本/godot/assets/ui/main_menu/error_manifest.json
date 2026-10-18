@@ -50,11 +50,44 @@
       }
     },
     {
+      "id": "btn_continue",
+      "kind": "button",
+      "rect": [
+        148,
+        524,
+        500,
+        116
+      ],
+      "states": {
+        "normal": "slices/btn_start_normal.png",
+        "hover": "slices/btn_start_hover.png",
+        "pressed": "slices/btn_start_pressed.png",
+        "disabled": "slices/btn_start_disabled.png"
+      },
+      "text_rect": [
+        64,
+        22,
+        372,
+        72
+      ],
+      "font": {
+        "family": "NotoSerifSC-Bold",
+        "size": 30,
+        "color": "#8D7E8F"
+      },
+      "ninepatch": [
+        64,
+        32,
+        64,
+        32
+      ]
+    },
+    {
       "id": "btn_start",
       "kind": "button",
       "rect": [
         148,
-        560,
+        642,
         500,
         116
       ],
@@ -87,7 +120,7 @@
       "kind": "button",
       "rect": [
         148,
-        702,
+        760,
         500,
         116
       ],
@@ -120,7 +153,7 @@
       "kind": "button",
       "rect": [
         148,
-        844,
+        878,
         500,
         116
       ],

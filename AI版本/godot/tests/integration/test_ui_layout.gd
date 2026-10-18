@@ -32,11 +32,11 @@ func test_layout_generated_from_manifest() -> void:
 
 func test_layout_rect_centers_design_canvas() -> void:
 	var r: Rect2 = UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1080))
-	assert_eq(r, Rect2(148, 560, 500, 116), "1920×1080 = 设计坐标")
-	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(2560, 1080)), Rect2(468, 560, 500, 116), "21:9 水平居中")
-	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1200)), Rect2(148, 620, 500, 116), "16:10 垂直居中")
+	assert_eq(r, Rect2(148, 642, 500, 116), "1920×1080 = 设计坐标")
+	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(2560, 1080)), Rect2(468, 642, 500, 116), "21:9 水平居中")
+	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1200)), Rect2(148, 702, 500, 116), "16:10 垂直居中")
 	assert_eq(UiKit.layout_rect("main_menu", "bg", Vector2(2560, 1200)), Rect2(0, 0, 2560, 1200), "铺满设计画布的背景 cover 整个视口")
-	assert_eq(UiKit.layout_text_rect("main_menu", "btn_start", Vector2(1920, 1080)), Rect2(148 + 64, 560 + 22, 372, 72), "按钮文字区 = text_rect")
+	assert_eq(UiKit.layout_text_rect("main_menu", "btn_start", Vector2(1920, 1080)), Rect2(148 + 64, 642 + 22, 372, 72), "按钮文字区 = text_rect")
 
 
 func test_main_menu_built_from_layout() -> void:
@@ -49,13 +49,18 @@ func test_main_menu_built_from_layout() -> void:
 	var vp: Vector2 = menu.size
 	var start: Button = menu.find_child("StartButton", true, false) as Button
 	assert_eq(start.get_rect(), UiKit.layout_rect("main_menu", "btn_start", vp), "按钮位置 = 布局")
-	assert_eq(start.text, DataRegistry.get_string("ui.menu_start"), "文字取 strings key（切片不含文字）")
+	assert_eq(start.text, DataRegistry.get_string("ui.menu_new_game"), "文字取 strings key（切片不含文字）；btn_start 现为「新游戏」")
+	var cont: Button = menu.find_child("ContinueButton", true, false) as Button
+	assert_eq(cont.get_rect(), UiKit.layout_rect("main_menu", "btn_continue", vp), "「继续游戏」在「新游戏」之上")
+	assert_eq(cont.text, DataRegistry.get_string("ui.menu_continue"))
+	assert_eq(cont.disabled, DataRegistry.has_errors or not SaveManager.has_progress(), "无进度时「继续游戏」禁用")
 	assert_eq(String(start.theme_type_variation), "main_menu__btn_start")
 	assert_eq((menu.find_child("Subtitle", true, false) as Label).text, DataRegistry.get_string("ui.game_subtitle"))
 	assert_not_null(menu.find_child("Title", true, false), "游戏名艺术字切片")
 	assert_eq(menu.find_child("ErrorBar", true, false) != null, DataRegistry.has_errors, "错误条只在数据错误时出现")
-	assert_true(start.has_focus(), "首项默认焦点")
-	assert_eq(start.get_theme_stylebox("normal"), start.get_theme_stylebox("hover"), "焦点复用 hover 贴图")
+	var first: Button = menu.call("first_enabled_button") as Button
+	assert_true(first.has_focus(), "第一个可用按钮默认焦点（有进度时「继续游戏」，否则「新游戏」）")
+	assert_eq(first.get_theme_stylebox("normal"), first.get_theme_stylebox("hover"), "焦点复用 hover 贴图")
 
 
 func test_settings_slider_fill_and_grabber_follow_value() -> void:
