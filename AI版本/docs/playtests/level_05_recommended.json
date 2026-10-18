@@ -4,12 +4,12 @@
   "data_version": "units.json@1",
   "deploy": {
     "u1": [
-      2,
+      1,
       4
     ],
     "u2": [
-      1,
-      4
+      2,
+      0
     ],
     "u3": [
       2,
@@ -39,11 +39,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -55,7 +87,17 @@
         "condition_mode": "all",
         "conditions": [],
         "action": {
-          "type": "idle"
+          "type": "follow_route",
+          "route_id": "advance",
+          "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -81,11 +123,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -97,7 +171,17 @@
         "condition_mode": "all",
         "conditions": [],
         "action": {
-          "type": "idle"
+          "type": "follow_route",
+          "route_id": "advance",
+          "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -111,19 +195,25 @@
           "route_id": "patrol",
           "loop": true
         }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
+        }
       }
     ]
   },
   "speed": 1,
   "result": "win",
-  "time": 25.5,
-  "losses": [
-    "u2"
-  ],
+  "time": 17.8,
+  "losses": [],
   "objective_hp": {
     "S1": 0.0,
     "S2": 0.0
   },
-  "notes": "快速形态后方巡回当最远者；2× 复核：一致",
-  "state_hash": 1901988881
+  "notes": "快速形态后方巡回当最远者；承伤 / 基础攻击形态迎击下坡的袭击者后沿正面推进路线压上（与关卡推荐解一致，2026-10-18）；2× 复核：一致",
+  "state_hash": 2596664541
 }

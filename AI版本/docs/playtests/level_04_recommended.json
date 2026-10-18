@@ -39,11 +39,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -58,6 +90,14 @@
           "type": "follow_route",
           "route_id": "north",
           "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -83,11 +123,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -102,6 +174,14 @@
           "type": "follow_route",
           "route_id": "south",
           "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -127,11 +207,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -145,16 +257,24 @@
         "action": {
           "type": "idle"
         }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
+        }
       }
     ]
   },
   "speed": 1,
   "result": "win",
-  "time": 5.73333333333333,
+  "time": 4.93333333333333,
   "losses": [],
   "objective_hp": {
     "HOUND": 0.0
   },
   "notes": "两侧攻击形态压迫 + 快速形态正面逼近；2× 复核：一致",
-  "state_hash": 3739635852
+  "state_hash": 2248884108
 }

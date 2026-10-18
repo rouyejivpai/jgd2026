@@ -41,9 +41,33 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -67,11 +91,35 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_route",
           "route_id": "south_flank",
           "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -95,11 +143,35 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_route",
           "route_id": "north_flank",
           "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -123,25 +195,49 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_route",
           "route_id": "north_flank",
           "loop": false
         }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
+        }
       }
     ]
   },
   "speed": 1,
   "result": "win",
-  "time": 25.7333333333333,
+  "time": 15.7,
   "losses": [
-    "u1",
+    "u3",
     "u4"
   ],
   "objective_hp": {
     "CORE": 0.0
   },
   "notes": "verification.expected_win：承伤正面原地吸引护卫，快速+远射走北侧藤廊、攻击形态走南侧藤廊绕后打核心（推荐指令为全员追击，等同正面推进，见 Q-028）；2× 复核：一致",
-  "state_hash": 183177974
+  "state_hash": 2758640295
 }

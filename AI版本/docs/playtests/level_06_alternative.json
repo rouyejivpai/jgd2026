@@ -35,6 +35,22 @@
         }
       },
       {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
         "enabled": false,
         "condition_mode": "all",
         "conditions": [
@@ -43,7 +59,23 @@
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": false,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -56,6 +88,14 @@
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -81,11 +121,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -98,6 +170,14 @@
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -121,9 +201,33 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ]
@@ -136,5 +240,5 @@
     "PRIEST": 0.0
   },
   "notes": "verification.alternatives：改由基础攻击形态追击（推荐部署）；2× 复核：一致",
-  "state_hash": 4111732874
+  "state_hash": 3118271533
 }

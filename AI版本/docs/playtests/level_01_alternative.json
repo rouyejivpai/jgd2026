@@ -35,11 +35,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -52,6 +84,14 @@
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -77,11 +117,43 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
         "action": {
-          "type": "chase_attack"
+          "type": "chase"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "attack"
         },
         "target": {
           "selector": "nearest",
@@ -95,14 +167,22 @@
         "action": {
           "type": "idle"
         }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
+        }
       }
     ]
   },
   "speed": 1,
   "result": "win",
-  "time": 4.76666666666667,
+  "time": 4.73333333333333,
   "losses": [],
   "objective_hp": {},
   "notes": "03 写明无需替代解；记录另一合法部署（同一行并排）；2× 复核：一致",
-  "state_hash": 3987003645
+  "state_hash": 2802108483
 }

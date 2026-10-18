@@ -15,9 +15,9 @@
   "deploy_zone": { "rect": [2, 0, 7, 8] },
   "roster": { "mode": "free", "budget": 11, "available_forms": ["bulwark", "striker", "lancer"], "max_units": 3, "min_units": 1, "fixed_slots": [] },
   "initial_units": [
-    { "id": "H1", "unit": "husk", "faction": "enemy", "pos": [14, 8], "counts_for_annihilate": true },
-    { "id": "H2", "unit": "husk", "faction": "enemy", "pos": [15, 7], "counts_for_annihilate": true },
-    { "id": "H3", "unit": "husk", "faction": "enemy", "pos": [14, 6], "counts_for_annihilate": true },
+    { "id": "H1", "unit": "husk", "faction": "enemy", "pos": [14, 8], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
+    { "id": "H2", "unit": "husk", "faction": "enemy", "pos": [15, 7], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
+    { "id": "H3", "unit": "husk", "faction": "enemy", "pos": [14, 6], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
     { "id": "PRIEST", "unit": "priest", "faction": "enemy", "pos": [15, 1], "counts_for_annihilate": true }
   ],
   "routes": {
@@ -84,9 +84,10 @@
     "unlock_level": "level_07"
   },
   "verification": {
-    "expected_win": "开战时只有承伤 (7,8) 在残骸视野 10 内（H3 (14,6) 到承伤距离 7.3，到基础攻击形态 (4,2) 10.8，到远射 (3,0) 12.5），三具残骸锁定承伤并北上。祭司 1 格/秒沿 y=1 西行，约 5 秒后进入远射 8 格射程且为最近者（残骸在 (8,8) 附近，与远射距离 9.4，超出射程）。远射 10 伤害/秒 + 基础攻击形态 12 伤害/秒，祭司 50 生命约 11 秒内倒下，位置约 x=5。",
+    "expected_win": "残骸视野 4（关卡覆盖），沿行列路线西行到 x≈11 时承伤 (7,8) 第一个进入视野，三具残骸锁定承伤。祭司 1 格/秒沿 y=1 西行，约 5 秒后进入远射 8 格射程且为最近者（残骸在 (8,8) 附近，与远射距离 9.4，超出射程）。远射 10 伤害/秒 + 基础攻击形态 12 伤害/秒，祭司 50 生命约 11 秒内倒下，位置约 x=5。",
     "expected_fail": "承伤不前置：残骸首先看见后排并涌向远射；或远射放得太靠上，残骸成为最近者。",
     "alternatives": "全员正面集火、或改由基础攻击形态追击祭司，均为合法解。",
-    "risks": "前排锁定不应频繁换敌；需验证改变承伤攻速/位置确实改变拦截窗口；锁定目标死亡后残骸继续按规则选下一目标。"
+    "risks": "前排锁定不应频繁换敌；需验证改变承伤攻速/位置确实改变拦截窗口；锁定目标死亡后残骸继续按规则选下一目标。",
+    "_note_20261018_wall": "移动改为直线（不寻路）后，残骸（视野 10）在出生点和行列路线上方隔着石块 (8..11,4..5) 看见下半场的单位就直线追过去，撞上石块卡死（逐格探针约 24/92 格）。行列路线经过石块正上方 y=8，在那里看得见又不被石块挡住的距离只有约 4.2 格，故三具残骸视野覆盖为 4；探针 0 卡墙，推荐解 8.1s 胜，三类失败归因不变。全员放在下半场（不前置承伤）也能胜，这在改动前同样成立（残骸当时卡在石块上）。"
   }
 }

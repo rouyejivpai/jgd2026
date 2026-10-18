@@ -38,6 +38,24 @@
         "condition_mode": "all",
         "conditions": [
           {
+            "type": "target_distance",
+            "op": "<",
+            "value": 3.0
+          }
+        ],
+        "action": {
+          "type": "hold_fire"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [
+          {
             "type": "enemy_visible"
           }
         ],
@@ -52,9 +70,33 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_visible"
+          }
+        ],
+        "action": {
+          "type": "hold_fire"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "unit"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "idle"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -78,11 +120,35 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "structure"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_beacons",
           "mode": "once",
           "from": "1"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ]
@@ -120,5 +186,5 @@
       }
     ]
   },
-  "state_hash": 3408529087
+  "state_hash": 2420816715
 }

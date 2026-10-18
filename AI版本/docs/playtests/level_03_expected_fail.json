@@ -33,11 +33,35 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_route",
           "route_id": "yard",
           "loop": false
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
         }
       }
     ],
@@ -61,25 +85,49 @@
       {
         "enabled": true,
         "condition_mode": "all",
+        "conditions": [
+          {
+            "type": "enemy_in_range"
+          }
+        ],
+        "action": {
+          "type": "idle"
+        },
+        "target": {
+          "selector": "nearest",
+          "filter": "any"
+        }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
         "conditions": [],
         "action": {
           "type": "follow_route",
           "route_id": "yard",
           "loop": false
         }
+      },
+      {
+        "enabled": true,
+        "condition_mode": "all",
+        "conditions": [],
+        "action": {
+          "type": "hold_fire"
+        }
       }
     ]
   },
   "speed": 1,
   "result": "lose",
-  "time": 9.73333333333333,
+  "time": 15.7333333333333,
   "losses": [
     "u1",
     "u2"
   ],
   "objective_hp": {
-    "PILLAR": 60.0
+    "PILLAR": 30.0
   },
   "notes": "verification.expected_fail：两单位一起走庭院正面；2× 复核：一致",
-  "state_hash": 3186721688
+  "state_hash": 1481048298
 }

@@ -13,9 +13,9 @@
       "level": "level_01",
       "kind": "alternative",
       "result": "win",
-      "time": 4.76666666666667,
+      "time": 4.73333333333333,
       "losses": [],
-      "hash": 3987003645
+      "hash": 2802108483
     },
     {
       "level": "level_01",
@@ -32,27 +32,25 @@
       "level": "level_02",
       "kind": "recommended",
       "result": "win",
-      "time": 11.7333333333333,
+      "time": 11.4,
       "losses": [],
-      "hash": 1728570966
+      "hash": 1931959451
     },
     {
       "level": "level_02",
       "kind": "alternative",
       "result": "win",
-      "time": 9.73333333333333,
+      "time": 7.96666666666667,
       "losses": [],
-      "hash": 1995872006
+      "hash": 3461554668
     },
     {
       "level": "level_02",
       "kind": "expected_fail",
       "result": "win",
-      "time": 12.6666666666667,
-      "losses": [
-        "u3"
-      ],
-      "hash": 679808873
+      "time": 11.6,
+      "losses": [],
+      "hash": 2002536011
     },
     {
       "level": "level_03",
@@ -60,28 +58,29 @@
       "result": "win",
       "time": 8.03333333333333,
       "losses": [],
-      "hash": 3408529087
+      "hash": 2420816715
     },
     {
       "level": "level_03",
       "kind": "alternative",
-      "result": "win",
-      "time": 17.8333333333333,
+      "result": "lose",
+      "time": 13.1666666666667,
       "losses": [
-        "u1"
+        "u1",
+        "u2"
       ],
-      "hash": 1496187789
+      "hash": 3852892917
     },
     {
       "level": "level_03",
       "kind": "expected_fail",
       "result": "lose",
-      "time": 9.73333333333333,
+      "time": 15.7333333333333,
       "losses": [
         "u1",
         "u2"
       ],
-      "hash": 3186721688
+      "hash": 1481048298
     },
     {
       "level": "level_03",
@@ -89,61 +88,63 @@
       "result": "win",
       "time": 8.03333333333333,
       "losses": [],
-      "hash": 3408529087
+      "hash": 2420816715
     },
     {
       "level": "level_04",
       "kind": "recommended",
       "result": "win",
-      "time": 5.73333333333333,
+      "time": 4.93333333333333,
       "losses": [],
-      "hash": 3739635852
+      "hash": 2248884108
     },
     {
       "level": "level_04",
       "kind": "alternative",
       "result": "win",
-      "time": 11.3,
+      "time": 5.6,
       "losses": [],
-      "hash": 1932819578
+      "hash": 3208406280
     },
     {
       "level": "level_04",
       "kind": "expected_fail",
       "result": "win",
-      "time": 16.3,
+      "time": 13.6666666666667,
       "losses": [],
-      "hash": 1621112929
+      "hash": 1506274128
     },
     {
       "level": "level_05",
       "kind": "recommended",
       "result": "win",
-      "time": 25.5,
-      "losses": [
-        "u2"
-      ],
-      "hash": 1901988881
+      "time": 17.8,
+      "losses": [],
+      "hash": 2596664541
     },
     {
       "level": "level_05",
       "kind": "alternative",
-      "result": "win",
-      "time": 9.06666666666667,
-      "losses": [],
-      "hash": 3604784348
-    },
-    {
-      "level": "level_05",
-      "kind": "expected_fail",
       "result": "lose",
-      "time": 23.0,
+      "time": 19.0,
       "losses": [
         "u1",
         "u2",
         "u3"
       ],
-      "hash": 2575396413
+      "hash": 2194426435
+    },
+    {
+      "level": "level_05",
+      "kind": "expected_fail",
+      "result": "lose",
+      "time": 15.0,
+      "losses": [
+        "u1",
+        "u2",
+        "u3"
+      ],
+      "hash": 3421473721
     },
     {
       "level": "level_06",
@@ -151,7 +152,7 @@
       "result": "win",
       "time": 8.1,
       "losses": [],
-      "hash": 1671991294
+      "hash": 415667393
     },
     {
       "level": "level_06",
@@ -159,7 +160,7 @@
       "result": "win",
       "time": 8.16666666666667,
       "losses": [],
-      "hash": 4111732874
+      "hash": 3118271533
     },
     {
       "level": "level_06",
@@ -167,10 +168,9 @@
       "result": "lose",
       "time": 14.5,
       "losses": [
-        "u2",
         "u3"
       ],
-      "hash": 338505214
+      "hash": 3462112603
     },
     {
       "level": "level_07",
@@ -178,7 +178,7 @@
       "result": "win",
       "time": 20.0,
       "losses": [],
-      "hash": 3806413355
+      "hash": 3222183829
     },
     {
       "level": "level_07",
@@ -186,7 +186,7 @@
       "result": "win",
       "time": 20.0,
       "losses": [],
-      "hash": 2756206642
+      "hash": 4213927421
     },
     {
       "level": "level_07",
@@ -194,39 +194,40 @@
       "result": "win",
       "time": 20.0,
       "losses": [],
-      "hash": 3791070653
+      "hash": 2280661406
     },
     {
       "level": "level_08",
       "kind": "recommended",
       "result": "win",
-      "time": 25.7333333333333,
+      "time": 15.7,
       "losses": [
-        "u1",
+        "u3",
         "u4"
       ],
-      "hash": 183177974
+      "hash": 2758640295
     },
     {
       "level": "level_08",
       "kind": "alternative",
       "result": "win",
-      "time": 19.6,
+      "time": 19.6666666666667,
       "losses": [
+        "u3",
         "u4"
       ],
-      "hash": 926273167
+      "hash": 3733662444
     },
     {
       "level": "level_08",
       "kind": "expected_fail",
       "result": "win",
-      "time": 17.3,
+      "time": 19.6666666666667,
       "losses": [
-        "u1",
+        "u3",
         "u4"
       ],
-      "hash": 1648849649
+      "hash": 3733662444
     }
   ]
 }

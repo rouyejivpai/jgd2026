@@ -83,7 +83,7 @@ func test_enemy_start_marks() -> void:
 	var floor_hl: FloorHighlight = root.find_child("FloorHighlight", true, false) as FloorHighlight
 	var cells: Array[Vector2i] = floor_hl.enemy_cells()
 	assert_eq(cells.size(), 3, "第三关敌方初始位置 3 处（含骸柱）")
-	assert_has(cells, Vector2i(9, 4))
+	assert_has(cells, Vector2i(9, 8))      # 守卫 W1（2026-10-18 为直线移动不卡墙由 (9,4) 挪到 (9,8)）
 	assert_true(floor_hl.deploy, "部署阶段绘制敌方初始位置标记")
 	var c: BattleController = root.get_node("BattleController") as BattleController
 	assert_true(c.apply_recommended())

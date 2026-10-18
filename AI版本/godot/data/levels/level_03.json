@@ -15,7 +15,7 @@
   "deploy_zone": { "rect": [1, 0, 2, 9] },
   "roster": { "mode": "free", "budget": 8, "available_forms": ["swift", "striker"], "max_units": 2, "min_units": 1, "fixed_slots": [] },
   "initial_units": [
-    { "id": "W1", "unit": "warden", "faction": "enemy", "pos": [9, 4], "counts_for_annihilate": true },
+    { "id": "W1", "unit": "warden", "faction": "enemy", "pos": [9, 8], "counts_for_annihilate": true },
     { "id": "W2", "unit": "warden", "faction": "enemy", "pos": [9, 7], "counts_for_annihilate": true },
     { "id": "PILLAR", "unit": "echo_pillar", "faction": "enemy", "pos": [14, 5], "counts_for_annihilate": false }
   ],
@@ -73,6 +73,7 @@
     "expected_win": "快速形态在庭院内以 3 格距离反复「靠近—撤离」牵制两名守卫；基础攻击形态沿 y=1 通道抵达 (14,1)，与骸柱 (14,5) 距离 4，攻击 5 秒摧毁。守卫被锁定在快速形态上，不换目标。",
     "expected_fail": "两单位一起走庭院正面：守卫 90 生命×2、10 伤害，快速形态 60 生命约 4 秒倒下，基础攻击形态随后被追上。",
     "alternatives": "两单位合力先击杀守卫（约 10 秒）再摧毁骸柱，为合法胜利，不得拒绝。",
-    "risks": "撤离算法是否会把快速形态推进角落；守卫视野 6 与快速形态牵制距离 3 的配合；基础攻击形态在通道 y=1 时与守卫 (9,4) 距离 3 在守卫视野内，但守卫已锁定快速形态——必须实机验证锁定不被偷换。"
+    "risks": "撤离算法是否会把快速形态推进角落；守卫视野 6 与快速形态牵制距离 3 的配合；守卫被快速形态拖进庭院后，基础攻击形态在通道 y=1 时仍可能处于守卫视野内，但守卫已锁定快速形态——必须实机验证锁定不被偷换。",
+    "_note_20261018_wall": "移动改为直线（不寻路）后，守卫 W1 原站 (9,4)，隔着哭墙 (4..12,2) 看见通道里的单位就直线追过去，撞墙卡死（逐格探针 15/103 格）。W1 挪到 (9,8)（与 W2 (9,7) 同在庭院上半），通道离它 ≥6 格，看得见的通道格都能隔墙打到；探针 0 卡墙，推荐解 8.0s 胜，正面硬冲仍失败。"
   }
 }

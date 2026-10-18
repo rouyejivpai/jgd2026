@@ -104,11 +104,11 @@
 
     { "level": "level_05", "kind": "recommended",
       "units": [
-        { "form": "bulwark", "pos": [2, 4], "rules": ["atk", "chase", "idle"] },
-        { "form": "striker", "pos": [1, 4], "rules": ["atk", "chase", "idle"] },
+        { "form": "bulwark", "pos": [1, 4], "rules": ["atk", "chase", "route:advance"] },
+        { "form": "striker", "pos": [2, 0], "rules": ["atk", "chase", "route:advance"] },
         { "form": "swift", "pos": [2, 8], "rules": ["route_loop:patrol"] }
       ],
-      "note": "快速形态后方巡回当最远者" },
+      "note": "快速形态后方巡回当最远者；承伤 / 基础攻击形态迎击下坡的袭击者后沿正面推进路线压上（与关卡推荐解一致，2026-10-18）" },
     { "level": "level_05", "kind": "alternative",
       "units": [
         { "form": "bulwark", "pos": [2, 4], "rules": ["atk", "chase", "route:advance"] },
