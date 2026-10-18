@@ -25,9 +25,9 @@ glow_blend_mode = 1
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
 shader = ExtResource("15_post")
-shader_parameter/vignette = 0.35
-shader_parameter/grain = 0.05
-shader_parameter/aberration = 0.002
+shader_parameter/vignette = 0.28
+shader_parameter/grain = 0.0
+shader_parameter/aberration = 0.0
 
 [node name="BattleRoot" type="Node2D"]
 script = ExtResource("1_root")

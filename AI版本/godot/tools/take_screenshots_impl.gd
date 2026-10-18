@@ -58,10 +58,14 @@ func run(tree: SceneTree) -> void:
 		GameState.unlocks = saved_unlocks
 		tree.quit(0)
 		return
-	if str(args.get("screen", "battle")) in ["world_map", "region"]:     # 2026-10-18：一级地图 / 区域选关（--completed=N 前 N 关战役已通关，--region=<id>）
+	if str(args.get("screen", "battle")) in ["world_map", "region"]:     # 2026-10-18：一级地图 / 区域选关（--completed=N 前 N 关战役已通关并带示例综合分，--region=<id>）
 		var wc: ChapterDef = DataRegistry.world_chapter()
 		var done: Array = wc.level_ids().slice(0, int(args.get("completed", "8")))
 		SaveManager.data["progress"] = { "completed": done, "unlocked_levels": [] }
+		var demo_scores: Dictionary = {}         # 2026-10-18：已通关关卡给示例综合分（仅内存，看名牌下的综合分标签）
+		for i: int in done.size():
+			demo_scores[str(done[i])] = { "total": 60 + 17 * i }
+		SaveManager.data["best_scores"] = demo_scores
 		GameState.sync_from_save()
 		GameState.current_level_id = ""
 		GameState.current_region_id = str(args.get("region", ""))

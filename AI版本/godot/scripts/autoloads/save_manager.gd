@@ -101,6 +101,24 @@ func mark_story_seen(story_id: String) -> void:
 	data["stories_seen"] = seen
 
 
+## 结算综合分（Scoring）：每关只留最低（最好）的一次；返回本次是否刷新纪录
+func record_score(level_id: String, score: Dictionary) -> bool:
+	if not data.get("best_scores", null) is Dictionary:
+		data["best_scores"] = {}
+	var best: Dictionary = data["best_scores"] as Dictionary
+	var old: Variant = best.get(level_id, null)
+	if old is Dictionary and int((old as Dictionary).get("total", 0)) <= int(score.get("total", 0)):
+		return false
+	best[level_id] = score.duplicate(true)
+	return true
+
+
+## 该关最好的综合分（没通关过返回 -1）
+func best_score(level_id: String) -> int:
+	var e: Variant = (data.get("best_scores", {}) as Dictionary).get(level_id, null)
+	return int((e as Dictionary).get("total", -1)) if e is Dictionary else -1
+
+
 ## 关卡胜利：累加奖励、记完成、开放下一关并写盘
 func complete_level(level_id: String, rewards: Dictionary) -> void:
 	apply_rewards(data, level_id, rewards)
@@ -148,6 +166,7 @@ static func new_save(initial_unlocks: Dictionary, initial_levels: Array[String])
 		"stories_seen": {},
 		"settings": {},
 		"tutorials_seen": {},
+		"best_scores": {},
 	}
 
 
@@ -207,7 +226,7 @@ func migrate(d: Dictionary) -> Dictionary:
 	var version: int = int(out.get("version", 1))
 	if version > SAVE_VERSION:
 		push_warning("[SaveManager] save version newer than game: %s" % str(out.get("version")))
-	for key: String in ["progress", "unlocks", "level_configs", "hints_seen", "recommend_used", "stories_seen", "settings", "tutorials_seen"]:
+	for key: String in ["progress", "unlocks", "level_configs", "hints_seen", "recommend_used", "stories_seen", "settings", "tutorials_seen", "best_scores"]:
 		if not out.get(key, null) is Dictionary:
 			out[key] = {}
 	if version < 2:

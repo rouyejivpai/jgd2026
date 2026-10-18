@@ -5,7 +5,7 @@ extends Node2D
 
 const NUMBER_FONT: FontVariation = preload("res://assets/fonts/Cinzel-Bold.tres")
 const FLASH_SECONDS: float = 0.35
-const FLASH_LIGHT_ENERGY: float = 2.5
+const FLASH_LIGHT_ENERGY: float = 1.6
 const QUAD_MARGIN_PX: float = 8.0
 const TICK_INTERVAL: float = 0.5
 const TICK_INTERVAL_FAST: float = 0.2

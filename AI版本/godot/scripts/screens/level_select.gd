@@ -34,6 +34,8 @@ var _press_pos: Vector2 = Vector2.ZERO
 var _press_scroll: float = 0.0
 var _replay_ids: Array[String] = []
 
+const SCORE_TAG_OFFSET: float = 1.15       ## 综合分胶囊中心在名牌中心下方的偏移（名牌高的倍数）
+const SCORE_TAG_FONT: int = 22
 @onready var _background: ColorRect = %Background
 @onready var _viewport: Control = %MapViewport
 @onready var _content: Control = %MapContent
@@ -315,6 +317,27 @@ func _build_nodes() -> void:
 		for c: Control in [plate_bg, name_label] as Array[Control]:
 			c.size = plate.size
 			c.position = center - plate.size * 0.5
+		var score_tag := PanelContainer.new()  # 2026-10-18：已通关关卡在名牌下显示综合分（越低越好）：深色小胶囊 + 金字
+		score_tag.name = "ScoreTag"
+		score_tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var pill := StyleBoxFlat.new()
+		pill.bg_color = Color(Palette.VIOLET_DEEP, 0.9)
+		pill.border_color = Color(Palette.ALCHEMY_GOLD, 0.85)
+		pill.set_border_width_all(2)
+		pill.set_corner_radius_all(14)
+		pill.set_content_margin_all(2)
+		pill.content_margin_left = 14
+		pill.content_margin_right = 14
+		score_tag.add_theme_stylebox_override("panel", pill)
+		var score_text := Label.new()
+		score_text.name = "Text"
+		score_text.theme_type_variation = name_label.theme_type_variation
+		score_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		score_text.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
+		score_text.add_theme_font_size_override("font_size", SCORE_TAG_FONT)
+		score_tag.add_child(score_text)
+		score_tag.set_meta(&"anchor", center + Vector2(0.0, plate.size.y * SCORE_TAG_OFFSET))
+		b.add_child(score_tag)
 		for m: Array in [["Lock", "node_lock_marker"], ["Check", "node_check_marker"]]:     # 锁定 / 已完成角标（右下，尺寸取布局）
 			var mark := TextureRect.new()
 			mark.name = str(m[0])
@@ -400,9 +423,17 @@ func _restyle_nodes() -> void:
 			name_plate.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 		else:
 			name_plate.remove_theme_color_override("font_color")
+		var score_tag: Control = b.get_node("ScoreTag") as Control
+		var lid: String = str(n.get("level", ""))
+		var best: int = SaveManager.best_score(lid) if state == 2 and lid != "" else -1
+		score_tag.visible = best >= 0
+		(score_tag.get_node("Text") as Label).text = DataRegistry.get_string("ui.level_best_score").format({ "total": best }) if best >= 0 else ""
+		score_tag.reset_size()
+		score_tag.position = (score_tag.get_meta(&"anchor") as Vector2) - score_tag.size * 0.5
 		plate_bg.scale = Vector2.ONE / b.scale       # 名牌不随选中放大
 		name_plate.scale = Vector2.ONE / b.scale
-		for c: Control in [plate_bg, name_plate] as Array[Control]:
+		score_tag.scale = Vector2.ONE / b.scale
+		for c: Control in [plate_bg, name_plate, score_tag] as Array[Control]:
 			c.pivot_offset = c.size * 0.5
 
 
@@ -614,7 +645,11 @@ func _refresh_detail() -> void:
 		_detail_summary.text = ""
 		_detail_objective.text = ""
 	_detail_region.text = DataRegistry.get_string("ui.detail_dot").format({ "label": DataRegistry.get_string("ui.detail_region"), "value": chapter.region_title(str(n.get("region", ""))) })
-	_detail_state.text = DataRegistry.get_string("ui.detail_dot").format({ "label": DataRegistry.get_string("ui.detail_state"), "value": DataRegistry.get_string(["ui.locked", "ui.playable", "ui.completed"][state]) })
+	var state_word: String = DataRegistry.get_string(["ui.locked", "ui.playable", "ui.completed"][state])
+	var best: int = SaveManager.best_score(level.id) if level != null and state == 2 else -1
+	if best >= 0:                                 # 已通关：状态后跟综合分（越低越好）
+		state_word = DataRegistry.get_string("ui.detail_state_score").format({ "state": state_word, "total": best })
+	_detail_state.text = DataRegistry.get_string("ui.detail_dot").format({ "label": DataRegistry.get_string("ui.detail_state"), "value": state_word })
 	if state == 0:
 		_detail_state.add_theme_color_override("font_color", _state_color(0))
 	else:

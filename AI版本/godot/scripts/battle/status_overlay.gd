@@ -15,7 +15,7 @@ const STATUS_STYLE: Dictionary = {
 const SIGNAL_COLOR: Dictionary = { "red": Color(1.0, 0.35, 0.3), "yellow": Color(1.0, 0.85, 0.3), "blue": Color(0.45, 0.65, 1.0) }
 const PIP_RADIUS: float = 20.0
 
-const REINFORCE_COLOR: Color = Color(0.85, 1.4, 1.1, 1.0)   ## 增援区青绿（提亮抵消 CanvasModulate）
+const REINFORCE_COLOR: Color = Color(0.5, 1.2, 0.9, 1.0)   ## 增援区青绿（略提亮抵消 CanvasModulate）
 var controller: BattleController = null
 var grid_height: int = 0
 var _t: float = 0.0

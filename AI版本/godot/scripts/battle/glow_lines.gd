@@ -9,10 +9,13 @@ const CORE_WIDTH: float = 2.4
 ## 光晕：[线宽, 相对不透明度]，由宽到窄叠画
 const GLOW_PASSES: Array = [[14.0, 0.07], [7.0, 0.16]]
 const OVERSHOOT_CELLS: float = 0.45
+## 2026-10-18 童话风明亮底图：芯线下先垫一道柔和的深色描边，浅色底上也读得清（深色底上几乎不可见）
+const SHADOW_COLOR: Color = Color(0.22, 0.13, 0.28, 0.72)
+const SHADOW_EXTRA: float = 4.4          ## 描边比芯线宽多少（本层单位）
 ## 特殊地块标志：assets/sprites/tile_marks/<名>.png（白色剪影 + alpha，用 tools/slice_tile_marks.py 从 gpt-image 生成图切出），按类型着色半透明叠到格上
 const MARK_DIR: String = "res://assets/sprites/tile_marks/%s.png"
 const MARK_SIZE: float = 0.62            ## 标志边长（格）
-const MARK_ALPHA: float = 0.55
+const MARK_ALPHA: float = 0.7
 
 
 ## 画 cells（Vector2i → true 的集合）的全部格边。glow：光晕强度倍率；core：是否画不透明芯线；
@@ -37,10 +40,11 @@ static func stroke(ci: CanvasItem, a: Vector2, b: Vector2, color: Color, glow: f
 		for p: Array in GLOW_PASSES:
 			passes.append([float(p[0]), minf(float(p[1]) * glow, 1.0)])
 	if core:
+		passes.push_front([core_width + SHADOW_EXTRA, -1.0])          # -1：描边（用 SHADOW_COLOR）
 		passes.append([core_width, 1.0])
 	for p: Array in passes:
 		var w: float = float(p[0])
-		var c := Color(color, color.a * float(p[1]))
+		var c := SHADOW_COLOR if float(p[1]) < 0.0 else Color(color, color.a * float(p[1]))
 		var clear := Color(c, 0.0)
 		ci.draw_line(a, b, c, w, true)
 		if ext_a > 0.0:

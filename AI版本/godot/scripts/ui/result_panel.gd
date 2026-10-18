@@ -19,6 +19,7 @@ var _last_hit: Label
 var _time: Label
 var _survivors: Label
 var _rewards: Label
+var _score: Label                       ## 胜利：综合分 + 明细（Scoring，越低越好）
 var _next: Button
 var _retry: Button
 var _back: Button
@@ -57,14 +58,16 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_level_name = _text_node()
 	_time = _text_node()
 	_survivors = _text_node()
-	_reward_head = _text_node()
 	_body = VBoxContainer.new()
 	_body.name = "ResultBody"
 	_body.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(_body)
+	_score = _body_label()
+	_score.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 	_reason = _body_label()
 	_last_hit = _body_label()
 	_last_hit.add_theme_color_override("font_color", Palette.WARN_RED)
+	_reward_head = _body_label()             # 2026-10-18：「解锁」标题并入正文流（综合分在它上面）
 	_rewards = _body_label()
 	_retry = _button(DataRegistry.get_string("ui.retry"), controller.reset)
 	_next = _button(DataRegistry.get_string("ui.next_level"), _on_next)
@@ -148,10 +151,11 @@ func _apply_layout(won: bool) -> void:
 	var btn_top: float = _r(k + "retry").position.y
 	var body_top: Rect2
 	if won:
-		put.call(_reward_head, _r("win_reward_head", true))
 		_reward_head.theme_type_variation = _tt("win_reward_head")
-		body_top = _r("win_reward", true)
+		var head_r: Rect2 = _r("win_reward_head", true)
+		body_top = Rect2(head_r.position, _r("win_reward", true).size)      # 正文从原「解锁」标题位置开始：综合分 → 解锁 → 奖励
 		_rewards.theme_type_variation = _tt("win_reward")
+		_score.theme_type_variation = _tt("win_reward")
 	else:
 		body_top = _r("lose_reason", true)
 		_reason.theme_type_variation = _tt("lose_reason")
@@ -160,7 +164,7 @@ func _apply_layout(won: bool) -> void:
 	var body_h: float = btn_top - body_top.position.y - line_gap * 2.0
 	_body_scroll.position = body_top.position - panel.position
 	_body_scroll.size = Vector2(body_top.size.x, body_h)
-	for l: Label in [_reason, _last_hit, _rewards]:
+	for l: Label in [_score, _reason, _last_hit, _reward_head, _rewards]:
 		l.custom_minimum_size = Vector2(body_top.size.x, 0.0)
 	var extra: float = _fit_body(body_top.size.x, body_h)
 	if extra > 0.0:                      # 正文放不下：框体向下加高（保持居中），按钮随之下移
@@ -187,7 +191,7 @@ const SCREEN_MARGIN: float = 24.0
 
 func _fit_body(width: float, max_h: float) -> float:
 	var labels: Array[Label] = []
-	for l: Label in [_reason, _last_hit, _rewards]:
+	for l: Label in [_score, _reason, _last_hit, _reward_head, _rewards]:
 		l.remove_theme_font_size_override("font_size")
 		if l.visible and l.text != "":
 			labels.append(l)
@@ -263,12 +267,39 @@ func show_result(result: int, delay: float = 0.0) -> void:
 	_survivors.text = RuleText.label_value("ui.result_survivors", DataRegistry.get_string("ui.list_sep").join(alive) if not alive.is_empty() else DataRegistry.get_string("ui.none"))
 	_rewards.text = _rewards_text() if won else ""
 	_rewards.visible = _rewards.text != ""
+	_score.text = _score_text() if won else ""
+	_score.visible = _score.text != ""
 	_reward_head.text = DataRegistry.get_string("ui.result_rewards")
 	var next_id: String = str(level.rewards.get("unlock_level", ""))
 	_next.visible = won and next_id != "" and GameState.is_level_unlocked(next_id)
 	_apply_layout(won)
 	ArtText.attach(_title, SKIN, ("win_" if won else "lose_") + "title")       # P8：「战斗胜利 / 失败」艺术字（R6b；「保护成功」无素材则保留文字）
 	visible = true
+
+
+## 胜利：综合分（新纪录 / 最佳）+ 明细一行
+func _score_text() -> String:
+	var sc: Dictionary = controller.last_score
+	if sc.is_empty():
+		return ""
+	var head: String = DataRegistry.get_string("ui.result_score").format({ "total": int(sc["total"]) })
+	var best: int = SaveManager.best_score(level.id) if controller.persist else -1
+	if controller.last_score_record:
+		head += "  " + DataRegistry.get_string("ui.result_score_record")
+	elif best >= 0:
+		head += DataRegistry.get_string("ui.result_score_best").format({ "best": best })
+	var c: Dictionary = Scoring.coefficients()
+	var parts: String = DataRegistry.get_string("ui.result_score_parts").format({
+		"units": int(sc["unit_count"]), "rules": int(sc["action_count"]) + int(sc["condition_count"]),
+		"beacons": int(sc["beacon_count"]), "seconds": "%.1f" % float(sc["seconds"]),
+		"cu": _coef(c["units"]), "ck": _coef(c["complexity"]), "cb": _coef(c["beacons"]), "ct": _coef(c["time"]) })
+	return head + "
+" + parts
+
+
+static func _coef(v: Variant) -> String:
+	var f: float = float(v)
+	return str(int(f)) if is_equal_approx(f, round(f)) else "%.1f" % f
 
 
 ## 失败目标为"某单位被摧毁"时：最后一次有效攻击来源与时间（第七关）

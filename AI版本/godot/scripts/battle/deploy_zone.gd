@@ -3,8 +3,8 @@ extends Node2D
 ## （GlowLines，芯线不透明、线端越出后淡出，光晕随时间呼吸）+ 每格一个半透明金色出生点标志（tile_marks/spawn）；拖拽悬停时合法格金色、非法格红色发光框；放下非法时该格红闪（10 §4）。仅 DEPLOY 阶段可见。
 
 const PULSE_SPEED: float = 2.0
-## 金色提亮（>1），与底格线同理抵消 CanvasModulate 压暗，出生点不被骨白格线盖住
-const SPAWN_COLOR: Color = Color(1.42, 1.15, 0.52, 1.0)
+## 出生点：暖金（亮于底格线的暖白，靠色相区分）
+const SPAWN_COLOR: Color = Color(1.3, 1.0, 0.35, 1.0)
 const FLASH_SECONDS: float = 0.4
 
 var level: LevelDefinition = null
@@ -78,7 +78,7 @@ func _draw() -> void:
 		return
 	var t: float = float(SimTypes.TILE_SIZE)
 	var hr := Rect2(SimTypes.sim_to_screen(Vector2(hover_cell.x, hover_cell.y + 1), level.height), Vector2(t, t))
-	var hc: Color = SPAWN_COLOR * 1.25 if hover_legal else Color(1.6, 0.45, 0.38)
+	var hc: Color = Color(1.35, 1.2, 0.6) if hover_legal else Color(1.35, 0.4, 0.32)
 	GlowLines.draw_cells(self, { hover_cell: true }, level.height, Color(hc, 1.0), 2.6, true, 0.0, GlowLines.CORE_WIDTH * 2.0)
 	if hover_ghost != null:              # 虚影：脚底对齐格中心（与 RosterCard 拖拽虚影同尺寸、同脚底比例）
 		var h: float = t * RosterCard.PREVIEW_HEIGHT_CELLS

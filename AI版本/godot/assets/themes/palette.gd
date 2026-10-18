@@ -12,4 +12,4 @@ const ALCHEMY_GOLD: Color = Color("#C9A24A")   ## 选中、当前生效指令、
 const WARN_RED: Color = Color("#FF4B3E")       ## 敌方识别、爆炸预警、失败
 const DIVINE_VIOLET: Color = Color("#B06CFF")  ## 神性/术法光、祭司
 const GRID_LINE: Color = Color(0.9098, 0.8627, 0.7686, 0.12)  ## #E8DCC4 @ 12% alpha，网格
-const CANVAS_MODULATE: Color = Color("#5A4A5E")  ## LightLayer 的 CanvasModulate（01 §8）
+const CANVAS_MODULATE: Color = Color("#BBAFC2")  ## LightLayer 的 CanvasModulate（01 §8）；2026-10-18 哥特暗黑童话：约 0.72 倍、偏冷紫，介于原暗黑（#5A4A5E）与明亮之间

@@ -23,6 +23,8 @@ var recommended_uids: Dictionary = {}    ## 推荐阵型条目名（recommended.
 var last_problems: Array[Dictionary] = []
 var load_problems: Array[Dictionary] = []   ## 读档时发现的失效配置（只提示，不删除）
 var persist: bool = false                ## true：退出/结束时写存档、胜利时发放奖励（战斗场景开启；测试保持关闭）
+var last_score: Dictionary = {}          ## 本局结算综合分明细（Scoring.compute；失败为空）
+var last_score_record: bool = false     ## 本局是否刷新该关最好成绩（只在 persist 时写存档）
 ## 多阶段 Boss 换阶段暂停（2026-10-12 评审：保留战局 → 暂停 → 展示新指令 → 重新编程 → 增援 → 恢复）。
 ## 暂停期间：存活单位可改指令 / 信标（不重建世界、不能挪位置），可在增援区按补费放新单位；「继续」时写入世界并进入下一阶段。
 var boss_pending: bool = false
@@ -706,7 +708,10 @@ func _finish_battle() -> void:
 	if world.result == SimTypes.BattleResult.LOSE:
 		GameState.record_fail(level.id)
 	save_config()
+	last_score = Scoring.from_controller(self) if world.result == SimTypes.BattleResult.WIN else {}
+	last_score_record = false
 	if world.result == SimTypes.BattleResult.WIN and persist:
+		last_score_record = SaveManager.record_score(level.id, last_score)     # complete_level 随后写盘
 		SaveManager.complete_level(level.id, level.rewards)
 		EventBus.level_completed.emit(level.id, level.rewards)
 	EventBus.battle_ended.emit(world.result, SimTypes.ReasonCode.OK)
