@@ -1,0 +1,464 @@
+{
+  "schema_version": 1,
+  "id": "level_e04",
+  "index": 204,
+  "display_index": 4,
+  "elite": true,
+  "title": "断臂回廊",
+  "subtitle": "别挤在一起",
+  "summary": "别挤在一起",
+  "region": "warped_corridor",
+  "region_cn": "畸变回廊",
+  "chapter": "chapter_02",
+  "biome": "transit_node",
+  "bgm": "region_warped_corridor",
+  "seed": 20404,
+  "grid": {
+    "width": 19,
+    "height": 11,
+    "blocked": [
+      [
+        6,
+        3
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        9,
+        3
+      ],
+      [
+        10,
+        3
+      ],
+      [
+        11,
+        3
+      ],
+      [
+        12,
+        3
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        10,
+        7
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "tiles": {}
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 17,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer",
+      "hexer"
+    ],
+    "max_units": 4,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "B1",
+      "unit": "marrow_hulk",
+      "faction": "enemy",
+      "pos": [
+        14,
+        5
+      ],
+      "display_name": "断臂巨像",
+      "overrides": {
+        "max_hp": 540,
+        "attack": 14,
+        "vision": 10,
+        "move_speed": 0.6
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        }
+      ],
+      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的分裂体。血极厚。"
+    },
+    {
+      "id": "C1",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        17,
+        9
+      ],
+      "display_name": "骨花核心·上",
+      "overrides": {
+        "max_hp": 90,
+        "vision": 10
+      }
+    },
+    {
+      "id": "C2",
+      "unit": "bone_core",
+      "faction": "enemy",
+      "pos": [
+        17,
+        1
+      ],
+      "display_name": "骨花核心·下",
+      "overrides": {
+        "max_hp": 90,
+        "vision": 10
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon",
+      "self_hp_below"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "highest_max_hp",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "modifiers": [
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:hexer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_hexer",
+        "form": "hexer",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              7,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          6
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              5,
+              6
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer2",
+        "form": "lancer",
+        "pos": [
+          0,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              4,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "highest_max_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "击倒断臂巨像。它血极厚、打谁谁易伤；两角的骨花核心会朝视野内（10 格）最远的人投下花粉爆裂（半径 2 格）。",
+    "win": [
+      {
+        "id": "win_boss",
+        "type": "destroy",
+        "targets": [
+          "B1"
+        ]
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "别扎堆：只让承伤形态进入骨花核心的视野去顶巨像，远射形态和咒术师在后面拉开距离输出，花粉爆裂就只会砸在一个人身上。"
+  },
+  "hints": [
+    "别扎堆：只让承伤形态进入骨花核心的视野去顶巨像，远射形态和咒术师在后面拉开距离输出，花粉爆裂就只会砸在一个人身上。",
+    "击倒断臂巨像。它血极厚、打谁谁易伤；两角的骨花核心会朝视野内（10 格）最远的人投下花粉爆裂（半径 2 格）。",
+    "承伤形态走到 (10,5) 顶住巨像；咒术师站 (7,4) 给巨像挂易伤，两名远射形态分站 (5,6)、(4,5)，都在骨花核心视野外，全员打血最厚的目标。约 24 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。别扎堆：只让承伤形态进入骨花核心的视野去顶巨像，远射形态和咒术师在后面拉开距离输出，花粉爆裂就只会砸在一个人身上。",
+    "default": "别扎堆：只让承伤形态进入骨花核心的视野去顶巨像，远射形态和咒术师在后面拉开距离输出，花粉爆裂就只会砸在一个人身上。"
+  },
+  "verification": {
+    "expected_win": "承伤形态走到 (10,5) 顶住巨像；咒术师站 (7,4) 给巨像挂易伤，两名远射形态分站 (5,6)、(4,5)，都在骨花核心视野外，全员打血最厚的目标。约 24 秒。",
+    "expected_fail": [
+      "四人一起挤到 (9, 4..6)：两颗花粉爆裂同时落在人堆里，9 秒内倒下三人。"
+    ],
+    "alternatives": [
+      "咒术师换成基础攻击形态也能险胜（约 26 秒）。",
+      "遗物骨臂：在巨像脚下放诅咒地块，巨像持续易伤，十几秒就能击倒。"
+    ],
+    "risks": [],
+    "_engine_check": "tools/elite_probe.gd（tools/elite_scenarios.json）无头实跑"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_07.png",
+    "ground": "res://assets/grounds/transit_node_a.png",
+    "ground_tint": "#b8a8c0",
+    "playfield_rect": null
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "",
+    "unlock_relics": [
+      "bone_arm"
+    ]
+  },
+  "_design_comment": "精英关 4：高血量巨像 + 两颗朝「最远者」投弹的骨花核心，考站位分散；骨臂（易伤地块）在这里效果最明显。"
+}

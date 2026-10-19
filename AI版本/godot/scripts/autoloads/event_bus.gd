@@ -30,6 +30,10 @@ signal hint_requested(tier: int)
 @warning_ignore("unused_signal")
 signal beacons_changed(unit_id: int)                ## 07 §3.1：部署阶段某单位的信标增删改
 @warning_ignore("unused_signal")
+signal relics_changed()                             ## 遗物状态变化（放置 / 撤回地块、使用、冷却结束、重置）
+@warning_ignore("unused_signal")
+signal relic_armed(relic_id: String)                ## 遗物进入「点选目标 / 落点」状态（"" = 取消）
+@warning_ignore("unused_signal")
 signal toast(text: String)
 @warning_ignore("unused_signal")
 signal toast_at(text: String, screen_pos: Vector2)   ## P6 ui_21：锚在某格上方的警示气泡（不可放置）；screen_pos = 格子上沿中点

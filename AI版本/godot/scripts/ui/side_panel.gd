@@ -12,4 +12,9 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	controller.remove_unit(str((data as Dictionary)["slot_id"]))
+	var d: Dictionary = data as Dictionary
+	if d.has("relic"):                   # 地图上的遗物地块拖回底栏 = 撤回
+		if controller.remove_relic_tile():
+			EventBus.toast.emit(DataRegistry.get_string("ui.relic_removed_toast").format({ "name": str(DataRegistry.get_relic(str(d["relic"])).get("name", "")) }))
+		return
+	controller.remove_unit(str(d["slot_id"]))

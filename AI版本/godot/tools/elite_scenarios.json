@@ -1,0 +1,1577 @@
+{
+  "_comment": "精英关探针场景（tools/elite_probe.gd）。units = \"recommended\" 时摆推荐阵型；否则逐个 add_unit。relics = 视为已获得的遗物；relic_tile = 开战前放下的遗物地块；relic_uses = 到点（模拟秒）对目标（初始单位 id 或 ally:<序号>）使用遗物。",
+  "scenarios": [
+    {
+      "level": "level_e01",
+      "kind": "recommended",
+      "expect": "WIN"
+    },
+    {
+      "level": "level_e01",
+      "kind": "fail_rush",
+      "expect": "LOSE",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            3
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e01",
+      "kind": "rush_with_blade",
+      "expect": "WIN",
+      "relics": [
+        "bone_blade"
+      ],
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            3
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        }
+      ],
+      "relic_uses": [
+        {
+          "relic": "bone_blade",
+          "at": 18,
+          "target": "S1"
+        },
+        {
+          "relic": "bone_blade",
+          "at": 25,
+          "target": "S1"
+        }
+      ]
+    },
+    {
+      "level": "level_e02",
+      "kind": "recommended",
+      "expect": "WIN"
+    },
+    {
+      "level": "level_e02",
+      "kind": "alt_no_shrine",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ],
+            [
+              2,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "at_beacon",
+                  "beacon": "2"
+                },
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "hexer",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e02",
+      "kind": "fail_no_hexer",
+      "expect": "LOSE",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "at_beacon",
+                  "beacon": "2"
+                },
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e02",
+      "kind": "fail_focus_hulk",
+      "expect": "LOSE",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "at_beacon",
+                  "beacon": "2"
+                },
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "hexer",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e02",
+      "kind": "no_hexer_with_badge",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "at_beacon",
+                  "beacon": "2"
+                },
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "idle"
+              }
+            }
+          ]
+        }
+      ],
+      "relics": [
+        "badge"
+      ],
+      "relic_uses": [
+        {
+          "relic": "badge",
+          "at": 10,
+          "target": "ally:0"
+        },
+        {
+          "relic": "badge",
+          "at": 16,
+          "target": "ally:0"
+        }
+      ]
+    },
+    {
+      "level": "level_e03",
+      "kind": "recommended",
+      "expect": "WIN"
+    },
+    {
+      "level": "level_e03",
+      "kind": "fail_glass",
+      "expect": "LOSE",
+      "units": [
+        {
+          "form": "striker",
+          "pos": [
+            2,
+            5
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            2,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "swift",
+          "pos": [
+            2,
+            6
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e03",
+      "kind": "alt_chase_all",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            6
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e03",
+      "kind": "chase_lantern_4",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            6
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [
+                {
+                  "type": "enemy_visible"
+                }
+              ],
+              "target": {
+                "selector": "nearest",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "chase_attack"
+              }
+            }
+          ]
+        }
+      ],
+      "relics": [
+        "lantern"
+      ],
+      "relic_tile": {
+        "relic": "lantern",
+        "cell": [
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "level": "level_e03",
+      "kind": "rec_lantern",
+      "expect": "WIN",
+      "relics": [
+        "lantern"
+      ],
+      "relic_tile": {
+        "relic": "lantern",
+        "cell": [
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "level": "level_e04",
+      "kind": "recommended",
+      "expect": "WIN"
+    },
+    {
+      "level": "level_e04",
+      "kind": "alt_no_hexer",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [
+            [
+              7,
+              4
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [
+            [
+              5,
+              6
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            0,
+            5
+          ],
+          "beacons": [
+            [
+              4,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e04",
+      "kind": "fail_clump",
+      "expect": "LOSE",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "hexer",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [
+            [
+              9,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [
+            [
+              9,
+              4
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            0,
+            5
+          ],
+          "beacons": [
+            [
+              9,
+              6
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "level_e04",
+      "kind": "no_hexer_bone_arm",
+      "expect": "WIN",
+      "units": [
+        {
+          "form": "bulwark",
+          "pos": [
+            2,
+            5
+          ],
+          "beacons": [
+            [
+              10,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "striker",
+          "pos": [
+            1,
+            4
+          ],
+          "beacons": [
+            [
+              7,
+              4
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            1,
+            6
+          ],
+          "beacons": [
+            [
+              5,
+              6
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        },
+        {
+          "form": "lancer",
+          "pos": [
+            0,
+            5
+          ],
+          "beacons": [
+            [
+              4,
+              5
+            ]
+          ],
+          "rules": [
+            {
+              "conditions": [
+                {
+                  "type": "enemy_in_range"
+                }
+              ],
+              "target": {
+                "selector": "highest_max_hp",
+                "filter": "unit"
+              },
+              "action": {
+                "type": "attack"
+              }
+            },
+            {
+              "conditions": [],
+              "action": {
+                "type": "follow_beacons",
+                "mode": "once"
+              }
+            }
+          ]
+        }
+      ],
+      "relics": [
+        "bone_arm"
+      ],
+      "relic_tile": {
+        "relic": "bone_arm",
+        "cell": [
+          11,
+          5
+        ]
+      }
+    }
+  ]
+}

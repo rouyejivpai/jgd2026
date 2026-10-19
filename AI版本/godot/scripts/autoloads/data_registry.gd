@@ -22,6 +22,8 @@ var _status_fx: Dictionary = {}                  ## 第五阶段：data/status_f
 const STATUS_FX_FILE: String = "status_fx.json"
 const STATUS_IDS: Array[String] = ["vulnerable", "paralysis", "slow"]
 const TEACHING_FILE: String = "teaching.json"
+var _relics: Dictionary = {}      ## 遗物 id -> 定义（data/relics.json，原样字典）
+var _relic_order: Array[String] = []
 
 
 func _ready() -> void:
@@ -53,6 +55,7 @@ func load_all(root: String = DATA_ROOT) -> bool:
 		var ctx: String = "units.json:%s" % uid
 		_units[uid] = UnitDefinition.from_dict(uid, DataReader.as_dict(unit_dict[uid], ctx), ctx)
 	DataValidator.validate_units(_units, _traits)
+	_load_relics(root + "/relics.json")
 
 	_commands = CommandCatalog.from_dict(_load_json(root + "/commands.json"), "commands.json")
 
@@ -81,6 +84,7 @@ func load_all(root: String = DATA_ROOT) -> bool:
 
 	_teaching.validate_against(_levels, TEACHING_FILE)
 	_validate_progression(level_ids)
+	_validate_relic_rewards(levels)
 	_validate_command_unlocks(levels)
 	_validate_biomes(levels)
 	_chapters.clear()
@@ -229,6 +233,25 @@ func get_ground_marks(biome: String) -> Array[String]:
 	return DataReader.string_array(marks.get(biome, marks.get("default", [])) as Array, "biomes.json")
 
 
+## 遗物定义（data/relics.json），无则 {}
+func get_relic(id: String) -> Dictionary:
+	return _relics.get(id, {}) as Dictionary
+
+
+## 遗物 id（按 relics.json order）
+func get_relic_ids() -> Array[String]:
+	return _relic_order.duplicate()
+
+
+## 掉落该遗物的关卡（rewards.unlock_relics 含它的第一个关卡），无则 null
+func relic_source_level(relic_id: String) -> LevelDefinition:
+	for lid: String in _level_order:
+		var L: LevelDefinition = _levels[lid] as LevelDefinition
+		if (L.rewards.get("unlock_relics", []) as Array).has(relic_id):
+			return L
+	return null
+
+
 ## 07 §10.1 章节
 func get_chapters() -> Array[ChapterDef]:
 	return _chapters
@@ -316,6 +339,51 @@ func _validate_command_unlocks(levels: Array[LevelDefinition]) -> void:
 	for k: String in _commands.unlock_keys():
 		if not known.has(k):
 			DataReader.report("commands.json", "unlock_key '%s' 不在 progression 初始解锁或任何关卡 rewards.unlock_presets 中" % k)
+
+
+const RELIC_KINDS: Array[String] = ["strike", "heal", "tile"]
+
+
+## data/relics.json：文件可缺省（= 没有遗物）；每枚遗物 kind / when / charges 合法，tile 需要 status（traits 中的状态）
+func _load_relics(path: String) -> void:
+	_relics.clear()
+	_relic_order.clear()
+	if not FileAccess.file_exists(path):
+		return
+	var doc: Dictionary = _load_json(path)
+	var ctx: String = "relics.json"
+	var defs: Dictionary = DataReader.opt_dict(doc, "relics", ctx)
+	for id: String in DataReader.string_array(DataReader.opt_array(doc, "order", ctx), ctx + ".order"):
+		if not defs.has(id):
+			DataReader.report(ctx, "order 中的遗物 '%s' 没有定义" % id)
+			continue
+		var d: Dictionary = DataReader.as_dict(defs[id], ctx + "." + id)
+		var rctx: String = ctx + "." + id
+		DataReader.req_str(d, "name", rctx)
+		DataReader.req_str(d, "desc", rctx)
+		var kind: String = DataReader.req_str(d, "kind", rctx)
+		if not RELIC_KINDS.has(kind):
+			DataReader.report(rctx, "kind 必须是 strike / heal / tile：%s" % kind)
+		var when: String = DataReader.req_str(d, "when", rctx)
+		if when != "deploy" and when != "battle":
+			DataReader.report(rctx, "when 必须是 deploy / battle：%s" % when)
+		if int(DataReader.opt_num(d, "charges", 1.0, rctx)) < 1:
+			DataReader.report(rctx, "charges 至少为 1")
+		if kind == "tile" and not _traits.has(DataReader.opt_str(d, "status", "", rctx)):
+			DataReader.report(rctx, "tile 遗物的 status 必须是 traits.json 中的状态")
+		_relics[id] = d
+		_relic_order.append(id)
+	for id: String in defs.keys():
+		if not _relic_order.has(id):
+			DataReader.report(ctx, "遗物 '%s' 不在 order 中" % id)
+
+
+## 关卡 rewards.unlock_relics 引用的遗物必须存在
+func _validate_relic_rewards(levels: Array[LevelDefinition]) -> void:
+	for L: LevelDefinition in levels:
+		for r: String in DataReader.string_array(DataReader.opt_array(L.rewards, "unlock_relics", L.id), L.id + ".rewards.unlock_relics"):
+			if not _relics.has(r):
+				DataReader.report("%s.json" % L.id, "rewards.unlock_relics '%s' 不存在（data/relics.json）" % r)
 
 
 func _list_level_files(dir_path: String) -> Array[String]:

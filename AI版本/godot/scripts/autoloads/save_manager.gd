@@ -5,7 +5,7 @@ extends Node
 const SAVE_PATH: String = "user://save.json"
 const SAVE_VERSION: int = 5              ## 2：level_configs 改为单位列表（07 §4.2），unlocks.slots 废弃；3：stories_seen（07 §10）；4：信标数字编号（10 §6.3）；5：指令双组口径 + tutorials_seen（第五阶段）
 const TMP_SUFFIX: String = ".tmp"
-const UNLOCK_LISTS: Array[String] = ["forms", "presets", "conditions", "selectors", "actions"]
+const UNLOCK_LISTS: Array[String] = ["forms", "presets", "conditions", "selectors", "actions", "relics"]   ## relics：精英关掉落的遗物（rewards.unlock_relics）
 
 var data: Dictionary = {}
 var invalid_configs: Dictionary = {}    ## level_id -> Array[Dictionary] 问题列表（只标记，不删除）
@@ -324,7 +324,7 @@ static func apply_rewards(save_data: Dictionary, level_id: String, rewards: Dict
 	var unlocks: Dictionary = save_data.get("unlocks", {}) as Dictionary
 	var pairs: Dictionary = {
 		"forms": "unlock_forms", "presets": "unlock_presets", "conditions": "unlock_conditions",
-		"selectors": "unlock_selectors", "actions": "unlock_actions",
+		"selectors": "unlock_selectors", "actions": "unlock_actions", "relics": "unlock_relics",
 	}
 	for key: String in pairs.keys():
 		var list: Array = unlocks.get(key, []) as Array

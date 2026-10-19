@@ -340,6 +340,11 @@ func _rewards_text() -> String:
 			items.append(DataRegistry.get_string("names.%s.%s" % [str(ga[2]), str(v)]))
 		if not items.is_empty():
 			lines.append(RuleText.label_value(str(ga[1]), sep.join(items)))
+	var relics: PackedStringArray = PackedStringArray()
+	for r: String in level.reward_relics():
+		relics.append(str(DataRegistry.get_relic(r).get("name", r)))
+	if not relics.is_empty():
+		lines.append(RuleText.label_value("ui.reward_relics", sep.join(relics)))
 	if lines.is_empty():
 		return ""
 	return "\n".join(lines)          # 「解锁」标题单独一行（_reward_head，批准整图 ui_10）

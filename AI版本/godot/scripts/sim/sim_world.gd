@@ -21,6 +21,7 @@ var result_objective: String = ""       ## 决出胜负的 objective id（失败
 var objective_progress: Dictionary = {} ## time_left / target_hp / target_max_hp / threat_cleared
 var level_id: String = ""
 var tiles: Dictionary = {}              ## Vector2i -> 地形效果格 kind（hazard / mire / shrine）
+var relic_tiles: Dictionary = {}        ## Vector2i -> { relic, status, seconds }：遗物地块（提灯 / 骨臂），只作用于敌方，由 BattleController 写入
 var boss: Dictionary = {}               ## LevelDefinition.boss 的副本
 var boss_state: Dictionary = {}         ## BossSystem 运行状态
 var boss_signal: String = ""            ## Boss 当前信号（signal_is 条件读取）

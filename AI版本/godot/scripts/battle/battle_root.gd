@@ -3,6 +3,7 @@ extends Node2D
 
 const UNIT_VIEW_SCENE: PackedScene = preload("res://scenes/battle/unit_view.tscn")
 const STATUS_OVERLAY_SCRIPT: Script = preload("res://scripts/battle/status_overlay.gd")
+const RELIC_LAYER_SCRIPT: Script = preload("res://scripts/battle/relic_layer.gd")
 const UNIT_HIT_RADIUS: float = 0.5        ## 单位点击命中：离身体线段的距离（格）
 const UNIT_HIT_BODY_CELLS: float = 0.9    ## 身体线段高度（格，脚底 → 胸口；精灵约 1.2 格高）
 
@@ -49,6 +50,8 @@ var pan_y: float = 0.0
 var cam_zoom: float = 1.0
 var _drag_source: int = -1               ## 部署拖动中的单位（原位置变淡）
 var _status_overlay: Node2D = null       ## 30 关战役：异常状态 / Boss 信号 / 增援区提示（status_overlay.gd）
+var _relic_ground: Node2D = null         ## 遗物地块 / 放置预览（单位之下，relic_layer.gd GROUND）
+var _relic_top: Node2D = null            ## 遗物点选目标圈 / 生效特效（单位之上，relic_layer.gd TOP）
 var tutorial: TutorialDirector = null    ## 第五阶段：强制引导
 
 
@@ -91,6 +94,10 @@ func _ready() -> void:
 	move_child(_status_overlay, _unit_layer.get_index() + 1)
 	_status_overlay.set("controller", controller)
 	_status_overlay.set("grid_height", level.height)
+	_relic_ground = _make_relic_layer("RelicGround", 0)
+	move_child(_relic_ground, _unit_layer.get_index())
+	_relic_top = _make_relic_layer("RelicTop", 1)
+	move_child(_relic_top, _status_overlay.get_index() + 1)
 	controller.boss_phase_paused.connect(_on_boss_phase_paused)
 	_apply_playfield()
 	get_viewport().size_changed.connect(_apply_playfield)
@@ -172,8 +179,9 @@ func _apply_playfield() -> void:
 
 func _panned_layers() -> Array[Node2D]:
 	var out: Array[Node2D] = [_map_layer, _target_lines, _unit_layer, _fx, _range, _debug]
-	if _status_overlay != null:
-		out.append(_status_overlay)
+	for n: Node2D in [_status_overlay, _relic_ground, _relic_top]:
+		if n != null:
+			out.append(n)
 	return out
 
 
@@ -513,6 +521,8 @@ func _on_sim_event(e: Dictionary) -> void:
 		SimTypes.EventType.BLAST_DETONATED:
 			_fx.call("detonate_marker", int(e["blast_id"]))
 			AudioManager.play_sfx("blast_detonate")
+		SimTypes.EventType.RELIC_USED:
+			_on_relic_used(e)
 		SimTypes.EventType.UNIT_DIED:
 			var dead: UnitView = _view(int(e["unit"]))
 			if dead != null:
@@ -536,3 +546,60 @@ func _alive_views() -> Array[UnitView]:
 		if v != null and not v.is_dying:
 			out.append(v)
 	return out
+
+
+# ---- 遗物（relic_layer.gd；HUD 遗物栏与 MapInput 调用）----
+func _make_relic_layer(node_name: String, mode: int) -> Node2D:
+	var n := Node2D.new()
+	n.name = node_name
+	n.set_script(RELIC_LAYER_SCRIPT)
+	add_child(n)
+	n.set("mode", mode)
+	n.set("controller", controller)
+	n.set("grid_height", level.height)
+	return n
+
+
+## 遗物进入 / 退出点选（"" = 退出）：清掉放置预览与目标悬停
+func set_relic_armed(relic_id: String) -> void:
+	_relic_top.call("set_armed", relic_id, -1)
+	_relic_ground.call("clear_hover")
+
+
+## 地块遗物落点预览（拖动或点选中），吸附到 cell
+func set_relic_hover(relic_id: String, cell: Vector2i, legal: bool) -> void:
+	_relic_ground.call("set_hover", relic_id, cell, legal)
+
+
+func clear_relic_hover() -> void:
+	if _relic_ground != null:
+		_relic_ground.call("clear_hover")
+
+
+## 点选目标时悬停的单位（-1 = 无）
+func set_relic_target_hover(relic_id: String, unit_id: int) -> void:
+	_relic_top.call("set_armed", relic_id, unit_id)
+
+
+## 屏幕坐标处的遗物地块（部署阶段拖动挪位 / 右键撤回用），无则 ""
+func relic_tile_at_screen(screen_pos: Vector2) -> String:
+	if controller.relic_tile.is_empty() or not in_playfield(screen_pos):
+		return ""
+	var rid: String = str(controller.relic_tile["relic"])
+	return rid if controller.relic_tile_cells(rid, controller.relic_tile["cell"] as Vector2i).has(screen_to_cell(screen_pos)) else ""
+
+
+func _on_relic_used(e: Dictionary) -> void:
+	var rid: String = str(e.get("relic", ""))
+	var target: SimUnit = controller.world.get_unit(int(e.get("target", -1)))
+	if target == null:
+		return
+	var heal: bool = str(e.get("kind", "")) == "heal"
+	var amount: int = roundi(float(e.get("amount", 0.0)))
+	_relic_top.call("spawn_fx", target.pos, RelicLayer.relic_color(rid), ("+%d" if heal else "-%d") % amount)
+	AudioManager.play_sfx("deploy_place" if heal else "hit_bone")
+	var v: UnitView = _view(target.id)
+	if v != null and heal:
+		v.flash()
+	_hud.call("show_toast", DataRegistry.get_string("ui.relic_used_heal" if heal else "ui.relic_used_strike").format({
+		"name": str(DataRegistry.get_relic(rid).get("name", "")), "target": target.display_name, "n": amount }))

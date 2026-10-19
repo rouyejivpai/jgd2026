@@ -106,7 +106,7 @@
       "level": "level_c01",
       "region": "bone_workshop",
       "pos": [
-        180,
+        150,
         780
       ],
       "links": [
@@ -118,7 +118,7 @@
       "level": "level_c02",
       "region": "bone_workshop",
       "pos": [
-        400,
+        342,
         600
       ],
       "links": [
@@ -130,7 +130,7 @@
       "level": "level_c03",
       "region": "bone_workshop",
       "pos": [
-        620,
+        535,
         790
       ],
       "links": [
@@ -142,7 +142,7 @@
       "level": "level_c04",
       "region": "bone_workshop",
       "pos": [
-        840,
+        728,
         610
       ],
       "links": [
@@ -154,7 +154,7 @@
       "level": "level_c05",
       "region": "bone_workshop",
       "pos": [
-        1060,
+        920,
         780
       ],
       "links": [
@@ -166,19 +166,30 @@
       "level": "level_c06",
       "region": "bone_workshop",
       "pos": [
-        1260,
+        1095,
         590
       ],
       "links": [
-        "level_c07"
+        "level_c07",
+        "level_e01"
       ],
       "node_art": "rake"
+    },
+    {
+      "level": "level_e01",
+      "region": "bone_workshop",
+      "pos": [
+        622,
+        380
+      ],
+      "links": [],
+      "elite": true
     },
     {
       "level": "level_c07",
       "region": "withered_farm",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -190,7 +201,7 @@
       "level": "level_c08",
       "region": "withered_farm",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -202,7 +213,7 @@
       "level": "level_c09",
       "region": "withered_farm",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -214,7 +225,7 @@
       "level": "level_c10",
       "region": "withered_farm",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [
@@ -226,7 +237,7 @@
       "level": "level_c11",
       "region": "grey_thorn",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -238,7 +249,7 @@
       "level": "level_c12",
       "region": "grey_thorn",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -250,7 +261,7 @@
       "level": "level_c13",
       "region": "grey_thorn",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -262,19 +273,30 @@
       "level": "level_c14",
       "region": "grey_thorn",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [
-        "level_c15"
+        "level_c15",
+        "level_e02"
       ],
       "node_art": "shield"
+    },
+    {
+      "level": "level_e02",
+      "region": "grey_thorn",
+      "pos": [
+        622,
+        390
+      ],
+      "links": [],
+      "elite": true
     },
     {
       "level": "level_c15",
       "region": "holy_bell",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -286,7 +308,7 @@
       "level": "level_c16",
       "region": "holy_bell",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -298,7 +320,7 @@
       "level": "level_c17",
       "region": "holy_bell",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -310,7 +332,7 @@
       "level": "level_c18",
       "region": "holy_bell",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [
@@ -322,7 +344,7 @@
       "level": "level_c19",
       "region": "flesh_swamp",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -334,7 +356,7 @@
       "level": "level_c20",
       "region": "flesh_swamp",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -346,7 +368,7 @@
       "level": "level_c21",
       "region": "flesh_swamp",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -358,19 +380,30 @@
       "level": "level_c22",
       "region": "flesh_swamp",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [
-        "level_c23"
+        "level_c23",
+        "level_e03"
       ],
       "node_art": "wolf_head"
+    },
+    {
+      "level": "level_e03",
+      "region": "flesh_swamp",
+      "pos": [
+        622,
+        390
+      ],
+      "links": [],
+      "elite": true
     },
     {
       "level": "level_c23",
       "region": "warped_corridor",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -382,7 +415,7 @@
       "level": "level_c24",
       "region": "warped_corridor",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -394,7 +427,7 @@
       "level": "level_c25",
       "region": "warped_corridor",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -406,19 +439,30 @@
       "level": "level_c26",
       "region": "warped_corridor",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [
-        "level_c27"
+        "level_c27",
+        "level_e04"
       ],
       "node_art": "crosshair"
+    },
+    {
+      "level": "level_e04",
+      "region": "warped_corridor",
+      "pos": [
+        622,
+        390
+      ],
+      "links": [],
+      "elite": true
     },
     {
       "level": "level_c27",
       "region": "bone_greenhouse",
       "pos": [
-        240,
+        202,
         760
       ],
       "links": [
@@ -430,7 +474,7 @@
       "level": "level_c28",
       "region": "bone_greenhouse",
       "pos": [
-        560,
+        482,
         580
       ],
       "links": [
@@ -442,7 +486,7 @@
       "level": "level_c29",
       "region": "bone_greenhouse",
       "pos": [
-        880,
+        762,
         770
       ],
       "links": [
@@ -454,7 +498,7 @@
       "level": "level_c30",
       "region": "bone_greenhouse",
       "pos": [
-        1200,
+        1042,
         590
       ],
       "links": [],
@@ -468,5 +512,6 @@
       1254,
       1254
     ]
-  }
+  },
+  "_comment_elite": "2026-10-19 精英关：c06 / c14 / c22 / c26 通关后在本区域地图上开放一个支线节点（elite: true，节点图标 = 奖励遗物），不计入区域进度，不解锁后续关卡；通关奖励遗物（data/relics.json）。"
 }

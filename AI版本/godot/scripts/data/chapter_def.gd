@@ -65,6 +65,7 @@ static func from_dict(d: Dictionary, ctx: String) -> ChapterDef:
 			"pos": pos,
 			"links": DataReader.string_array(DataReader.opt_array(n, "links", nctx), nctx + ".links"),
 			"boss": DataReader.opt_bool(n, "boss", false, nctx),
+			"elite": DataReader.opt_bool(n, "elite", false, nctx),     ## 精英关支线节点（2026-10-19）：不计入区域进度
 			"story_on_unlock": DataReader.opt_str(n, "story_on_unlock", "", nctx),
 			"legacy_ids": DataReader.string_array(DataReader.opt_array(n, "legacy_ids", nctx), nctx + ".legacy_ids"),
 		})
@@ -120,10 +121,11 @@ func region_nodes(region_id: String) -> Array[Dictionary]:
 	return out
 
 
+## 区域主线关卡（不含占位节点与精英关支线）
 func region_level_ids(region_id: String) -> Array[String]:
 	var out: Array[String] = []
 	for n: Dictionary in region_nodes(region_id):
-		if not bool(n["placeholder"]) and str(n["level"]) != "":
+		if not bool(n["placeholder"]) and str(n["level"]) != "" and not bool(n.get("elite", false)):
 			out.append(str(n["level"]))
 	return out
 
@@ -136,14 +138,18 @@ func region_unlocked(region_id: String, completed: Array, initial_levels: Array)
 	return false
 
 
-## 区域进度 (已通关数, 关卡数)
+## 区域进度 (已通关数, 关卡数)；精英关（支线）不计入
 func region_progress(region_id: String, completed: Array) -> Vector2i:
-	var ids: Array[String] = region_level_ids(region_id)
 	var done: int = 0
-	for lid: String in ids:
+	var total: int = 0
+	for n: Dictionary in region_nodes(region_id):
+		var lid: String = str(n["level"])
+		if bool(n["placeholder"]) or lid == "" or bool(n.get("elite", false)):
+			continue
+		total += 1
 		if completed.has(lid):
 			done += 1
-	return Vector2i(done, ids.size())
+	return Vector2i(done, total)
 
 
 ## 解锁本区域首关需要先通关的关卡（区域首关的前驱，可能在上一区域）；没有则 ""

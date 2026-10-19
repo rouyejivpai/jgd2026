@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "id": "level_e02",
+  "index": 202,
+  "display_index": 2,
+  "elite": true,
+  "title": "灰棘祭坛",
+  "subtitle": "先清侍从，再磨髓块",
+  "summary": "先清侍从，再磨髓块",
+  "region": "grey_thorn",
+  "region_cn": "灰棘林",
+  "chapter": "chapter_02",
+  "biome": "bone_greenhouse",
+  "bgm": "region_grey_thorn",
+  "seed": 20202,
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        9,
+        10
+      ]
+    ],
+    "tiles": {
+      "hazard": [
+        [
+          7,
+          0
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          7,
+          10
+        ]
+      ],
+      "shrine": [
+        [
+          4,
+          5
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 13,
+    "available_forms": [
+      "bulwark",
+      "striker",
+      "lancer",
+      "hexer",
+      "swift"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "M1",
+      "unit": "marrow_hulk",
+      "faction": "enemy",
+      "pos": [
+        12,
+        5
+      ],
+      "display_name": "祭坛髓块",
+      "overrides": {
+        "max_hp": 300,
+        "attack": 18,
+        "vision": 9,
+        "move_speed": 0.9
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "lowest_hp",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        }
+      ],
+      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的分裂体。"
+    },
+    {
+      "id": "H1",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        13,
+        7
+      ],
+      "display_name": "残骸侍从·上",
+      "overrides": {
+        "max_hp": 70,
+        "attack": 8,
+        "vision": 9
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击。"
+    },
+    {
+      "id": "H2",
+      "unit": "husk",
+      "faction": "enemy",
+      "pos": [
+        13,
+        3
+      ],
+      "display_name": "残骸侍从·下",
+      "overrides": {
+        "max_hp": 70,
+        "attack": 8,
+        "vision": 9
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_visible"
+            }
+          ],
+          "target": {
+            "selector": "first_seen",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "chase_attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "idle"
+          }
+        }
+      ],
+      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击。"
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "modifiers": [
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:hexer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              10,
+              5
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              4,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "2"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_hexer",
+        "form": "hexer",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          6
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "清掉灰棘祭坛的守卫。髓块打中谁谁就易伤，两个侍从跟着咬人；绿色三角是净化台，我方站上去立刻清掉异常。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "先清侍从：所有人打最近的目标，咒术师的易伤让侍从和髓块都更脆；承伤形态诱敌后退回净化台站住，髓块标上的易伤会被立刻清掉。"
+  },
+  "hints": [
+    "先清侍从：所有人打最近的目标，咒术师的易伤让侍从和髓块都更脆；承伤形态诱敌后退回净化台站住，髓块标上的易伤会被立刻清掉。",
+    "清掉灰棘祭坛的守卫。髓块打中谁谁就易伤，两个侍从跟着咬人；绿色三角是净化台，我方站上去立刻清掉异常。",
+    "承伤形态穿过腐地到 (10,5) 诱敌，退回净化台 (4,5) 站住还手；咒术师与远射形态在部署区打射程内最近的敌人。先倒侍从、再磨髓块，约 20 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。先清侍从：所有人打最近的目标，咒术师的易伤让侍从和髓块都更脆；承伤形态诱敌后退回净化台站住，髓块标上的易伤会被立刻清掉。",
+    "default": "先清侍从：所有人打最近的目标，咒术师的易伤让侍从和髓块都更脆；承伤形态诱敌后退回净化台站住，髓块标上的易伤会被立刻清掉。"
+  },
+  "verification": {
+    "expected_win": "承伤形态穿过腐地到 (10,5) 诱敌，退回净化台 (4,5) 站住还手；咒术师与远射形态在部署区打射程内最近的敌人。先倒侍从、再磨髓块，约 20 秒。",
+    "expected_fail": [
+      "不带咒术师（换基础攻击形态）：没有易伤，输出不够，髓块磨死全队。",
+      "所有人集火血最厚的髓块：侍从一直在咬人，后排先倒。"
+    ],
+    "alternatives": [
+      "不站净化台、退回部署区也能险胜（约 22 秒），远射形态会掉血。",
+      "不带咒术师 + 遗物徽章（给承伤形态回两次血）可以赢。"
+    ],
+    "risks": [],
+    "_engine_check": "tools/elite_probe.gd（tools/elite_scenarios.json）无头实跑"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_03.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#b090b8",
+    "playfield_rect": null
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "",
+    "unlock_relics": [
+      "badge"
+    ]
+  },
+  "_design_comment": "精英关 2：c12「回流」的升级版，多了侍从与咒术师，考易伤的「互相施加」。"
+}

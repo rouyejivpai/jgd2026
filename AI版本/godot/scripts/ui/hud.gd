@@ -12,6 +12,8 @@ extends Control
 ## - 角色 / 敌人详情（第四阶段）：停靠屏幕一侧、上下铺满的侧栏（批准整图 assets/ui/side_detail/design.png）；单位在左半屏时侧栏在右，反之在左，
 ##   不遮挡该单位与战场；没有遮罩，战场照常可点（点空地 = 取消选中并收起），Esc /「关闭」收起
 ## - 信标模式（第四阶段）：数字键 / 详情「信标」进入，底部信标边栏（替换出场卡）：标题、操作说明、移动方式（沿路径 / 循环 / 往返 / 自动寻路·待定）、完成
+## - 遗物栏（2026-10-19）：预算铭牌上方一排四枚遗物（RelicSlot）。同一场只能启用一枚；地块遗物（提灯 / 骨臂）开战前拖到地图上
+##   （或点一下再点落点），骨刃 / 徽章战斗中点一下再点选目标；右键 / Esc 取消点选。
 ## 以及校验问题列表、悬浮原因、Toast、F3 调试信息、结算与对话等浮层。
 
 const SKIN: String = "battle_hud"
@@ -47,6 +49,13 @@ var _beacon_bar: Control = null
 var _beacon_nodes: Dictionary = {}         ## 信标边栏布局元素 id → 节点
 const BEACON_BAR_IDS: Array[String] = ["beacon_bar", "beacon_bar_title", "beacon_bar_hint", "beacon_mode_once", "beacon_mode_loop", "beacon_mode_pingpong", "beacon_mode_auto", "beacon_done"]
 const BEACON_MODE_BUTTONS: Dictionary = { "beacon_mode_once": SimTypes.BeaconMode.ONCE, "beacon_mode_loop": SimTypes.BeaconMode.LOOP, "beacon_mode_pingpong": SimTypes.BeaconMode.PINGPONG }
+## 遗物栏设计矩形（1920×1080 设计坐标；预算铭牌之上、第一张角色卡之左）与单枚直径 / 间距
+const RELIC_BAR_RECT: Rect2 = Rect2(44.0, 826.0, 356.0, 84.0)
+const RELIC_SLOT_PX: float = 80.0
+var _relic_bar: Control = null
+var _relic_slots: Array[RelicSlot] = []
+var _relic_armed: String = ""              ## 正在点选目标 / 落点的遗物（"" = 无）
+var _relic_tick: int = 0
 
 @onready var _title: Label = %TitleLabel
 @onready var _objective: Label = %ObjectiveLabel
@@ -102,7 +111,7 @@ func setup(root: Node2D) -> void:
 	_result_panel.call("setup", _controller, _level)
 
 	_title.text = DataRegistry.get_string("ui.hud_level_title").format({
-		"label": DataRegistry.get_string("ui.level_label").format({ "index": _level.display_index }), "title": _level.title })
+		"label": RuleText.level_label(_level), "title": _level.title })
 	_objective.text = _level.objective_text
 	_mechanics_button.text = DataRegistry.get_string("ui.mechanics")
 	_objectives_button.text = DataRegistry.get_string("ui.objectives_popup")
@@ -127,6 +136,7 @@ func setup(root: Node2D) -> void:
 	_skin_objective_popup()
 	_skin_detail()
 	_build_beacon_bar()
+	_build_relic_bar()
 	_unit_panel.connect("beacon_mode_requested", enter_beacon_mode)
 
 	_exit_button.pressed.connect(_controller.exit)
@@ -159,6 +169,7 @@ func setup(root: Node2D) -> void:
 	EventBus.unit_selected.connect(_on_unit_selected)
 	EventBus.toast.connect(show_toast)
 	EventBus.toast_at.connect(show_bubble)
+	EventBus.relics_changed.connect(_refresh_relics)
 	_on_speed_changed(1)
 	_update_hint_button()
 	_update_budget()
@@ -170,6 +181,7 @@ func setup(root: Node2D) -> void:
 func begin() -> void:
 	_build_cards()
 	_update_budget()
+	_refresh_relics()
 	# 07 §10.2：开始剧情 <level_id>_intro，其后接本关机制提示卡；剧情不存在则不弹出（提示仍可在"机制说明"中查看）
 	var hint: String = str(_level.briefing.get("mechanic_hint", ""))
 	_mechanics_popup.call("set_level_hint", hint)
@@ -256,6 +268,7 @@ func _relayout_skin() -> void:
 	UiKit.place(_mechanics_popup, UiKit.layout_rect(SKIN, "mech_panel", vp))     # 「机制说明」弹窗（批准整图 ui_07）
 	_place_side(false)
 	_layout_beacon_bar()
+	_layout_relic_bar()
 	_layout_problems()
 	# 进度（生存关剩余时间 / 清除情况）：计时铭牌正下方
 	var timer: Rect2 = UiKit.layout_rect(SKIN, "timer", vp)
@@ -482,7 +495,10 @@ func side_visible() -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and _beacon_slot != "":
+	if event.is_action_pressed("ui_cancel") and _relic_armed != "":
+		disarm_relic()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel") and _beacon_slot != "":
 		exit_beacon_mode()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel") and _side_panel.visible:
@@ -514,6 +530,9 @@ func _process(_delta: float) -> void:
 	_progress.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD if cleared else Palette.BONE_DIM)
 	if _debug_label.visible:
 		_debug_label.text = "t=%.3f  step=%d  hash=%d" % [w.clock.time, w.clock.steps, w.state_hash()]
+	_relic_tick += 1
+	if _relic_tick % 6 == 0 and _controller.relic_active != "":     # 冷却读秒 / 悬停说明随模拟时间更新
+		_refresh_relics()
 
 
 ## 10 §6.1「清空」（决策 ⑥ 不弹确认）：移除全部已放置角色、收起侧栏、toast 人数
@@ -546,6 +565,8 @@ func _on_phase_changed(phase: int) -> void:
 			_phase_label.text = DataRegistry.get_string("ui.paused")
 		_:
 			_phase_label.text = ""
+	disarm_relic()
+	_refresh_relics()
 	if not deploy:
 		_problems_panel.visible = false
 		hide_tooltip()
@@ -769,6 +790,101 @@ func _on_beacon_mode_button(id: String) -> void:
 	if _controller.set_beacon_follow_mode(_beacon_slot, mode):
 		show_toast(DataRegistry.get_string("ui.beacon_mode_applied").format({ "mode": RuleText.beacon_mode_name(mode), "name": _controller.label_of(_beacon_slot) }))
 	_refresh_beacon_bar()
+
+
+# ---- 遗物栏（data/relics.json）----
+func _build_relic_bar() -> void:
+	_relic_bar = Control.new()
+	_relic_bar.name = "RelicBar"
+	_relic_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_relic_bar)
+	move_child(_relic_bar, _side_panel.get_index())
+	for id: String in DataRegistry.get_relic_ids():
+		var slot := RelicSlot.new()
+		slot.name = "Relic_" + id
+		_relic_bar.add_child(slot)
+		slot.setup(id, _controller)
+		slot.pressed_slot.connect(_on_relic_pressed)
+		_relic_slots.append(slot)
+	_layout_relic_bar()
+
+
+## 设计矩形居中换算（同 UiKit.layout_rect：设计画布在视口中居中），四枚等距排开
+func _layout_relic_bar() -> void:
+	if _relic_bar == null:
+		return
+	var vp: Vector2 = get_viewport_rect().size
+	var design: Vector2 = UiKit.design_size(SKIN)
+	var r := Rect2(RELIC_BAR_RECT.position + ((vp - design) * 0.5).floor(), RELIC_BAR_RECT.size)
+	if not UiKit.layout_element(SKIN, "relic_bar").is_empty():      # 布局有 relic_bar 元素（skin_overrides 可调）时以布局为准
+		r = UiKit.layout_rect(SKIN, "relic_bar", vp)
+	UiKit.place(_relic_bar, r)
+	var n: int = _relic_slots.size()
+	var gap: float = (r.size.x - RELIC_SLOT_PX * n) / maxf(n - 1, 1)
+	for i: int in n:
+		_relic_slots[i].position = Vector2(i * (RELIC_SLOT_PX + gap), (r.size.y - RELIC_SLOT_PX) * 0.5)
+		_relic_slots[i].size = Vector2(RELIC_SLOT_PX, RELIC_SLOT_PX)
+
+
+func _refresh_relics() -> void:
+	for s: RelicSlot in _relic_slots:
+		s.armed = s.relic_id == _relic_armed
+		s.refresh()
+
+
+func relic_slots() -> Array[RelicSlot]:
+	return _relic_slots
+
+
+func relic_armed() -> String:
+	return _relic_armed
+
+
+## 点按遗物：可用 → 进入点选（地块 = 选落点，骨刃 / 徽章 = 选目标），再点一次取消；不可用 → toast 原因
+func _on_relic_pressed(id: String) -> void:
+	if _relic_armed == id:
+		disarm_relic()
+		return
+	var problem: String = _controller.relic_problem(id)
+	if problem == "":
+		arm_relic(id)
+		return
+	var slot: RelicSlot = null
+	for s: RelicSlot in _relic_slots:
+		if s.relic_id == id:
+			slot = s
+	if slot != null and problem != "locked":
+		show_toast(slot.state_text())
+	elif slot != null:
+		show_toast(slot.tooltip_text)
+	AudioManager.play_sfx("ui_error", "UI")
+
+
+func arm_relic(id: String) -> void:
+	exit_beacon_mode()
+	_relic_armed = id
+	var d: Dictionary = DataRegistry.get_relic(id)
+	var key: String = "ui.relic_arm_tile"
+	match str(d.get("kind", "")):
+		"strike":
+			key = "ui.relic_arm_enemy"
+		"heal":
+			key = "ui.relic_arm_ally"
+	show_toast(DataRegistry.get_string(key).format({ "name": str(d.get("name", "")) }))
+	AudioManager.play_sfx("ui_toggle", "UI")
+	_root.call("set_relic_armed", id)
+	_refresh_relics()
+	EventBus.relic_armed.emit(id)
+
+
+func disarm_relic() -> void:
+	if _relic_armed == "":
+		return
+	_relic_armed = ""
+	if _root != null:
+		_root.call("set_relic_armed", "")
+	_refresh_relics()
+	EventBus.relic_armed.emit("")
 
 
 # ---- 分层提示 / 推荐阵型 / 机制说明 / 任务弹窗（浮层互斥，避免半透明面板相互叠压）----

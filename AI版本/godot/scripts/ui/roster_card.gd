@@ -59,6 +59,11 @@ static func make_preview(p_form: String, cell_px: float) -> Control:
 	return holder
 
 
+## 其他拖拽源（遗物栏）登记自己的虚影，让 MapInput 的 tint_preview / show_preview 同样作用于它
+static func register_preview(body: Control) -> void:
+	_preview_sprite = weakref(body)
+
+
 ## 当前拖拽虚影的落点调制：1 合法（金）、-1 非法（红）、0 无（矩形外）
 static func tint_preview(state: int) -> void:
 	var body: Control = _preview_sprite.get_ref() as Control if _preview_sprite != null else null

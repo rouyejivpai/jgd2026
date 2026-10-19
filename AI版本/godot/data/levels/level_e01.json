@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "id": "level_e01",
+  "index": 201,
+  "display_index": 1,
+  "elite": true,
+  "title": "剔骨坊",
+  "subtitle": "守卫在前，骨喉在后",
+  "summary": "守卫在前，骨喉在后",
+  "region": "bone_workshop",
+  "region_cn": "织骸工坊",
+  "chapter": "chapter_02",
+  "biome": "bone_farm",
+  "bgm": "region_bone_workshop",
+  "seed": 20101,
+  "grid": {
+    "width": 16,
+    "height": 9,
+    "blocked": [
+      [
+        8,
+        0
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        8,
+        8
+      ]
+    ],
+    "tiles": {}
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      2,
+      2,
+      6
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 13,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer"
+    ],
+    "max_units": 3,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "G1",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        5
+      ],
+      "display_name": "剔骨匠·上",
+      "overrides": {
+        "max_hp": 125,
+        "attack": 11,
+        "vision": 5
+      }
+    },
+    {
+      "id": "G2",
+      "unit": "bone_guard",
+      "faction": "enemy",
+      "pos": [
+        10,
+        3
+      ],
+      "display_name": "剔骨匠·下",
+      "overrides": {
+        "max_hp": 125,
+        "attack": 11,
+        "vision": 5
+      }
+    },
+    {
+      "id": "S1",
+      "unit": "spitter",
+      "faction": "enemy",
+      "pos": [
+        14,
+        4
+      ],
+      "display_name": "骨喉",
+      "overrides": {
+        "max_hp": 170,
+        "vision": 16
+      }
+    }
+  ],
+  "routes": {},
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp",
+      "highest_max_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "wait",
+      "idle"
+    ]
+  },
+  "modifiers": [
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          3
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              7,
+              4
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              13,
+              4
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              6,
+              6
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              7,
+              5
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "2"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "at_beacon",
+                "beacon": "1"
+              },
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "once"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_swift",
+        "form": "swift",
+        "pos": [
+          1,
+          2
+        ],
+        "beacons": [
+          {
+            "id": "1",
+            "cell": [
+              3,
+              1
+            ]
+          },
+          {
+            "id": "2",
+            "cell": [
+              3,
+              7
+            ]
+          },
+          {
+            "id": "3",
+            "cell": [
+              4,
+              7
+            ]
+          },
+          {
+            "id": "4",
+            "cell": [
+              4,
+              1
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "conditions": [],
+            "action": {
+              "type": "follow_beacons",
+              "mode": "loop"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "清掉剔骨坊里的全部敌人。两名剔骨匠守着中墙缺口，骨喉在最后方朝视野内最远的分裂体吐骨浆（落点射程 12 格）。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "承伤形态顶在缺口前拖住剔骨匠；远射形态站在快速形态前面打；快速形态在后场 12 格以内来回绕圈，当那个「最远的人」替大家挨骨浆。"
+  },
+  "hints": [
+    "承伤形态顶在缺口前拖住剔骨匠；远射形态站在快速形态前面打；快速形态在后场 12 格以内来回绕圈，当那个「最远的人」替大家挨骨浆。",
+    "清掉剔骨坊里的全部敌人。两名剔骨匠守着中墙缺口，骨喉在最后方朝视野内最远的分裂体吐骨浆（落点射程 12 格）。",
+    "承伤形态走到中墙缺口前 (7,4) 顶住剔骨匠；远射形态先到 (6,6) 打血量最低的剔骨匠，清完后前移到 (7,5) 打骨喉；快速形态在 (3..4, 1..7) 绕圈，始终是骨喉射程内最远的人，骨浆全部落空。约 26 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。承伤形态顶在缺口前拖住剔骨匠；远射形态站在快速形态前面打；快速形态在后场 12 格以内来回绕圈，当那个「最远的人」替大家挨骨浆。",
+    "default": "承伤形态顶在缺口前拖住剔骨匠；远射形态站在快速形态前面打；快速形态在后场 12 格以内来回绕圈，当那个「最远的人」替大家挨骨浆。"
+  },
+  "verification": {
+    "expected_win": "承伤形态走到中墙缺口前 (7,4) 顶住剔骨匠；远射形态先到 (6,6) 打血量最低的剔骨匠，清完后前移到 (7,5) 打骨喉；快速形态在 (3..4, 1..7) 绕圈，始终是骨喉射程内最远的人，骨浆全部落空。约 26 秒。",
+    "expected_fail": [
+      "三人一起冲缺口：没人当最远的那个，骨浆砸在人堆里，打不完骨喉。"
+    ],
+    "alternatives": [
+      "冲锋阵容 + 遗物骨刃：骨刃两刀补掉骨喉，可以翻盘（遗物对照）。"
+    ],
+    "risks": [],
+    "_engine_check": "tools/elite_probe.gd（tools/elite_scenarios.json）无头实跑"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_01.png",
+    "ground": "res://assets/grounds/bone_farm_a.png",
+    "ground_tint": "#c8b8b0",
+    "playfield_rect": null
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "",
+    "unlock_relics": [
+      "bone_blade"
+    ]
+  },
+  "_design_comment": "精英关 1：把第一区的「诱导骨浆」和「远射点后排」放进同一张图，预算只够三人各司其职。"
+}

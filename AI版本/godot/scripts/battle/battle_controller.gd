@@ -35,6 +35,12 @@ var reinforce_uids: Array[String] = []
 var _phase1_rules: Dictionary = {}       ## 暂停前的指令 / 信标快照：重开或结束时还原，存档里保留第一阶段的编程
 var _phase1_beacons: Dictionary = {}
 var _phase1_beacon_packs: int = 0        ## 暂停时已买的信标包（暂停期间多出的包从增援预算里扣）
+## 遗物（data/relics.json）：同一场战斗只能启用一枚。relic_active = 本场已启用的遗物（放下地块或在战斗中用过即启用，
+## 其余遗物本场锁定）；部署阶段撤回地块可改用别的。地块随部署配置保留（重开不清），战斗内次数 / 冷却在重开时恢复。
+var relic_tile: Dictionary = {}          ## { relic: String, cell: Vector2i }（部署阶段放下的地块；无则 {}）
+var relic_active: String = ""
+var relic_uses: int = 0                  ## 本场（本次推演）已使用次数（strike / heal）
+var relic_ready_at: float = 0.0          ## 下次可用的模拟时间（冷却）
 
 
 ## saved_raw：存档中该关的配置（07 §4.2）{ "units": [ { uid, form, slot?, pos?, rules, beacons } ], "next_uid": n }；
@@ -42,6 +48,7 @@ var _phase1_beacon_packs: int = 0        ## 暂停时已买的信标包（暂停
 func setup(p_level: LevelDefinition, saved_raw: Dictionary = {}) -> void:
 	level = p_level
 	_clear_units()
+	_clear_relics()
 	load_problems.clear()
 	var saved: Dictionary = DeploymentValidator.parse_saved_config(level, saved_raw, load_problems)
 	if level.is_free():
@@ -661,6 +668,9 @@ func reset() -> void:
 		return
 	DebugLog.end("reset")
 	_clear_boss_state()
+	relic_uses = 0
+	relic_ready_at = 0.0
+	relic_active = str(relic_tile.get("relic", ""))
 	_rebuild_world()
 	_set_phase(SimTypes.Phase.DEPLOY)
 
@@ -719,6 +729,9 @@ func _finish_battle() -> void:
 
 func _rebuild_world() -> void:
 	world = SimWorld.from_level(level, DataRegistry.get_units(), DataRegistry.get_traits(), build_config())
+	if not relic_tile.is_empty():
+		var rid: String = str(relic_tile["relic"])
+		RelicSystem.apply_tile(world, level, rid, DataRegistry.get_relic(rid), relic_tile["cell"] as Vector2i)
 	world_rebuilt.emit()
 
 
@@ -873,3 +886,137 @@ func _clear_boss_state() -> void:
 	_phase1_beacons.clear()
 	_phase1_beacon_packs = 0
 	boss_pending = false
+
+
+# ---- 遗物（data/relics.json；HUD 遗物栏 / 地图输入调用）----
+func _clear_relics() -> void:
+	relic_tile = {}
+	relic_active = ""
+	relic_uses = 0
+	relic_ready_at = 0.0
+
+
+## 已获得的遗物（存档 unlocks.relics，按 relics.json 顺序）
+func owned_relics() -> Array[String]:
+	var out: Array[String] = []
+	for id: String in DataRegistry.get_relic_ids():
+		if GameState.is_unlocked("relics", id):
+			out.append(id)
+	return out
+
+
+## 本场剩余次数（地块：已放下 = 0）
+func relic_charges_left(id: String) -> int:
+	var d: Dictionary = DataRegistry.get_relic(id)
+	if d.is_empty():
+		return 0
+	var total: int = int(d.get("charges", 1))
+	if str(d.get("kind", "")) == "tile":
+		return 0 if str(relic_tile.get("relic", "")) == id else total
+	return total - relic_uses if relic_active == id else total
+
+
+## 冷却剩余模拟秒数（只对正在启用的战斗类遗物）
+func relic_cooldown_left(id: String) -> float:
+	if relic_active != id or world == null:
+		return 0.0
+	return maxf(0.0, relic_ready_at - world.clock.time)
+
+
+## 现在能否使用该遗物；可用为 ""，否则为原因键（ui.relic_state_*）
+## 原因：locked（未获得）/ other_active（本场已启用另一枚）/ deploy_only / battle_only / placed（地块已放下）/ no_charges / cooldown / ended
+func relic_problem(id: String) -> String:
+	var d: Dictionary = DataRegistry.get_relic(id)
+	if d.is_empty() or level == null or not GameState.is_unlocked("relics", id):
+		return "locked"
+	if relic_active != "" and relic_active != id:
+		return "other_active"
+	if phase == SimTypes.Phase.ENDED or (world != null and world.result != SimTypes.BattleResult.NONE):
+		return "ended"
+	var deploy_kind: bool = str(d.get("when", "battle")) == "deploy"
+	var in_deploy: bool = phase == SimTypes.Phase.DEPLOY
+	if deploy_kind and not in_deploy:
+		return "deploy_only"
+	if not deploy_kind and in_deploy:
+		return "battle_only"
+	if str(d.get("kind", "")) == "tile" and str(relic_tile.get("relic", "")) == id:
+		return "placed"
+	if relic_charges_left(id) <= 0:
+		return "no_charges"
+	if relic_cooldown_left(id) > SimTypes.TIME_EPS:
+		return "cooldown"
+	return ""
+
+
+## 遗物地块以 cell 为中心时覆盖的格
+func relic_tile_cells(id: String, cell: Vector2i) -> Array[Vector2i]:
+	return RelicSystem.tile_cells(level, cell, int(DataRegistry.get_relic(id).get("radius", 1)))
+
+
+## 地块能否落在 cell（中心格须在网格内、非障碍）。moving = 拖动已放下的地块挪位
+func can_place_relic_tile(id: String, cell: Vector2i, moving: bool = false) -> bool:
+	if level == null or str(DataRegistry.get_relic(id).get("kind", "")) != "tile":
+		return false
+	var problem: String = relic_problem(id)
+	if problem != "" and not (moving and problem == "placed"):
+		return false
+	return level.in_bounds(cell) and not level.is_blocked(cell)
+
+
+## 放下（或挪动）遗物地块：启用该遗物，重建世界
+func place_relic_tile(id: String, cell: Vector2i) -> bool:
+	var moving: bool = str(relic_tile.get("relic", "")) == id
+	if not can_place_relic_tile(id, cell, moving):
+		return false
+	relic_tile = { "relic": id, "cell": cell }
+	relic_active = id
+	_rebuild_world()
+	EventBus.relics_changed.emit()
+	return true
+
+
+## 部署阶段撤回地块（本场不再有启用的遗物）
+func remove_relic_tile() -> bool:
+	if relic_tile.is_empty() or phase != SimTypes.Phase.DEPLOY:
+		return false
+	relic_tile = {}
+	relic_active = ""
+	_rebuild_world()
+	EventBus.relics_changed.emit()
+	return true
+
+
+## 战斗中的遗物能否作用于 unit_id（骨刃：存活敌人；徽章：存活且未满血的己方单位）
+func relic_target_ok(id: String, unit_id: int) -> bool:
+	if world == null:
+		return false
+	var u: SimUnit = world.get_unit(unit_id)
+	if u == null or not u.alive:
+		return false
+	match str(DataRegistry.get_relic(id).get("kind", "")):
+		"strike":
+			return u.faction == SimTypes.Faction.ENEMY
+		"heal":
+			return u.faction == SimTypes.Faction.ALLY and not u.is_structure() and u.hp < u.max_hp - 0.01
+	return false
+
+
+## 战斗中使用骨刃 / 徽章；返回实际伤害 / 回复量（失败为 -1）。立即转发事件；致胜 / 致败时结束战斗
+func use_relic_on(id: String, unit_id: int) -> float:
+	if relic_problem(id) != "" or not relic_target_ok(id, unit_id):
+		return -1.0
+	var d: Dictionary = DataRegistry.get_relic(id)
+	var amount: float = float(d.get("amount", 0.0))
+	var got: float = RelicSystem.strike(world, id, unit_id, amount) if str(d["kind"]) == "strike" else RelicSystem.heal(world, id, unit_id, amount)
+	if got < 0.0:
+		return -1.0
+	relic_active = id
+	relic_uses += 1
+	relic_ready_at = world.clock.time + float(d.get("cooldown", 0.0))
+	for e: Dictionary in world.take_events():
+		DebugLog.write_event(e)
+		EventBus.sim_event.emit(e)
+	EventBus.relics_changed.emit()
+	if world.result != SimTypes.BattleResult.NONE and phase != SimTypes.Phase.ENDED:
+		_finish_battle()
+	return got

@@ -283,7 +283,7 @@ func _refresh() -> void:
 		var state: String = "region_state_done" if _completed().has(lid) else ("region_state_open" if chapter.is_unlocked(lid, _completed(), DataRegistry.get_initial_levels()) else "region_state_locked")
 		var l := Label.new()
 		l.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "objective").get("theme_type", "")))
-		l.text = DataRegistry.get_string("ui.region_level_line").format({ "no": "%02d" % L.display_index, "title": L.title, "state": DataRegistry.get_string("ui." + state) })
+		l.text = DataRegistry.get_string("ui.region_level_line").format({ "no": RuleText.level_no(L), "title": L.title, "state": DataRegistry.get_string("ui." + state) })
 		l.clip_text = true
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_list.add_child(l)
@@ -308,7 +308,7 @@ func status_text(rid: String) -> String:
 
 
 static func _level_name(L: LevelDefinition) -> String:
-	return "%s %s" % [DataRegistry.get_string("ui.level_label").format({ "index": L.display_index }), L.title] if L != null else ""
+	return "%s %s" % [RuleText.level_label(L), L.title] if L != null else ""
 
 
 func _draw_overlay() -> void:

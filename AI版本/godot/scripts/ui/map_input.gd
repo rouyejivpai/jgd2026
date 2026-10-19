@@ -10,6 +10,9 @@ extends Control
 ##   原位置的单位变淡；放下后不弹出详情。
 ## - 信标模式（HUD 底部信标边栏，数字键 / 「信标」按钮进入）：左键点地块 = 给该单位追加信标，右键 = 撤销最后一个；按住已有信标仍可拖动。
 ## - Ctrl + 左键拖动 = 平移镜头，Ctrl + 滚轮 = 缩放（BattleRoot.pan_by / zoom_at），不当作点击。
+## 遗物（2026-10-19）：遗物栏点按后进入点选（HUD.relic_armed）——地块遗物左键点落点放下，骨刃 / 徽章左键点目标生效，右键取消；
+## 地块遗物也可从遗物栏直接拖到地图上（同放置人偶：吸附预览、非法格红闪 + 原因气泡）；部署阶段按住已放下的地块可拖动挪位，
+## 拖出战场 / 拖回底栏 = 撤回，未选中单位时右键地块也可撤回。
 
 var _root: Node2D = null
 var _controller: BattleController = null
@@ -39,6 +42,10 @@ func _gui_input(event: InputEvent) -> void:
 			_root.call("set_beacon_drag", _drag_beacon, cell, ok)
 			accept_event()
 			return
+		if relic_armed() != "":
+			_relic_hover(mm.global_position)
+			accept_event()
+			return
 		_update_tooltip(mm.global_position)
 		return
 	var mb: InputEventMouseButton = event as InputEventMouseButton
@@ -49,6 +56,16 @@ func _gui_input(event: InputEvent) -> void:
 	if mb != null and mb.button_index == MOUSE_BUTTON_LEFT and (mb.ctrl_pressed and mb.pressed or _cam_drag and not mb.pressed):
 		_cam_drag = mb.pressed
 		_press_unit = -1
+		accept_event()
+		return
+	if mb != null and relic_armed() != "" and mb.pressed and mb.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			_relic_click(mb.global_position)
+		else:
+			_hud().call("disarm_relic")
+		accept_event()
+		return
+	if mb != null and mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed and _try_remove_relic(mb.global_position):
 		accept_event()
 		return
 	if mb != null and mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
@@ -90,7 +107,14 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		return null
 	var cell: Vector2i = _root.call("screen_to_cell", get_global_transform() * at_position) as Vector2i
 	var sid: String = _controller.slot_at(cell)
-	if sid == "" or _cam_drag or beacon_mode_slot() != "":
+	if sid == "" and not _cam_drag and beacon_mode_slot() == "" and relic_armed() == "":
+		var rid: String = str(_root.call("relic_tile_at_screen", get_global_transform() * at_position))
+		if rid != "":                          # 按住已放下的遗物地块拖动 = 挪位 / 拖出战场撤回
+			_press_unit = -1
+			set_drag_preview(RelicSlot.make_preview(rid, float(_root.call("cell_screen_px"))))
+			AudioManager.play_sfx("ui_drag_pick", "UI")
+			return { "relic": rid, "from_map": true }
+	if sid == "" or _cam_drag or beacon_mode_slot() != "" or relic_armed() != "":
 		return null
 	_press_unit = -1                       # 拖动开始：松开时不再选中
 	set_drag_preview(RosterCard.make_preview(_controller.form_of(sid), float(_root.call("cell_screen_px"))))
@@ -104,6 +128,8 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	if _controller == null or (_controller.phase != SimTypes.Phase.DEPLOY and not _controller.boss_pending) or not data is Dictionary:
 		return false
 	var d: Dictionary = data as Dictionary
+	if d.has("relic"):
+		return _can_drop_relic(at_position, d)
 	if not d.has("form") and not d.has("slot_id"):
 		return false
 	if not bool(_root.call("in_playfield", get_global_transform() * at_position)):
@@ -132,6 +158,9 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	var inside: bool = bool(_root.call("in_playfield", screen))
 	AudioManager.play_sfx("ui_drag_drop", "UI")
 	_root.call("clear_drag_hover")
+	if d.has("relic"):
+		_drop_relic(d, cell, inside)
+		return
 	if not inside:
 		if bool(d.get("from_map", false)):
 			_controller.remove_unit(str(d["slot_id"]))      # 拖出战场 = 移除（侧栏随之收起，见 BattleRoot）
@@ -161,6 +190,7 @@ static func cannot_place_text(problem: String) -> String:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END and _root != null:
 		_root.call("clear_drag_hover")
+		_root.call("clear_relic_hover")
 		_root.call("set_drag_source", -1)
 		RosterCard.tint_preview(0)
 	elif what == NOTIFICATION_MOUSE_EXIT and get_parent() != null:
@@ -289,3 +319,107 @@ func _update_tooltip(screen_pos: Vector2) -> void:
 	else:
 		hud.call("hide_tooltip")
 
+
+
+# ---- 遗物（HUD 遗物栏）----
+func _hud() -> Node:
+	return get_parent()
+
+
+func relic_armed() -> String:
+	var hud: Node = _hud()
+	return str(hud.call("relic_armed")) if hud != null and hud.has_method("relic_armed") else ""
+
+
+static func _relic_name(id: String) -> String:
+	return str(DataRegistry.get_relic(id).get("name", ""))
+
+
+static func _is_tile_relic(id: String) -> bool:
+	return str(DataRegistry.get_relic(id).get("kind", "")) == "tile"
+
+
+## 点选中移动鼠标：地块遗物 = 吸附预览；骨刃 / 徽章 = 悬停目标加粗
+func _relic_hover(screen_pos: Vector2) -> void:
+	var rid: String = relic_armed()
+	if _is_tile_relic(rid):
+		if not bool(_root.call("in_playfield", screen_pos)):
+			_root.call("clear_relic_hover")
+			return
+		var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
+		_root.call("set_relic_hover", rid, cell, _controller.can_place_relic_tile(rid, cell))
+	else:
+		var id: int = int(_root.call("unit_at_screen", screen_pos))
+		_root.call("set_relic_target_hover", rid, id if _controller.relic_target_ok(rid, id) else -1)
+
+
+## 点选中左键：放下地块 / 对目标生效；点到矩形外 = 取消
+func _relic_click(screen_pos: Vector2) -> void:
+	var rid: String = relic_armed()
+	if not bool(_root.call("in_playfield", screen_pos)):
+		_hud().call("disarm_relic")
+		return
+	if _is_tile_relic(rid):
+		var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
+		if _controller.place_relic_tile(rid, cell):
+			AudioManager.play_sfx("deploy_place")
+			EventBus.toast.emit(DataRegistry.get_string("ui.relic_placed_toast").format({ "name": _relic_name(rid) }))
+			_hud().call("disarm_relic")
+		else:
+			_root.call("flash_illegal", cell)
+			EventBus.toast_at.emit(DataRegistry.get_string("ui.relic_bad_cell"), _root.call("cell_top_screen", cell) as Vector2)
+		return
+	var id: int = int(_root.call("unit_at_screen", screen_pos))
+	if _controller.use_relic_on(rid, id) >= 0.0:
+		_hud().call("disarm_relic")
+	else:
+		var bad: String = "ui.relic_bad_target_enemy" if str(DataRegistry.get_relic(rid).get("kind", "")) == "strike" else "ui.relic_bad_target_ally"
+		EventBus.toast.emit(DataRegistry.get_string(bad))
+		AudioManager.play_sfx("ui_error", "UI")
+
+
+## 部署阶段、未选中己方单位、不在信标模式时右键遗物地块 = 撤回
+func _try_remove_relic(screen_pos: Vector2) -> bool:
+	if _controller == null or _controller.phase != SimTypes.Phase.DEPLOY or beacon_mode_slot() != "" or str(_root.call("selected_slot")) != "":
+		return false
+	var rid: String = str(_root.call("relic_tile_at_screen", screen_pos))
+	if rid == "" or not _controller.remove_relic_tile():
+		return false
+	AudioManager.play_sfx("deploy_remove")
+	EventBus.toast.emit(DataRegistry.get_string("ui.relic_removed_toast").format({ "name": _relic_name(rid) }))
+	return true
+
+
+func _can_drop_relic(at_position: Vector2, d: Dictionary) -> bool:
+	var rid: String = str(d["relic"])
+	var from_map: bool = bool(d.get("from_map", false))
+	var screen: Vector2 = get_global_transform() * at_position
+	if not bool(_root.call("in_playfield", screen)):
+		_root.call("clear_relic_hover")
+		RosterCard.tint_preview(0)
+		RosterCard.show_preview(true)
+		return from_map
+	var cell: Vector2i = _root.call("screen_to_cell", screen) as Vector2i
+	var legal: bool = _controller.can_place_relic_tile(rid, cell, from_map)
+	_root.call("set_relic_hover", rid, cell, legal)
+	RosterCard.tint_preview(1 if legal else -1)
+	RosterCard.show_preview(false)
+	return true
+
+
+func _drop_relic(d: Dictionary, cell: Vector2i, inside: bool) -> void:
+	var rid: String = str(d["relic"])
+	_root.call("clear_relic_hover")
+	if not inside:
+		if bool(d.get("from_map", false)) and _controller.remove_relic_tile():
+			AudioManager.play_sfx("deploy_remove")
+			EventBus.toast.emit(DataRegistry.get_string("ui.relic_removed_toast").format({ "name": _relic_name(rid) }))
+		return
+	if _controller.place_relic_tile(rid, cell):
+		AudioManager.play_sfx("deploy_place")
+		if not bool(d.get("from_map", false)):
+			EventBus.toast.emit(DataRegistry.get_string("ui.relic_placed_toast").format({ "name": _relic_name(rid) }))
+		_hud().call("disarm_relic")
+	else:
+		_root.call("flash_illegal", cell)
+		EventBus.toast_at.emit(DataRegistry.get_string("ui.relic_bad_cell"), _root.call("cell_top_screen", cell) as Vector2)

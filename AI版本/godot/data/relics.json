@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "_comment": "遗物（2026-10-19 新增）：通关精英关获得（关卡 rewards.unlock_relics）。局内 HUD 左下的遗物栏随时可点按，但同一场战斗只能启用一枚（用过 / 放下其中一枚后，其余本场锁定；部署阶段撤回地块可换）。kind：strike = 战斗中点选敌人造成伤害；heal = 战斗中点选己方回复生命；tile = 部署阶段像放人偶一样拖到地图上，放下一块 (2·radius+1)² 的地块，开战后对站在上面的敌人持续施加状态（离开后残留 status_seconds 秒）。when：deploy = 开战前使用；battle = 战斗中（运行或暂停）使用。charges = 每场次数；cooldown = 两次之间的模拟秒数。amount 为伤害 / 回复量（伤害结算吃易伤倍率）。",
+  "order": ["bone_blade", "badge", "lantern", "bone_arm"],
+  "relics": {
+    "bone_blade": {
+      "name": "骨刃",
+      "icon": "res://assets/sprites/relics/bone_blade.png",
+      "kind": "strike",
+      "when": "battle",
+      "amount": 50,
+      "charges": 2,
+      "cooldown": 6.0,
+      "color": "#ff6a5a",
+      "desc": "战斗中点选一名敌人，立刻造成 50 点伤害（易伤时 ×1.5）。每场 2 次，间隔 6 秒。"
+    },
+    "badge": {
+      "name": "徽章",
+      "icon": "res://assets/sprites/relics/badge.png",
+      "kind": "heal",
+      "when": "battle",
+      "amount": 60,
+      "charges": 2,
+      "cooldown": 6.0,
+      "color": "#9df0b8",
+      "desc": "战斗中点选一名己方单位，立刻回复 60 点生命（不超过上限）。每场 2 次，间隔 6 秒。"
+    },
+    "lantern": {
+      "name": "提灯",
+      "icon": "res://assets/sprites/relics/lantern.png",
+      "kind": "tile",
+      "when": "deploy",
+      "status": "slow",
+      "status_seconds": 1.5,
+      "radius": 1,
+      "charges": 1,
+      "color": "#78b4ff",
+      "desc": "开战前拖到地图上，放置一块 3×3 的冷焰地块：敌人走进去即「减速」（移速 -40%），离开后残留 1.5 秒。每场 1 块。"
+    },
+    "bone_arm": {
+      "name": "骨臂",
+      "icon": "res://assets/sprites/relics/bone_arm.png",
+      "kind": "tile",
+      "when": "deploy",
+      "status": "vulnerable",
+      "status_seconds": 1.5,
+      "radius": 1,
+      "charges": 1,
+      "color": "#d24b5a",
+      "desc": "开战前拖到地图上，放置一块 3×3 的诅咒地块：敌人站在里面即「易伤」（受到伤害 ×1.5），离开后残留 1.5 秒。每场 1 块。"
+    }
+  }
+}

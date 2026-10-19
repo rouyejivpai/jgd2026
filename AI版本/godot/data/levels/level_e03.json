@@ -1,0 +1,683 @@
+{
+  "schema_version": 1,
+  "id": "level_e03",
+  "index": 203,
+  "display_index": 3,
+  "elite": true,
+  "title": "冷焰沼",
+  "subtitle": "把猎犬赶进泥里",
+  "summary": "把猎犬赶进泥里",
+  "region": "flesh_swamp",
+  "region_cn": "肉巢沼泽",
+  "chapter": "chapter_02",
+  "biome": "hound_den",
+  "bgm": "region_flesh_swamp",
+  "seed": 20303,
+  "grid": {
+    "width": 17,
+    "height": 11,
+    "blocked": [],
+    "tiles": {
+      "mire": [
+        [
+          12,
+          0
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          12,
+          3
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          12,
+          7
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          12,
+          10
+        ],
+        [
+          13,
+          0
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          8
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          0
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          14,
+          3
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          14,
+          5
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          7
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          9
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          15,
+          2
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          15,
+          4
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          15,
+          6
+        ],
+        [
+          15,
+          7
+        ],
+        [
+          15,
+          8
+        ],
+        [
+          15,
+          9
+        ],
+        [
+          15,
+          10
+        ],
+        [
+          16,
+          0
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          16,
+          3
+        ],
+        [
+          16,
+          4
+        ],
+        [
+          16,
+          5
+        ],
+        [
+          16,
+          6
+        ],
+        [
+          16,
+          7
+        ],
+        [
+          16,
+          8
+        ],
+        [
+          16,
+          9
+        ],
+        [
+          16,
+          10
+        ]
+      ]
+    }
+  },
+  "deploy_zone": {
+    "rect": [
+      0,
+      3,
+      2,
+      7
+    ]
+  },
+  "roster": {
+    "mode": "free",
+    "budget": 13,
+    "available_forms": [
+      "striker",
+      "swift",
+      "bulwark",
+      "lancer"
+    ],
+    "max_units": 4,
+    "min_units": 1,
+    "fixed_slots": [],
+    "beacon_cost": 1,
+    "beacon_bundle": 5,
+    "_beacon_note": "1 Cost 买 5 个信标，全场共用这一个池"
+  },
+  "initial_units": [
+    {
+      "id": "D1",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        9,
+        8
+      ],
+      "display_name": "冷焰猎犬·一",
+      "overrides": {
+        "max_hp": 150,
+        "attack": 12
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "self_hp_below",
+              "ratio": 0.4
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "search_depth": 3
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "rush_top"
+          }
+        }
+      ],
+      "public_rule_text": "沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"
+    },
+    {
+      "id": "D2",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        9,
+        2
+      ],
+      "display_name": "冷焰猎犬·二",
+      "overrides": {
+        "max_hp": 150,
+        "attack": 12
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "self_hp_below",
+              "ratio": 0.4
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "search_depth": 3
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "rush_bot"
+          }
+        }
+      ],
+      "public_rule_text": "沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"
+    },
+    {
+      "id": "D3",
+      "unit": "hound",
+      "faction": "enemy",
+      "pos": [
+        11,
+        5
+      ],
+      "display_name": "冷焰猎犬·三",
+      "overrides": {
+        "max_hp": 150,
+        "attack": 12
+      },
+      "rules": [
+        {
+          "conditions": [
+            {
+              "type": "self_hp_below",
+              "ratio": 0.4
+            }
+          ],
+          "action": {
+            "type": "retreat",
+            "search_depth": 3
+          }
+        },
+        {
+          "conditions": [
+            {
+              "type": "enemy_in_range"
+            }
+          ],
+          "target": {
+            "selector": "nearest",
+            "filter": "unit"
+          },
+          "action": {
+            "type": "attack"
+          }
+        },
+        {
+          "conditions": [],
+          "action": {
+            "type": "follow_route",
+            "route_id": "rush_mid"
+          }
+        }
+      ],
+      "public_rule_text": "沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"
+    },
+    {
+      "id": "W1",
+      "unit": "bone_weaver",
+      "faction": "enemy",
+      "pos": [
+        15,
+        5
+      ],
+      "display_name": "织骨者",
+      "overrides": {
+        "max_hp": 120
+      }
+    }
+  ],
+  "routes": {
+    "rush_top": {
+      "name": "上路",
+      "points": [
+        [
+          8,
+          8
+        ],
+        [
+          3,
+          6
+        ]
+      ]
+    },
+    "rush_bot": {
+      "name": "下路",
+      "points": [
+        [
+          8,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    "rush_mid": {
+      "name": "中路",
+      "points": [
+        [
+          3,
+          5
+        ]
+      ]
+    }
+  },
+  "allowed": {
+    "conditions": [
+      "always",
+      "enemy_in_range",
+      "enemy_visible",
+      "at_beacon"
+    ],
+    "selectors": [
+      "nearest",
+      "farthest",
+      "lowest_hp"
+    ],
+    "actions": [
+      "attack",
+      "chase_attack",
+      "follow_beacons",
+      "idle"
+    ]
+  },
+  "modifiers": [
+    {
+      "target": "form:striker",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:swift",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    },
+    {
+      "target": "form:bulwark",
+      "stat": "vision",
+      "mul": 0,
+      "add": 9,
+      "_design_vision": true
+    },
+    {
+      "target": "form:lancer",
+      "stat": "vision",
+      "mul": 0,
+      "add": 10,
+      "_design_vision": true
+    }
+  ],
+  "recommended": {
+    "units": [
+      {
+        "slot": "slot_bulwark",
+        "form": "bulwark",
+        "pos": [
+          2,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_lancer",
+        "form": "lancer",
+        "pos": [
+          1,
+          5
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [
+              {
+                "type": "enemy_visible"
+              }
+            ],
+            "target": {
+              "selector": "lowest_hp",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "chase_attack"
+            }
+          }
+        ]
+      },
+      {
+        "slot": "slot_striker",
+        "form": "striker",
+        "pos": [
+          1,
+          4
+        ],
+        "beacons": [],
+        "rules": [
+          {
+            "conditions": [
+              {
+                "type": "enemy_in_range"
+              }
+            ],
+            "target": {
+              "selector": "nearest",
+              "filter": "unit"
+            },
+            "action": {
+              "type": "attack"
+            }
+          },
+          {
+            "conditions": [],
+            "action": {
+              "type": "idle"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "objectives": {
+    "objective_text": "清掉冷焰沼里的三只猎犬和织骨者。猎犬沿路线直扑部署区，咬到血量低于四成就逃进右边泥沼（泥沼里移速减半）。",
+    "win": [
+      {
+        "id": "win_annihilate",
+        "type": "annihilate"
+      }
+    ],
+    "lose": [
+      {
+        "id": "lose_all_dead",
+        "type": "all_allies_dead"
+      }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "承伤形态顶在前面挨咬，基础攻击形态在旁边补刀；远射形态打血最少的猎犬，等它们逃进泥沼后追过去逐个点掉，别贴进织骨者的减速光环。"
+  },
+  "hints": [
+    "承伤形态顶在前面挨咬，基础攻击形态在旁边补刀；远射形态打血最少的猎犬，等它们逃进泥沼后追过去逐个点掉，别贴进织骨者的减速光环。",
+    "清掉冷焰沼里的三只猎犬和织骨者。猎犬沿路线直扑部署区，咬到血量低于四成就逃进右边泥沼（泥沼里移速减半）。",
+    "承伤形态在 (2,5) 原地挡住三只猎犬，基础攻击形态打最近的；远射形态打射程内血最少的、射程外则追击血最少的，把逃进泥沼的猎犬和织骨者逐个点掉，约 43 秒。",
+    "实在过不去时，可以先摆放推荐阵型看看思路。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "全员倒下了。承伤形态顶在前面挨咬，基础攻击形态在旁边补刀；远射形态打血最少的猎犬，等它们逃进泥沼后追过去逐个点掉，别贴进织骨者的减速光环。",
+    "default": "承伤形态顶在前面挨咬，基础攻击形态在旁边补刀；远射形态打血最少的猎犬，等它们逃进泥沼后追过去逐个点掉，别贴进织骨者的减速光环。"
+  },
+  "verification": {
+    "expected_win": "承伤形态在 (2,5) 原地挡住三只猎犬，基础攻击形态打最近的；远射形态打射程内血最少的、射程外则追击血最少的，把逃进泥沼的猎犬和织骨者逐个点掉，约 43 秒。",
+    "expected_fail": [
+      "没有承伤形态（两个基础攻击 + 快速形态）：三只猎犬同时扑上来，7 秒内团灭。"
+    ],
+    "alternatives": [
+      "承伤 + 两个基础攻击形态都用追击指令也能惨胜（约 44 秒），最后只剩一人。",
+      "遗物提灯：在部署区前方放冷焰地块，猎犬冲锋被减速，可以多打几轮。"
+    ],
+    "risks": [],
+    "_engine_check": "tools/elite_probe.gd（tools/elite_scenarios.json）无头实跑"
+  },
+  "scene": {
+    "backdrop": "res://assets/backdrops/level_04.png",
+    "ground": "res://assets/grounds/hound_den_a.png",
+    "ground_tint": "#a0b0c8",
+    "playfield_rect": null
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "",
+    "unlock_relics": [
+      "lantern"
+    ]
+  },
+  "_design_comment": "精英关 3：猎犬撤离 + 缓滞带 + 织骨者光环，三个「慢」叠在一起。"
+}

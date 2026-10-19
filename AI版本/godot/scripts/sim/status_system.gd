@@ -40,6 +40,7 @@ static func tick(world: SimWorld) -> void:
 			u.add_status(tdef.status, status_duration(world, tdef.status, tdef.duration))
 		for c: String in tdef.clears:
 			u.statuses.erase(c)
+	RelicSystem.tick_tiles(world)
 	for src: SimUnit in world.units:
 		if not src.alive or src.def == null:
 			continue

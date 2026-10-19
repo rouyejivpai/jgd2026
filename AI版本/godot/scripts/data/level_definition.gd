@@ -62,6 +62,7 @@ var recommended_deploy: Dictionary = {} ## 由 recommended_units 派生：slot_i
 var rewards: Dictionary = {}
 var verification: Dictionary = {}
 var comment: String = ""                ## JSON 键 "_comment"（第七关锁定标记）
+var elite: bool = false                 ## 精英关（2026-10-19）：章节地图上的支线节点，通关奖励遗物（rewards.unlock_relics）；display_index = 精英关序号
 
 
 static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
@@ -99,6 +100,7 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 	L.bgm = DataReader.opt_str(d, "bgm", "", ctx)
 	L.rng_seed = int(DataReader.opt_num(d, "seed", 0.0, ctx))
 	L.comment = DataReader.opt_str(d, "_comment", "", ctx)
+	L.elite = DataReader.opt_bool(d, "elite", false, ctx)
 
 	var grid: Dictionary = DataReader.opt_dict(d, "grid", ctx)
 	L.width = int(DataReader.req_num(grid, "width", ctx + ".grid"))
@@ -238,6 +240,11 @@ static func from_dict(d: Dictionary, ctx: String) -> LevelDefinition:
 ## 第五阶段：本关数据里的玩家指令 → 双组口径（legacy 关卡折算，dual 关卡原样）
 func player_rules(rules: Array[RuleDef]) -> Array[RuleDef]:
 	return RuleDef.migrate_legacy(rules) if rules_format == "legacy" else RuleDef.clone_array(rules)
+
+
+## 通关奖励的遗物 id（rewards.unlock_relics）
+func reward_relics() -> Array[String]:
+	return DataReader.string_array(rewards.get("unlock_relics", []) as Array, id + ".rewards.unlock_relics")
 
 
 func in_bounds(c: Vector2i) -> bool:

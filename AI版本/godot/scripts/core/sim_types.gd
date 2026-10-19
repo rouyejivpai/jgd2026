@@ -77,6 +77,7 @@ enum EventType {
 	TARGET_CHANGED,
 	OBJECTIVE_PROGRESS,
 	BATTLE_ENDED,
+	RELIC_USED,         ## 遗物生效（骨刃伤害 / 徽章治疗）：{ relic, kind, target, amount }
 }
 
 const _FACTION := { "ally": Faction.ALLY, "enemy": Faction.ENEMY, "neutral": Faction.NEUTRAL }

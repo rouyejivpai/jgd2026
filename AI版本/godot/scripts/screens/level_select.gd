@@ -20,6 +20,7 @@ const NODE_ART_DIR: String = "res://assets/ui/chapter/nodes/"
 const STORY_KINDS: Array[String] = ["intro", "win", "lose"]
 const STORY_PLAYER_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
 const SKIN: String = "chapter"
+const ELITE_DISC_TINT: Color = Color(1.0, 0.55, 0.6)   ## 精英关节点徽章（首领青底徽章染暗红）
 
 var chapter: ChapterDef = null
 var node_buttons: Dictionary = {}        ## node id -> Button
@@ -275,7 +276,7 @@ func _build_nodes() -> void:
 			continue
 		var b := Button.new()
 		b.name = "Node_" + nid
-		var node_px: float = node_size * (float(nd.get("boss_scale", 1.3)) if bool(n["boss"]) else 1.0)
+		var node_px: float = node_size * (float(nd.get("boss_scale", 1.3)) if bool(n["boss"]) else (float(nd.get("elite_scale", 1.15)) if bool(n.get("elite", false)) else 1.0))
 		b.custom_minimum_size = Vector2(node_px, node_px)
 		b.size = Vector2(node_px, node_px)
 		b.focus_mode = Control.FOCUS_NONE
@@ -283,6 +284,8 @@ func _build_nodes() -> void:
 		b.text = str(level.display_index) if level != null else ""
 		b.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "plate_text").get("theme_type", "")))
 		var art: Texture2D = Art.texture(NODE_ART_DIR + "%s.png" % str(n["node_art"])) if str(n["node_art"]) != "" else null
+		if bool(n.get("elite", false)) and level != null and not level.reward_relics().is_empty():     # 精英关：节点图标 = 奖励遗物
+			art = Art.texture(str(DataRegistry.get_relic(level.reward_relics()[0]).get("icon", "")))
 		if art != null:
 			b.icon = art
 			b.expand_icon = true
@@ -358,6 +361,8 @@ func node_label(node_id: String) -> String:
 	var level: LevelDefinition = DataRegistry.get_level(str(n.get("level", ""))) if not bool(n.get("placeholder", false)) else null
 	if level == null:
 		return node_title(node_id)
+	if level.elite:
+		return DataRegistry.get_string("ui.elite_plate").format({ "title": level.title })
 	return DataRegistry.get_string("ui.node_plate").format({ "index": "%02d" % level.display_index, "title": level.title })
 
 
@@ -398,11 +403,13 @@ func _restyle_nodes() -> void:
 		var sel: bool = nid == selected_id
 		var n: Dictionary = chapter.node_of(nid)
 		var tex_id: String = ["node_tex_locked", "node_tex_open", "node_tex_done"][state]
-		if bool(n.get("boss", false)):
+		var elite: bool = bool(n.get("elite", false))
+		if bool(n.get("boss", false)) or elite:
 			tex_id = "node_tex_boss"
 		elif sel:
 			tex_id = "node_tex_selected"
 		(b.get_node("Disc") as TextureRect).texture = Art.texture(str(UiKit.layout_element(SKIN, tex_id).get("file", "")))
+		(b.get_node("Disc") as TextureRect).modulate = ELITE_DISC_TINT if elite else Color.WHITE      # 精英关：首领徽章染暗红
 		var pad: float = b.size.x * (1.0 - float(nd.get("icon_ratio", 0.5))) * 0.5
 		var box := StyleBoxEmpty.new()
 		box.set_content_margin_all(pad)
@@ -410,6 +417,8 @@ func _restyle_nodes() -> void:
 			b.add_theme_stylebox_override(style, box)
 		b.add_theme_stylebox_override("focus", empty)
 		var glyph := Color(str(nd.get("glyph_locked" if state == 0 else "glyph_color", "#FFFFFF")))
+		if elite:                                  # 遗物图标保留原色，锁定时压暗
+			glyph = Color(0.45, 0.42, 0.5) if state == 0 else Color.WHITE
 		for c: String in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "font_color"]:
 			b.add_theme_color_override(c, glyph)
 		b.scale = Vector2.ONE * (float(nd.get("selected_scale", 1.3)) if sel else 1.0)
@@ -634,9 +643,11 @@ func _refresh_detail() -> void:
 	var state: int = node_state(selected_id)
 	var level: LevelDefinition = DataRegistry.get_level(str(n.get("level", ""))) if not bool(n.get("placeholder", false)) else null
 	if level != null:
-		_level_no.text = DataRegistry.get_string("ui.level_label").format({ "index": level.display_index })
+		_level_no.text = RuleText.level_label(level)
 		_detail_title.text = level.title
 		_detail_summary.text = level.summary if level.summary != "" else level.subtitle
+		if level.elite and not level.reward_relics().is_empty():
+			_detail_summary.text += "\n" + DataRegistry.get_string("ui.detail_elite_note").format({ "name": str(DataRegistry.get_relic(level.reward_relics()[0]).get("name", "")) })
 		_detail_objective.text = level.objective_text
 	else:
 		_level_no.text = ""
@@ -664,7 +675,7 @@ func _refresh_detail() -> void:
 		for p: String in chapter.predecessors(selected_id):
 			var pl: LevelDefinition = DataRegistry.get_level(str(chapter.node_of(p).get("level", "")))
 			if pl != null:
-				names.append("%s %s" % [DataRegistry.get_string("ui.level_label").format({ "index": pl.display_index }), pl.title])
+				names.append("%s %s" % [RuleText.level_label(pl), pl.title])
 		_detail_locked.text = DataRegistry.get_string("ui.node_locked_by").format({ "levels": DataRegistry.get_string("ui.list_sep").join(names) })
 	_fill_replay(level)
 	_apply_detail_mode()

@@ -38,7 +38,7 @@ func test_all_shipped_data_loads_without_errors() -> void:
 	var ok: bool = bool(reg.call("load_all"))
 	assert_true(ok)
 	assert_false(bool(reg.get("has_errors")))
-	assert_eq((reg.call("get_level_list") as Array).size(), 38, "第一章 8 关 + 30 关战役")
+	assert_eq((reg.call("get_level_list") as Array).size(), 42, "第一章 8 关 + 30 关战役 + 4 个精英关")
 	reg.free()
 	assert_false(DataRegistry.has_errors, "autoload 启动加载无错误")
 

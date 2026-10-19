@@ -7,6 +7,16 @@ static func s(key: String) -> String:
 	return DataRegistry.get_string(key)
 
 
+## 关卡编号文字：「第 N 关」；精英关「精英关 N」（N = 精英关序号 display_index）
+static func level_label(L: LevelDefinition) -> String:
+	return s("ui.elite_label" if L.elite else "ui.level_label").format({ "index": L.display_index })
+
+
+## 名牌 / 列表里的短编号：「07」；精英关「精英」
+static func level_no(L: LevelDefinition) -> String:
+	return s("ui.elite_tag") if L.elite else "%02d" % L.display_index
+
+
 ## 数字显示：整数不带小数点
 static func num(v: float) -> String:
 	return str(int(round(v))) if is_equal_approx(v, round(v)) else "%.1f" % v
