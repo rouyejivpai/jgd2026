@@ -27,12 +27,18 @@
         872
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/settings_overlay/slices/panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "settings_overlay__panel_settings"
     },
     {
@@ -72,16 +78,22 @@
       "align": "center",
       "key": "ui.settings_close",
       "ninepatch": [
-        25,
-        25,
-        25,
-        25
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
-        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
-        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
-        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "settings_overlay__btn_close"
     },
@@ -94,7 +106,7 @@
         889,
         1
       ],
-      "file": "res://assets/ui/settings_overlay/slices/separator_header.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "section_audio",
@@ -144,12 +156,12 @@
         10
       ],
       "ninepatch": [
-        5,
-        4,
-        5,
-        4
+        0,
+        0,
+        0,
+        0
       ],
-      "file": "res://assets/ui/common/slider_track.png",
+      "file": "res://assets/ui/gothic/detail/track.png",
       "theme_type": "settings_overlay__slider_master_track"
     },
     {
@@ -162,12 +174,12 @@
         6
       ],
       "ninepatch": [
-        3,
         2,
-        3,
-        2
+        0,
+        2,
+        0
       ],
-      "file": "res://assets/ui/common/slider_fill.png",
+      "file": "res://assets/ui/gothic/slider_fill.png",
       "theme_type": "settings_overlay__slider_master_fill"
     },
     {
@@ -179,7 +191,7 @@
         23,
         23
       ],
-      "file": "res://assets/ui/common/slider_grabber_normal.png"
+      "file": "res://assets/ui/gothic/slider_grabber_normal.png"
     },
     {
       "id": "pct_master",
@@ -228,12 +240,12 @@
         10
       ],
       "ninepatch": [
-        5,
-        4,
-        5,
-        4
+        0,
+        0,
+        0,
+        0
       ],
-      "file": "res://assets/ui/common/slider_track.png",
+      "file": "res://assets/ui/gothic/detail/track.png",
       "theme_type": "settings_overlay__slider_music_track"
     },
     {
@@ -246,12 +258,12 @@
         6
       ],
       "ninepatch": [
-        3,
         2,
-        3,
-        2
+        0,
+        2,
+        0
       ],
-      "file": "res://assets/ui/common/slider_fill.png",
+      "file": "res://assets/ui/gothic/slider_fill.png",
       "theme_type": "settings_overlay__slider_music_fill"
     },
     {
@@ -263,7 +275,7 @@
         23,
         23
       ],
-      "file": "res://assets/ui/common/slider_grabber_normal.png"
+      "file": "res://assets/ui/gothic/slider_grabber_normal.png"
     },
     {
       "id": "pct_music",
@@ -312,12 +324,12 @@
         10
       ],
       "ninepatch": [
-        5,
-        4,
-        5,
-        4
+        0,
+        0,
+        0,
+        0
       ],
-      "file": "res://assets/ui/common/slider_track.png",
+      "file": "res://assets/ui/gothic/detail/track.png",
       "theme_type": "settings_overlay__slider_sfx_track"
     },
     {
@@ -330,12 +342,12 @@
         6
       ],
       "ninepatch": [
-        3,
         2,
-        3,
-        2
+        0,
+        2,
+        0
       ],
-      "file": "res://assets/ui/common/slider_fill.png",
+      "file": "res://assets/ui/gothic/slider_fill.png",
       "theme_type": "settings_overlay__slider_sfx_fill"
     },
     {
@@ -347,7 +359,7 @@
         23,
         23
       ],
-      "file": "res://assets/ui/common/slider_grabber_normal.png"
+      "file": "res://assets/ui/gothic/slider_grabber_normal.png"
     },
     {
       "id": "pct_sfx",
@@ -415,8 +427,8 @@
         37
       ],
       "states": {
-        "on": "res://assets/ui/common/toggle_on.png",
-        "off": "res://assets/ui/common/toggle_off.png"
+        "off": "res://assets/ui/gothic/toggle_off.png",
+        "on": "res://assets/ui/gothic/toggle_on.png"
       }
     },
     {
@@ -448,8 +460,8 @@
         37
       ],
       "states": {
-        "on": "res://assets/ui/common/toggle_on.png",
-        "off": "res://assets/ui/common/toggle_off.png"
+        "off": "res://assets/ui/gothic/toggle_off.png",
+        "on": "res://assets/ui/gothic/toggle_on.png"
       }
     },
     {
@@ -481,23 +493,23 @@
         54
       ],
       "text_rect": [
-        21,
-        3,
-        154,
-        48
+        44,
+        4,
+        140,
+        46
       ],
       "align": "left",
       "ninepatch": [
-        27,
-        27,
-        27,
-        27
+        35,
+        0,
+        62,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/common/dropdown_normal.png",
-        "hover": "res://assets/ui/common/dropdown_hover.png",
-        "pressed": "res://assets/ui/common/dropdown_pressed.png",
-        "disabled": "res://assets/ui/common/dropdown_disabled.png"
+        "normal": "res://assets/ui/gothic/detail/dropdown.png",
+        "hover": "res://assets/ui/gothic/detail/dropdown.png",
+        "pressed": "res://assets/ui/gothic/detail/dropdown.png",
+        "disabled": "res://assets/ui/gothic/detail/dropdown.png"
       },
       "theme_type": "settings_overlay__dropdown_font_scale",
       "popup_theme_type": "settings_overlay__dropdown_font_scale__popup"
@@ -511,7 +523,6 @@
         154,
         48
       ],
-      "merged_into": "dropdown_font_scale",
       "text_rect": [
         0,
         0,
@@ -531,7 +542,7 @@
         20,
         20
       ],
-      "file": "res://assets/ui/common/dropdown_arrow.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "section_debug",
@@ -581,8 +592,8 @@
         37
       ],
       "states": {
-        "on": "res://assets/ui/common/toggle_on.png",
-        "off": "res://assets/ui/common/toggle_off.png"
+        "off": "res://assets/ui/gothic/toggle_off.png",
+        "on": "res://assets/ui/gothic/toggle_on.png"
       }
     },
     {
@@ -613,7 +624,7 @@
         889,
         1
       ],
-      "file": "res://assets/ui/settings_overlay/slices/separator_footer.png"
+      "file": "res://assets/ui/gothic/blank.png"
     }
   ],
   "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/settings_overlay/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"

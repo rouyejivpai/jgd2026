@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "screen": "dialogue",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "dim",
+      "kind": "flatbox",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "data": {
+        "_note": "背景图上的压暗层（铺满视口）"
+      },
+      "theme_type": "dialogue__dim"
+    },
+    {
+      "id": "portrait",
+      "kind": "flatbox",
+      "rect": [
+        176,
+        40,
+        768,
+        1040
+      ],
+      "data": {
+        "art_size": [
+          768,
+          1152
+        ],
+        "_note": "立绘（768×1152 全身竖图）按原尺寸画：左上角在 rect 左上，下沿超出屏幕（脚没入对话框之下，同整图）；rect 只记可见部分"
+      },
+      "theme_type": "dialogue__portrait"
+    },
+    {
+      "id": "box",
+      "kind": "image",
+      "rect": [
+        0,
+        516,
+        1920,
+        564
+      ],
+      "file": "res://assets/ui/gothic/dialogue_box.png"
+    },
+    {
+      "id": "next",
+      "kind": "image",
+      "rect": [
+        1619,
+        961,
+        55,
+        74
+      ],
+      "data": {
+        "_note": "F01 继续提示：逐字未完时半透明"
+      },
+      "file": "res://assets/ui/gothic/dialogue_next.png"
+    },
+    {
+      "id": "speaker",
+      "kind": "text_style",
+      "rect": [
+        262,
+        760,
+        390,
+        46
+      ],
+      "text_rect": [
+        0,
+        0,
+        390,
+        46
+      ],
+      "align": "center",
+      "theme_type": "dialogue__speaker"
+    },
+    {
+      "id": "text",
+      "kind": "text_style",
+      "rect": [
+        386,
+        860,
+        1000,
+        170
+      ],
+      "text_rect": [
+        0,
+        0,
+        1000,
+        170
+      ],
+      "align": "left",
+      "data": {
+        "line_spacing": 6
+      },
+      "theme_type": "dialogue__text"
+    }
+  ],
+  "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/dialogue/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
+}

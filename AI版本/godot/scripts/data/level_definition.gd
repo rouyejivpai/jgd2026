@@ -19,7 +19,7 @@ var playfield_rect: Rect2i = Rect2i()
 ## 对齐底图（level_0X_base.png），按设计坐标 1:1 铺；GroundLayer 不再平铺 scene.ground / ground_marks（二者降为无资源时的占位，DEPRECATED）。
 ## 每块：{ file（相对清单目录）, cells（所占格，须 ⊆ blocked）, anchor_px（块左上相对所占格外接框左上，整图像素）, size_px（整图像素） }
 var scene_obstacles: String = ""
-var obstacle_pieces: Array[Dictionary] = []   ## { file: String（res://）, cells: Array[Vector2i], anchor: Vector2, size: Vector2 }
+var obstacle_pieces: Array[Dictionary] = []   ## { file: String（res://）, cells: Array[Vector2i], anchor: Vector2, size: Vector2, upright: String（竖立样式，"" = 平贴） }
 var bgm: String = ""
 var rng_seed: int = 0                   ## JSON 键 "seed"
 var width: int = 0
@@ -360,4 +360,5 @@ static func _read_obstacles(L: LevelDefinition, ctx: String) -> void:
 		if anchor.size() != 2 or size.size() != 2 or float(size[0]) <= 0.0 or float(size[1]) <= 0.0:
 			DataReader.report(pctx, "anchor_px 必须是 [x, y]，size_px 必须是正的 [w, h]")
 			continue
-		L.obstacle_pieces.append({ "file": file, "cells": cells, "anchor": Vector2(float(anchor[0]), float(anchor[1])), "size": Vector2(float(size[0]), float(size[1])) })
+		var upright: String = DataReader.opt_str(pd, "upright", "", pctx)   # 用户 2026-10-20：立体物改由 ObstacleProps 竖立成丛；样式存在性由 DataRegistry 校验
+		L.obstacle_pieces.append({ "file": file, "cells": cells, "anchor": Vector2(float(anchor[0]), float(anchor[1])), "size": Vector2(float(size[0]), float(size[1])), "upright": upright })

@@ -8,6 +8,10 @@ extends Control
 ## 节点各一份，按结果切换主题变体与位置。
 ## P8：标题有艺术字素材（data/art_text.json）时换成艺术字，字形高与位置按布局 ref_ink。
 ## P6 补充素材（P6_MISSING_ASSETS #7 / #8）：胜利 = 标题后纹章、左上月牙、两侧菱形装饰线；失败 = 右侧裂痕罗盘、带菱形的分隔线（贴图）。
+## 2026-10-19 结算演出（参数 data/ui_motion.json 的 result；动效总闸关闭时直接显示终态）：
+## 胜利：框体淡入 → 计分四行（人数 / 指令要素 / 信标 / 用时）逐行出现，数字从 0 涨到该项分数，越接近越慢（expo out）
+## → 右侧斜着「盖章」综合分（大号落下 + 轻震）→ 其余结算（时间、存活、解锁）打字机逐字出现，超出正文区时自动滚到底 → 最后按钮淡入。
+## 失败：框体淡入 → 文字打字机 → 按钮。演出中任意处点击或按确认 / 取消键 = 跳到终态。
 
 var controller: BattleController = null
 var level: LevelDefinition = null
@@ -31,6 +35,18 @@ var _decor: Dictionary = {}              ## 布局 id → 装饰贴图节点（�
 var _scrolls: Dictionary = {}           ## 文字节点 → 包裹的 ScrollText（摆放时用包裹节点）
 var _body: VBoxContainer                ## 失败：原因 + 最后一击；胜利：奖励各行（在一个滚动区里）
 var _body_scroll: ScrollText
+var _score_block: Control = null        ## 胜利计分区：左 = 四行明细，右 = 印章
+var _score_rows: Array[Dictionary] = [] ## { key, row, value, detail, target }
+var _stamp: Control = null
+var _stamp_total: Label = null
+var _stamp_note: Label = null
+var _show_tween: Tween = null           ## 结算演出（点击跳过时停掉）
+var _typing: Array[Label] = []          ## 本次要打字机显示的文字
+const STAMP_PX: float = 176.0           ## 印章边长（设计像素）
+const SCORE_ROW_H: float = 40.0
+const STAMP_INSET: float = 64.0          ## 印章离正文右缘（正文区右缘贴着框线，留出倾斜后的角）
+const SCORE_KEYS: Array[String] = ["units", "complexity", "beacons", "time"]
+const STAMP_INK: Color = Color(0.66, 0.11, 0.15, 0.95)
 
 const SKIN: String = "battle_hud"
 const WIN_DECOR: Array[String] = ["win_title_sigil", "win_title_crescent", "win_title_lines"]
@@ -64,6 +80,8 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	add_child(_body)
 	_score = _body_label()
 	_score.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
+	_score.visible = false                   # 2026-10-19：综合分改由计分区 + 印章显示，此标签只保留文字（两行明细）供查阅
+	_build_score_block()
 	_reason = _body_label()
 	_last_hit = _body_label()
 	_last_hit.add_theme_color_override("font_color", Palette.WARN_RED)
@@ -81,6 +99,98 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	EventBus.sim_event.connect(_on_sim_event)
 	controller.ticked.connect(_on_ticked)
 	EventBus.battle_phase_changed.connect(_on_phase_changed)
+
+
+## 计分区：四行（名称 · 数量 × 系数 · 分数）+ 右侧印章（AI 生成的印框 + 「综合分」+ 总分 + 新纪录 / 最佳）
+func _build_score_block() -> void:
+	_score_block = Control.new()
+	_score_block.name = "ScoreBlock"
+	_score_block.mouse_filter = Control.MOUSE_FILTER_PASS
+	_body.add_child(_score_block)
+	_body.move_child(_score_block, 0)
+	var col := VBoxContainer.new()
+	col.name = "Rows"
+	col.add_theme_constant_override("separation", 0)
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_score_block.add_child(col)
+	for k: String in SCORE_KEYS:
+		var row := HBoxContainer.new()
+		row.name = "Row_" + k
+		row.custom_minimum_size = Vector2(0.0, SCORE_ROW_H)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var name_l := Label.new()
+		name_l.name = "Name"
+		name_l.text = DataRegistry.get_string("ui.score_row_" + ("rules" if k == "complexity" else k))
+		name_l.custom_minimum_size = Vector2(150.0, 0.0)
+		var detail := Label.new()
+		detail.name = "Detail"
+		detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		detail.modulate = Color(1.0, 1.0, 1.0, 0.7)
+		var value := Label.new()
+		value.name = "Value"
+		value.custom_minimum_size = Vector2(110.0, 0.0)
+		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		value.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
+		for l: Label in [name_l, detail, value]:
+			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			l.clip_text = true
+			l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(l)
+		col.add_child(row)
+		_score_rows.append({ "key": k, "row": row, "value": value, "detail": detail, "target": 0.0 })
+	_stamp = Control.new()
+	_stamp.name = "Stamp"
+	_stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stamp.size = Vector2(STAMP_PX, STAMP_PX)
+	_stamp.pivot_offset = _stamp.size * 0.5
+	_score_block.add_child(_stamp)
+	# 朴素印章：红色双线圆框（外粗内细），不用荆棘环贴图
+	for ring_def: Array in [[0.0, 5], [10.0, 2]]:
+		var ring := Panel.new()
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+		sb.border_color = STAMP_INK
+		sb.set_border_width_all(int(ring_def[1]))
+		sb.set_corner_radius_all(int(STAMP_PX))
+		sb.anti_aliasing = true
+		ring.add_theme_stylebox_override("panel", sb)
+		ring.set_anchors_preset(Control.PRESET_FULL_RECT)
+		ring.offset_left = float(ring_def[0])
+		ring.offset_top = float(ring_def[0])
+		ring.offset_right = -float(ring_def[0])
+		ring.offset_bottom = -float(ring_def[0])
+		ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_stamp.add_child(ring)
+	var col2 := VBoxContainer.new()
+	col2.set_anchors_preset(Control.PRESET_FULL_RECT)
+	col2.alignment = BoxContainer.ALIGNMENT_CENTER
+	col2.add_theme_constant_override("separation", -4)
+	col2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stamp.add_child(col2)
+	var head := Label.new()
+	head.text = DataRegistry.get_string("ui.score_stamp_head")
+	_stamp_total = Label.new()
+	_stamp_note = Label.new()
+	for pair: Array in [[head, 18, "res://assets/fonts/NotoSerifSC-Bold.otf"], [_stamp_total, 52, "res://assets/fonts/Cinzel-Regular.ttf"], [_stamp_note, 16, "res://assets/fonts/NotoSerifSC-Bold.otf"]]:
+		var l: Label = pair[0] as Label
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		l.add_theme_font_override("font", load(str(pair[2])) as Font)
+		l.add_theme_font_size_override("font_size", int(pair[1]))
+		l.add_theme_color_override("font_color", STAMP_INK)
+		col2.add_child(l)
+
+
+## 计分区摆放：四行占左侧，印章贴右、竖直居中；返回计分区高度
+func _layout_score_block(width: float) -> float:
+	var rows_h: float = SCORE_ROW_H * float(SCORE_KEYS.size())
+	var h: float = maxf(rows_h, STAMP_PX) + 8.0
+	_score_block.custom_minimum_size = Vector2(width, h)
+	var col: Control = _score_block.get_node("Rows") as Control
+	col.position = Vector2(0.0, (h - rows_h) * 0.5)
+	col.size = Vector2(width - STAMP_PX - STAMP_INSET - 24.0, rows_h)
+	_stamp.position = Vector2(width - STAMP_PX - STAMP_INSET, (h - STAMP_PX) * 0.5)
+	return h
 
 
 func _text_node() -> Label:
@@ -156,16 +266,22 @@ func _apply_layout(won: bool) -> void:
 		body_top = Rect2(head_r.position, _r("win_reward", true).size)      # 正文从原「解锁」标题位置开始：综合分 → 解锁 → 奖励
 		_rewards.theme_type_variation = _tt("win_reward")
 		_score.theme_type_variation = _tt("win_reward")
+		for r: Dictionary in _score_rows:
+			for n: String in ["Name", "Detail", "Value"]:
+				((r["row"] as Control).get_node(n) as Label).theme_type_variation = _tt("win_time")
 	else:
 		body_top = _r("lose_reason", true)
 		_reason.theme_type_variation = _tt("lose_reason")
 		_last_hit.theme_type_variation = _tt("lose_reason")
 	var line_gap: float = body_top.size.y * 0.15
-	var body_h: float = btn_top - body_top.position.y - line_gap * 2.0
+	var body_h: float = btn_top - body_top.position.y - line_gap * 2.0 - BODY_BOTTOM_PAD
 	_body_scroll.position = body_top.position - panel.position
 	_body_scroll.size = Vector2(body_top.size.x, body_h)
 	for l: Label in [_score, _reason, _last_hit, _reward_head, _rewards]:
 		l.custom_minimum_size = Vector2(body_top.size.x, 0.0)
+	_score_block.visible = won and not controller.last_score.is_empty()
+	if _score_block.visible:
+		_layout_score_block(body_top.size.x)
 	var extra: float = _fit_body(body_top.size.x, body_h)
 	if extra > 0.0:                      # 正文放不下：框体向下加高（保持居中），按钮随之下移
 		position.y -= extra * 0.5
@@ -181,11 +297,14 @@ func _apply_layout(won: bool) -> void:
 		put.call(buttons[i], _r(ids[i]))
 		buttons[i].position.y += extra
 		buttons[i].theme_type_variation = _tt(ids[i])
+		if buttons[i].has_meta(ButtonMotion.META):      # 按钮动效已按旧变体接管了样式：按新变体重新取
+			(buttons[i].get_node(ButtonMotion.NODE_NAME) as ButtonMotion).recapture()
 
 
 ## 结算页不翻页（2026-10-18）：正文（解锁 / 失败原因）按实际字体与换行宽度量高，超出按钮上方的区域时先把框体向下加高
 ## （不超过视口留边），仍放不下再逐级缩小字号（最小 BODY_MIN_SCALE 倍），保证全部内容一屏显示、不需要滚动。返回框体加高量。
 const BODY_MIN_SCALE: float = 0.6
+const BODY_BOTTOM_PAD: float = 14.0       ## 正文滚动区下沿离按钮的留白（按钮按钮切图有外扩尖角）
 const SCREEN_MARGIN: float = 24.0
 
 
@@ -212,6 +331,8 @@ func _fit_body(width: float, max_h: float) -> float:
 
 func _body_height(labels: Array[Label], width: float, size: int, gap: float) -> float:
 	var h: float = gap * float(labels.size() - 1)
+	if _score_block != null and _score_block.visible:        # 计分区（固定高）
+		h += _score_block.custom_minimum_size.y + gap
 	for l: Label in labels:
 		var font: Font = l.get_theme_font("font")
 		var lines: int = 0
@@ -268,13 +389,168 @@ func show_result(result: int, delay: float = 0.0) -> void:
 	_rewards.text = _rewards_text() if won else ""
 	_rewards.visible = _rewards.text != ""
 	_score.text = _score_text() if won else ""
-	_score.visible = _score.text != ""
+	_fill_score_rows(won)
 	_reward_head.text = DataRegistry.get_string("ui.result_rewards")
 	var next_id: String = str(level.rewards.get("unlock_level", ""))
 	_next.visible = won and next_id != "" and GameState.is_level_unlocked(next_id)
 	_apply_layout(won)
 	ArtText.attach(_title, SKIN, ("win_" if won else "lose_") + "title")       # P8：「战斗胜利 / 失败」艺术字（R6b；「保护成功」无素材则保留文字）
 	visible = true
+	_play_show(won)
+
+
+# ---- 2026-10-19 结算演出 ----
+func _fill_score_rows(won: bool) -> void:
+	var sc: Dictionary = controller.last_score if won else {}
+	if sc.is_empty():
+		return
+	var c: Dictionary = Scoring.coefficients()
+	var parts: Dictionary = sc["parts"] as Dictionary
+	var counts: Dictionary = { "units": int(sc["unit_count"]), "complexity": int(sc["action_count"]) + int(sc["condition_count"]), "beacons": int(sc["beacon_count"]) }
+	for r: Dictionary in _score_rows:
+		var k: String = str(r["key"])
+		r["target"] = float(parts.get(k, 0.0))
+		var detail: String
+		if k == "time":
+			detail = DataRegistry.get_string("ui.score_row_time_detail").format({ "n": "%.1f" % float(sc["seconds"]), "c": Scoring.num(c[k]) })
+		else:
+			detail = DataRegistry.get_string("ui.score_row_detail").format({ "n": counts[k], "c": Scoring.num(c[k]) })
+		(r["detail"] as Label).text = detail
+		(r["value"] as Label).text = _score_value(float(r["target"]), float(r["target"]))
+	_stamp_total.text = str(int(sc["total"]))
+	var best: int = SaveManager.best_score(level.id) if controller.persist else -1
+	if controller.last_score_record:
+		_stamp_note.text = DataRegistry.get_string("ui.score_stamp_record")
+	elif best >= 0:
+		_stamp_note.text = DataRegistry.get_string("ui.result_best_line").format({ "best": best })
+	else:
+		_stamp_note.text = ""
+	_stamp_note.visible = _stamp_note.text != ""
+	_stamp.rotation = deg_to_rad(float((UiKit.motion_params("result").get("stamp", {}) as Dictionary).get("angle_deg", -14.0)))
+
+
+## 计分数字：目标为整数时显示整数，否则一位小数
+static func _score_value(v: float, target: float) -> String:
+	return str(int(round(v))) if is_equal_approx(target, round(target)) else "%.1f" % v
+
+
+## 演出：动效关闭时直接终态；否则按 result 参数串成一条 Tween（点击面板跳过）
+func _play_show(won: bool) -> void:
+	if _show_tween != null and _show_tween.is_valid():
+		_show_tween.kill()
+	_typing.clear()
+	var texts: Array[Label] = []
+	texts.assign([_time, _survivors, _reward_head, _rewards] if won else [_time, _survivors, _reason, _last_hit])
+	for l: Label in texts:
+		if l.visible and l.text != "":
+			_typing.append(l)
+	if not UiKit.motion_enabled:
+		_finish_show()
+		return
+	var p: Dictionary = UiKit.motion_params("result")
+	var sp: Dictionary = p.get("stamp", {}) as Dictionary
+	UiKit.pop_in(self, "panel_in")
+	for r: Dictionary in _score_rows:
+		(r["row"] as Control).modulate.a = 0.0
+		(r["value"] as Label).text = _score_value(0.0, float(r["target"]))
+	_stamp.visible = false
+	for l: Label in _typing:
+		l.visible_ratio = 0.0
+	for b: Button in [_retry, _next, _back] as Array[Button]:
+		b.modulate.a = 0.0
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_body_scroll.offset = 0.0
+	var t: Tween = create_tween()
+	_show_tween = t
+	t.tween_interval(float(p.get("panel_in_s", 0.25)))
+	if _score_block.visible:
+		var trans: Tween.TransitionType = UiKit.MOTION_TRANS.get(str(p.get("count_trans", "expo")), Tween.TRANS_EXPO) as Tween.TransitionType
+		var ease_t: Tween.EaseType = UiKit.MOTION_EASE.get(str(p.get("count_ease", "out")), Tween.EASE_OUT) as Tween.EaseType
+		for r: Dictionary in _score_rows:
+			var row: Control = r["row"] as Control
+			var value: Label = r["value"] as Label
+			var target: float = float(r["target"])
+			t.tween_property(row, "modulate:a", 1.0, 0.12)
+			t.tween_method(func(v: float) -> void: value.text = _score_value(v, target), 0.0, target, float(p.get("count_s", 0.9))).set_trans(trans).set_ease(ease_t)
+			t.tween_interval(float(p.get("row_gap_s", 0.15)))
+		t.tween_interval(float(sp.get("delay_s", 0.25)))
+		t.tween_callback(_stamp_down)
+		t.tween_interval(float(sp.get("duration", 0.32)) + float(sp.get("shake_s", 0.18)))
+	var cps: float = maxf(float(p.get("type_cps", 40.0)), 1.0)
+	for l: Label in _typing:
+		var n: int = maxi(l.get_total_character_count(), 1)
+		t.tween_property(l, "visible_ratio", 1.0, float(n) / cps)
+		t.tween_callback(_scroll_to_bottom)
+		t.tween_interval(float(p.get("line_gap_s", 0.1)))
+	var bd: float = float(p.get("buttons_in_s", 0.3))
+	t.tween_property(_retry, "modulate:a", 1.0, bd)
+	t.parallel().tween_property(_next, "modulate:a", 1.0, bd)
+	t.parallel().tween_property(_back, "modulate:a", 1.0, bd)
+	t.tween_callback(_finish_show)
+
+
+## 盖章：从大、透明落到原大小（back out），随后整块轻震
+func _stamp_down() -> void:
+	var sp: Dictionary = UiKit.motion_params("result").get("stamp", {}) as Dictionary
+	_stamp.visible = true
+	_stamp.modulate.a = 0.0
+	_stamp.scale = Vector2.ONE * float(sp.get("from_scale", 2.6))
+	var d: float = float(sp.get("duration", 0.32))
+	var t: Tween = _stamp.create_tween().set_parallel(true)
+	t.tween_property(_stamp, "scale", Vector2.ONE, d).set_trans(UiKit.motion_trans(sp)).set_ease(UiKit.motion_ease(sp))
+	t.tween_property(_stamp, "modulate:a", 1.0, d * 0.5)
+	var shake: float = float(sp.get("shake_px", 6.0))
+	var base: Vector2 = _stamp.position
+	var k: Tween = _stamp.create_tween()
+	k.tween_interval(d * 0.8)
+	for off: Vector2 in [Vector2(shake, shake * 0.5), Vector2(-shake * 0.6, -shake * 0.4), Vector2(shake * 0.3, 0.0), Vector2.ZERO]:
+		k.tween_property(_stamp, "position", base + off, float(sp.get("shake_s", 0.18)) / 4.0)
+
+
+## 正文超出滚动区时滚到底（打字机每出一行就跟一次）
+func _scroll_to_bottom() -> void:
+	var over: float = _body_scroll.overflow()
+	if over <= 0.0:
+		return
+	var t: Tween = _body_scroll.create_tween()
+	t.tween_property(_body_scroll, "offset", over, float(UiKit.motion_params("result").get("scroll_s", 0.25))).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+
+
+## 终态：全部数字、印章、文字、按钮就位（演出结束或点击跳过）
+func _finish_show() -> void:
+	if _show_tween != null and _show_tween.is_valid():
+		_show_tween.kill()
+	_show_tween = null
+	for r: Dictionary in _score_rows:
+		(r["row"] as Control).modulate.a = 1.0
+		(r["value"] as Label).text = _score_value(float(r["target"]), float(r["target"]))
+	_stamp.visible = _score_block.visible
+	_stamp.scale = Vector2.ONE
+	_stamp.modulate.a = 1.0
+	modulate.a = 1.0
+	scale = Vector2.ONE
+	for l: Label in _typing:
+		l.visible_ratio = 1.0
+	for b: Button in [_retry, _next, _back] as Array[Button]:
+		b.modulate.a = 1.0
+		b.mouse_filter = Control.MOUSE_FILTER_STOP
+	if _body_scroll.overflow() > 0.0:
+		_body_scroll.offset = _body_scroll.overflow()
+
+
+func is_showing() -> bool:
+	return _show_tween != null and _show_tween.is_valid()
+
+
+## 演出中：任意处点击（含按钮位置——按钮在演出结束前不响应）或按确认 / 取消键 = 直接跳到结束，这一下不传给下层
+func _input(event: InputEvent) -> void:
+	if not is_showing():
+		return
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	var click: bool = mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT
+	if click or event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
+		_finish_show()
+		get_viewport().set_input_as_handled()
 
 
 ## 胜利：综合分（新纪录 / 最佳）+ 明细一行

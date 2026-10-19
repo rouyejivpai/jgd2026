@@ -1,5 +1,7 @@
 extends CanvasLayer
-## 场景切换（01_程序架构.md §4），带黑幕淡入淡出。
+## 场景切换（01_程序架构.md §4）。2026-10-19 起转场为「菱晶碎裂波」：切换前截下旧画面盖在最上层，立即换场景，
+## 然后旧画面碎成菱晶、从最近一次点击处向外一圈圈收缩消失（assets/shaders/transition_shatter.gdshader，参数 ui_motion.json 的 transition），
+## 新界面从下面露出。动效总闸关闭（截图 --no-motion）时直接切换；截不到画面时退回黑幕淡入淡出。
 ## 10 §2：常驻持有设置浮窗 SettingsOverlay（子 CanvasLayer 层 100，低于黑幕 128），任何界面可开。
 ## 10 §1（P5）：只有战斗场景使用 HDR 2D（辉光需要）；菜单类界面关闭 HDR 2D，按 sRGB 空间混合半透明切片，与设计图的合成方式一致（Q-069）。
 
@@ -14,8 +16,11 @@ const CONFIG_EDITOR_SCENE: String = "res://tools/config_editor.tscn"   ## 第五
 const SETTINGS_OVERLAY_SCENE: PackedScene = preload("res://scenes/ui/settings_overlay.tscn")
 const SETTINGS_LAYER: int = 100
 const FADE_SECONDS: float = 0.25
+const MAX_STEP: float = 1.0 / 30.0        ## 转场每帧最多推进的秒数
 
 var _fade: ColorRect
+var _shatter: TextureRect                ## 转场：旧画面 + 碎裂着色器
+var _last_click: Vector2 = Vector2(-1.0, -1.0)   ## 最近一次鼠标按下的视口坐标（转场波心）
 var _busy: bool = false
 var _settings_layer: CanvasLayer
 var _settings: SettingsOverlay
@@ -31,6 +36,17 @@ func _ready() -> void:
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_fade)
+	_shatter = TextureRect.new()
+	_shatter.name = "Transition"
+	_shatter.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_shatter.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_shatter.stretch_mode = TextureRect.STRETCH_SCALE
+	_shatter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_shatter.visible = false
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://assets/shaders/transition_shatter.gdshader") as Shader
+	_shatter.material = mat
+	add_child(_shatter)
 	_settings_layer = CanvasLayer.new()
 	_settings_layer.layer = SETTINGS_LAYER
 	add_child(_settings_layer)
@@ -108,22 +124,86 @@ func goto_battle(level_id: String) -> void:
 	_change_scene(BATTLE_SCENE)
 
 
+## 记下最近一次点击位置（转场从这里碎开）；不拦截输入
+func _input(event: InputEvent) -> void:
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	if mb != null and mb.pressed:
+		_last_click = mb.position
+
+
 func _change_scene(path: String) -> void:
 	if _busy:
 		return
 	_busy = true
 	if is_settings_open():
 		close_settings()
+	if not UiKit.motion_enabled:             # 截图 / 无动效：直接切换
+		_switch(path)
+		_busy = false
+		return
+	var shot: Texture2D = _capture()
+	if shot != null:
+		await _shatter_to(path, shot)
+		_busy = false
+		return
 	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
 	var tween_out: Tween = create_tween()
 	tween_out.tween_property(_fade, "modulate:a", 1.0, FADE_SECONDS)
 	await tween_out.finished
-	var err: Error = get_tree().change_scene_to_file(path)
-	if err != OK:
-		push_error("[SceneRouter] change_scene_to_file failed (%d): %s" % [err, path])
-	get_tree().root.use_hdr_2d = path == BATTLE_SCENE
+	_switch(path)
 	var tween_in: Tween = create_tween()
 	tween_in.tween_property(_fade, "modulate:a", 0.0, FADE_SECONDS)
 	await tween_in.finished
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_busy = false
+
+
+func _switch(path: String) -> void:
+	var err: Error = get_tree().change_scene_to_file(path)
+	if err != OK:
+		push_error("[SceneRouter] change_scene_to_file failed (%d): %s" % [err, path])
+	get_tree().root.use_hdr_2d = path == BATTLE_SCENE
+
+
+## 截下当前画面（HDR 2D 的战斗画面是线性浮点：转 8 位后转回 sRGB，新场景按 sRGB 贴图采样）
+func _capture() -> Texture2D:
+	var img: Image = get_viewport().get_texture().get_image()
+	if img == null or img.is_empty():
+		return null
+	if get_tree().root.use_hdr_2d:
+		img.convert(Image.FORMAT_RGBA8)
+		img.linear_to_srgb()
+	return ImageTexture.create_from_image(img)
+
+
+## 菱晶碎裂波：旧画面盖住 → 换场景（等 hold_frames 帧让新界面排好）→ progress 0 → 1
+func _shatter_to(path: String, shot: Texture2D) -> void:
+	var p: Dictionary = UiKit.motion_params("transition")
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var mat: ShaderMaterial = _shatter.material as ShaderMaterial
+	var origin: Vector2 = _last_click / vp if _last_click.x >= 0.0 else Vector2(0.5, 0.5)
+	mat.set_shader_parameter("origin", origin.clamp(Vector2.ZERO, Vector2.ONE))
+	mat.set_shader_parameter("aspect", vp.x / maxf(vp.y, 1.0))
+	mat.set_shader_parameter("cells", float(p.get("cells", 14.0)))
+	mat.set_shader_parameter("spread", float(p.get("spread", 0.55)))
+	mat.set_shader_parameter("rim", float(p.get("rim", 0.09)))
+	mat.set_shader_parameter("rim_color", Color(str(p.get("rim_color", "#ECE6F2"))))
+	mat.set_shader_parameter("ember_color", Color(str(p.get("ember_color", "#B01C2A"))))
+	mat.set_shader_parameter("progress", 0.0)
+	_shatter.texture = shot
+	_shatter.visible = true
+	_shatter.mouse_filter = Control.MOUSE_FILTER_STOP        # 转场期间不接受点击
+	_switch(path)
+	for i: int in int(p.get("hold_frames", 2)):
+		await get_tree().process_frame
+	# 逐帧推进，单帧最多推进 MAX_STEP 秒：新场景首帧加载 / 编译着色器的卡顿不会把碎裂波跳过去
+	var dur: float = maxf(float(p.get("duration", 0.55)), 0.01)
+	var e: float = 0.0
+	while e < dur:
+		await get_tree().process_frame
+		e += minf(get_process_delta_time(), MAX_STEP)
+		mat.set_shader_parameter("progress", clampf(e / dur, 0.0, 1.0))
+	_shatter.visible = false
+	_shatter.texture = null
+	_shatter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_last_click = Vector2(-1.0, -1.0)

@@ -212,9 +212,12 @@ func _refresh_confirm() -> void:
 
 
 func _show() -> void:
+	var was_open: bool = visible
 	visible = true
 	_layout_skin()
 	_layout_skin.call_deferred()        # 换行后的行高下一帧才确定
+	if not was_open and not _skin.is_empty():
+		UiKit.slide_in.call_deferred([self], Rect2())       # 浮窗：缓动滑入（矩形在下一帧布局后取）
 
 
 ## 高度随内容：顶部（标题 / 关闭 / 分隔线）按整图距上沿；列表；其下为圆点（提示态）或确认区（确认态，按整图距下沿）

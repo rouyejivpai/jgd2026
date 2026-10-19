@@ -72,8 +72,7 @@ func test_no_progress_disables_continue() -> void:
 	await wait_process_frames(2)
 	assert_true(_btn(menu, "btn_continue").disabled, "无进度时「继续游戏」禁用")
 	assert_eq(_btn(menu, "btn_start").disabled, DataRegistry.has_errors)
-	if not DataRegistry.has_errors:
-		assert_true(_btn(menu, "btn_start").has_focus(), "默认焦点落在「新游戏」")
+	assert_null(menu.get_viewport().gui_get_focus_owner(), "进入时不取默认焦点")
 	_btn(menu, "btn_start").pressed.emit()
 	var dlg: ConfirmDialog = menu.find_child("NewGameConfirm", true, false) as ConfirmDialog
 	assert_false(dlg.visible, "没有进度时直接开始，不弹确认框")
@@ -86,12 +85,14 @@ func test_new_game_confirm_cancel_then_ok() -> void:
 	await wait_process_frames(2)
 	var cont: Button = _btn(menu, "btn_continue")
 	assert_eq(cont.disabled, DataRegistry.has_errors, "有进度时「继续游戏」可用")
-	if not DataRegistry.has_errors:
-		assert_true(cont.has_focus(), "有进度时默认焦点在「继续游戏」")
+	assert_false(cont.has_focus(), "有进度时「继续游戏」也不默认选中")
 	var dlg: ConfirmDialog = menu.find_child("NewGameConfirm", true, false) as ConfirmDialog
 	assert_not_null(dlg)
 	assert_false(dlg.visible)
+	var saved_motion: bool = UiKit.motion_enabled
+	UiKit.motion_enabled = false              # 只查摆放：不要滑入动效的中间位置
 	_btn(menu, "btn_start").pressed.emit()
+	UiKit.motion_enabled = saved_motion
 	assert_true(dlg.visible, "有进度时「新游戏」先弹确认框")
 	await wait_process_frames(1)
 	assert_eq(dlg.size, menu.size, "确认框铺满界面（遮罩挡住下层）")

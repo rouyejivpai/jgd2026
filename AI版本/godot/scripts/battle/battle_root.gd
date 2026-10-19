@@ -25,7 +25,7 @@ var _views: Dictionary = {}     ## unit id -> UnitView
 
 @onready var controller: BattleController = $BattleController
 @onready var _map_layer: Node2D = $MapLayer
-@onready var _grid: Node2D = $MapLayer/GridOverlay
+@onready var _grid: GridOverlay = $MapLayer/GridOverlay
 @onready var _backdrop: Sprite2D = $BackdropLayer
 @onready var _ground: Node2D = $MapLayer/GroundLayer
 @onready var _floor: FloorHighlight = $MapLayer/FloorHighlight
@@ -63,6 +63,7 @@ var cam_zoom: float = 1.0
 var _drag_source: int = -1               ## 部署拖动中的单位（原位置变淡）
 var _status_overlay: Node2D = null       ## 30 关战役：异常状态 / Boss 信号 / 增援区提示（status_overlay.gd）
 var _relic_ground: Node2D = null         ## 遗物地块 / 放置预览（单位之下，relic_layer.gd GROUND）
+var _obstacle_props: ObstacleProps = null ## 用户 2026-10-20：地块立体物件，挂在 UnitLayer 下与角色一起按脚底 y 排序
 var _relic_top: Node2D = null            ## 遗物点选目标圈 / 生效特效（单位之上，relic_layer.gd TOP）
 var tutorial: TutorialDirector = null    ## 第五阶段：强制引导
 var _ground_fx: Node2D = null            ## 脚印 / 落地碎屑（ground_fx.gd，地图之上、目标连线之下）
@@ -97,6 +98,11 @@ func _ready() -> void:
 	_backdrop.call("setup", level)
 	_map_layer.call("setup", level)
 	_ground.call("setup", level)
+	_obstacle_props = ObstacleProps.new()
+	_obstacle_props.name = "ObstacleProps"
+	_unit_layer.add_child(_obstacle_props)
+	_obstacle_props.setup(level)
+	_grid.draw_tile_objects = not ObstacleProps.has_objects(level)
 	_grid.call("setup", level)
 	_floor.setup(level)
 	_beacon_layer.call("setup", level, controller, self)
@@ -306,11 +312,18 @@ func _process(delta: float) -> void:
 	if level == null:
 		return
 	_update_shake(delta)
+	_grid.set_line_state(controller.phase == SimTypes.Phase.DEPLOY, grid_focus())
 	if DisplayServer.get_name() == "headless" or not get_window().has_focus():
 		return
 	var mouse: Vector2 = get_viewport().get_mouse_position()
 	if get_viewport_rect().has_point(mouse):
 		edge_pan_step(mouse, delta)
+
+
+## 底格线回到原不透明度的情形（2026-10-19）：拖动单位、选中单位看详情、信标模式
+func grid_focus() -> bool:
+	return selected_id >= 0 or _drag_source >= 0 or _floor.dragging or _floor.beacon_drag \
+		or str(_hud.call("beacon_mode_slot")) != ""
 
 
 ## 去掉镜头偏移与缩放后的屏幕坐标（= 未平移、未缩放时的同一世界点）
@@ -429,7 +442,8 @@ func clear_drag_hover() -> void:
 
 func _on_world_rebuilt() -> void:
 	for v: Node in _unit_layer.get_children():
-		v.queue_free()
+		if v != _obstacle_props:
+			v.queue_free()
 	_views.clear()
 	_fx.call("clear")
 	_ground_fx.call("clear")

@@ -66,7 +66,8 @@ func test_disabled_switch_attaches_nothing() -> void:
 		assert_false(b.has_meta(ButtonMotion.META))
 		assert_eq(b.get_rect(), UiKit.layout_rect("main_menu", id, menu.size), "%s 静止态位置 / 尺寸 = 布局" % id)
 		assert_eq(b.scale, Vector2.ONE)
-	var start: Button = menu.call("first_enabled_button") as Button     # 默认焦点按钮
+	var start: Button = menu.call("first_enabled_button") as Button
+	start.grab_focus()
 	assert_eq(start.get_theme_stylebox("normal"), start.get_theme_stylebox("hover"), "无动效时仍按 P5 约定：焦点复用 hover 贴图")
 	assert_null(UiKit.attach_button_motion(start), "总闸关闭时 attach 返回 null")
 
@@ -94,11 +95,13 @@ func test_rest_state_matches_original_styles() -> void:
 func test_focus_shows_hover_and_follows_mouse() -> void:
 	var menu: Control = _menu()
 	await wait_process_frames(3)
-	var start: Button = menu.call("first_enabled_button") as Button     # 默认焦点：「继续游戏」或（无进度时）「新游戏」
+	var start: Button = menu.call("first_enabled_button") as Button     # 「继续游戏」或（无进度时）「新游戏」
 	var settings: Button = _button(menu, "btn_settings")
 	var ms: ButtonMotion = start.get_node(ButtonMotion.NODE_NAME) as ButtonMotion
-	assert_eq(ms.visual, ButtonMotion.Visual.HOVER, "默认焦点按钮呈 hover 态（首帧直接落位）")
-	assert_eq(ms.hover_w, 1.0)
+	assert_null(menu.get_viewport().gui_get_focus_owner(), "进入时不取默认焦点")
+	assert_eq(ms.visual, ButtonMotion.Visual.NORMAL, "进入时没有按钮呈选中态")
+	start.grab_focus()
+	assert_eq(ms.target_visual(), ButtonMotion.Visual.HOVER, "取焦点后呈 hover 态")
 	settings.mouse_entered.emit()
 	assert_true(settings.has_focus(), "悬停即取焦点")
 	assert_eq(ms.target_visual(), ButtonMotion.Visual.NORMAL, "「开始」失焦后回普通态，同一时刻只有一个按钮亮")

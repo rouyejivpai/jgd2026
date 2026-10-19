@@ -87,6 +87,7 @@ func load_all(root: String = DATA_ROOT) -> bool:
 	_validate_relic_rewards(levels)
 	_validate_command_unlocks(levels)
 	_validate_biomes(levels)
+	_validate_upright_obstacles(levels)
 	_chapters.clear()
 	if DirAccess.dir_exists_absolute(root + "/chapters"):
 		for f: String in DirAccess.get_files_at(root + "/chapters"):
@@ -311,6 +312,22 @@ func _validate_biomes(levels: Array[LevelDefinition]) -> void:
 	for L: LevelDefinition in levels:
 		if get_ground_marks(L.biome).is_empty():
 			DataReader.report("%s.json" % L.id, "biome '%s' 没有地面标识（biomes.json ground_marks）" % L.biome)
+
+
+## 障碍块的 upright 样式（用户 2026-10-20）：须在 ObstacleProps.UPRIGHT 登记，且登记的变体图都在
+func _validate_upright_obstacles(levels: Array[LevelDefinition]) -> void:
+	for L: LevelDefinition in levels:
+		for i: int in L.obstacle_pieces.size():
+			var style: String = str(L.obstacle_pieces[i].get("upright", ""))
+			if style == "":
+				continue
+			var ctx: String = "%s.json.scene.obstacles.pieces[%d]" % [L.id, i]
+			if not ObstacleProps.UPRIGHT.has(style):
+				DataReader.report(ctx, "upright 样式 '%s' 未在 ObstacleProps.UPRIGHT 登记" % style)
+				continue
+			var files: Array = (ObstacleProps.UPRIGHT[style] as Dictionary)["files"] as Array
+			if ObstacleProps.upright_textures(style).size() != files.size():
+				DataReader.report(ctx, "upright 样式 '%s' 的变体图不全：%s" % [style, str(files)])
 
 
 func _validate_progression(level_ids: Array[String]) -> void:

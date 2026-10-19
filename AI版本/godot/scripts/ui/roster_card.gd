@@ -7,6 +7,8 @@ extends Button
 ## 第三阶段 P6（批准整图 ui_01）：卡面 = 该形态的卡片切片（头像已画在切片上），名称 / COST / 费用为子 Label，
 ## 位置取 data/ui_layout/battle_hud.json 的 card_name / card_cost_label / card_cost_value（相对其参照卡 data.card 的偏移）；
 ## 切片只有一态，按下 / 禁用用同一张贴图调色（布局 card_* 的 data.tint）；名称超出时自动滚动（ScrollText）。
+## 2026-10-19 哥特换皮（布局有 card_back 时）：条纹后片 card_back → Q 版立绘 card_portrait → 徽记前片 card_front（遮住下半身，
+## 悬停时上移 rest_dy 露出徽记）→ 名称 card_g_name / Cost card_g_cost；位置相对第 1 卡位 card_slot_1。
 
 const CARD_SIZE: Vector2 = Vector2(168.0, 96.0)
 const ICON_PX: int = 64
@@ -16,6 +18,8 @@ const PREVIEW_HEIGHT_CELLS: float = 1.6
 const SPRITE_FEET_RATIO: float = 232.0 / 256.0   ## 04 §2.1：256 画布、脚底在底部 24 px 处
 const PREVIEW_TINT_LEGAL: Color = Color(1.0, 0.86, 0.45)   ## 金色调制
 const PREVIEW_TINT_ILLEGAL: Color = Color(1.0, 0.35, 0.3)  ## 红色调制
+const FORM_ICON_RECT: Rect2 = Rect2(-20.0, -20.0, 144.0, 144.0)  ## 哥特卡面：形态图标（相对卡位左上角；2026-10-20 放大 3 倍，贴图四周约 20% 透明留白，故左上外移让图形贴卡面左上角）
+const FORM_ICON_TINT: Color = Color(1.2, 1.2, 1.2, 1.0)      ## 颜色在贴图里（金 → 形态标志色），略超 1 触发辉光
 
 const SKIN: String = "battle_hud"
 const SKIN_TEXTS: Array[String] = ["card_name", "card_cost_label", "card_cost_value"]
@@ -27,6 +31,7 @@ var form: String = ""                    ## free 关
 var slot_id: String = ""                 ## fixed 关
 var controller: BattleController = null
 var locked: bool = false                 ## 补足五个卡位的「未解锁」卡（不可交互）
+var _base_tip: String = ""               ## 哥特卡面不放文字时的悬停提示（名称 · Cost），refresh 在其后接不可用原因
 
 
 ## 拖拽虚影：形态精灵 60% 透明，高度 = cell_px × 1.6，脚底对准鼠标；无精灵时退回半透明方块
@@ -151,7 +156,10 @@ func _common() -> void:
 		var udef: UnitDefinition = DataRegistry.get_unit(form)
 		var title: String = text.get_slice("\n", 0) if slot_id == "" else text
 		text = ""
-		_apply_skin(card_file(form), title, str(udef.cost) if udef != null else "")
+		if gothic():
+			_apply_gothic(title, str(udef.cost) if udef != null else "", Art.unit_texture(form))
+		else:
+			_apply_skin(card_file(form), title, str(udef.cost) if udef != null else "")
 	refresh()
 
 
@@ -178,7 +186,11 @@ static func make_locked_card() -> Control:
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	c.focus_mode = Control.FOCUS_NONE
 	c.set_meta(&"no_motion", true)
-	c._apply_skin(card_file("locked"), DataRegistry.get_string("ui.locked"), DataRegistry.get_string("ui.card_locked_value"))
+	if gothic():
+		c._apply_gothic(DataRegistry.get_string("ui.locked"), DataRegistry.get_string("ui.card_locked_value"), null)
+		c.modulate = Color(1.0, 1.0, 1.0, 0.45)
+	else:
+		c._apply_skin(card_file("locked"), DataRegistry.get_string("ui.locked"), DataRegistry.get_string("ui.card_locked_value"))
 	return c
 
 
@@ -218,6 +230,82 @@ func _apply_skin(file: String, title: String, cost: String) -> void:
 			ScrollText.wrap(l, ScrollText.Mode.AUTO)
 
 
+static func gothic() -> bool:
+	return not UiKit.layout_element(SKIN, "card_back").is_empty()
+
+
+## 哥特卡面：三层图 + 两行字，样式全空（卡面不靠 StyleBox）；按钮动效不挂，悬停改为前片上移
+## 2026-10-19 形态图标（区分共用人偶图的形态）：金色 → 形态标志色的发光图标放卡面左上角（UnitAura.FORM_ICON_DIR）；
+## 2026-10-20 改为画在人物之前、覆盖立绘（仍在徽记前片之后）
+func _add_form_icon() -> void:
+	var icon: Texture2D = Art.texture(UnitAura.FORM_ICON_DIR % form) if form != "" else null
+	if icon == null:
+		return
+	var t := TextureRect.new()
+	t.name = "Layer_form_icon"
+	t.texture = icon
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	t.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	t.modulate = FORM_ICON_TINT
+	t.position = FORM_ICON_RECT.position
+	t.size = FORM_ICON_RECT.size
+	add_child(t, false, Node.INTERNAL_MODE_BACK)
+
+
+func _apply_gothic(title: String, cost: String, portrait: Texture2D) -> void:
+	var d: Vector2 = UiKit.design_size(SKIN)
+	var ref: Rect2 = UiKit.layout_rect(SKIN, "card_slot_1", d)
+	var empty := StyleBoxEmpty.new()
+	for st: String in ["normal", "hover", "pressed", "disabled", "hover_pressed", "focus"]:
+		add_theme_stylebox_override(st, empty)
+	set_meta(&"no_motion", true)
+	for id: String in ["card_back", "card_portrait", "card_front"]:
+		var e: Dictionary = UiKit.layout_element(SKIN, id)
+		var t := TextureRect.new()
+		t.name = "Layer_" + id
+		t.texture = portrait if id == "card_portrait" else load(str(e.get("file", ""))) as Texture2D
+		t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		t.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if id == "card_portrait" else CanvasItem.TEXTURE_FILTER_LINEAR
+		t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var r: Rect2 = UiKit.layout_rect(SKIN, id, d)
+		t.position = r.position - ref.position
+		t.size = r.size
+		add_child(t, false, Node.INTERNAL_MODE_BACK)
+		if id == "card_portrait":
+			_add_form_icon()
+		if id == "card_front":
+			var lift: float = float((e.get("data", {}) as Dictionary).get("rest_dy", 0.0))
+			var up: Vector2 = t.position
+			t.position = up + Vector2(0.0, lift)
+			mouse_entered.connect(func() -> void: UiKit.ease_to(t, "position", up if not disabled else up + Vector2(0.0, lift)))     # 2026-10-19：抬起 / 落下缓动
+			mouse_exited.connect(func() -> void: UiKit.ease_to(t, "position", up + Vector2(0.0, lift)))
+	var texts: Dictionary = { "card_g_name": ["Text_card_name", title], "card_g_cost": ["Text_card_cost_value", DataRegistry.get_string("ui.card_cost_label") + " " + cost if cost != "" else ""] }
+	for id: String in texts.keys():
+		var e: Dictionary = UiKit.layout_element(SKIN, id)
+		var l := Label.new()
+		l.name = str((texts[id] as Array)[0])
+		l.theme_type_variation = StringName(str(e.get("theme_type", "")))
+		l.horizontal_alignment = UiKit.text_align(str(e.get("align", "center")))
+		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		l.clip_text = true
+		l.text = str((texts[id] as Array)[1])
+		add_child(l, false, Node.INTERNAL_MODE_BACK)
+		var r: Rect2 = UiKit.layout_text_rect(SKIN, id, d)
+		l.position = r.position - ref.position
+		l.size = r.size
+		if bool((e.get("data", {}) as Dictionary).get("hidden", false)):     # 参考整图卡面无文字：保留节点（测试 / 截图读取），不显示
+			l.visible = false
+			continue
+		if str(e.get("overflow", "")) == "auto":
+			ScrollText.wrap(l, ScrollText.Mode.AUTO)
+	_base_tip = DataRegistry.get_string("ui.card_cost").format({ "name": title, "cost": cost }) if cost != "" else title
+	tooltip_text = _base_tip
+
+
 ## 卡面文字（测试与截图用）：名称 / COST / 费用
 func skin_text(id: String) -> String:
 	for n: Node in get_children(true):
@@ -233,15 +321,14 @@ func refresh() -> void:
 	var deploy: bool = controller.phase == SimTypes.Phase.DEPLOY or controller.boss_pending   # Boss 换阶段暂停可补增援
 	if slot_id != "":
 		disabled = not deploy
-		modulate = Color(1.0, 1.0, 1.0, 0.55) if controller.placements.has(slot_id) else Color.WHITE
+		UiKit.ease_to(self, "modulate", Color(1.0, 1.0, 1.0, 0.55) if controller.placements.has(slot_id) else Color.WHITE)
 		return
 	disabled = not controller.can_add_form(form)
-	tooltip_text = ""
+	tooltip_text = _base_tip
 	if deploy and disabled:
-		if controller.placements.size() >= controller.level.max_units:
-			tooltip_text = DataRegistry.get_string("ui.roster_full").format({ "n": controller.level.max_units })
-		else:
-			tooltip_text = DataRegistry.get_string("ui.budget_short")
+		var why: String = DataRegistry.get_string("ui.roster_full").format({ "n": controller.level.max_units }) if controller.placements.size() >= controller.level.max_units else DataRegistry.get_string("ui.budget_short")
+		tooltip_text = why if _base_tip == "" else _base_tip + "
+" + why
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:

@@ -19,7 +19,7 @@
 处理：去零星碎块 → 裁到不透明外框 → 朝左（含脸偏向画面左侧的 3/4 侧身）的角色水平翻转为默认朝右（游戏里向左走时再由程序翻转） → 等比放入 256 画布（脚底在底部 24 px 处）；
 头像 = 头部方形裁切 + 深紫径向底（512）；出场卡切片的头像圆窗换成新头像。
 原图备份到 tools/_work/char_backup_20261019/（不入库），可用 --restore 还原。
-用法（godot/ 目录）：python tools/import_qq_art.py [--preview 输出图] [--restore]
+用法（godot/ 目录）：python tools/import_qq_art.py [--preview 输出图] [--restore] [--portraits（只重生成六形态头像）]
 """
 import io
 import shutil
@@ -98,7 +98,9 @@ UNIT_LAYOUT = {
 # 己方形态 → 头像背后的金色发光图标
 FORM_ICON_DIR = GODOT / "assets/sprites/form_icons"
 FORM_ICON_FORMS = {"striker", "bulwark", "swift", "lancer", "hexer", "binder"}
-PORTRAIT_ICON_SIZE = 0.46   ## 图标边长（占头像，左上角；用户：大小不变，允许被人物遮住一小部分）
+PORTRAIT_ICON_SIZE = 0.62   ## 图标边长（占头像，左上角；2026-10-20 与出场卡同步：放大，画在人物之前、覆盖立绘；贴图四周约 20% 透明留白）
+PORTRAIT_ICON_POS = 0.0     ## 图标左上角位置（占头像；0 = 贴头像左上角，再外移会被圆形遮罩切掉）
+PORTRAIT_ICON_GAIN = 1.2    ## 图标亮度（同出场卡 FORM_ICON_TINT，略超 1 提亮辉光）
 PORTRAIT_ICON_FIG_W = 0.74  ## 有图标时人物宽度（占头像）
 PORTRAIT_ICON_TOP = 0.16    ## 有图标时人物头顶位置（占头像）
 PORTRAIT_ICON_FIG_DX = 0.1  ## 有图标时人物右移（占头像），给左上角图标让位
@@ -202,15 +204,20 @@ def portrait(fig: Image.Image, head: list, size: int = 512, icon: str = "") -> I
     inner, outer = np.array([62, 36, 82]), np.array([16, 9, 22])
     col = inner[None, None, :] * (1 - d) + outer[None, None, :] * d
     bg = Image.fromarray(np.dstack([col, np.full((size, size, 1), 255)]).astype(np.uint8), "RGBA")
-    if icon:                                   # 用户 2026-10-19：金色发光图标放左上角、尽量露出全貌（仍在人物之后）；整个人物（不做方形裁切）按宽缩放、略偏右下
-        ic = gold_icon(icon, int(size * PORTRAIT_ICON_SIZE))
-        bg.alpha_composite(ic, (int(size * 0.01), int(size * 0.01)))
+    if icon:                                   # 用户 2026-10-19：整个人物（不做方形裁切）按宽缩放、略偏右下；2026-10-20 与出场卡同步：金色发光图标放大、画在人物之前（覆盖立绘左上）
         k = size * PORTRAIT_ICON_FIG_W / fig.width
         f = fig.resize((round(fig.width * k), round(fig.height * k)), Image.LANCZOS)
         layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
         top = int(size * PORTRAIT_ICON_TOP)
         layer.alpha_composite(f.crop((0, 0, f.width, min(f.height, size - top))), ((size - f.width) // 2 + int(size * PORTRAIT_ICON_FIG_DX), top))
         bg.alpha_composite(layer)
+        ic = np.array(gold_icon(icon, int(size * PORTRAIT_ICON_SIZE))).astype(np.float32)
+        ic[..., :3] = np.clip(ic[..., :3] * PORTRAIT_ICON_GAIN, 0, 255)
+        ic = Image.fromarray(ic.astype(np.uint8), "RGBA")
+        pos = int(size * PORTRAIT_ICON_POS)
+        icon_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        icon_layer.alpha_composite(ic, (max(pos, 0), max(pos, 0)), (max(-pos, 0), max(-pos, 0)))
+        bg.alpha_composite(icon_layer)
         return bg
     bg.alpha_composite(crop)
     return bg
@@ -285,6 +292,11 @@ def main() -> int:
         for f in BACKUP.rglob("*.png"):
             shutil.copy2(f, GODOT / f.relative_to(BACKUP))
             print("restored", f.relative_to(BACKUP))
+        return 0
+    if "--portraits" in sys.argv:             # 只重生成己方六形态头像（不动单位精灵 / 立绘 / 物件）
+        for uid in sorted(FORM_ICON_FORMS):
+            fname = UNITS[uid]
+            save(portrait(figure(fname), FIGURES[fname][2], icon=uid), SPR / f"portraits/{uid}.png")
         return 0
     if "--preview" in sys.argv:
         preview(sys.argv[sys.argv.index("--preview") + 1])

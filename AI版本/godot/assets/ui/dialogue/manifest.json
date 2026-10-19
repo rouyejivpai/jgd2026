@@ -1,0 +1,121 @@
+{
+ "schema_version": 1,
+ "screen": "dialogue",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "_comment": "2026-10-19 哥特换皮：剧情对话（01.zip 对话切图 F01 / F02，整图 ../gothic/design_dialogue.png；F02 烘进的示例文字已在入库时抹掉）。坐标即切图在整图中的位置。手写，无拟合产物。",
+ "elements": [
+  {
+   "id": "dim",
+   "kind": "flatbox",
+   "rect": [
+    0,
+    0,
+    1920,
+    1080
+   ],
+   "style": {
+    "bg": "#0E0A10A8"
+   },
+   "data": {
+    "_note": "背景图上的压暗层（铺满视口）"
+   }
+  },
+  {
+   "id": "portrait",
+   "kind": "flatbox",
+   "rect": [
+    176,
+    40,
+    768,
+    1040
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "data": {
+    "art_size": [
+     768,
+     1152
+    ],
+    "_note": "立绘（768×1152 全身竖图）按原尺寸画：左上角在 rect 左上，下沿超出屏幕（脚没入对话框之下，同整图）；rect 只记可见部分"
+   }
+  },
+  {
+   "id": "box",
+   "kind": "image",
+   "rect": [
+    0,
+    516,
+    1920,
+    564
+   ],
+   "file": "../gothic/dialogue_box.png"
+  },
+  {
+   "id": "next",
+   "kind": "image",
+   "rect": [
+    1619,
+    961,
+    55,
+    74
+   ],
+   "file": "../gothic/dialogue_next.png",
+   "data": {
+    "_note": "F01 继续提示：逐字未完时半透明"
+   }
+  },
+  {
+   "id": "speaker",
+   "kind": "text_style",
+   "rect": [
+    262,
+    760,
+    390,
+    46
+   ],
+   "text_rect": [
+    0,
+    0,
+    390,
+    46
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 29,
+    "color": "#F5F2F5",
+    "shadow": "#000000B0"
+   }
+  },
+  {
+   "id": "text",
+   "kind": "text_style",
+   "rect": [
+    386,
+    860,
+    1000,
+    170
+   ],
+   "text_rect": [
+    0,
+    0,
+    1000,
+    170
+   ],
+   "align": "left",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8",
+    "shadow": "#00000090"
+   },
+   "data": {
+    "line_spacing": 6
+   }
+  }
+ ]
+}

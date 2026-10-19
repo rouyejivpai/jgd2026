@@ -3,6 +3,7 @@
   "pieces": [
     {
       "file": "01.png",
+      "upright": "thorn",
       "cells": [
         [
           3,
@@ -20,6 +21,7 @@
     },
     {
       "file": "02.png",
+      "upright": "thorn",
       "cells": [
         [
           8,
@@ -37,6 +39,7 @@
     },
     {
       "file": "03.png",
+      "upright": "thorn",
       "cells": [
         [
           3,
@@ -54,6 +57,7 @@
     },
     {
       "file": "04.png",
+      "upright": "thorn",
       "cells": [
         [
           8,

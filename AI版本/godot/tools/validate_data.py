@@ -316,6 +316,32 @@ def check_obstacles(ctx, sc, g, blocked):
         a, sz = pc.get("anchor_px"), pc.get("size_px")
         if not (isinstance(a, list) and len(a) == 2 and isinstance(sz, list) and len(sz) == 2 and sz[0] > 0 and sz[1] > 0):
             err(pctx, "anchor_px 必须是 [x, y]，size_px 必须是正的 [w, h]")
+        style = pc.get("upright", "")
+        if style:
+            styles = upright_styles()
+            if not isinstance(style, str) or style not in styles:
+                err(pctx, f"upright 样式 {style!r} 未在 ObstacleProps.UPRIGHT 登记（可用：{sorted(styles)}）")
+            else:
+                for rel in styles[style]:
+                    if not (ROOT.parent / "assets" / "sprites" / rel).exists():
+                        err(pctx, f"upright 样式 {style!r} 的变体图不存在：assets/sprites/{rel}")
+
+
+_UPRIGHT_STYLES = None
+
+
+def upright_styles():
+    """用户 2026-10-20：障碍块竖立样式表——解析 scripts/battle/obstacle_props.gd 的 UPRIGHT 常量，返回 {样式名: [files]}"""
+    global _UPRIGHT_STYLES
+    if _UPRIGHT_STYLES is None:
+        _UPRIGHT_STYLES = {}
+        src = (ROOT.parent / "scripts" / "battle" / "obstacle_props.gd").read_text(encoding="utf-8")
+        m = re.search(r"^const UPRIGHT: Dictionary = \{\n(.*?)^\}", src, re.S | re.M)
+        for line in (m.group(1).splitlines() if m else []):
+            sm = re.match(r'\s*"(\w+)": \{ "files": \[([^\]]*)\]', line)
+            if sm:
+                _UPRIGHT_STYLES[sm.group(1)] = re.findall(r'"([^"]+)"', sm.group(2))
+    return _UPRIGHT_STYLES
 
 
 def bfs_reachable(w, h, blocked, a, b):

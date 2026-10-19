@@ -27,12 +27,18 @@
         400
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/settings_overlay/slices/panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "confirm_dialog__panel"
     },
     {
@@ -62,7 +68,7 @@
         620,
         1
       ],
-      "file": "res://assets/ui/settings_overlay/slices/separator_header.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "body",
@@ -99,16 +105,22 @@
       ],
       "align": "center",
       "ninepatch": [
-        25,
-        25,
-        25,
-        25
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
-        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
-        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
-        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
       },
       "theme_type": "confirm_dialog__btn_ok"
     },
@@ -129,16 +141,22 @@
       ],
       "align": "center",
       "ninepatch": [
-        25,
-        25,
-        25,
-        25
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/settings_overlay/slices/btn_close_normal.png",
-        "hover": "res://assets/ui/settings_overlay/slices/btn_close_hover.png",
-        "pressed": "res://assets/ui/settings_overlay/slices/btn_close_pressed.png",
-        "disabled": "res://assets/ui/settings_overlay/slices/btn_close_disabled.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "confirm_dialog__btn_cancel"
     }

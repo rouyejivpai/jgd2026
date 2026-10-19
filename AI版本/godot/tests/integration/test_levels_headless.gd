@@ -616,3 +616,51 @@ func test_obstacle_pieces_anchor_to_cells_and_sort_by_foot() -> void:
 	for i: int in rects.size() - 1:
 		assert_true(float(rects[i]["foot"]) <= float(rects[i + 1]["foot"]), "按脚底从上到下排序")
 	assert_not_null(rects[0]["tex"], "贴图可加载")
+
+
+# ---- 用户 2026-10-20：障碍块的立体物（upright 样式）竖立成丛 ----
+func test_upright_obstacle_piece_stands_in_unit_layer() -> void:
+	var L: LevelDefinition = _level_03_with_obstacles("res://tests/fixtures/obstacles/obstacles_upright.json")
+	assert_eq(str(L.obstacle_pieces[0]["upright"]), "thorn", "读入 upright 字段")
+	assert_eq(str(L.obstacle_pieces[1]["upright"]), "", "未写 upright = 平贴")
+	var rects: Array[Dictionary] = GroundLayer.obstacle_rects(L)
+	assert_eq(rects.size(), 1, "带 upright 的块不再由 GroundLayer 平贴")
+	var items: Array = ObstacleProps.layout(L).filter(func(it: Dictionary) -> bool: return str(it["kind"]) == "obstacle:thorn")
+	var sd: Dictionary = ObstacleProps.UPRIGHT["thorn"] as Dictionary
+	var t: float = float(SimTypes.TILE_SIZE)
+	for cell: Vector2i in [Vector2i(4, 2), Vector2i(5, 2)]:
+		var mine: Array = items.filter(func(it: Dictionary) -> bool: return it["cell"] == cell)
+		assert_between(mine.size(), int((sd["count"] as Array)[0]), int((sd["count"] as Array)[1]), "每格一丛，件数在样式范围内")
+		var center: Vector2 = SimTypes.sim_to_screen(SimTypes.cell_center(cell), L.height)
+		var texs: Dictionary = {}
+		for it: Dictionary in mine:
+			var d: Vector2 = ((it["foot"] as Vector2) - center) / t
+			assert_true(absf(d.x) < 0.5 and absf(d.y) < 0.5, "脚底落在所占格内（前后都可）")
+			texs[it["tex"]] = true
+		assert_eq(texs.size(), mine.size(), "同格各件用不同变体图")
+	var again: Array = ObstacleProps.layout(L).filter(func(it: Dictionary) -> bool: return str(it["kind"]) == "obstacle:thorn")
+	assert_eq(again.map(func(it: Dictionary) -> Vector2: return it["foot"]), items.map(func(it: Dictionary) -> Vector2: return it["foot"]), "按关卡 + 格定种子，摆放确定")
+
+
+func test_upright_style_must_be_registered() -> void:
+	var L: LevelDefinition = _level_03_with_obstacles("res://tests/fixtures/obstacles/obstacles_upright.json")
+	var before: int = DataReader.error_count
+	DataReader.silent = true
+	DataRegistry._validate_upright_obstacles([L])
+	assert_eq(DataReader.error_count, before, "已登记且图齐全的样式无错误")
+	L.obstacle_pieces[0]["upright"] = "no_such_style"
+	DataRegistry._validate_upright_obstacles([L])
+	DataReader.silent = false
+	assert_gt(DataReader.error_count, before, "未登记的样式 → 报错")
+
+
+func test_chapter_1_props_upright_but_cracked_floor_stays_flat() -> void:
+	for id: String in ["level_03", "level_04", "level_05", "level_08"]:
+		var L: LevelDefinition = DataRegistry.get_level(id)
+		assert_eq(GroundLayer.obstacle_rects(L).size(), 0, "%s 的立体障碍不再平贴" % id)
+		var n: int = ObstacleProps.layout(L).filter(func(it: Dictionary) -> bool: return str(it["kind"]).begins_with("obstacle:")).size()
+		var cells: int = 0
+		for pc: Dictionary in L.obstacle_pieces:
+			cells += (pc["cells"] as Array).size()
+		assert_gte(n, cells * 2, "%s 每个障碍格至少两件" % id)
+	assert_eq(GroundLayer.obstacle_rects(DataRegistry.get_level("level_06")).size(), 1, "第 6 关裂石地板是地面标志，仍平贴")

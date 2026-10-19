@@ -1,0 +1,45 @@
+{
+ "level": "level_03",
+ "_comment": "用户 2026-10-20 测试夹具：第一块带 upright（竖立成丛，GroundLayer 跳过），第二块平贴",
+ "pieces": [
+  {
+   "file": "01.png",
+   "upright": "thorn",
+   "cells": [
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ]
+   ],
+   "anchor_px": [
+    0,
+    -20
+   ],
+   "size_px": [
+    122,
+    81
+   ]
+  },
+  {
+   "file": "02.png",
+   "cells": [
+    [
+     8,
+     2
+    ]
+   ],
+   "anchor_px": [
+    -4,
+    -10
+   ],
+   "size_px": [
+    69,
+    71
+   ]
+  }
+ ]
+}

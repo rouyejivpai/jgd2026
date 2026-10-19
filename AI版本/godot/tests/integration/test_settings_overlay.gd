@@ -22,6 +22,7 @@ var _overlay: SettingsOverlay
 
 func before_each() -> void:
 	_saved_data = SaveManager.data.duplicate(true)
+	SaveManager.autosave = false          # 2026-10-20：选关 / 一级地图会记解锁动画的揭开记录，测试里不写盘
 	_saved_level_id = GameState.current_level_id
 	_saved_unlocks = GameState.unlocks
 	GameState.unlocks = ALL_UNLOCKED
@@ -36,6 +37,7 @@ func after_each() -> void:
 	SaveManager.data = _saved_data
 	GameState.sync_from_save()
 	GameState.current_level_id = _saved_level_id
+	SaveManager.autosave = true
 	GameState.unlocks = _saved_unlocks
 	for p: String in [TEST_SAVE, TEST_SAVE + ".tmp"]:
 		if FileAccess.file_exists(p):

@@ -5,6 +5,8 @@ extends Node
 ## - 每关只自动出现一次（完成或跳过记入存档 tutorials_seen）；配置器预览（GameState.tutorial_preview）不受此限、不写存档。
 ## - 部署阶段的步骤在开战后自动跳过；战斗中的步骤（phase = running）到时出现并暂停战斗，推进后恢复。
 ## - 剧情 / 设置 / 结算显示时引导暂时隐藏。
+## - 指令界面（左侧侧栏）挡住本步高亮时自动先插一步「收起指令界面」；本步要看指令界面而它没开时先插「打开指令界面」（panel_fix，2026-10-20）。
+## - 引导含放单位的步骤时，开场撤下重进关卡恢复的上次部署。
 ## - 拾取模式（GameState.tutorial_pick，配置器「拾取目标」）：点击界面元素或地块 → 结果写入 GameState.tutorial_pick_result 并返回配置器。
 
 signal finished(skipped: bool)
@@ -30,6 +32,7 @@ var _beacons: Dictionary = {}             ## unit id -> 信标数
 var _layer: CanvasLayer = null
 var _zoomed: Dictionary = {}              ## 被 zoom 放大的界面元素 Control -> 原 scale（换步时还原）
 var back_button: Button = null            ## 从配置器进入（预览 / 拾取 / 试玩本关）时的「返回配置器」
+var _advance_pending: bool = false        ## 已排队在帧末推进（_queue_advance）
 
 
 func setup(p_root: Node2D, p_hud: Control) -> void:
@@ -66,6 +69,8 @@ func setup(p_root: Node2D, p_hud: Control) -> void:
 	overlay.skip_pressed.connect(skip)
 	overlay.back_pressed.connect(_back_to_editor)
 	overlay.set_back_visible(false)               # 「返回配置器」统一用独立按钮（_add_back_button）
+	if not pick_mode and steps.any(func(s: Dictionary) -> bool: return str(s["event"]) == "deployed" or str(s["event"]) == "drag_started"):
+		controller.clear_units()          # 引导从放单位教起：撤下重进关卡时恢复的上次部署（否则预算已满、指令界面开着，引导走不下去）
 	_placed = controller.placements.size()
 	EventBus.deployment_changed.connect(_on_deployment_changed)
 	EventBus.unit_selected.connect(_on_unit_selected)
@@ -114,6 +119,15 @@ func _process(_delta: float) -> void:
 	if controller.phase == SimTypes.Phase.ENDED:
 		finish(false)
 		return
+	if not overlay.visible and str(step["advance"]) == "event" and str(step["event"]) == "ally_selected" and _ally_panel_open():
+		_advance()                              # 放下单位会自动打开指令界面：「选中己方」已成立，这一步不再出现（否则永远等不到事件）
+		return
+	var fix: Dictionary = panel_fix(step)
+	if not fix.is_empty():
+		steps.insert(index, fix)                # 先插一步「收起 / 打开指令界面」，完成后回到原步骤
+		_restore_zoom()
+		overlay.hide_overlay()
+		return
 	if not overlay.visible:
 		_show(step)
 	overlay.set_targets(target_rects(step))
@@ -134,9 +148,62 @@ func _show(step: Dictionary) -> void:
 		title = DataRegistry.get_string("ui.tutorial_test_tag") + title
 	if bool(step["deselect"]):
 		EventBus.unit_selected.emit(-1)
-	overlay.show_step(title, str(step["text"]), index + 1, steps.size(), str(step["advance"]) == "next", bool(step["block"]), str(step["arrow"]), str(step["panel"]),
+	# 自动插入的步骤不计入「第几步 / 共几步」：显示为紧随其后的那一步的序号
+	var n: int = 1
+	var total: int = 0
+	for i: int in steps.size():
+		if not bool(steps[i].get("auto", false)):
+			total += 1
+			if i < index:
+				n += 1
+	overlay.show_step(title, str(step["text"]), mini(n, total), total, str(step["advance"]) == "next", bool(step["block"]), str(step["arrow"]), str(step["panel"]),
 		str(step["advance"]) == "tap")
 	_apply_zoom(step)
+
+
+## 指令界面（左侧侧栏）与本步高亮冲突时要先插入的一步：
+## - 本步要看指令界面里的东西（UnitPanel 内的元素）而侧栏没开着己方单位 → 「打开指令界面」（点人偶）
+## - 本步要看的地方（侧栏以外的界面元素 / 地块 / 单位 / 圆环）被侧栏挡住 → 「收起指令界面」（点「关闭」）
+## 无冲突返回 {}。出现时会取消选中的步骤（deselect）自己会收起侧栏，不插。
+func panel_fix(step: Dictionary) -> Dictionary:
+	if bool(step.get("auto", false)) or _advance_pending:
+		return {}                               # 已要推进（如点了人偶 → 侧栏刚打开）时不再插步
+	var unit_panel: Node = hud.find_child("UnitPanel", true, false)
+	var side: Node = hud.find_child("SidePanel", true, false)
+	var needs_panel: bool = false
+	var covered: bool = false
+	var side_open: bool = bool(hud.call("side_visible"))
+	var side_r: Rect2 = hud.call("side_rect") as Rect2
+	for t: Dictionary in step["targets"] as Array[Dictionary]:
+		if str(t["kind"]) == "ui":
+			var c: Control = find_ui(str(t["node"]))
+			if c != null and side != null and (side == c or side.is_ancestor_of(c)):
+				needs_panel = needs_panel or (unit_panel != null and (unit_panel == c or unit_panel.is_ancestor_of(c)))
+				continue
+		if not side_open or (bool(step["deselect"]) and not overlay.visible):
+			continue
+		for r: Rect2 in target_rects({ "targets": [t] as Array[Dictionary] }):
+			if r.intersects(side_r):
+				covered = true
+	if needs_panel and not _ally_panel_open() and _first_ally() != null:
+		return _auto_step("open")
+	if covered and not needs_panel:
+		return _auto_step("close")
+	return {}
+
+
+func _auto_step(kind: String) -> Dictionary:
+	var d: Dictionary = { "title": DataRegistry.get_string("ui.tutorial_%s_panel_title" % kind), "text": DataRegistry.get_string("ui.tutorial_%s_panel_text" % kind),
+		"advance": "event" }
+	if kind == "open":
+		d["targets"] = [{ "kind": "ally" }]
+		d["event"] = "ally_selected"
+	else:
+		d["targets"] = [{ "kind": "ui", "node": "DetailClose" }]
+		d["event"] = "panel_closed"
+	var s: Dictionary = TeachingDef.normalize_step(d, "tutorial.auto_" + kind)
+	s["auto"] = true
+	return s
 
 
 ## ui 目标的 zoom：以中心为轴放大（出场卡等），换步 / 结束时还原
@@ -162,6 +229,12 @@ func _restore_zoom() -> void:
 		if is_instance_valid(c):
 			(c as Control).scale = _zoomed[c] as Vector2
 	_zoomed.clear()
+
+
+## 侧栏正显示着己方单位的指令界面（放下单位时 MapInput 自动选中并打开）
+func _ally_panel_open() -> bool:
+	var sel: Variant = root.get("selected_id")
+	return bool(hud.call("side_visible")) and sel != null and int(sel) >= 0 and controller.slot_of_unit(int(sel)) != ""
 
 
 ## 剧情、设置、结算等浮层显示时让路
@@ -193,7 +266,13 @@ func target_rect(t: Dictionary) -> Rect2:
 	match str(t["kind"]):
 		"ui":
 			var c: Control = find_ui(str(t["node"]))
-			return c.get_global_rect() if c != null and c.is_visible_in_tree() else Rect2()
+			if c == null or not c.is_visible_in_tree():
+				return Rect2()
+			var side: Node = hud.find_child("SidePanel", true, false)
+			if side != null and side.is_ancestor_of(c):
+				# 侧栏内容（UnitPanel / EnemyPanel）按整张底图（含伸到地图上的纹饰）定尺寸：高亮裁到侧栏框体内，不压到地图上
+				return c.get_global_rect().intersection(hud.call("side_rect") as Rect2)
+			return c.get_global_rect()
 		"cell", "cells":
 			return _cells_rect(t["cells"] as Array)
 		"deploy_zone":
@@ -288,7 +367,9 @@ func _ring_rect(u: SimUnit, ring: String) -> Rect2:
 	var center: Variant = root.call("unit_screen_pos", u.id)
 	var c: Vector2 = center as Vector2 if center != null else cr.get_center()
 	var r: float = radius_cells * cr.size.x
-	return Rect2(c - Vector2(r, r), Vector2(r, r) * 2.0)
+	# 大圈（视野）的外接方框会伸出棋盘、照亮两侧界面：裁到棋盘范围内
+	var board: Rect2 = _cells_rect([Vector2i.ZERO, Vector2i(level.width - 1, level.height - 1)])
+	return Rect2(c - Vector2(r, r), Vector2(r, r) * 2.0).intersection(board)
 
 
 # ---- 推进 ----
@@ -305,7 +386,7 @@ func _fire(event: String) -> void:
 		return
 	if _counted(event) < int(step["count"]):
 		return
-	_advance_from.call_deferred(index)
+	_queue_advance()
 
 
 ## count 对应的累计数量：已部署单位数 / 全场信标数 / 本步高亮地块内的信标数；其他事件恒为 1
@@ -334,8 +415,15 @@ func beacons_in_area(step: Dictionary) -> int:
 	return n
 
 
+## 延后到帧末推进第 i 步（_advance_from）；其间不再插入「收起 / 打开指令界面」
+func _queue_advance() -> void:
+	_advance_pending = true
+	_advance_from.call_deferred(index)
+
+
 ## 只推进第 i 步（同一帧内多次触发只推进一次）
 func _advance_from(i: int) -> void:
+	_advance_pending = false
 	if index == i:
 		_advance()
 
@@ -442,10 +530,10 @@ func _input(event: InputEvent) -> void:
 			return
 		var adv: String = str(current()["advance"])
 		if adv == "click" and not overlay.holes.is_empty() and overlay.holes[0].has_point(click.position):
-			_advance_from.call_deferred(index)
+			_queue_advance()
 		elif adv == "tap" and not overlay.panel_rect().has_point(click.position):
 			get_viewport().set_input_as_handled()     # 点任意处继续：这一下只用来推进，不传给下面的界面
-			_advance_from.call_deferred(index)
+			_queue_advance()
 		return
 	var key: InputEventKey = event as InputEventKey
 	if key != null and key.pressed and key.keycode == KEY_ESCAPE:

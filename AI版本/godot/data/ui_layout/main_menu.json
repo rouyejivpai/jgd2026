@@ -15,7 +15,10 @@
         1920,
         1080
       ],
-      "file": "res://assets/ui/main_menu/slices/bg.png"
+      "data": {
+        "_note": "用户 2026-10-19 主界面图（标题「人偶补完计划」与下方白条画在图上），2560×1440，铺满视口"
+      },
+      "file": "res://assets/ui/gothic/menu_bg.png"
     },
     {
       "id": "game_title_art",
@@ -26,54 +29,62 @@
         580,
         149
       ],
-      "file": "res://assets/ui/main_menu/slices/game_title_art.png"
+      "data": {
+        "no_art_text": true,
+        "_note": "标题已画在背景图上：不再叠标题切图与艺术字"
+      },
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "subtitle",
       "kind": "text_style",
       "rect": [
-        164,
-        452,
-        600,
-        44
+        1010,
+        1026,
+        700,
+        36
       ],
       "text_rect": [
         0,
         0,
-        600,
-        44
+        700,
+        36
       ],
-      "align": "left",
+      "align": "right",
+      "data": {
+        "follow_cover": true,
+        "_note": "压在背景图白条下、右端止于蜘蛛徽记左侧（徽记约 x 1725–1780）：随 cover 铺满的背景图一起缩放定位（非 16:9 窗口不错位）"
+      },
       "theme_type": "main_menu__subtitle"
     },
     {
       "id": "btn_continue",
       "kind": "button",
       "rect": [
-        148,
-        524,
-        500,
-        116
+        1640,
+        548,
+        250,
+        52
       ],
       "text_rect": [
-        64,
-        22,
-        372,
-        72
+        24,
+        4,
+        202,
+        44
       ],
       "align": "center",
       "key": "ui.menu_continue",
       "ninepatch": [
-        64,
-        32,
-        64,
-        32
+        16,
+        0,
+        16,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/main_menu/slices/btn_start_normal.png",
-        "hover": "res://assets/ui/main_menu/slices/btn_start_hover.png",
-        "pressed": "res://assets/ui/main_menu/slices/btn_start_pressed.png",
-        "disabled": "res://assets/ui/main_menu/slices/btn_start_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_dark.png",
+        "hover": "res://assets/ui/gothic/hex_gray.png",
+        "pressed": "res://assets/ui/gothic/hex_gray.png",
+        "disabled": "res://assets/ui/gothic/hex_dark.png"
       },
       "theme_type": "main_menu__btn_continue"
     },
@@ -81,30 +92,30 @@
       "id": "btn_start",
       "kind": "button",
       "rect": [
-        148,
-        642,
-        500,
-        116
+        1640,
+        614,
+        250,
+        52
       ],
       "text_rect": [
-        64,
-        22,
-        372,
-        72
+        24,
+        4,
+        202,
+        44
       ],
       "align": "center",
       "key": "ui.menu_new_game",
       "ninepatch": [
-        64,
-        32,
-        64,
-        32
+        16,
+        0,
+        16,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/main_menu/slices/btn_start_normal.png",
-        "hover": "res://assets/ui/main_menu/slices/btn_start_hover.png",
-        "pressed": "res://assets/ui/main_menu/slices/btn_start_pressed.png",
-        "disabled": "res://assets/ui/main_menu/slices/btn_start_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_dark.png",
+        "hover": "res://assets/ui/gothic/hex_gray.png",
+        "pressed": "res://assets/ui/gothic/hex_gray.png",
+        "disabled": "res://assets/ui/gothic/hex_dark.png"
       },
       "theme_type": "main_menu__btn_start"
     },
@@ -112,30 +123,30 @@
       "id": "btn_settings",
       "kind": "button",
       "rect": [
-        148,
-        760,
-        500,
-        116
+        1640,
+        680,
+        250,
+        52
       ],
       "text_rect": [
-        64,
-        22,
-        372,
-        72
+        24,
+        4,
+        202,
+        44
       ],
       "align": "center",
       "key": "ui.menu_settings",
       "ninepatch": [
-        64,
-        32,
-        64,
-        32
+        16,
+        0,
+        16,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/main_menu/slices/btn_settings_normal.png",
-        "hover": "res://assets/ui/main_menu/slices/btn_settings_hover.png",
-        "pressed": "res://assets/ui/main_menu/slices/btn_settings_pressed.png",
-        "disabled": "res://assets/ui/main_menu/slices/btn_settings_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_dark.png",
+        "hover": "res://assets/ui/gothic/hex_gray.png",
+        "pressed": "res://assets/ui/gothic/hex_gray.png",
+        "disabled": "res://assets/ui/gothic/hex_dark.png"
       },
       "theme_type": "main_menu__btn_settings"
     },
@@ -143,30 +154,30 @@
       "id": "btn_quit",
       "kind": "button",
       "rect": [
-        148,
-        878,
-        500,
-        116
+        1640,
+        746,
+        250,
+        52
       ],
       "text_rect": [
-        64,
-        22,
-        372,
-        72
+        24,
+        4,
+        202,
+        44
       ],
       "align": "center",
       "key": "ui.menu_quit",
       "ninepatch": [
-        64,
-        32,
-        64,
-        32
+        16,
+        0,
+        16,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/main_menu/slices/btn_quit_normal.png",
-        "hover": "res://assets/ui/main_menu/slices/btn_quit_hover.png",
-        "pressed": "res://assets/ui/main_menu/slices/btn_quit_pressed.png",
-        "disabled": "res://assets/ui/main_menu/slices/btn_quit_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_dark.png",
+        "hover": "res://assets/ui/gothic/hex_gray.png",
+        "pressed": "res://assets/ui/gothic/hex_gray.png",
+        "disabled": "res://assets/ui/gothic/hex_dark.png"
       },
       "theme_type": "main_menu__btn_quit"
     },

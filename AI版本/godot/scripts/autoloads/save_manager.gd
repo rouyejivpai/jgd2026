@@ -9,6 +9,7 @@ const UNLOCK_LISTS: Array[String] = ["forms", "presets", "conditions", "selector
 
 var data: Dictionary = {}
 var invalid_configs: Dictionary = {}    ## level_id -> Array[Dictionary] 问题列表（只标记，不删除）
+var autosave: bool = true               ## false：mark_revealed 只改内存不写盘（测试 / 截图工具用，避免把演示进度写进真实存档）
 
 
 func _ready() -> void:
@@ -101,6 +102,32 @@ func mark_story_seen(story_id: String) -> void:
 	data["stories_seen"] = seen
 
 
+## 2026-10-20 解锁动画的揭开记录：key = "regions_revealed"（一级地图的区域 id）/ "levels_revealed"（选关地图的关卡 id）。
+## 记录里有的 = 已播过解锁动画、名牌已揭开。旧存档没有这一项时返回 null（由界面按当前进度补种）
+func revealed(key: String) -> Variant:
+	var v: Variant = data.get(key, null)
+	return (v as Array).duplicate() if v is Array else null
+
+
+## 追加揭开记录（不重复）；autosave 时立即写盘，免得退出游戏后再播一遍
+func mark_revealed(key: String, ids: Array) -> void:
+	var cur: Array = data.get(key, []) as Array if data.get(key, null) is Array else []
+	for id: Variant in ids:
+		if not cur.has(str(id)):
+			cur.append(str(id))
+	data[key] = cur
+	if autosave:
+		save()
+
+
+func revealed_regions() -> Variant:
+	return revealed("regions_revealed")
+
+
+func mark_regions_revealed(ids: Array) -> void:
+	mark_revealed("regions_revealed", ids)
+
+
 ## 结算综合分（Scoring）：每关只留最低（最好）的一次；返回本次是否刷新纪录
 func record_score(level_id: String, score: Dictionary) -> bool:
 	if not data.get("best_scores", null) is Dictionary:
@@ -111,6 +138,12 @@ func record_score(level_id: String, score: Dictionary) -> bool:
 		return false
 	best[level_id] = score.duplicate(true)
 	return true
+
+
+## 该关最好成绩的完整明细（Scoring.compute 的结果；没有返回 {}）
+func best_score_detail(level_id: String) -> Dictionary:
+	var e: Variant = (data.get("best_scores", {}) as Dictionary).get(level_id, null)
+	return (e as Dictionary).duplicate(true) if e is Dictionary else {}
 
 
 ## 该关最好的综合分（没通关过返回 -1）

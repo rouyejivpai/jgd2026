@@ -133,7 +133,181 @@ static func ui_layout(screen: String) -> Dictionary:
 
 
 static func ui_theme(screen: String) -> Theme:
-	return load(UI_THEME_PATTERN % screen) as Theme
+	var t: Theme = load(UI_THEME_PATTERN % screen) as Theme
+	if t != null and not t.has_stylebox("panel", &"TooltipPanel"):
+		_add_tooltip_style(t)
+	if t != null and not t.has_meta(&"plates_fitted"):
+		_fit_plate_styles(t)
+		t.set_meta(&"plates_fitted", true)
+	return t
+
+
+## 简洁按钮底板（2026-10-20）：原 detail/plate*.png 烟纹铭牌拉伸必变形，主题里用到它的按钮样式一律换成无描边的纯色底板
+## （plate_flat*.png，九宫格；四角斜切大小不一，边缘不规则，中间纯色可任意拉伸；着色沿用原样式的 modulate_color，内边距不变；只改内存中的主题）。
+const PLATE_FLAT: String = "res://assets/ui/gothic/plate_flat.png"
+const PLATE_FLAT_CRIMSON: String = "res://assets/ui/gothic/plate_flat_crimson.png"
+const PLATE_FLAT_MARGIN_X: float = 24.0
+const PLATE_FLAT_MARGIN_Y: float = 16.0
+
+
+static func _fit_plate_styles(t: Theme) -> void:
+	for type_name: StringName in t.get_stylebox_type_list():
+		for sb_name: StringName in t.get_stylebox_list(type_name):
+			var sb: StyleBoxTexture = t.get_stylebox(sb_name, type_name) as StyleBoxTexture
+			if sb != null and sb.texture != null and sb.texture.resource_path.contains("/detail/plate"):
+				t.set_stylebox(sb_name, type_name, _flat_plate(sb))
+
+
+static func _flat_plate(src: StyleBoxTexture) -> StyleBoxTexture:
+	var f := StyleBoxTexture.new()
+	f.texture = load(PLATE_FLAT_CRIMSON if src.texture.resource_path.contains("crimson") else PLATE_FLAT) as Texture2D
+	f.modulate_color = src.modulate_color
+	f.texture_margin_left = PLATE_FLAT_MARGIN_X
+	f.texture_margin_right = PLATE_FLAT_MARGIN_X
+	f.texture_margin_top = PLATE_FLAT_MARGIN_Y
+	f.texture_margin_bottom = PLATE_FLAT_MARGIN_Y
+	for side: int in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		f.set_content_margin(side as Side, src.get_content_margin(side as Side))
+	return f
+
+
+## 悬停提示的统一样式（2026-10-19 哥特换皮）：深底细银边，正文浅灰；各界面主题加载时补进（只改内存中的主题，不写回 .tres）
+const TOOLTIP_BG: Color = Color(0.07, 0.055, 0.085, 0.96)
+const TOOLTIP_BORDER: Color = Color(0.62, 0.59, 0.66, 0.9)
+const TOOLTIP_TEXT: Color = Color(0.9, 0.88, 0.92)
+const TOOLTIP_FONT_SIZE: int = 18
+
+
+static func _add_tooltip_style(t: Theme) -> void:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = TOOLTIP_BG
+	sb.border_color = TOOLTIP_BORDER
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(2)
+	sb.content_margin_left = 14
+	sb.content_margin_right = 14
+	sb.content_margin_top = 9
+	sb.content_margin_bottom = 9
+	t.set_stylebox("panel", &"TooltipPanel", sb)
+	t.set_color("font_color", &"TooltipLabel", TOOLTIP_TEXT)
+	t.set_font_size("font_size", &"TooltipLabel", TOOLTIP_FONT_SIZE)
+	var f: Font = load("res://assets/fonts/NotoSerifSC-Regular.otf") as Font
+	if f != null:
+		t.set_font("font", &"TooltipLabel", f)
+
+
+# ---- 2026-10-19：状态切换缓动（data/ui_motion.json 的 state_ease / panel_in）----
+## 把 node 的属性缓动到 value（同一节点同一属性的上一段缓动先停掉）；动效总闸关闭时直接赋值
+static func ease_to(node: Node, prop: NodePath, value: Variant, profile: String = "state_ease") -> void:
+	var key := StringName("_ease_" + str(prop).replace(":", "_"))
+	var old: Tween = node.get_meta(key, null) as Tween if node.has_meta(key) else null
+	if old != null and old.is_valid():
+		old.kill()
+	if not motion_enabled or not node.is_inside_tree():
+		node.set_indexed(prop, value)
+		return
+	var p: Dictionary = motion_params(profile)
+	var t: Tween = node.create_tween()
+	t.tween_property(node, prop, value, float(p.get("duration", 0.18))).set_trans(motion_trans(p)).set_ease(motion_ease(p))
+	node.set_meta(key, t)
+
+
+## 弹窗出现（2026-10-19 用户规则，参数 ui_motion.json 的 slide_in）：按窗口与屏幕边的关系决定从哪边滑进来——
+## 宽或高覆盖整个屏幕（≥ span_ratio）时从最近的屏幕边整体滑入：竖向铺满 → 左 / 右，横向铺满 → 上 / 下，都铺满 → 沿长边方向；
+## 不铺满但贴着某条屏幕边（≤ touch_px）时，从贴着的边滑入（几条都贴时取与窗口长边平行的那条）；
+## 上下左右都不沾的浮窗：从下方短距离（float_px）缓动滑入并淡入。
+## nodes 一起平移（同一偏移），ref 为判定用的窗口矩形（缺省 = 第一个节点）；fades 只淡入不平移（遮罩、压暗层）。
+## 父节点是容器的节点不能改位置（会被重排）：改为淡入 + 轻微放大。动效总闸关闭时什么都不做。
+static func slide_in(nodes: Array, ref: Rect2 = Rect2(), fades: Array = [], profile: String = "slide_in") -> void:
+	if not motion_enabled or nodes.is_empty() or not is_instance_valid(nodes[0]):
+		return
+	var first: Control = nodes[0] as Control
+	if first == null or not first.is_inside_tree():
+		return
+	if ref.size == Vector2.ZERO:
+		ref = first.get_global_rect()
+	var p: Dictionary = motion_params(profile)
+	var off: Vector2 = slide_offset(ref, first.get_viewport_rect(), p)
+	var d: float = float(p.get("edge_s" if off.length() > float(p.get("float_px", 40.0)) + 1.0 else "float_s", 0.26))
+	for n: Variant in nodes:
+		if not is_instance_valid(n) or not n is Control:
+			continue
+		var c: Control = n as Control
+		var old: Tween = c.get_meta(&"_slide_tween", null) as Tween if c.has_meta(&"_slide_tween") else null
+		if old != null and old.is_valid():
+			old.custom_step(INF)
+		var t: Tween = c.create_tween().set_parallel(true)
+		c.modulate.a = 0.0
+		t.tween_property(c, "modulate:a", 1.0, d * 0.6)
+		if c.get_parent() is Container:
+			c.pivot_offset = c.size * 0.5
+			c.scale = Vector2.ONE * 0.98
+			t.tween_property(c, "scale", Vector2.ONE, d).set_trans(motion_trans(p)).set_ease(motion_ease(p))
+		else:
+			# 偏移叠在当前排版位置上：滑入途中界面重新排版（改了 position）时，以新位置为终点继续
+			var state: Dictionary = { "home": c.position, "last": c.position + off }
+			c.position = state["last"]
+			t.tween_method(func(k: float) -> void:
+				if not is_instance_valid(c):
+					return
+				if not c.position.is_equal_approx(state["last"] as Vector2):
+					state["home"] = c.position          # 排版代码把它放回了（新的）终点
+				state["last"] = (state["home"] as Vector2) + off * (1.0 - k)
+				c.position = state["last"], 0.0, 1.0, d).set_trans(motion_trans(p)).set_ease(motion_ease(p))
+		c.set_meta(&"_slide_tween", t)
+	for n: Variant in fades:
+		if not is_instance_valid(n) or not n is CanvasItem:
+			continue
+		var f: CanvasItem = n as CanvasItem
+		f.modulate.a = 0.0
+		f.create_tween().tween_property(f, "modulate:a", 1.0, d)
+
+
+## 滑入的起始偏移（见 slide_in）：返回「起点 − 终点」
+static func slide_offset(ref: Rect2, vp: Rect2, p: Dictionary) -> Vector2:
+	var span: float = float(p.get("span_ratio", 0.9))
+	var touch: float = float(p.get("touch_px", 24.0))
+	var gaps: Dictionary = { "left": ref.position.x - vp.position.x, "right": vp.end.x - ref.end.x, "top": ref.position.y - vp.position.y, "bottom": vp.end.y - ref.end.y }
+	var full_w: bool = ref.size.x >= vp.size.x * span
+	var full_h: bool = ref.size.y >= vp.size.y * span
+	var cands: Array[String] = []
+	if full_w and full_h:
+		cands.assign(["top", "bottom"] if ref.size.x >= ref.size.y else ["left", "right"])
+	elif full_h:
+		cands.assign(["left", "right"])
+	elif full_w:
+		cands.assign(["top", "bottom"])
+	else:
+		var touching: Array[String] = []
+		for k: String in ["bottom", "top", "right", "left"]:
+			if float(gaps[k]) <= touch:
+				touching.append(k)
+		var long_side: Array = ["top", "bottom"] if ref.size.x >= ref.size.y else ["left", "right"]
+		for k: String in touching:
+			if k in long_side:
+				cands.assign([k])
+				break
+		if cands.is_empty() and not touching.is_empty():
+			cands.assign([touching[0]])
+	if cands.is_empty():
+		return Vector2(0.0, float(p.get("float_px", 40.0)))
+	var side: String = cands[0]
+	for k: String in cands:
+		if float(gaps[k]) < float(gaps[side]):
+			side = k
+	match side:
+		"left":
+			return Vector2(-(ref.end.x - vp.position.x), 0.0)
+		"right":
+			return Vector2(vp.end.x - ref.position.x, 0.0)
+		"top":
+			return Vector2(0.0, -(ref.end.y - vp.position.y))
+	return Vector2(0.0, vp.end.y - ref.position.y)
+
+
+## 旧名：等同 slide_in（单个节点，矩形取其自身）
+static func pop_in(c: Control, _profile: String = "panel_in") -> void:
+	slide_in([c])
 
 
 ## 元素列表（manifest 绘制顺序，从后往前）
@@ -160,16 +334,38 @@ static func design_size(screen: String) -> Vector2:
 	return Vector2(float(d[0]), float(d[1]))
 
 
-## 设计坐标 → 屏幕坐标：设计画布在视口中居中（取整到像素）；铺满整个设计画布的元素返回整个视口（cover）
+## 设计坐标 → 屏幕坐标：设计画布在视口中居中（取整到像素）；铺满整个设计画布的元素返回整个视口（cover），data.no_cover 的除外（与其他控件对位的整屏框体）
+## data.follow_cover：与 cover 铺满的背景图对位的元素（如压在背景图白条下的副标题），按同一 cover 缩放 + 居中换算，非 16:9 窗口也不错位
 static func layout_rect(screen: String, id: String, viewport_size: Vector2) -> Rect2:
 	var e: Dictionary = layout_element(screen, id)
 	if e.is_empty():
 		return Rect2()
 	var design: Vector2 = design_size(screen)
 	var r: Rect2 = _rect_of(e["rect"])
-	if r.position == Vector2.ZERO and r.size == design:
+	var data: Dictionary = e.get("data", {}) as Dictionary if e.get("data", {}) is Dictionary else {}
+	if r.position == Vector2.ZERO and r.size == design and not bool(data.get("no_cover", false)):
 		return Rect2(Vector2.ZERO, viewport_size)
-	return Rect2(r.position + ((viewport_size - design) * 0.5).floor(), r.size)
+	if bool(data.get("follow_cover", false)):
+		var s: float = maxf(viewport_size.x / design.x, viewport_size.y / design.y)
+		var off: Vector2 = (viewport_size - design * s) * 0.5
+		return Rect2((r.position * s + off).round(), (r.size * s).round())
+	return Rect2(r.position + dock_shift(str(data.get("dock", "")), viewport_size, design), r.size)
+
+
+## 设计画布 → 视口的平移：默认居中；data.dock 含 left / right / top / bottom 时贴对应的视口边
+## （2026-10-19：宽屏 / 高屏下，贴边的一组元素随视口边走，不留居中造成的空隙）
+static func dock_shift(dock: String, viewport_size: Vector2, design: Vector2) -> Vector2:
+	var extra: Vector2 = viewport_size - design
+	var d: Vector2 = (extra * 0.5).floor()
+	if dock.contains("left"):
+		d.x = 0.0
+	elif dock.contains("right"):
+		d.x = extra.x
+	if dock.contains("top"):
+		d.y = 0.0
+	elif dock.contains("bottom"):
+		d.y = extra.y
+	return d
 
 
 ## 元素内部文字区（text_rect）对应的屏幕矩形；没有 text_rect 时为元素本身

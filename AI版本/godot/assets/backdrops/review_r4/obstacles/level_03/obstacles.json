@@ -3,6 +3,7 @@
   "pieces": [
     {
       "file": "01.png",
+      "upright": "rubble",
       "cells": [
         [
           4,

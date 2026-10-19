@@ -1,0 +1,110 @@
+{
+ "_comment": "2026-10-19 哥特换皮：面板框 / 按钮牌 / 开关 / 滑条把手 / 下拉箭头为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（docs/reference/gothic_gen），滑条轨为程序绘制；只换贴图与字色，位置不变。",
+ "elements": [
+  {
+   "id": "panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "title",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 36,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "separator",
+   "file": "../gothic/blank.png"
+  },
+  {
+   "id": "body",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 24,
+    "color": "#ADA4B4"
+   }
+  },
+  {
+   "id": "btn_ok",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson.png",
+    "hover": "../gothic/detail/plate_crimson.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "btn_cancel",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  }
+ ]
+}

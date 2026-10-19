@@ -1,0 +1,38 @@
+[gd_resource type="Theme" load_steps=5 format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Bold.otf" id="1_fontfile"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Regular.otf" id="2_fontfile"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.054902, 0.0392157, 0.0627451, 0.658824)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
+bg_color = Color(0, 0, 0, 0)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[resource]
+dialogue__dim/base_type = &"PanelContainer"
+dialogue__dim/styles/panel = SubResource("StyleBoxFlat_1")
+dialogue__portrait/base_type = &"PanelContainer"
+dialogue__portrait/styles/panel = SubResource("StyleBoxFlat_2")
+dialogue__speaker/base_type = &"Label"
+dialogue__speaker/fonts/font = ExtResource("1_fontfile")
+dialogue__speaker/font_sizes/font_size = 29
+dialogue__speaker/colors/font_color = Color(0.960784, 0.94902, 0.960784, 1)
+dialogue__speaker/colors/font_shadow_color = Color(0, 0, 0, 0.690196)
+dialogue__speaker/constants/shadow_offset_x = 2
+dialogue__speaker/constants/shadow_offset_y = 2
+dialogue__text/base_type = &"Label"
+dialogue__text/fonts/font = ExtResource("2_fontfile")
+dialogue__text/font_sizes/font_size = 26
+dialogue__text/colors/font_color = Color(0.901961, 0.878431, 0.909804, 1)
+dialogue__text/colors/font_shadow_color = Color(0, 0, 0, 0.564706)
+dialogue__text/constants/shadow_offset_x = 2
+dialogue__text/constants/shadow_offset_y = 2

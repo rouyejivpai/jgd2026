@@ -156,7 +156,16 @@ static func objective_sentence(o: ObjectiveDef, level: LevelDefinition) -> Strin
 
 
 ## 面板六项属性（生命 / 攻击 / 攻速 / 移速 / 视野 / 射程）：有模拟单位时显示有效值，与形态基础值不同则注明关卡加成（07 §7）
+## 2026-10-19：格子里只放短式「9（+1）」（stat_modified），完整说明「9（+1 关卡加成）」见 stat_tips（悬停提示）
 static func stat_values(u: SimUnit, udef: UnitDefinition) -> Array[String]:
+	return _stat_texts(u, udef, "ui.stat_modified")
+
+
+static func stat_tips(u: SimUnit, udef: UnitDefinition) -> Array[String]:
+	return _stat_texts(u, udef, "ui.stat_modified_tip")
+
+
+static func _stat_texts(u: SimUnit, udef: UnitDefinition, key: String) -> Array[String]:
 	var out: Array[String] = []
 	for stat: String in ModifierDef.STATS:
 		var base: float = ModifierDef.base_of(udef, stat)
@@ -165,7 +174,9 @@ static func stat_values(u: SimUnit, udef: UnitDefinition) -> Array[String]:
 		if stat == "max_hp" and u != null:
 			text = "%s/%s" % [num(maxf(u.hp, 0.0)), num(eff)]
 		if u != null and absf(eff - base) > SimTypes.DIST_EPS:
-			text = s("ui.stat_modified").format({ "value": text, "delta": ("+" if eff > base else "") + num(eff - base) })
+			text = s(key).format({ "value": text, "delta": ("+" if eff > base else "") + num(eff - base) })
+		elif key == "ui.stat_modified_tip":
+			text = ""
 		out.append(text)
 	return out
 

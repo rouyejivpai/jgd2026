@@ -6,7 +6,26 @@ const MAIN_MENU_SCENE: PackedScene = preload("res://scenes/screens/main_menu.tsc
 
 
 func _manifest(screen: String, file: String = "manifest.json") -> Dictionary:
-	return JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/%s/%s" % [screen, file])) as Dictionary
+	var man: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/%s/%s" % [screen, file])) as Dictionary
+	var ov_path: String = "res://assets/ui/%s/skin_overrides.json" % screen
+	if file == "manifest.json" and FileAccess.file_exists(ov_path):      # 2026-10-19 换皮覆盖层：同 apply_ui_manifest.merge_overrides 的 rect 覆盖与增删
+		var ov: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ov_path)) as Dictionary
+		var els: Array = (man["elements"] as Array).duplicate(true)
+		for o: Variant in ov.get("elements", []) as Array:
+			var od: Dictionary = o as Dictionary
+			var idx: int = -1
+			for i: int in els.size():
+				if str((els[i] as Dictionary)["id"]) == str(od["id"]):
+					idx = i
+			if bool(od.get("_remove", false)):
+				els.remove_at(idx)
+			elif idx >= 0:
+				if od.has("rect"):
+					(els[idx] as Dictionary)["rect"] = od["rect"]
+			else:
+				els.append(od)
+		man["elements"] = els
+	return man
 
 
 func test_layout_generated_from_manifest() -> void:
@@ -31,12 +50,15 @@ func test_layout_generated_from_manifest() -> void:
 
 
 func test_layout_rect_centers_design_canvas() -> void:
+	var a: Array = UiKit.layout_element("main_menu", "btn_start")["rect"] as Array      # 设计坐标取布局本身（换皮后按钮位置会变）
+	var d := Rect2(float(a[0]), float(a[1]), float(a[2]), float(a[3]))
+	var t: Array = UiKit.layout_element("main_menu", "btn_start")["text_rect"] as Array
 	var r: Rect2 = UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1080))
-	assert_eq(r, Rect2(148, 642, 500, 116), "1920×1080 = 设计坐标")
-	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(2560, 1080)), Rect2(468, 642, 500, 116), "21:9 水平居中")
-	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1200)), Rect2(148, 702, 500, 116), "16:10 垂直居中")
+	assert_eq(r, d, "1920×1080 = 设计坐标")
+	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(2560, 1080)), Rect2(d.position + Vector2(320, 0), d.size), "21:9 水平居中")
+	assert_eq(UiKit.layout_rect("main_menu", "btn_start", Vector2(1920, 1200)), Rect2(d.position + Vector2(0, 60), d.size), "16:10 垂直居中")
 	assert_eq(UiKit.layout_rect("main_menu", "bg", Vector2(2560, 1200)), Rect2(0, 0, 2560, 1200), "铺满设计画布的背景 cover 整个视口")
-	assert_eq(UiKit.layout_text_rect("main_menu", "btn_start", Vector2(1920, 1080)), Rect2(148 + 64, 642 + 22, 372, 72), "按钮文字区 = text_rect")
+	assert_eq(UiKit.layout_text_rect("main_menu", "btn_start", Vector2(1920, 1080)), Rect2(d.position + Vector2(float(t[0]), float(t[1])), Vector2(float(t[2]), float(t[3]))), "按钮文字区 = text_rect")
 
 
 func test_main_menu_built_from_layout() -> void:
@@ -58,8 +80,9 @@ func test_main_menu_built_from_layout() -> void:
 	assert_eq((menu.find_child("Subtitle", true, false) as Label).text, DataRegistry.get_string("ui.game_subtitle"))
 	assert_not_null(menu.find_child("Title", true, false), "游戏名艺术字切片")
 	assert_eq(menu.find_child("ErrorBar", true, false) != null, DataRegistry.has_errors, "错误条只在数据错误时出现")
+	assert_null(menu.get_viewport().gui_get_focus_owner(), "进入时没有按钮呈选中态")
 	var first: Button = menu.call("first_enabled_button") as Button
-	assert_true(first.has_focus(), "第一个可用按钮默认焦点（有进度时「继续游戏」，否则「新游戏」）")
+	first.grab_focus()
 	assert_eq(first.get_theme_stylebox("normal"), first.get_theme_stylebox("hover"), "焦点复用 hover 贴图")
 
 

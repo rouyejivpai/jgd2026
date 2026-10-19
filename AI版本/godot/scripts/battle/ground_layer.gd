@@ -17,7 +17,8 @@ func setup(p_level: LevelDefinition) -> void:
 	queue_redraw()
 
 
-## 障碍块在本层局部坐标（每格 TILE_SIZE）中的矩形，按脚底 y 升序（靠下的后画、压在上面）
+## 障碍块在本层局部坐标（每格 TILE_SIZE）中的矩形，按脚底 y 升序（靠下的后画、压在上面）。
+## 用户 2026-10-20：带 upright 样式的块是立体物，由 ObstacleProps 在单位层竖立成丛，这里跳过
 static func obstacle_rects(p_level: LevelDefinition) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if p_level.obstacle_pieces.is_empty():
@@ -25,6 +26,8 @@ static func obstacle_rects(p_level: LevelDefinition) -> Array[Dictionary]:
 	var t: float = float(SimTypes.TILE_SIZE)
 	var k: float = t / float(int(Playfield.compute(p_level, Playfield.DESIGN_SIZE)["cell_px"]))   # 整图像素 → 本层单位
 	for pc: Dictionary in p_level.obstacle_pieces:
+		if str(pc.get("upright", "")) != "":
+			continue
 		var cells: Array[Vector2i] = pc["cells"] as Array[Vector2i]
 		var lo := Vector2i(cells[0])
 		var hi := Vector2i(cells[0])

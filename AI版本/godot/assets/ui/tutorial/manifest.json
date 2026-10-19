@@ -1,0 +1,296 @@
+{
+ "schema_version": 1,
+ "screen": "tutorial",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "_comment": "2026-10-19 哥特换皮：新手引导（TutorialOverlay）。说明框 = 指令卡框（GPT 绘图），按钮 = 按钮牌，高亮框四角 = 银色角饰、指向箭头 = 银色长矛（GPT 绘图，docs/reference/gothic_gen）。rect 只取尺寸（说明框位置由引导按目标自动摆放）。手写，无拟合产物。",
+ "elements": [
+  {
+   "id": "panel",
+   "kind": "ninepatch",
+   "rect": [
+    0,
+    0,
+    460,
+    200
+   ],
+   "file": "../gothic/detail/card.png",
+   "ninepatch": [
+    48,
+    39,
+    48,
+    39
+   ],
+   "data": {
+    "pad": [
+     34,
+     26,
+     34,
+     24
+    ],
+    "_note": "说明框；pad = 内容边距 [左, 上, 右, 下]"
+   }
+  },
+  {
+   "id": "title",
+   "kind": "text_style",
+   "rect": [
+    0,
+    0,
+    400,
+    34
+   ],
+   "text_rect": [
+    0,
+    0,
+    400,
+    34
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#E6B422",
+    "shadow": "#000000B0"
+   }
+  },
+  {
+   "id": "body",
+   "kind": "text_style",
+   "rect": [
+    0,
+    0,
+    400,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    400,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#E6E0E8",
+    "shadow": "#00000090"
+   }
+  },
+  {
+   "id": "step",
+   "kind": "text_style",
+   "rect": [
+    0,
+    0,
+    200,
+    28
+   ],
+   "text_rect": [
+    0,
+    0,
+    200,
+    28
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 17,
+    "color": "#B9AFC0"
+   }
+  },
+  {
+   "id": "btn_next",
+   "kind": "button",
+   "rect": [
+    0,
+    0,
+    120,
+    40
+   ],
+   "text_rect": [
+    18,
+    4,
+    84,
+    32
+   ],
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/detail/plate_crimson_small.png",
+    "hover": "../gothic/detail/plate_crimson_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "btn_skip",
+   "kind": "button",
+   "rect": [
+    0,
+    0,
+    120,
+    40
+   ],
+   "text_rect": [
+    18,
+    4,
+    84,
+    32
+   ],
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "btn_back",
+   "kind": "button",
+   "rect": [
+    0,
+    0,
+    120,
+    40
+   ],
+   "text_rect": [
+    18,
+    4,
+    84,
+    32
+   ],
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "corner",
+   "kind": "image",
+   "rect": [
+    0,
+    0,
+    72,
+    77
+   ],
+   "file": "../gothic/tut_corner.png",
+   "data": {
+    "pivot": [
+     11,
+     10
+    ],
+    "_note": "高亮框左上角角饰：pivot = 两条边交点在图中的像素位置，对准高亮框角；其余三角镜像"
+   }
+  },
+  {
+   "id": "arrow",
+   "kind": "image",
+   "rect": [
+    0,
+    0,
+    26,
+    140
+   ],
+   "file": "../gothic/tut_arrow.png",
+   "data": {
+    "_note": "指向箭头：图中朝下、尖端在底边中点，按方向旋转"
+   }
+  },
+  {
+   "id": "highlight",
+   "kind": "flatbox",
+   "rect": [
+    0,
+    0,
+    4,
+    4
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "data": {
+    "color": "#D8D2DECC",
+    "width": 1.5,
+    "_note": "高亮框细线颜色 / 线宽（覆盖 teaching.json 的金色）"
+   }
+  }
+ ]
+}

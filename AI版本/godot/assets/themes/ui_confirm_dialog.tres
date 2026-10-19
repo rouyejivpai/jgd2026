@@ -1,19 +1,21 @@
-[gd_resource type="Theme" load_steps=21 format=3]
+[gd_resource type="Theme" load_steps=19 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/panel.png" id="1_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/gothic/detail/panel.png" id="1_texture2d"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Bold.otf" id="2_fontfile"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Regular.otf" id="3_fontfile"]
-[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_normal.png" id="4_texture2d"]
-[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_hover.png" id="5_texture2d"]
-[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_pressed.png" id="6_texture2d"]
-[ext_resource type="Texture2D" path="res://assets/ui/settings_overlay/slices/btn_close_disabled.png" id="7_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/gothic/detail/plate_crimson.png" id="4_texture2d"]
+[ext_resource type="Texture2D" path="res://assets/ui/gothic/detail/plate.png" id="5_texture2d"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
 texture = ExtResource("1_texture2d")
-texture_margin_left = 32.0
-texture_margin_top = 32.0
-texture_margin_right = 32.0
-texture_margin_bottom = 32.0
+expand_margin_left = 29.0
+expand_margin_top = 23.0
+expand_margin_right = 29.0
+expand_margin_bottom = 21.0
+texture_margin_left = 100.0
+texture_margin_top = 167.0
+texture_margin_right = 100.0
+texture_margin_bottom = 167.0
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -21,54 +23,57 @@ content_margin_bottom = 0.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
 texture = ExtResource("4_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
-texture = ExtResource("5_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("4_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
-texture = ExtResource("6_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("4_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
-texture = ExtResource("7_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("4_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.494118, 0.470588, 0.509804, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6"]
-texture = ExtResource("6_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("4_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -77,11 +82,12 @@ content_margin_bottom = 8.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8"]
-texture = ExtResource("4_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("5_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.847059, 0.823529, 0.854902, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -89,43 +95,46 @@ content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_9"]
 texture = ExtResource("5_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_10"]
-texture = ExtResource("6_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("5_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_11"]
-texture = ExtResource("7_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("5_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.494118, 0.470588, 0.509804, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_12"]
-texture = ExtResource("6_texture2d")
-texture_margin_left = 25.0
-texture_margin_top = 25.0
-texture_margin_right = 25.0
-texture_margin_bottom = 25.0
+texture = ExtResource("5_texture2d")
+expand_margin_left = 26.0
+expand_margin_right = 6.0
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 52.0
+texture_margin_right = 40.0
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -139,11 +148,11 @@ confirm_dialog__panel/styles/panel = SubResource("StyleBoxTexture_1")
 confirm_dialog__title/base_type = &"Label"
 confirm_dialog__title/fonts/font = ExtResource("2_fontfile")
 confirm_dialog__title/font_sizes/font_size = 36
-confirm_dialog__title/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
+confirm_dialog__title/colors/font_color = Color(0.901961, 0.878431, 0.909804, 1)
 confirm_dialog__body/base_type = &"Label"
 confirm_dialog__body/fonts/font = ExtResource("3_fontfile")
 confirm_dialog__body/font_sizes/font_size = 24
-confirm_dialog__body/colors/font_color = Color(0.721569, 0.666667, 0.556863, 1)
+confirm_dialog__body/colors/font_color = Color(0.678431, 0.643137, 0.705882, 1)
 confirm_dialog__btn_ok/base_type = &"Button"
 confirm_dialog__btn_ok/styles/normal = SubResource("StyleBoxTexture_2")
 confirm_dialog__btn_ok/styles/hover = SubResource("StyleBoxTexture_3")
@@ -153,12 +162,12 @@ confirm_dialog__btn_ok/styles/hover_pressed = SubResource("StyleBoxTexture_6")
 confirm_dialog__btn_ok/styles/focus = SubResource("StyleBoxEmpty_7")
 confirm_dialog__btn_ok/fonts/font = ExtResource("3_fontfile")
 confirm_dialog__btn_ok/font_sizes/font_size = 26
-confirm_dialog__btn_ok/colors/font_color = Color(0.890196, 0.643137, 0.556863, 1)
-confirm_dialog__btn_ok/colors/font_hover_color = Color(0.890196, 0.643137, 0.556863, 1)
-confirm_dialog__btn_ok/colors/font_pressed_color = Color(0.890196, 0.643137, 0.556863, 1)
-confirm_dialog__btn_ok/colors/font_focus_color = Color(0.890196, 0.643137, 0.556863, 1)
-confirm_dialog__btn_ok/colors/font_hover_pressed_color = Color(0.890196, 0.643137, 0.556863, 1)
-confirm_dialog__btn_ok/colors/font_disabled_color = Color(0.890196, 0.643137, 0.556863, 1)
+confirm_dialog__btn_ok/colors/font_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_ok/colors/font_hover_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_ok/colors/font_pressed_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_ok/colors/font_focus_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_ok/colors/font_hover_pressed_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_ok/colors/font_disabled_color = Color(0.541176, 0.517647, 0.54902, 1)
 confirm_dialog__btn_cancel/base_type = &"Button"
 confirm_dialog__btn_cancel/styles/normal = SubResource("StyleBoxTexture_8")
 confirm_dialog__btn_cancel/styles/hover = SubResource("StyleBoxTexture_9")
@@ -168,9 +177,9 @@ confirm_dialog__btn_cancel/styles/hover_pressed = SubResource("StyleBoxTexture_1
 confirm_dialog__btn_cancel/styles/focus = SubResource("StyleBoxEmpty_13")
 confirm_dialog__btn_cancel/fonts/font = ExtResource("3_fontfile")
 confirm_dialog__btn_cancel/font_sizes/font_size = 26
-confirm_dialog__btn_cancel/colors/font_color = Color(0.909804, 0.862745, 0.768627, 1)
-confirm_dialog__btn_cancel/colors/font_hover_color = Color(0.909804, 0.862745, 0.768627, 1)
-confirm_dialog__btn_cancel/colors/font_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
-confirm_dialog__btn_cancel/colors/font_focus_color = Color(0.909804, 0.862745, 0.768627, 1)
-confirm_dialog__btn_cancel/colors/font_hover_pressed_color = Color(0.909804, 0.862745, 0.768627, 1)
-confirm_dialog__btn_cancel/colors/font_disabled_color = Color(0.909804, 0.862745, 0.768627, 1)
+confirm_dialog__btn_cancel/colors/font_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_cancel/colors/font_hover_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_cancel/colors/font_pressed_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_cancel/colors/font_focus_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_cancel/colors/font_hover_pressed_color = Color(0.929412, 0.909804, 0.933333, 1)
+confirm_dialog__btn_cancel/colors/font_disabled_color = Color(0.541176, 0.517647, 0.54902, 1)

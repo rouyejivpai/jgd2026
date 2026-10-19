@@ -4,6 +4,8 @@ extends Control
 ## 输入：block = true 时只有高亮处可点（_has_point 在高亮外返回 true 吞掉点击，高亮内放行给下面的界面 / 地图）；
 ## block = false 时整层放行，只有说明框可点。样式参数来自 data/teaching.json 的 style（TeachingDef.DEFAULT_STYLE）。
 ## 只负责画与收输入；步骤推进、目标定位由 TutorialDirector 负责。
+## 2026-10-19 哥特换皮：布局 data/ui_layout/tutorial.json 存在时，说明框 / 文字 / 按钮用其主题，高亮框画细银线 + 四角角饰，
+## 箭头画银色长矛切图（按方向旋转）；布局缺失时退回金边 + 三角箭头。
 
 signal next_pressed()
 signal skip_pressed()
@@ -11,6 +13,7 @@ signal back_pressed()                     ## 配置器预览：返回配置器
 
 const MAX_HOLES: int = 12
 const PANEL_PAD: int = 16
+const SKIN: String = "tutorial"
 
 var style: Dictionary = TeachingDef.DEFAULT_STYLE.duplicate()
 var holes: Array[Rect2] = []              ## 屏幕矩形（已含留白）；第一个为箭头指向的目标
@@ -26,6 +29,8 @@ var _next: Button
 var _skip: Button
 var _back: Button
 var _time: float = 0.0
+var _corner: Texture2D = null             ## 哥特：高亮框角饰（左上角，其余镜像）
+var _arrow_tex: Texture2D = null          ## 哥特：箭头切图（朝下）
 
 
 func _ready() -> void:
@@ -71,7 +76,29 @@ func _ready() -> void:
 	_next = _button("NextButton", "ui.tutorial_next", next_pressed)
 	foot.add_child(_next)
 	_back.visible = false
+	_apply_skin(m)
 	visible = false
+
+
+## 哥特换皮：主题、说明框底板与内边距、文字与按钮的主题变体、角饰 / 箭头贴图
+func _apply_skin(m: MarginContainer) -> void:
+	if UiKit.ui_layout(SKIN).is_empty():
+		return
+	theme = UiKit.ui_theme(SKIN)
+	_panel.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "panel").get("theme_type", "")))
+	var pad: Array = (UiKit.layout_element(SKIN, "panel").get("data", {}) as Dictionary).get("pad", [PANEL_PAD, PANEL_PAD, PANEL_PAD, PANEL_PAD]) as Array
+	for i: int in 4:
+		m.add_theme_constant_override("margin_" + ["left", "top", "right", "bottom"][i], int(pad[i]))
+	for pair: Array in [[_title, "title"], [_body, "body"], [_step, "step"], [_next, "btn_next"], [_skip, "btn_skip"], [_back, "btn_back"]]:
+		var c: Control = pair[0] as Control
+		var e: Dictionary = UiKit.layout_element(SKIN, str(pair[1]))
+		c.theme_type_variation = StringName(str(e.get("theme_type", "")))
+		if c is Button:
+			c.custom_minimum_size = UiKit.layout_rect(SKIN, str(pair[1]), UiKit.design_size(SKIN)).size
+	_title.remove_theme_color_override("font_color")
+	_step.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_corner = Art.texture(str(UiKit.layout_element(SKIN, "corner").get("file", "")))
+	_arrow_tex = Art.texture(str(UiKit.layout_element(SKIN, "arrow").get("file", "")))
 
 
 func _button(n: String, key: String, sig: Signal) -> Button:
@@ -86,6 +113,10 @@ func _button(n: String, key: String, sig: Signal) -> Button:
 func set_style(s: Dictionary) -> void:
 	for k: String in s.keys():
 		style[k] = s[k]
+	var hd: Dictionary = UiKit.layout_element(SKIN, "highlight").get("data", {}) as Dictionary     # 哥特：高亮线色 / 线宽取布局
+	if hd.has("color"):
+		style["highlight_color"] = hd["color"]
+		style["highlight_width"] = hd.get("width", style["highlight_width"])
 	_panel.custom_minimum_size = Vector2(float(style["panel_width"]), 0.0)
 	_body.custom_minimum_size = Vector2(float(style["panel_width"]) - PANEL_PAD * 2.0, 0.0)   # 换行标签先定宽，高度才对
 	_deco.queue_redraw()
@@ -105,6 +136,7 @@ func show_step(title: String, text: String, step_n: int, total: int, show_next: 
 	panel_side = p_panel
 	visible = true
 	_layout_panel()
+	UiKit.slide_in.call_deferred([_panel])     # 2026-10-19：每一步的说明框缓动滑入（等本帧高亮 / 摆放定好再取位置）
 
 
 func set_back_visible(on: bool) -> void:
@@ -191,6 +223,8 @@ func _draw_deco() -> void:
 	var w: float = float(style["highlight_width"])
 	for r: Rect2 in holes:
 		_deco.draw_rect(r, col, false, w)
+		if _corner != null:
+			_draw_corners(r)
 	if holes.is_empty() or arrow == "none":
 		return
 	var t: Rect2 = holes[0]
@@ -213,10 +247,27 @@ func _draw_deco() -> void:
 		_:
 			dir = Vector2.RIGHT
 			tip = Vector2(t.position.x - gap, t.get_center().y)
+	if _arrow_tex != null:                     # 哥特：长矛切图朝下、尖端在底边中点 → 旋转到 dir，尖端对准 tip
+		var sz: Vector2 = _arrow_tex.get_size()
+		_deco.draw_set_transform(tip, Vector2.DOWN.angle_to(dir), Vector2.ONE)
+		_deco.draw_texture_rect(_arrow_tex, Rect2(-sz.x * 0.5, -sz.y, sz.x, sz.y), false)
+		_deco.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
 	var back: Vector2 = tip - dir * arrow_len
 	var n: Vector2 = Vector2(-dir.y, dir.x) * arrow_len * 0.55
 	_deco.draw_colored_polygon(PackedVector2Array([tip, back + n, back - n]), col)
 	_deco.draw_line(back, back - dir * arrow_len * 1.1, col, w * 2.0)
+
+
+## 高亮框四角角饰：切图为左上角，pivot（两边交点）对准框角，其余三角水平 / 竖直镜像
+func _draw_corners(r: Rect2) -> void:
+	var pv: Array = (UiKit.layout_element(SKIN, "corner").get("data", {}) as Dictionary).get("pivot", [0, 0]) as Array
+	var pivot := Vector2(float(pv[0]), float(pv[1]))
+	var sz: Vector2 = _corner.get_size()
+	for c: Array in [[r.position, Vector2(1, 1)], [Vector2(r.end.x, r.position.y), Vector2(-1, 1)], [Vector2(r.position.x, r.end.y), Vector2(1, -1)], [r.end, Vector2(-1, -1)]]:
+		_deco.draw_set_transform(c[0] as Vector2, 0.0, c[1] as Vector2)
+		_deco.draw_texture_rect(_corner, Rect2(-pivot, sz), false)
+	_deco.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 ## 箭头方向：指定方向直接用；auto = 目标在屏幕下半 → 从上往下指（箭头在目标上方），否则从下往上指

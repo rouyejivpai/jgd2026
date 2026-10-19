@@ -171,7 +171,7 @@ func test_hud_text_slots_contain_overlong_content() -> void:
 		assert_eq(c.get_global_rect(), expect, "%s 超长内容下框体 / 文字区不变" % id)
 		if str(e.get("kind", "")) == "text_style":
 			assert_true(c is ScrollText and (c as ScrollText).clip_contents, "%s 文字遮罩" % id)
-			if id != "timer_value":
+			if id != "timer_value" and id != "timer_value2":
 				assert_gt((c as ScrollText).overflow(), 0.0, "%s 超出 → 可滚动" % id)
 		elif c is Button and str(e.get("overflow", "")) != "":
 			var proxy: ScrollText = null
@@ -186,6 +186,12 @@ func test_hud_text_slots_contain_overlong_content() -> void:
 		for ch: Node in card.get_children(true):
 			if ch is ScrollText:
 				scrolls.append(ch as ScrollText)
-		assert_eq(scrolls.size(), 3, "卡名 / COST / 费用都遮罩 + 自动滚动")
+		var expect: int = 3
+		if RosterCard.gothic():                  # 哥特卡：名称、「COST n」各一行，按布局 data.hidden 隐藏的不算（卡名进悬停提示）
+			expect = 0
+			for gid: String in ["card_g_name", "card_g_cost"]:
+				if not bool((UiKit.layout_element("battle_hud", gid).get("data", {}) as Dictionary).get("hidden", false)):
+					expect += 1
+		assert_eq(scrolls.size(), expect, "卡名 / COST / 费用都遮罩 + 自动滚动")
 		for st: ScrollText in scrolls:
 			assert_true((card as Control).get_global_rect().encloses(st.get_global_rect()), "卡面文字区在卡面内")

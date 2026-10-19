@@ -1,0 +1,214 @@
+{
+ "_comment": "2026-10-19 哥特换皮：主界面（用户提供的主界面整图作背景）。菜单按钮没有新切图，暂用同套 E08/E10 六角牌，见 docs/UI拼接_哥特换皮.md。",
+ "elements": [
+  {
+   "id": "bg",
+   "file": "../gothic/menu_bg.png",
+   "data": {
+    "_note": "用户 2026-10-19 主界面图（标题「人偶补完计划」与下方白条画在图上），2560×1440，铺满视口"
+   }
+  },
+  {
+   "id": "game_title_art",
+   "file": "../gothic/blank.png",
+   "data": {
+    "no_art_text": true,
+    "_note": "标题已画在背景图上：不再叠标题切图与艺术字"
+   }
+  },
+  {
+   "id": "subtitle",
+   "rect": [
+    1010,
+    1026,
+    700,
+    36
+   ],
+   "text_rect": [
+    0,
+    0,
+    700,
+    36
+   ],
+   "align": "right",
+   "data": {
+    "follow_cover": true,
+    "_note": "压在背景图白条下、右端止于蜘蛛徽记左侧（徽记约 x 1725–1780）：随 cover 铺满的背景图一起缩放定位（非 16:9 窗口不错位）"
+   },
+   "font": {
+    "family": "Cinzel",
+    "size": 20,
+    "color": "#CFC6D4",
+    "shadow": "#000000C0"
+   }
+  },
+  {
+   "id": "btn_continue",
+   "rect": [
+    1640,
+    548,
+    250,
+    52
+   ],
+   "text_rect": [
+    24,
+    4,
+    202,
+    44
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_dark.png",
+    "hover": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EEE8F0",
+    "disabled_color": "#7E7882"
+   }
+  },
+  {
+   "id": "btn_start",
+   "rect": [
+    1640,
+    614,
+    250,
+    52
+   ],
+   "text_rect": [
+    24,
+    4,
+    202,
+    44
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_dark.png",
+    "hover": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EEE8F0",
+    "disabled_color": "#7E7882"
+   }
+  },
+  {
+   "id": "btn_settings",
+   "rect": [
+    1640,
+    680,
+    250,
+    52
+   ],
+   "text_rect": [
+    24,
+    4,
+    202,
+    44
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_dark.png",
+    "hover": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EEE8F0",
+    "disabled_color": "#7E7882"
+   }
+  },
+  {
+   "id": "btn_quit",
+   "rect": [
+    1640,
+    746,
+    250,
+    52
+   ],
+   "text_rect": [
+    24,
+    4,
+    202,
+    44
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_dark.png",
+    "hover": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EEE8F0",
+    "disabled_color": "#7E7882"
+   }
+  }
+ ]
+}

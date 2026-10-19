@@ -44,6 +44,25 @@ func run(tree: SceneTree) -> void:
 		GameState.sync_from_save()
 		tree.quit(0)
 		return
+	if str(args.get("screen", "battle")) == "dialogue":     # 2026-10-19 哥特换皮：剧情对话（--story=<id> 默认 level_01_intro，--line=N 第 N 句，从 1 起）
+		SceneRouter.goto_level_select()
+		for i: int in LOAD_FRAMES:
+			await tree.process_frame
+		var sp: StoryPlayer = (load("res://scenes/ui/dialogue_overlay.tscn") as PackedScene).instantiate() as StoryPlayer
+		tree.current_scene.add_child(sp)
+		sp.play_story(str(args.get("story", "level_01_intro")))
+		for i: int in int(args.get("line", "1")) - 1:
+			sp.advance()
+			sp.advance()
+		for i: int in SETTLE_FRAMES:
+			await tree.process_frame
+		sp.advance()                          # 逐字显示 → 整句
+		for i: int in SETTLE_FRAMES:
+			await tree.process_frame
+		_save_shot(tree, out_dir.path_join("dialogue_%s_%s.png" % [str(args.get("story", "level_01_intro")), str(args.get("line", "1"))]))
+		GameState.unlocks = saved_unlocks
+		tree.quit(0)
+		return
 	if str(args.get("screen", "battle")) == "config_editor":     # 第五阶段：教学与解锁配置器（--tab=0/1/2，--level=<id>）
 		SceneRouter.goto_config_editor()
 		for i: int in LOAD_FRAMES:
@@ -69,13 +88,36 @@ func run(tree: SceneTree) -> void:
 		GameState.sync_from_save()
 		GameState.current_level_id = ""
 		GameState.current_region_id = str(args.get("region", ""))
+		# 2026-10-20：解锁动画——去掉揭开记录（按旧存档补种：一级地图最新解锁的区域、选关里可挑战未通关的关卡各播一次），且不写盘；
+		# --at=0.5,1.4,… 在进场后这些秒数各截一张（配合引擎参数 --fixed-fps 60）
+		SaveManager.data.erase("regions_revealed")
+		SaveManager.data.erase("levels_revealed")
+		var saved_autosave: bool = SaveManager.autosave
+		SaveManager.autosave = false
 		if str(args["screen"]) == "world_map":
 			SceneRouter.goto_world_map()
 		else:
 			SceneRouter.goto_region(str(args.get("region", "bone_workshop")))
-		for i: int in LOAD_FRAMES:
-			await tree.process_frame
-		_save_shot(tree, out_dir.path_join("%s_%s.png" % [str(args["screen"]), str(args.get("region", "default"))]))
+		if args.has("panel") or args.has("pull"):       # 2026-10-20 选关：--panel=closed 收起详情面板；--pull=<px> 把地图向右拖出左端 px（橡皮筋后的值）
+			for i: int in 30:
+				await tree.process_frame
+			var ls: Node = tree.current_scene
+			if str(args.get("panel", "")) == "closed":
+				ls.call("set_panel_open", false)
+			if args.has("pull"):
+				ls.call("_apply_scroll", float(ls.call("_rubber", float(ls.call("min_scroll")) - float(args["pull"]))))
+		if args.has("at"):
+			var frame: int = 0
+			for at: String in str(args["at"]).split(","):
+				while frame < int(float(at) * 60.0):
+					await tree.process_frame
+					frame += 1
+				_save_shot(tree, out_dir.path_join("%s_t%04d.png" % [str(args["screen"]), int(float(at) * 1000.0)]))
+		else:
+			for i: int in LOAD_FRAMES:
+				await tree.process_frame
+			_save_shot(tree, out_dir.path_join("%s_%s.png" % [str(args["screen"]), str(args.get("region", "default"))]))
+		SaveManager.autosave = saved_autosave
 		GameState.unlocks = saved_unlocks
 		SaveManager.data = saved
 		GameState.sync_from_save()
@@ -213,6 +255,8 @@ func run(tree: SceneTree) -> void:
 				bare = _linear_to_srgb8(bare)
 			bare.save_png(out_dir.path_join("%s_notext.png" % lid))
 		print("[shots] %s t=%.2f -> %s (%dx%d)" % [lid, c.world.clock.time, path, img.get_width(), img.get_height()])
+		if OS.get_cmdline_user_args().has("--scan-overflow"):
+			_scan_overflow(tree.root, lid + "_" + str(args.get("demo", args.get("select", ""))))
 	GameState.unlocks = saved_unlocks
 	SaveManager.data = saved
 	GameState.tutorials_enabled = true
@@ -417,6 +461,66 @@ func _save_shot(tree: SceneTree, path: String) -> void:
 	img.save_png(path)
 	_save_meta(path)
 	print("[shots] %s (%dx%d)" % [path, img.get_width(), img.get_height()])
+	if OS.get_cmdline_user_args().has("--scan-overflow"):      # 2026-10-19：顺带列出出框的文字（不在 ScrollText 遮罩里的 Label / 按钮）
+		_scan_overflow(tree.root, path.get_file())
+
+
+## 出框扫描：可见、有字、非透明的 Label / Button；不在 ScrollText 内（那些会遮罩滚动）。
+## 单行：字宽 > 文字区宽；多行：所需行高 > 高；另查文字矩形是否超出视口。只打印，不改界面。
+func _scan_overflow(root: Node, tag: String) -> void:
+	var vp: Rect2 = root.get_viewport().get_visible_rect()
+	var stack: Array[Node] = [root]
+	var checked: int = 0
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for ch: Node in n.get_children(true):
+			stack.append(ch)
+		var c: Control = n as Control
+		if c == null or not c.is_visible_in_tree() or c is ScrollText:
+			continue
+		var in_scroll: bool = false
+		var a: Node = c.get_parent()
+		while a != null:
+			if a is ScrollText:
+				in_scroll = true
+				break
+			a = a.get_parent()
+		if in_scroll:
+			continue
+		var text: String = ""
+		var area: Rect2 = c.get_global_rect()
+		if c is Label:
+			text = (c as Label).text
+			if (c as Label).visible_ratio <= 0.0:
+				continue
+		elif c is Button and not (c is OptionButton) and not c.has_meta(UiKit.TEXT_PROXY_META):
+			text = (c as Button).text
+			var sb: StyleBox = c.get_theme_stylebox("normal")
+			if sb != null:
+				area = Rect2(area.position + Vector2(sb.get_margin(SIDE_LEFT), sb.get_margin(SIDE_TOP)), area.size - Vector2(sb.get_margin(SIDE_LEFT) + sb.get_margin(SIDE_RIGHT), sb.get_margin(SIDE_TOP) + sb.get_margin(SIDE_BOTTOM)))
+		if text.strip_edges() == "" or c.get_theme_color("font_color").a < 0.05 or c.modulate.a < 0.05:
+			continue
+		var font: Font = c.get_theme_font("font")
+		var fs: int = c.get_theme_font_size("font_size")
+		checked += 1
+		var why: String = ""
+		var wrap: bool = c is Label and (c as Label).autowrap_mode != TextServer.AUTOWRAP_OFF
+		if not wrap:
+			var w: float = 0.0
+			for line: String in text.split("\n"):
+				w = maxf(w, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x)
+			if w > area.size.x + 2.0:
+				why = "宽 %d > %d" % [int(w), int(area.size.x)]
+		else:
+			var l: Label = c as Label
+			var need: float = float(l.get_line_count()) * (font.get_height(fs) + float(l.get_theme_constant("line_spacing")))
+			if need > area.size.y + 2.0 and l.clip_text:
+				why = "高 %d > %d" % [int(need), int(area.size.y)]
+		if why == "" and not vp.encloses(area.grow(-1.0)) and area.size.x > 0.0:
+			why = "超出视口"
+		if why != "":
+			print("[overflow] %s | %s | %s | %s" % [tag, str(c.get_path()).replace("/root/", ""), why, text.replace("\n", " / ").left(40)])
+	print("[overflow] %s | 共检查 %d 处文字" % [tag, checked])
 
 
 ## 章节地图截图；--text-layer 时再拍一张隐藏全部文字的 <名>_notext.png（几何验收），拍完恢复文字（后面还要拍其他状态）

@@ -48,9 +48,16 @@ func open(title_key: String, body_key: String, ok_key: String, cancel_key: Strin
 	(nodes["body"] as Label).text = DataRegistry.get_string(body_key)
 	(nodes["btn_ok"] as Button).text = DataRegistry.get_string(ok_key)
 	(nodes["btn_cancel"] as Button).text = DataRegistry.get_string(cancel_key)
+	var was_open: bool = visible
 	visible = true
 	_layout()
 	(nodes["btn_cancel"] as Button).grab_focus()
+	if not was_open:                         # 2026-10-19：面板与按钮一起滑入，遮罩淡入
+		var group: Array = []
+		for id: String in nodes.keys():
+			if id != "mask":
+				group.append(nodes[id])
+		UiKit.slide_in(group, (nodes["panel"] as Control).get_global_rect(), [nodes.get("mask")])
 
 
 func is_open() -> bool:

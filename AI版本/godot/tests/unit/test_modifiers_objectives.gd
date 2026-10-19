@@ -62,10 +62,12 @@ func test_panel_shows_level_bonus() -> void:
 	var L: LevelDefinition = _load(_raw())[0] as LevelDefinition
 	var w: SimWorld = _world(L)
 	var striker_vals: Array[String] = RuleText.stat_values(w.get_spawn("u1"), DataRegistry.get_unit("striker"))
-	assert_eq(striker_vals[1], "18（+6 关卡加成）", "攻击 12 ×1.5")
+	assert_eq(striker_vals[1], "18（+6）", "攻击 12 ×1.5（格内短式，2026-10-19）")
+	assert_eq(RuleText.stat_tips(w.get_spawn("u1"), DataRegistry.get_unit("striker"))[1], "18（+6 关卡加成）", "悬停提示是完整说明")
 	var raider_vals: Array[String] = RuleText.stat_values(w.get_spawn("R1"), DataRegistry.get_unit("raider"))
-	assert_eq(raider_vals[0], "75/75（+20 关卡加成）")
-	assert_eq(raider_vals[4], "2（-10 关卡加成）", "视野覆盖 12 → 2")
+	assert_eq(raider_vals[0], "75/75（+20）")
+	assert_eq(raider_vals[4], "2（-10）", "视野覆盖 12 → 2")
+	assert_eq(RuleText.stat_tips(w.get_spawn("R1"), DataRegistry.get_unit("raider"))[1], "", "没有加成的属性不出提示")
 	assert_eq(RuleText.stat_values(null, DataRegistry.get_unit("striker"))[1], "12", "无模拟单位时显示基础值")
 
 

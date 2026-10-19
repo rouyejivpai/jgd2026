@@ -24,6 +24,7 @@ FONT_FILES = {
     "NotoSerifSC": "res://assets/fonts/NotoSerifSC-Regular.otf",
     "NotoSerifSC-Bold": "res://assets/fonts/NotoSerifSC-Bold.otf",
     "Cinzel": "res://assets/fonts/Cinzel-Regular.ttf",
+    "NotoSansSC": "res://assets/fonts/NotoSansSC-Regular.otf",
 }
 IMPORT_PARAMS = {"compress/mode": "0", "mipmaps/generate": "false"}
 
@@ -75,9 +76,12 @@ class TresWriter:
             self.ext[path] = (f"{len(self.ext) + 1}_{typ.lower()}", typ)
         return self.ext[path][0]
 
-    def stylebox(self, texture: str, ninepatch, content, modulate: str = "") -> str:
+    def stylebox(self, texture: str, ninepatch, content, modulate: str = "", expand=None) -> str:
         sid = f"StyleBoxTexture_{len(self.subs) + 1}"
         lines = [f'texture = ExtResource("{self.ext_id(texture, "Texture2D")}")']
+        for side, v in zip(("left", "top", "right", "bottom"), expand or (0, 0, 0, 0)):     # 切图装饰画在框线外：外扩到控件矩形之外
+            if v:
+                lines.append(f"expand_margin_{side} = {float(v)}")
         if modulate:
             lines.append(f"modulate_color = {color_tres(modulate)}")
         for side, v in zip(("left", "top", "right", "bottom"), ninepatch or (0, 0, 0, 0)):
@@ -144,6 +148,14 @@ def font_props(tw: TresWriter, var: str, font: dict, ctx: str, extra_colors=()):
     col = color_tres(font.get("color", "#FFFFFF"))
     for name in ("font_color",) + tuple(extra_colors):
         tw.props.append(f"{var}/colors/{name} = {col}")
+    if font.get("shadow"):                        # 投影（哥特换皮：浅字压在半透明暗底 / 场景上）："shadow": "#RRGGBBAA"，偏移 shadow_offset [x, y]
+        off = font.get("shadow_offset", [2, 2])
+        tw.props.append(f"{var}/colors/font_shadow_color = {color_tres(font['shadow'])}")
+        tw.props.append(f"{var}/constants/shadow_offset_x = {int(off[0])}")
+        tw.props.append(f"{var}/constants/shadow_offset_y = {int(off[1])}")
+    if font.get("outline_size"):                  # 描边："outline_size" 像素 + "outline_color"
+        tw.props.append(f"{var}/constants/outline_size = {int(font['outline_size'])}")
+        tw.props.append(f"{var}/colors/font_outline_color = {color_tres(font.get('outline_color', '#000000'))}")
 
 
 def load_json(path: Path, ctx: str):
@@ -154,6 +166,45 @@ def load_json(path: Path, ctx: str):
         return None
 
 
+def merge_overrides(man: dict, ov: dict, screen: str) -> dict:
+    """skin_overrides.json：叠在 manifest.json（ui_fit_reference 拟合产物，不手改）之上的换皮层。
+    elements[] 每项按 id 匹配：已有元素 → 逐字段覆盖（值为 null 删除该字段）；"_remove": true → 删除该元素；
+    新元素 → 追加到末尾，或插在 "_after" / "_before" 指定元素的后 / 前（绘制顺序）。以 "_" 开头的键不进 manifest。
+    顶层 "reserved"、"design_size" 若给出则整体替换。"""
+    out = dict(man)
+    for k in ("reserved", "design_size"):
+        if k in ov:
+            out[k] = ov[k]
+    elements = [dict(e) for e in man.get("elements", [])]
+    for o in ov.get("elements", []):
+        eid = o.get("id")
+        idx = next((i for i, e in enumerate(elements) if e.get("id") == eid), -1)
+        if o.get("_remove"):
+            if idx < 0:
+                err(f"{screen}.{eid}", "skin_overrides 要删除的元素不存在")
+            else:
+                elements.pop(idx)
+            continue
+        fields = {k: v for k, v in o.items() if not k.startswith("_")}
+        if idx >= 0:
+            for k, v in fields.items():
+                if v is None:
+                    elements[idx].pop(k, None)
+                else:
+                    elements[idx][k] = v
+            continue
+        anchor = o.get("_after") or o.get("_before")
+        at = next((i for i, e in enumerate(elements) if e.get("id") == anchor), -1) if anchor else -1
+        if anchor and at < 0:
+            err(f"{screen}.{eid}", f"skin_overrides 的定位元素 {anchor} 不存在")
+        if at < 0:
+            elements.append(fields)
+        else:
+            elements.insert(at + 1 if o.get("_after") else at, fields)
+    out["elements"] = elements
+    return out
+
+
 def build(screen: str):
     sdir = UI_ROOT / screen
     man = load_json(sdir / "manifest.json", f"{screen}/manifest.json")
@@ -161,6 +212,11 @@ def build(screen: str):
         return None
     preview = load_json(sdir / "preview.json", f"{screen}/preview.json") if (sdir / "preview.json").exists() else {}
     bindings = (preview or {}).get("bindings", {})
+    if (sdir / "skin_overrides.json").exists():       # 换皮覆盖层（2026-10-19 哥特新切图），见 merge_overrides
+        ov = load_json(sdir / "skin_overrides.json", f"{screen}/skin_overrides.json")
+        if ov is None:
+            return None
+        man = merge_overrides(man, ov, screen)
     design = man.get("design_size", [1920, 1080])
     elements = list(man.get("elements", []))
     error_colors = {}
@@ -227,6 +283,8 @@ def build(screen: str):
         np_ = e.get("ninepatch")
         if np_ is not None:
             item["ninepatch"] = np_
+        if e.get("expand"):                       # 外扩边距（StyleBoxTexture.expand_margin），原样记入布局
+            item["expand"] = e["expand"]
         if kind in ("image", "icon", "ninepatch"):
             path = res_path(sdir, e.get("file", ""), ctx)
             item["file"] = path
@@ -237,7 +295,7 @@ def build(screen: str):
                     err(ctx, f"九宫格边距 {np_} 超出贴图 {size}")
                 item["theme_type"] = var
                 tw.props.append(f'{var}/base_type = &"PanelContainer"')
-                tw.props.append(f"{var}/styles/panel = {tw.stylebox(path, np_, (0, 0, 0, 0))}")
+                tw.props.append(f"{var}/styles/panel = {tw.stylebox(path, np_, (0, 0, 0, 0), '', e.get('expand'))}")
         elif kind == "flatbox":
             st = e.get("style", {})
             item["theme_type"] = var
@@ -276,9 +334,9 @@ def build(screen: str):
             tw.props.append(f'{var}/base_type = &"{"OptionButton" if eid.startswith("dropdown_") else "Button"}"')
             for st in BUTTON_STATES:
                 if item["states"].get(st):
-                    tw.props.append(f"{var}/styles/{st} = {tw.stylebox(item['states'][st], np_, content, tints.get(st, ''))}")
+                    tw.props.append(f"{var}/styles/{st} = {tw.stylebox(item['states'][st], np_, content, tints.get(st, ''), e.get('expand'))}")
             if item["states"].get("pressed"):
-                tw.props.append(f"{var}/styles/hover_pressed = {tw.stylebox(item['states']['pressed'], np_, content, tints.get('pressed', ''))}")
+                tw.props.append(f"{var}/styles/hover_pressed = {tw.stylebox(item['states']['pressed'], np_, content, tints.get('pressed', ''), e.get('expand'))}")
             tw.props.append(f"{var}/styles/focus = {tw.empty_style()}")     # 焦点复用 hover 贴图（UiKit.skin_button），不叠加
             if e.get("font"):
                 font_props(tw, var, e["font"], ctx, ("font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"))

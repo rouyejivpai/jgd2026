@@ -1,0 +1,997 @@
+{
+ "_comment": "2026-10-19 哥特换皮（01.zip 选关切图 D01–D05 + 关卡节点 D06，整图 ../gothic/design_level_select.png）。叠在 manifest.json 之上，由 apply_ui_manifest.py 合并；坐标即切图在整图中的位置（模板匹配量得）。新整图没有的元素（区域名、返回 / 设置、详情文字、回放下拉、名牌）用同套切图的空白六角牌临时承载；锁 / 勾角标为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（docs/reference/gothic_gen），见 docs/UI拼接_哥特换皮.md。 data.dock（2026-10-19）：左上一组贴左上、右侧详情一组贴右（含 map_view，地图可见宽随之变宽）、底部滑轨贴左下。",
+ "elements": [
+  {
+   "id": "map_view",
+   "kind": "flatbox",
+   "rect": [
+    0,
+    0,
+    1200,
+    1080
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_before": "title_plaque",
+   "data": {
+    "_note": "地图可见宽（节点遮罩右缘）：详情面板 D01 左侧是渐隐，约 x=1200 起才不透明",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "title_plaque",
+   "file": "../gothic/corner_shade.png",
+   "ninepatch": null,
+   "kind": "image",
+   "rect": [
+    0,
+    0,
+    760,
+    250
+   ],
+   "data": {
+    "_note": "左上包角衬底（用户 2026-10-19）：以屏幕左上角为心的黑色椭圆渐隐，压在区域名与返回 / 设置之下",
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "title",
+   "rect": [
+    48,
+    26,
+    620,
+    66
+   ],
+   "text_rect": [
+    0,
+    0,
+    620,
+    66
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 44,
+    "color": "#EEE8F0",
+    "shadow": "#000000C0",
+    "outline_size": 6,
+    "outline_color": "#1A1420"
+   },
+   "data": {
+    "ref_ink": [
+     150.4,
+     34.4,
+     186.0,
+     42.5
+    ],
+    "ref_text": "腐土平原",
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "title_moon",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "title_line",
+   "file": "../gothic/blank.png",
+   "ninepatch": [
+    1,
+    0,
+    1,
+    0
+   ],
+   "data": {
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "btn_back",
+   "rect": [
+    48,
+    108,
+    189,
+    39
+   ],
+   "text_rect": [
+    20,
+    4,
+    149,
+    31
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#D6D0D8"
+    },
+    "hover": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#A8A0AA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 20,
+    "color": "#FFFFFF",
+    "disabled_color": "#4A444C"
+   },
+   "data": {
+    "ref_ink": [
+     1565.2,
+     52.8,
+     43.6,
+     20.7
+    ],
+    "ref_text": "返回",
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "btn_settings",
+   "rect": [
+    48,
+    156,
+    189,
+    39
+   ],
+   "text_rect": [
+    20,
+    4,
+    149,
+    31
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#D6D0D8"
+    },
+    "hover": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#A8A0AA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_light.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 20,
+    "color": "#FFFFFF",
+    "disabled_color": "#4A444C"
+   },
+   "data": {
+    "ref_ink": [
+     1773.0,
+     52.8,
+     42.5,
+     20.7
+    ],
+    "ref_text": "设置",
+    "dock": "left top"
+   }
+  },
+  {
+   "id": "panel_top",
+   "kind": "image",
+   "rect": [
+    976,
+    0,
+    944,
+    1080
+   ],
+   "file": "../gothic/level_panel.png",
+   "ninepatch": null,
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "panel_bottom",
+   "kind": "image",
+   "rect": [
+    1290,
+    280,
+    600,
+    800
+   ],
+   "file": "../gothic/blank.png",
+   "ninepatch": null,
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "moon_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "astro_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "gem1_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "gem2_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "gem3_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "gem4_orn",
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "level_no",
+   "rect": [
+    1290,
+    108,
+    82,
+    50
+   ],
+   "text_rect": [
+    0,
+    0,
+    82,
+    50
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 32,
+    "color": "#D8323C",
+    "shadow": "#000000A0"
+   },
+   "data": {
+    "short_no": true,
+    "_note": "紫色八芒星里的红色关卡编号（整图「01」，RuleText.level_no）",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "level_title",
+   "rect": [
+    1490,
+    104,
+    280,
+    56
+   ],
+   "text_rect": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 32,
+    "color": "#EFEAF2",
+    "shadow": "#000000A0"
+   },
+   "data": {
+    "ref_ink": [
+     1429.7,
+     213.5,
+     99.9,
+     47.1
+    ],
+    "ref_text": "墙缝",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "sep_top",
+   "rect": [
+    1300,
+    190,
+    560,
+    8
+   ],
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "region",
+   "rect": [
+    1300,
+    236,
+    560,
+    36
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    36
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#B9AFC0"
+   },
+   "data": {
+    "ref_ink": [
+     1430.8,
+     322.5,
+     130.9,
+     23.0
+    ],
+    "ref_text": "区域 · 哭墙",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "summary",
+   "rect": [
+    1300,
+    300,
+    560,
+    36
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    36
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 24,
+    "color": "#E6E0E8"
+   },
+   "data": {
+    "ref_ink": [
+     1432.0,
+     466.0,
+     408.8,
+     26.4
+    ],
+    "ref_text": "查看敌人规则，诱敌撤离，绕后破坏",
+    "_note": "关卡特征（summary，空则 subtitle），多行时与下方内容一起在下框内滚动",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "sep_bottom",
+   "rect": [
+    1300,
+    346,
+    560,
+    20
+   ],
+   "file": "../gothic/blank.png",
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "objective_head",
+   "rect": [
+    1300,
+    380,
+    560,
+    34
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    34
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#C9A5D8"
+   },
+   "data": {
+    "ref_ink": [
+     1429.7,
+     571.6,
+     51.7,
+     24.1
+    ],
+    "ref_text": "任务",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "objective",
+   "rect": [
+    1300,
+    424,
+    560,
+    34
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    34
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#DCD6DE"
+   },
+   "data": {
+    "ref_ink": [
+     1432.0,
+     618.6,
+     277.9,
+     23.0
+    ],
+    "ref_text": "摧毁哭墙后方的回响骸柱",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "state",
+   "rect": [
+    1300,
+    480,
+    560,
+    36
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    36
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 23,
+    "color": "#CDB8E0"
+   },
+   "data": {
+    "ref_ink": [
+     1433.1,
+     711.6,
+     165.4,
+     25.2
+    ],
+    "ref_text": "状态 · 可挑战",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "btn_enter",
+   "rect": [
+    1534,
+    930,
+    386,
+    55
+   ],
+   "ninepatch": null,
+   "text_rect": [
+    0,
+    0,
+    386,
+    55
+   ],
+   "states": {
+    "normal": "../gothic/btn_enter.png",
+    "hover": {
+     "file": "../gothic/btn_enter.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_enter.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_enter.png",
+     "modulate": "#5E5660"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "按钮字「进入关卡」画在切图上，节点 text 仍为 ui.node_enter（透明）",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "replay_pick",
+   "rect": [
+    1300,
+    872,
+    232,
+    40
+   ],
+   "text_rect": [
+    24,
+    4,
+    184,
+    32
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_gray.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E6E0E8",
+    "disabled_color": "#8A848C"
+   },
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "btn_replay",
+   "rect": [
+    1272,
+    930,
+    267,
+    55
+   ],
+   "ninepatch": null,
+   "text_rect": [
+    0,
+    0,
+    267,
+    55
+   ],
+   "states": {
+    "normal": "../gothic/btn_replay.png",
+    "hover": {
+     "file": "../gothic/btn_replay.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_replay.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_replay.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "ph_plaque",
+   "file": "../gothic/blank.png",
+   "ninepatch": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "ph_title",
+   "rect": [
+    1490,
+    104,
+    280,
+    56
+   ],
+   "text_rect": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 32,
+    "color": "#EFEAF2",
+    "shadow": "#000000A0"
+   },
+   "data": {
+    "ref_ink": [
+     1542.2,
+     194.0,
+     122.9,
+     37.9
+    ],
+    "ref_text": "未开放",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "ph_panel",
+   "file": "../gothic/blank.png",
+   "ninepatch": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "ph_text",
+   "rect": [
+    1300,
+    236,
+    560,
+    36
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    36
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 24,
+    "color": "#CFC6D4"
+   },
+   "data": {
+    "ref_ink": [
+     1469.9,
+     355.8,
+     74.6,
+     24.1
+    ],
+    "ref_text": "未解锁",
+    "dock": "right"
+   }
+  },
+  {
+   "id": "ph_enter",
+   "rect": [
+    1534,
+    930,
+    386,
+    55
+   ],
+   "ninepatch": null,
+   "text_rect": [
+    0,
+    0,
+    386,
+    55
+   ],
+   "states": {
+    "normal": "../gothic/btn_enter.png",
+    "hover": "../gothic/btn_enter.png",
+    "pressed": "../gothic/btn_enter.png",
+    "disabled": {
+     "file": "../gothic/btn_enter.png",
+     "modulate": "#5E5660"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "dock": "right"
+   }
+  },
+  {
+   "id": "scroll_line",
+   "kind": "image",
+   "rect": [
+    0,
+    894,
+    1237,
+    186
+   ],
+   "file": "../gothic/scroll_rail.png",
+   "ninepatch": null,
+   "data": {
+    "dock": "left bottom"
+   }
+  },
+  {
+   "id": "scroll_thumb",
+   "kind": "image",
+   "rect": [
+    134,
+    976,
+    104,
+    104
+   ],
+   "file": "../gothic/scroll_knob.png",
+   "ninepatch": null,
+   "data": {
+    "knob": true,
+    "travel": 572,
+    "_note": "定宽旋钮：中心沿滑轨从左端（x=186）移到右端（+travel），位置 = 当前滚动比例",
+    "dock": "left bottom"
+   }
+  },
+  {
+   "id": "node",
+   "rect": [
+    0,
+    0,
+    90,
+    90
+   ],
+   "data": {
+    "_note": "哥特关卡节点（D06 圆盘图标，一张图）：按 art_size 画在点击区上、圆盘中心对准节点坐标；状态靠调色：选中放大、可挑战 / 已完成原色、锁定压暗；圆盘自带星芒，区域图标不叠画（精英关的遗物图标除外）",
+    "selected_scale": 1.18,
+    "boss_scale": 1.2,
+    "elite_scale": 1.1,
+    "glyph_color": "#00000000",
+    "glyph_locked": "#00000000",
+    "art_scale": 1.0,
+    "art_size": [
+     182,
+     98
+    ],
+    "art_offset": [
+     0,
+     0
+    ],
+    "icon_ratio": 0.4,
+    "locked_modulate": "#6A6270",
+    "idle_modulate": "#C9C2CC"
+   }
+  },
+  {
+   "id": "node_tex_locked",
+   "rect": [
+    0,
+    0,
+    304,
+    163
+   ],
+   "file": "../gothic/node_icon.png"
+  },
+  {
+   "id": "node_tex_open",
+   "rect": [
+    0,
+    0,
+    304,
+    163
+   ],
+   "file": "../gothic/node_icon.png"
+  },
+  {
+   "id": "node_tex_done",
+   "rect": [
+    0,
+    0,
+    304,
+    163
+   ],
+   "file": "../gothic/node_icon.png"
+  },
+  {
+   "id": "node_tex_selected",
+   "rect": [
+    0,
+    0,
+    304,
+    163
+   ],
+   "file": "../gothic/node_icon.png"
+  },
+  {
+   "id": "node_tex_boss",
+   "rect": [
+    0,
+    0,
+    304,
+    163
+   ],
+   "file": "../gothic/node_icon.png"
+  },
+  {
+   "id": "link_gem",
+   "file": "../gothic/blank.png"
+  },
+  {
+   "id": "plate",
+   "rect": [
+    0,
+    0,
+    210,
+    36
+   ],
+   "file": "../gothic/hex_dark.png",
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "data": {
+    "offset": [
+     0,
+     64
+    ],
+    "selected_modulate": "#FFFFFF",
+    "_note": "名牌：同套空白六角牌（E08），节点下方"
+   }
+  },
+  {
+   "id": "plate_text",
+   "rect": [
+    10,
+    0,
+    190,
+    34
+   ],
+   "text_rect": [
+    0,
+    0,
+    190,
+    34
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 19,
+    "color": "#E8E2EA"
+   }
+  },
+  {
+   "id": "link",
+   "data": {
+    "width": 2.5,
+    "done": "#E4DCE8C0",
+    "open": "#A99CB4A0",
+    "locked": "#3A3442A0"
+   }
+  },
+  {
+   "id": "node_shade",
+   "kind": "image",
+   "rect": [
+    0,
+    0,
+    320,
+    40
+   ],
+   "file": "../gothic/node_shade.png",
+   "_after": "node_tex_boss",
+   "data": {
+    "_note": "节点图标后的黑底（用户 2026-10-19）：左右渐隐，高 = 图标高（98）的 40%，与图标中心对齐；尺寸随首领 / 精英缩放"
+   }
+  },
+  {
+   "id": "node_lock_marker",
+   "file": "../gothic/node_lock.png",
+   "rect": [
+    0,
+    0,
+    44,
+    38
+   ],
+   "data": {
+    "_note": "用户 2026-10-19 要求按哥特风重绘：GPT 绘图生成（绿幕抠图）"
+   }
+  },
+  {
+   "id": "node_check_marker",
+   "file": "../gothic/node_check.png",
+   "rect": [
+    0,
+    0,
+    44,
+    38
+   ],
+   "data": {
+    "_note": "用户 2026-10-19 要求按哥特风重绘：GPT 绘图生成（绿幕抠图）"
+   }
+  },
+  {
+   "id": "score_tag",
+   "kind": "ninepatch",
+   "rect": [
+    0,
+    0,
+    402,
+    71
+   ],
+   "file": "../gothic/score_tag.png",
+   "ninepatch": [
+    88,
+    0,
+    88,
+    0
+   ],
+   "_after": "plate_text",
+   "data": {
+    "content": [
+     82,
+     20,
+     82,
+     17
+    ],
+    "color": "#E8E2EA",
+    "font_size": 20,
+    "_note": "综合分铭牌（2026-10-20 按真人切图的平面叠层风格重绘：GPT 绘图，绿幕反混合抠图保留半透明）；横向九宫格，content = 文字内边距"
+   }
+  }
+ ]
+}

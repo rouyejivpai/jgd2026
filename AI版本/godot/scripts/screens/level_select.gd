@@ -4,6 +4,8 @@ extends Control
 ##   范围 [0, 地图宽 − 详情面板左缘]（地图右端可滚到面板左缘，所有节点都能露出），无惯性，按下后移动 ≤ 6 px 视为点击。
 ##   底部金线 = 可滚范围，亮段 = 当前可见部分。
 ## - 点击节点 = 选中（金环放大 + 名牌高亮），不进关；进入地图默认选中最新可挑战节点并滚到可见区中央。
+##   2026-10-20（用户）：进入时详情面板收起、默认节点不画选中样式；节点平铺整张区域地图（不再避让面板）；
+##   点节点时面板滑出，并把该节点滚到可见区横向正中（可出框）；收起面板时立刻弹回可滚范围。
 ## - 右侧上框：第 N 关、关名、区域；下框：关卡特征（summary，空则 subtitle）、任务、状态、锁定时的前置关卡。
 ##   「进入」（锁定时禁用）；「开场剧情」下拉列出该关 _intro / _win / _lose 中 stories_seen 已含的条目，「回放剧情」用 StoryPlayer 播放，不改 stories_seen。
 ## - 选中占位节点（未开放）时右侧换成整图 ui_25 的紧凑版式：标题牌 + 说明框「未解锁」+ 禁用的「进入」，不显示区域与回放（布局 ph_*）。
@@ -12,6 +14,12 @@ extends Control
 ## - 连线：已完成金、可挑战暗金、锁定暗紫（指向占位节点的按锁定色）。story_on_unlock 行为不变。
 ## - 2026-10-18 分区域：章节的区域带区域地图时按区域分屏——只显示当前区域（GameState.current_region_id，缺省 = 最近关卡所在区域）的节点与区域地图，
 ##   标题 = 区域名，「返回」回到一级地图（world_map）；跨区域的连线不画。没有区域地图的章节（第一章旧 Demo）仍整章显示。
+## - 2026-10-20（用户）：
+##   · 地图两端不再接镜像图，左右边缘沿腐蚀线羽化（parchment_edge），地图后面与一级地图相同：暗品红底光 + 彼岸花瓣（前后两层）。
+##   · 左键拖动可左右拖出框，最多视口宽的 1/8：越拉越紧（橡皮筋，不硬卡），松手后弹回范围内；上下不动。滚轮仍限制在范围内。
+##   · 点地图空白处（按下后移动 ≤ 6 px）收起右侧详情面板（向右滑出），地图可见宽随之铺满窗口；点任一节点再滑回并选中。
+##   · 未解锁关卡名牌是空的，锁压在名牌上，详情标题显示「？？？」、不显示特征与任务；关卡新解锁（存档 levels_revealed 没有它）时，
+##     进场后播与一级地图相同的解锁动画（UnlockBurst：锁颤抖 → 白色粒子 → 名牌闪白换名 → 渐回）；有解锁剧情时等剧情播完。调试版 F9 重播选中关。
 
 signal enter_requested(level_id: String)
 
@@ -21,10 +29,20 @@ const STORY_KINDS: Array[String] = ["intro", "win", "lose"]
 const STORY_PLAYER_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
 const SKIN: String = "chapter"
 const ELITE_DISC_TINT: Color = Color(1.0, 0.55, 0.6)   ## 精英关节点徽章（首领青底徽章染暗红）
+const EDGE_SHADER: Shader = preload("res://assets/shaders/parchment_edge.gdshader")
+const BACKDROP_SHADER: Shader = preload("res://assets/shaders/magenta_backdrop.gdshader")
+const FEATHER_PX: float = 170.0          ## 区域地图左右羽化宽（视口像素）
+const OVERSCROLL_FRAC: float = 0.125     ## 左右最多拖出框 = 视口宽 × 1/8
+const SPRING_TIME: float = 0.45          ## 拖出框松手后弹回的时长
+const PANEL_TIME: float = 0.38           ## 详情面板收起 / 展开的时长
+const REVEAL_DELAY: float = 0.9          ## 进场（或解锁剧情播完）后多久开始播解锁动画
+const REVEAL_GAP: float = 0.35           ## 同时解锁多关时，依次播放的间隔
+const LOCKED_PLATE_TINT: Color = Color(0.78, 0.76, 0.80, 0.92)
 
 var chapter: ChapterDef = null
 var node_buttons: Dictionary = {}        ## node id -> Button
 var selected_id: String = ""
+var highlighted: bool = false            ## 节点是否画选中样式：进入时默认关卡只填详情面板、不高亮，玩家点击后才高亮
 var scroll_x: float = 0.0
 var navigate: bool = true                ## false：「进入」只发 enter_requested（测试用）
 var _scale: float = 1.0
@@ -68,10 +86,22 @@ var _node_layer: Control = null          ## 节点 / 连线所在层，随滚动
 ## 多章节：指定显示第几个章节（测试 / 调试用）；-1 = 自动（最近关卡所在章节；不在任何章节时取带一级地图的章节）
 static var chapter_index: int = -1
 var region_id: String = ""               ## 当前显示的区域（"" = 整章显示）
+var panel_open: bool = true              ## 右侧详情面板是否展开
+var revealing: Array[String] = []        ## 正在 / 等待播放解锁动画的节点（显示为锁住）
+var _panel_t: float = 0.0                ## 面板收起进度：0 展开 → 1 收起
+var _panel_tween: Tween = null
+var _scroll_tween: Tween = null
+var _reveal_tween: Tween = null
+var _burst: UnlockBurst = null
 
 
 func _ready() -> void:
-	_background.color = Palette.BG_DEEP
+	_background.color = Color.WHITE
+	var bm := ShaderMaterial.new()          # 地图后面：暗品红底光（与一级地图相同）
+	bm.shader = BACKDROP_SHADER
+	_background.material = bm
+	var far := _make_petals("PetalsFar", 24, 0.7)
+	move_child(far, _background.get_index() + 1)
 	AudioManager.play_bgm(MENU_BGM)
 	AudioManager.stop_ambient()
 	var chapters: Array[ChapterDef] = DataRegistry.get_chapters()
@@ -101,16 +131,41 @@ func _ready() -> void:
 	_node_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_node_clip.add_child(_node_layer)
 	_node_layer.draw.connect(_draw_links)
+	var near := _make_petals("PetalsNear", 14, 1.0)      # 前层花瓣：地图之上、节点之下
+	near.reparent(_viewport)
+	_viewport.move_child(near, _node_clip.get_index())
 	_viewport.gui_input.connect(_on_viewport_input)
 	_viewport.resized.connect(_layout)
 	resized.connect(_place_skin)
+	revealing = pending_reveals()
+	if not revealing.is_empty():
+		var lids: Array = revealing.map(func(nid: String) -> String: return str(chapter.node_of(nid)["level"]))
+		SaveManager.mark_revealed("levels_revealed", lids)
+		if not UiKit.motion_enabled:
+			revealing.clear()
 	_build_nodes()
+	_burst = UnlockBurst.new()
+	_burst.name = "UnlockBurst"
+	_burst.z_index = 5
+	_node_layer.add_child(_burst)
 	_layout()
+	set_panel_open(false, true)      # 进入时不显示详情面板，点节点才滑出
 	select_node(default_node())
 	center_on(selected_id)
 	_story = STORY_PLAYER_SCENE.instantiate() as StoryPlayer
 	add_child(_story)
 	_play_unlock_stories.call_deferred()
+	_start_reveals.call_deferred()
+
+
+func _make_petals(n: String, amount: int, depth: float) -> LilyPetals:
+	var p := LilyPetals.new()
+	p.name = n
+	p.count = amount
+	p.depth = depth
+	p.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(p)
+	return p
 
 
 ## 换皮：主题；框体 / 分隔线 / 滚动指示等贴图节点；场景里各节点的主题变体；摆放见 _place_skin
@@ -157,6 +212,7 @@ func _apply_skin() -> void:
 		if c is Label:
 			(c as Label).clip_text = true
 			(c as Label).vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			(c as Label).horizontal_alignment = UiKit.text_align(str(UiKit.layout_element(SKIN, id).get("align", "left")))      # 哥特面板：关名居中
 		elif c is Button:
 			(c as Button).clip_text = true
 	_detail_summary.clip_text = false
@@ -178,6 +234,7 @@ func _make_label(id: String) -> Label:
 	l.name = "Skin_" + id
 	l.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, id).get("theme_type", "")))
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.horizontal_alignment = UiKit.text_align(str(UiKit.layout_element(SKIN, id).get("align", "left")))
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_detail.get_node("DetailColumn").add_child(l)
 	_skin[id] = l
@@ -187,6 +244,8 @@ func _make_label(id: String) -> Label:
 ## 按布局摆放（设计坐标 → 屏幕坐标只在 UiKit.layout_rect 一处换算）；下框的特征 / 任务 / 状态按文字实际高度顺排
 func _place_skin() -> void:
 	var vp: Vector2 = get_viewport_rect().size
+	var slid: float = _detail.position.x                 # 收起时面板整体右移：按展开位置摆放，再移回去
+	_detail.position.x = 0.0
 	for id: String in _skin.keys():
 		if id in ["scroll_thumb", "sep_bottom", "summary", "objective", "objective_head", "state"] and _lower != null:
 			continue
@@ -195,6 +254,7 @@ func _place_skin() -> void:
 		var text: bool = str(UiKit.layout_element(SKIN, id).get("kind", "")) == "text_style"
 		UiKit.place(_skin[id] as Control, UiKit.layout_text_rect(SKIN, id, vp) if text else UiKit.layout_rect(SKIN, id, vp))
 	_flow_detail()
+	_detail.position.x = slid
 	_place_scroll_thumb()
 	_apply_detail_mode()
 
@@ -253,7 +313,10 @@ func _flow_detail() -> void:
 			flowed[i].custom_minimum_size = Vector2(sm.size.x, heights[i])
 		_lower_scroll = ScrollText.wrap_box(_lower, ScrollText.Mode.MANUAL, Rect2(Vector2.ZERO, Vector2.ONE))
 	var inner_bottom: float = st.end.y + (panel.end.y - st.end.y) * 0.25         # 遮罩下沿：整图状态行下沿再留四分之一的底边距（文字不压金边）
+	var slid: float = _detail.position.x
+	_detail.position.x = 0.0
 	UiKit.place(_lower_scroll, Rect2(sm.position.x, sm.position.y, sm.size.x, inner_bottom - sm.position.y))
+	_detail.position.x = slid
 
 
 func _gap(h: float) -> Control:
@@ -290,7 +353,7 @@ func _build_nodes() -> void:
 			b.icon = art
 			b.expand_icon = true
 			b.text = ""
-		b.pressed.connect(select_node.bind(nid))
+		b.pressed.connect(_on_node_pressed.bind(nid))
 		_node_layer.add_child(b)
 		var disc := TextureRect.new()           # 节点徽章（按状态换图，画在按钮图标之下；边长 = 金环直径 × art_scale）
 		disc.name = "Disc"
@@ -299,12 +362,29 @@ func _build_nodes() -> void:
 		disc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		disc.show_behind_parent = true
 		disc.size = Vector2(node_px, node_px) * float(nd.get("art_scale", 1.0))
-		disc.position = (Vector2(node_px, node_px) - disc.size) * 0.5
+		var art_off := Vector2.ZERO
+		if nd.has("art_size"):                  # 2026-10-19 哥特节点：竖长切图按原尺寸（随首领 / 精英缩放）画，偏移让上半身对准节点坐标
+			var k: float = node_px / node_size
+			disc.size = Vector2(float((nd["art_size"] as Array)[0]), float((nd["art_size"] as Array)[1])) * k
+			art_off = Vector2(float((nd.get("art_offset", [0, 0]) as Array)[0]), float((nd.get("art_offset", [0, 0]) as Array)[1])) * k
+		disc.position = (Vector2(node_px, node_px) - disc.size) * 0.5 + art_off
+		if not UiKit.layout_element(SKIN, "node_shade").is_empty():      # 哥特节点：图标后一块左右渐隐的黑底，让图标融进地图
+			var shade := TextureRect.new()
+			shade.name = "Shade"
+			shade.texture = Art.texture(str(UiKit.layout_element(SKIN, "node_shade").get("file", "")))
+			shade.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			shade.stretch_mode = TextureRect.STRETCH_SCALE
+			shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			shade.show_behind_parent = true
+			shade.size = UiKit.layout_rect(SKIN, "node_shade", vp).size * (node_px / node_size)
+			shade.position = disc.position + (disc.size - shade.size) * 0.5
+			b.add_child(shade)
 		b.add_child(disc)
 		var plate_bg := Panel.new()            # 名牌胶囊（P6 #24 名牌切片）
 		plate_bg.name = "PlateBg"
 		plate_bg.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "plate").get("theme_type", "")))
 		plate_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		plate_bg.material = UnlockBurst.flash_material()
 		b.add_child(plate_bg)
 		var name_label := Label.new()
 		name_label.name = "Nameplate"
@@ -314,6 +394,7 @@ func _build_nodes() -> void:
 		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name_label.clip_text = true
 		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		name_label.material = UnlockBurst.flash_material()
 		b.add_child(name_label)
 		var off: Array = (UiKit.layout_element(SKIN, "plate").get("data", {}) as Dictionary).get("offset", [0, 0]) as Array
 		var center := Vector2(node_px * 0.5, node_px * 0.5) + Vector2(float(off[0]), float(off[1])) + Vector2(0.0, (node_px - node_size) * 0.5)
@@ -332,16 +413,28 @@ func _build_nodes() -> void:
 		pill.content_margin_left = 14
 		pill.content_margin_right = 14
 		score_tag.add_theme_stylebox_override("panel", pill)
+		var st: Dictionary = UiKit.layout_element(SKIN, "score_tag")
+		if not st.is_empty():                    # 哥特换皮：综合分铭牌切片（横向九宫格）代替金边胶囊
+			var tex := StyleBoxTexture.new()
+			tex.texture = Art.texture(str(st.get("file", "")))
+			var np_: Array = st.get("ninepatch", [0, 0, 0, 0]) as Array
+			var cm: Array = (st.get("data", {}) as Dictionary).get("content", np_) as Array
+			for i: int in 4:
+				tex.set_texture_margin(i as Side, float(np_[i]))
+				tex.set_content_margin(i as Side, float(cm[i]))
+			score_tag.add_theme_stylebox_override("panel", tex)
 		var score_text := Label.new()
 		score_text.name = "Text"
 		score_text.theme_type_variation = name_label.theme_type_variation
 		score_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		score_text.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
-		score_text.add_theme_font_size_override("font_size", SCORE_TAG_FONT)
+		score_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		var sd: Dictionary = st.get("data", {}) as Dictionary
+		score_text.add_theme_color_override("font_color", Color(str(sd["color"])) if sd.has("color") else Palette.ALCHEMY_GOLD)
+		score_text.add_theme_font_size_override("font_size", int(sd.get("font_size", SCORE_TAG_FONT)))
 		score_tag.add_child(score_text)
 		score_tag.set_meta(&"anchor", center + Vector2(0.0, plate.size.y * SCORE_TAG_OFFSET))
 		b.add_child(score_tag)
-		for m: Array in [["Lock", "node_lock_marker"], ["Check", "node_check_marker"]]:     # 锁定 / 已完成角标（右下，尺寸取布局）
+		for m: Array in [["Lock", "node_lock_marker"], ["Check", "node_check_marker"]]:     # 已完成角标（右下）；锁压在名牌正中（2026-10-20），尺寸取布局
 			var mark := TextureRect.new()
 			mark.name = str(m[0])
 			mark.texture = Art.texture(str(UiKit.layout_element(SKIN, str(m[1])).get("file", "")))
@@ -349,8 +442,14 @@ func _build_nodes() -> void:
 			mark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			mark.size = UiKit.layout_rect(SKIN, str(m[1]), vp).size
-			mark.position = Vector2(node_px, node_px) * 0.86 - mark.size * 0.5
-			b.add_child(mark)
+			if str(m[0]) == "Lock":
+				mark.position = (plate.size - mark.size) * 0.5
+				mark.pivot_offset = mark.size * 0.5
+				mark.material = UnlockBurst.flash_material()
+				plate_bg.add_child(mark)
+			else:
+				mark.position = Vector2(node_px, node_px) * 0.86 - mark.size * 0.5
+				b.add_child(mark)
 		node_buttons[nid] = b
 	_restyle_nodes()
 
@@ -377,6 +476,11 @@ func node_state(node_id: String) -> int:
 	return 1 if GameState.is_level_unlocked(lid) else 0
 
 
+## 显示用的状态：等解锁动画的节点仍按锁定显示
+func shown_state(node_id: String) -> int:
+	return 0 if revealing.has(node_id) else node_state(node_id)
+
+
 ## 节点名：关卡名；占位节点用 title_key（缺省「未开放」）
 func node_title(node_id: String) -> String:
 	var n: Dictionary = chapter.node_of(node_id)
@@ -399,8 +503,8 @@ func _restyle_nodes() -> void:
 	var empty := StyleBoxEmpty.new()
 	for nid: String in node_buttons.keys():
 		var b: Button = node_buttons[nid] as Button
-		var state: int = node_state(nid)
-		var sel: bool = nid == selected_id
+		var state: int = shown_state(nid)
+		var sel: bool = highlighted and nid == selected_id
 		var n: Dictionary = chapter.node_of(nid)
 		var tex_id: String = ["node_tex_locked", "node_tex_open", "node_tex_done"][state]
 		var elite: bool = bool(n.get("elite", false))
@@ -409,7 +513,10 @@ func _restyle_nodes() -> void:
 		elif sel:
 			tex_id = "node_tex_selected"
 		(b.get_node("Disc") as TextureRect).texture = Art.texture(str(UiKit.layout_element(SKIN, tex_id).get("file", "")))
-		(b.get_node("Disc") as TextureRect).modulate = ELITE_DISC_TINT if elite else Color.WHITE      # 精英关：首领徽章染暗红
+		var disc_tint: Color = ELITE_DISC_TINT if elite else Color.WHITE      # 精英关：首领徽章染暗红
+		if not elite and nd.has("locked_modulate"):      # 哥特节点只有一张图标：锁定压暗、未选中略暗、选中原色（布局 node.data）
+			disc_tint = Color(str(nd["locked_modulate"]) if state == 0 else ("#FFFFFF" if sel else str(nd.get("idle_modulate", "#FFFFFF"))))
+		UiKit.ease_to(b.get_node("Disc"), "modulate", disc_tint)      # 2026-10-19：选中 / 非选中缓动
 		var pad: float = b.size.x * (1.0 - float(nd.get("icon_ratio", 0.5))) * 0.5
 		var box := StyleBoxEmpty.new()
 		box.set_content_margin_all(pad)
@@ -421,13 +528,15 @@ func _restyle_nodes() -> void:
 			glyph = Color(0.45, 0.42, 0.5) if state == 0 else Color.WHITE
 		for c: String in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "font_color"]:
 			b.add_theme_color_override(c, glyph)
-		b.scale = Vector2.ONE * (float(nd.get("selected_scale", 1.3)) if sel else 1.0)
+		var target_scale: float = float(nd.get("selected_scale", 1.3)) if sel else 1.0
 		b.z_index = 1 if sel else 0
-		(b.get_node("Lock") as Control).visible = state == 0
+		var hidden: bool = state == 0 and not bool(n.get("placeholder", false))      # 占位节点（未开放的后续内容）照旧写「未开放」、不压锁
+		(b.get_node("PlateBg/Lock") as Control).visible = hidden
 		(b.get_node("Check") as Control).visible = state == 2
 		var plate_bg: Control = b.get_node("PlateBg") as Control
-		plate_bg.modulate = Color(str(pd.get("selected_modulate", "#FFFFFF"))) if sel else Color.WHITE
+		UiKit.ease_to(plate_bg, "modulate", Color(str(pd.get("selected_modulate", "#FFFFFF"))) if sel else (LOCKED_PLATE_TINT if hidden else Color.WHITE))
 		var name_plate: Label = b.get_node("Nameplate") as Label
+		name_plate.text = "" if hidden else node_label(nid)      # 打到之前看不见名字
 		if sel:
 			name_plate.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 		else:
@@ -437,13 +546,31 @@ func _restyle_nodes() -> void:
 		var best: int = SaveManager.best_score(lid) if state == 2 and lid != "" else -1
 		score_tag.visible = best >= 0
 		(score_tag.get_node("Text") as Label).text = DataRegistry.get_string("ui.level_best_score").format({ "total": best }) if best >= 0 else ""
+		score_tag.tooltip_text = Scoring.tip_text(SaveManager.best_score_detail(lid)) if best >= 0 else ""      # 悬停看分数构成
+		score_tag.mouse_filter = Control.MOUSE_FILTER_PASS if best >= 0 else Control.MOUSE_FILTER_IGNORE
 		score_tag.reset_size()
 		score_tag.position = (score_tag.get_meta(&"anchor") as Vector2) - score_tag.size * 0.5
-		plate_bg.scale = Vector2.ONE / b.scale       # 名牌不随选中放大
-		name_plate.scale = Vector2.ONE / b.scale
-		score_tag.scale = Vector2.ONE / b.scale
 		for c: Control in [plate_bg, name_plate, score_tag] as Array[Control]:
 			c.pivot_offset = c.size * 0.5
+		_ease_node_scale(b, target_scale)
+
+
+## 节点放大（选中）缓动；名牌 / 综合分标签同步反向缩放，始终保持原大小（参数 data/ui_motion.json 的 state_ease）
+func _ease_node_scale(b: Button, target: float) -> void:
+	var apply := func(s: float) -> void:
+		b.scale = Vector2.ONE * s
+		for n: String in ["PlateBg", "Nameplate", "ScoreTag"]:
+			(b.get_node(n) as Control).scale = Vector2.ONE / s
+	var old: Tween = b.get_meta(&"_scale_tween", null) as Tween if b.has_meta(&"_scale_tween") else null
+	if old != null and old.is_valid():
+		old.kill()
+	if not UiKit.motion_enabled or not b.is_inside_tree() or is_equal_approx(b.scale.x, target):
+		apply.call(target)
+		return
+	var p: Dictionary = UiKit.motion_params("state_ease")
+	var t: Tween = b.create_tween()
+	t.tween_method(apply, b.scale.x, target, float(p.get("duration", 0.18))).set_trans(UiKit.motion_trans(p)).set_ease(UiKit.motion_ease(p))
+	b.set_meta(&"_scale_tween", t)
 
 
 ## 默认选中：最新可挑战节点（按数据顺序最后一个）；没有则最后一个已完成；再没有则第一个
@@ -467,7 +594,17 @@ func default_node() -> String:
 	return str(ns[0]["id"]) if not ns.is_empty() else ""
 
 
-## 点击节点 = 选中（不进关）
+## 点击节点 = 选中（不进关）；详情面板收起时滑回；把节点滚到可见区横向正中（可出框，收起面板时弹回）
+func _on_node_pressed(node_id: String) -> void:
+	highlighted = true
+	select_node(node_id)
+	if panel_open:
+		_scroll_to(center_scroll(node_id, _open_width()), PANEL_TIME, Tween.TRANS_CUBIC)
+	else:
+		set_panel_open(true)
+
+
+## 选中（不进关）
 func select_node(node_id: String) -> void:
 	if not node_buttons.has(node_id):
 		return
@@ -485,6 +622,8 @@ func _layout() -> void:
 	_content.size = Vector2(map_size().x * _scale, vp_h)
 	_node_clip.size = Vector2(visible_width(), vp_h)
 	_node_layer.size = _content.size
+	if _burst != null:
+		_burst.size = _content.size
 	_build_map_tiles()
 	for nid: String in node_buttons.keys():
 		var b: Button = node_buttons[nid] as Button
@@ -509,37 +648,139 @@ func _build_map_tiles() -> void:
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	r.size = _content.size
 	r.show_behind_parent = true
+	var edge := ShaderMaterial.new()         # 2026-10-20：左右沿腐蚀线羽化，露出后面的品红底光（不再接镜像图）
+	edge.shader = EDGE_SHADER
+	edge.set_shader_parameter("edge_uv", Vector2(FEATHER_PX / maxf(_content.size.x, 1.0), 0.0))
+	r.material = edge
 	_content.add_child(r)
 	_content.move_child(r, 0)
-	var mirror := TextureRect.new()          # 地图右端之后（详情面板背后）接一张水平镜像，滚到最右时面板后不露底
-	mirror.name = "MapTile1"
-	mirror.texture = tex
-	mirror.flip_h = true
-	mirror.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	mirror.stretch_mode = TextureRect.STRETCH_SCALE
-	mirror.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	mirror.position = Vector2(_content.size.x, 0.0)
-	mirror.size = _content.size
-	mirror.show_behind_parent = true
-	_content.add_child(mirror)
-	_content.move_child(mirror, 1)
 
 
-## 地图可见宽 = 详情面板左缘（地图铺满窗口，面板浮在右侧）
+## 地图可见宽 = 详情面板左缘（地图铺满窗口，面板浮在右侧）；布局有 map_view 时取其右缘（哥特面板左侧是渐隐，不透明处才算面板）。
+## 面板收起时按收起进度过渡到整个窗口宽
 func visible_width() -> float:
-	return UiKit.layout_rect(SKIN, "panel_top", get_viewport_rect().size).position.x
+	return lerpf(_open_width(), get_viewport_rect().size.x, _panel_t)
+
+
+func _open_width() -> float:
+	var vp: Vector2 = get_viewport_rect().size
+	if not UiKit.layout_element(SKIN, "map_view").is_empty():
+		return UiKit.layout_rect(SKIN, "map_view", vp).end.x
+	return UiKit.layout_rect(SKIN, "panel_top", vp).position.x
+
+
+## 可滚范围（x = 下限，y = 上限）：地图宽于可见区时 [0, 地图宽 − 可见宽]；窄于可见区时居中（上下限相等，为负）
+func scroll_range(vis: float = -1.0) -> Vector2:
+	var v: float = visible_width() if vis < 0.0 else vis
+	var w: float = _content.size.x
+	if w <= v:
+		return Vector2.ONE * (w - v) * 0.5
+	return Vector2(0.0, w - v)
 
 
 func max_scroll() -> float:
-	return maxf(0.0, _content.size.x - visible_width())
+	return scroll_range().y
 
 
+func min_scroll() -> float:
+	return scroll_range().x
+
+
+## 直接滚到 x（限制在范围内，打断弹回）
 func set_scroll(x: float) -> void:
-	scroll_x = clampf(x, 0.0, max_scroll())
+	_kill_scroll_tween()
+	var r: Vector2 = scroll_range()
+	_apply_scroll(clampf(x, r.x, r.y))
+
+
+## 不限制范围地摆放（拖出框 / 弹回动画用）
+func _apply_scroll(x: float) -> void:
+	scroll_x = x
 	_content.position.x = -scroll_x
 	if _node_layer != null:
 		_node_layer.position.x = -scroll_x
 	_place_scroll_thumb()
+
+
+func _kill_scroll_tween() -> void:
+	if _scroll_tween != null and _scroll_tween.is_valid():
+		_scroll_tween.kill()
+	_scroll_tween = null
+
+
+## 平滑滚到 x（x 已限制在目标范围内）；无动效时直接到位
+func _scroll_to(x: float, duration: float = SPRING_TIME, trans: Tween.TransitionType = Tween.TRANS_BACK) -> void:
+	_kill_scroll_tween()
+	if not UiKit.motion_enabled or not is_inside_tree() or is_equal_approx(x, scroll_x):
+		_apply_scroll(x)
+		return
+	_scroll_tween = create_tween()
+	_scroll_tween.tween_method(_apply_scroll, scroll_x, x, duration).set_trans(trans).set_ease(Tween.EASE_OUT)
+
+
+## 拖动时的橡皮筋：范围内一比一；出框部分越拉越紧，渐近视口宽的 1/8（不硬卡）。
+## 按下时已出框（选中节点居中）则范围扩到按下位置，拖动起步不跳
+func _rubber(x: float) -> float:
+	var r: Vector2 = scroll_range()
+	r = Vector2(minf(r.x, _press_scroll), maxf(r.y, _press_scroll))
+	var lim: float = get_viewport_rect().size.x * OVERSCROLL_FRAC
+	if x < r.x:
+		return r.x - lim * (1.0 - exp(-(r.x - x) / lim))
+	if x > r.y:
+		return r.y + lim * (1.0 - exp(-(x - r.y) / lim))
+	return x
+
+
+## 松手：出框则弹回范围内
+func _spring_back() -> void:
+	var r: Vector2 = scroll_range()
+	if scroll_x < r.x - 0.01 or scroll_x > r.y + 0.01:
+		_scroll_to(clampf(scroll_x, r.x, r.y))
+
+
+# ---- 详情面板收起 / 展开 ----
+## 收起 = 面板整体向右滑出窗口，地图可见宽铺满窗口，同时立刻弹回可滚范围内；
+## 展开时把选中节点滚到可见区横向正中（可出框）。instant：不播动画（进场用）
+func set_panel_open(open: bool, instant: bool = false) -> void:
+	if open == panel_open:
+		return
+	panel_open = open
+	if _panel_tween != null and _panel_tween.is_valid():
+		_panel_tween.kill()
+	var target: float = 0.0 if open else 1.0
+	var vis: float = lerpf(_open_width(), get_viewport_rect().size.x, target)
+	var r: Vector2 = scroll_range(vis)
+	var want: float = center_scroll(selected_id, vis) if open else clampf(scroll_x, r.x, r.y)
+	if instant or not UiKit.motion_enabled or not is_inside_tree():
+		_apply_panel(target)
+		_kill_scroll_tween()
+		_apply_scroll(want)
+		return
+	_panel_tween = create_tween()
+	_panel_tween.tween_method(_apply_panel, _panel_t, target, PANEL_TIME).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT if open else Tween.EASE_IN_OUT)
+	_scroll_to(want, PANEL_TIME, Tween.TRANS_CUBIC)
+
+
+func _apply_panel(t: float) -> void:
+	_panel_t = t
+	_detail.position.x = t * _panel_slide()
+	if _node_clip != null:
+		_node_clip.size.x = visible_width()
+	_place_scroll_thumb()
+
+
+## 面板滑出的距离：面板（含左侧渐隐与纹饰）整个出窗口
+func _panel_slide() -> float:
+	var vp: Vector2 = get_viewport_rect().size
+	return vp.x - UiKit.layout_rect(SKIN, "panel_top", vp).position.x + 40.0
+
+
+## 让节点落在可见宽 vis 横向正中所需的滚动量（不限制范围，可出框）
+func center_scroll(node_id: String, vis: float) -> float:
+	var n: Dictionary = chapter.node_of(node_id) if chapter != null else {}
+	if n.is_empty():
+		return scroll_x
+	return (n["pos"] as Vector2).x * _scale - vis * 0.5
 
 
 ## 底部滚动指示：亮段长度 = 可见比例，位置随滚动
@@ -549,9 +790,15 @@ func _place_scroll_thumb() -> void:
 	var vp: Vector2 = get_viewport_rect().size
 	var line: Rect2 = UiKit.layout_rect(SKIN, "scroll_line", vp)
 	var th: Rect2 = UiKit.layout_rect(SKIN, "scroll_thumb", vp)
+	var td: Dictionary = UiKit.layout_element(SKIN, "scroll_thumb").get("data", {}) as Dictionary
+	var sr: Vector2 = scroll_range()
+	if bool(td.get("knob", false)):              # 哥特滑轨：定宽旋钮沿滑轨移动 travel，位置 = 滚动比例（拖出框时停在端点）
+		var tk: float = clampf(inverse_lerp(sr.x, sr.y, scroll_x), 0.0, 1.0) if sr.y > sr.x else 0.0
+		UiKit.place(_skin["scroll_thumb"] as Control, Rect2(th.position.x + float(td.get("travel", 0.0)) * tk, th.position.y, th.size.x, th.size.y))
+		return
 	var frac: float = clampf(visible_width() / _content.size.x, 0.05, 1.0)
 	var w: float = line.size.x * frac
-	var t: float = scroll_x / maxf(max_scroll(), 1.0) if max_scroll() > 0.0 else 0.0
+	var t: float = clampf(inverse_lerp(sr.x, sr.y, scroll_x), 0.0, 1.0) if sr.y > sr.x else 0.0
 	UiKit.place(_skin["scroll_thumb"] as Control, Rect2(line.position.x + (line.size.x - w) * t, th.position.y, w, th.size.y))
 
 
@@ -585,13 +832,18 @@ func _on_viewport_input(event: InputEvent) -> void:
 		match mb.button_index:
 			MOUSE_BUTTON_LEFT:
 				if mb.pressed:
+					_kill_scroll_tween()
 					_pressing = true
 					_dragging = false
 					_press_pos = mb.position
 					_press_scroll = scroll_x
 				else:
+					var was_click: bool = _pressing and not _dragging
 					_pressing = false
 					_dragging = false
+					_spring_back()
+					if was_click and mb.position.x < visible_width():      # 点地图空白处：收起详情面板
+						set_panel_open(false)
 			MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_RIGHT:
 				if mb.pressed:
 					set_scroll(scroll_x + UiKit.CHAPTER_WHEEL_STEP)
@@ -604,7 +856,7 @@ func _on_viewport_input(event: InputEvent) -> void:
 		if not _dragging and mm.position.distance_to(_press_pos) > UiKit.CHAPTER_DRAG_THRESHOLD:
 			_dragging = true
 		if _dragging:
-			set_scroll(_press_scroll - (mm.position.x - _press_pos.x))
+			_apply_scroll(_rubber(_press_scroll - (mm.position.x - _press_pos.x)))
 
 
 func is_dragging() -> bool:
@@ -640,15 +892,21 @@ func link_color(from_id: String, to_id: String) -> Color:
 # ---- 详情面板 ----
 func _refresh_detail() -> void:
 	var n: Dictionary = chapter.node_of(selected_id)
-	var state: int = node_state(selected_id)
+	var state: int = shown_state(selected_id)
 	var level: LevelDefinition = DataRegistry.get_level(str(n.get("level", ""))) if not bool(n.get("placeholder", false)) else null
 	if level != null:
 		_level_no.text = RuleText.level_label(level)
+		if bool((UiKit.layout_element(SKIN, "level_no").get("data", {}) as Dictionary).get("short_no", false)):    # 哥特面板：八芒星里只放短编号「01」
+			_level_no.text = RuleText.level_no(level)
 		_detail_title.text = level.title
 		_detail_summary.text = level.summary if level.summary != "" else level.subtitle
 		if level.elite and not level.reward_relics().is_empty():
 			_detail_summary.text += "\n" + DataRegistry.get_string("ui.detail_elite_note").format({ "name": str(DataRegistry.get_relic(level.reward_relics()[0]).get("name", "")) })
 		_detail_objective.text = level.objective_text
+		if state == 0:                              # 打到之前看不见名字与内容，只留前置关卡
+			_detail_title.text = DataRegistry.get_string("ui.node_unknown")
+			_detail_summary.text = ""
+			_detail_objective.text = ""
 	else:
 		_level_no.text = ""
 		_detail_title.text = node_title(selected_id)
@@ -661,6 +919,8 @@ func _refresh_detail() -> void:
 	if best >= 0:                                 # 已通关：状态后跟综合分（越低越好）
 		state_word = DataRegistry.get_string("ui.detail_state_score").format({ "state": state_word, "total": best })
 	_detail_state.text = DataRegistry.get_string("ui.detail_dot").format({ "label": DataRegistry.get_string("ui.detail_state"), "value": state_word })
+	_detail_state.tooltip_text = Scoring.tip_text(SaveManager.best_score_detail(level.id)) if best >= 0 else ""     # 悬停看综合分构成
+	_detail_state.mouse_filter = Control.MOUSE_FILTER_PASS if best >= 0 else Control.MOUSE_FILTER_IGNORE
 	if state == 0:
 		_detail_state.add_theme_color_override("font_color", _state_color(0))
 	else:
@@ -739,6 +999,96 @@ func _on_back_pressed() -> void:
 	else:
 		SceneRouter.goto_main_menu()
 
+
+
+# ---- 解锁动画 ----
+## 本区域里已解锁、还没揭开过的关卡节点（开局就开放的关卡不算）。旧存档没有揭开记录时补种为「已通关的关卡」，即可挑战未通关的补播一次
+func pending_reveals() -> Array[String]:
+	var seen: Variant = SaveManager.revealed("levels_revealed")
+	if seen == null:
+		seen = (GameState.progress.get("completed", []) as Array).duplicate()
+		SaveManager.data["levels_revealed"] = seen
+	var initial: Array = DataRegistry.get_initial_levels()
+	var out: Array[String] = []
+	for n: Dictionary in shown_nodes():
+		if bool(n["placeholder"]) or DataRegistry.get_level(str(n["level"])) == null:
+			continue
+		var lid: String = str(n["level"])
+		if node_state(str(n["id"])) != 0 and not initial.has(lid) and not (seen as Array).has(lid):
+			out.append(str(n["id"]))
+	return out
+
+
+## 进场后（有解锁剧情时等它播完）依次播放解锁动画
+func _start_reveals() -> void:
+	if revealing.is_empty():
+		return
+	if _story != null and _story.is_playing():
+		await _story.finished
+	if not is_inside_tree():
+		return
+	_play_reveals(revealing.duplicate(), REVEAL_DELAY)
+
+
+func _play_reveals(ids: Array, delay: float) -> void:
+	if _reveal_tween != null and _reveal_tween.is_valid():
+		_reveal_tween.kill()
+	for nid: String in ids:
+		if not revealing.has(nid):
+			revealing.append(nid)
+	_restyle_nodes()
+	_refresh_detail()
+	var tw: Tween = create_tween()
+	_reveal_tween = tw
+	tw.tween_interval(delay)
+	for i: int in ids.size():
+		var nid: String = str(ids[i])
+		var b: Button = node_buttons[nid] as Button
+		if i > 0:
+			tw.tween_interval(REVEAL_GAP)
+		_burst.append_reveal(tw, b.get_node("PlateBg/Lock") as Control, b.get_node("PlateBg") as Control, b.get_node("Nameplate") as Control,
+			_reveal_name.bind(nid), _reveal_done.bind(nid))
+
+
+func _reveal_name(nid: String) -> void:
+	revealing.erase(nid)
+	_restyle_nodes()
+	if nid == selected_id:
+		_refresh_detail()
+	_node_layer.queue_redraw()
+
+
+func _reveal_done(nid: String) -> void:
+	revealing.erase(nid)
+
+
+## 测试 / 跳过：立刻结束所有解锁动画
+func skip_reveals() -> void:
+	if _reveal_tween != null and _reveal_tween.is_valid():
+		_reveal_tween.kill()
+	_reveal_tween = null
+	revealing.clear()
+	_burst.clear()
+	for nid: String in node_buttons.keys():
+		var b: Button = node_buttons[nid] as Button
+		var lock: Control = b.get_node("PlateBg/Lock") as Control
+		for c: Control in [b.get_node("PlateBg") as Control, b.get_node("Nameplate") as Control, lock]:
+			UnlockBurst.set_flash(c, 0.0)
+		lock.rotation = 0.0
+		lock.scale = Vector2.ONE
+		lock.position = lock.get_meta(&"shake_base", lock.position) as Vector2
+	_restyle_nodes()
+	_refresh_detail()
+
+
+## 调试版 F9：重播选中关卡的解锁动画（只是表现，不改存档）
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key: InputEventKey = event as InputEventKey
+	if key == null or not key.pressed or key.echo or key.keycode != KEY_F9 or not OS.is_debug_build() or chapter == null:
+		return
+	if node_state(selected_id) != 0 and not DataRegistry.get_initial_levels().has(str(chapter.node_of(selected_id).get("level", ""))):
+		skip_reveals()
+		_play_reveals([selected_id], 0.3)
 
 
 # ---- 章节 / 区域 ----

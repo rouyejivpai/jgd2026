@@ -24,6 +24,7 @@ var _saved_progress: Dictionary
 
 func before_each() -> void:
 	_saved_data = SaveManager.data.duplicate(true)
+	SaveManager.autosave = false          # 2026-10-20：选关 / 一级地图会记解锁动画的揭开记录，测试里不写盘
 	_saved_level_id = GameState.current_level_id
 	_saved_unlocks = GameState.unlocks
 	_saved_progress = GameState.progress
@@ -38,6 +39,7 @@ func before_each() -> void:
 func after_each() -> void:
 	SaveManager.data = _saved_data
 	GameState.current_level_id = _saved_level_id
+	SaveManager.autosave = true
 	GameState.unlocks = _saved_unlocks
 	GameState.progress = _saved_progress
 	DataRegistry.story_dir = DataRegistry.STORY_DIR

@@ -3,10 +3,10 @@ extends Control
 ## data/ui_layout/main_menu.json 与 assets/themes/ui_main_menu.tres（tools/apply_ui_manifest.py 由 assets/ui/main_menu/manifest.json 生成），
 ## 本脚本只负责文字绑定与功能接线：继续游戏 → 一级地图（无进度时禁用）、新游戏 → 有进度时先弹确认框，确认后清空全部存档
 ## （保留设置）再进一级地图、设置 → 设置浮窗、退出；数据有错误时显示错误条并禁用继续 / 新游戏（error_manifest 的元素）。
-## 第一个可用按钮默认取焦点，焦点复用 hover 贴图（设计图状态）。菜单音乐。
+## 进入时不取默认焦点（2026-10-20：否则「继续游戏」一进来就呈选中态）；按方向键 / Tab 时才落到第一个可用按钮，焦点复用 hover 贴图。菜单音乐。
 ## 节点名沿用：btn_start / StartButton 现为「新游戏」，其上新增 btn_continue / ContinueButton「继续游戏」。
 ## P8（10 §1.5）：菜单按钮挂菜单大按钮档的动效（data/ui_motion.json 的 button_menu；总闸关闭时不挂）；
-## 该档悬停即取焦点（焦点跟随鼠标，Q-072），避免默认焦点的「开始」与鼠标悬停的按钮同时亮起。
+## 该档悬停即取焦点（焦点跟随鼠标，Q-072），同一时刻只有一个按钮亮起。
 
 const SCREEN: String = "main_menu"
 const MENU_BGM: String = "menu_main"
@@ -43,25 +43,17 @@ func _ready() -> void:
 	(nodes["btn_quit"] as Button).pressed.connect(_on_quit_pressed)
 	resized.connect(_layout)
 	_layout()
-	ArtText.fill(nodes["game_title_art"] as Control, SCREEN + ".game_title_art")     # P8：标题艺术字（R6a：光晕 + 扫光，静止态 = 原标题图）
+	if not bool((UiKit.layout_element(SCREEN, "game_title_art").get("data", {}) as Dictionary).get("no_art_text", false)):     # 哥特换皮：标题画在背景图上
+		ArtText.fill(nodes["game_title_art"] as Control, SCREEN + ".game_title_art")     # P8：标题艺术字（R6a：光晕 + 扫光，静止态 = 原标题图）
 	for id: String in MOTION_BUTTONS:
 		UiKit.attach_button_motion(nodes[id] as Button, MOTION_PROFILE)
 	_confirm = ConfirmDialog.new()
 	_confirm.name = "NewGameConfirm"
 	add_child(_confirm)
 	_confirm.confirmed.connect(_start_new_game)
-	_confirm.cancelled.connect(_focus_first)
-	_focus_first()
 	if OS.get_cmdline_user_args().has("--config-editor") and ResourceLoader.exists(SceneRouter.CONFIG_EDITOR_SCENE) and not _opened_editor_once:
 		_opened_editor_once = true
 		SceneRouter.goto_config_editor.call_deferred()
-
-
-## 默认焦点：有进度时为「继续游戏」，否则「新游戏」；数据出错（两者都禁用）时不取焦点
-func _focus_first() -> void:
-	var b: Button = first_enabled_button()
-	if b == nodes["btn_continue"] or b == nodes["btn_start"]:
-		b.grab_focus()
 
 
 func first_enabled_button() -> Button:
@@ -72,7 +64,7 @@ func first_enabled_button() -> Button:
 	return null
 
 
-## 键盘导航：鼠标离开按钮会交还焦点（焦点跟随鼠标），此时按上 / 下 / Tab 先回到第一个可用按钮
+## 键盘导航：进入时及鼠标离开按钮后（焦点跟随鼠标）都没有焦点，此时按上 / 下 / Tab 先落到第一个可用按钮
 ## 第五阶段：F10 打开教学与解锁配置器（开发工具，导出包内不存在时忽略）
 func _unhandled_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey

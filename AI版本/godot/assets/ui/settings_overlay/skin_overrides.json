@@ -1,0 +1,317 @@
+{
+ "_comment": "2026-10-19 哥特换皮：面板框 / 按钮牌 / 开关 / 滑条把手 / 下拉箭头为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（docs/reference/gothic_gen），滑条轨为程序绘制；只换贴图与字色，位置不变。",
+ "elements": [
+  {
+   "id": "panel_settings",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "title",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 40,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "btn_close",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 24,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "separator_header",
+   "file": "../gothic/blank.png"
+  },
+  {
+   "id": "section_audio",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#C9B6D6"
+   }
+  },
+  {
+   "id": "label_master",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "slider_master_track",
+   "file": "../gothic/detail/track.png",
+   "ninepatch": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "slider_master_fill",
+   "file": "../gothic/slider_fill.png",
+   "ninepatch": [
+    2,
+    0,
+    2,
+    0
+   ]
+  },
+  {
+   "id": "slider_master_grabber",
+   "file": "../gothic/slider_grabber_normal.png"
+  },
+  {
+   "id": "pct_master",
+   "font": {
+    "family": "Cinzel",
+    "size": 24,
+    "color": "#ADA4B4"
+   }
+  },
+  {
+   "id": "label_music",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "slider_music_track",
+   "file": "../gothic/detail/track.png",
+   "ninepatch": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "slider_music_fill",
+   "file": "../gothic/slider_fill.png",
+   "ninepatch": [
+    2,
+    0,
+    2,
+    0
+   ]
+  },
+  {
+   "id": "slider_music_grabber",
+   "file": "../gothic/slider_grabber_normal.png"
+  },
+  {
+   "id": "pct_music",
+   "font": {
+    "family": "Cinzel",
+    "size": 24,
+    "color": "#ADA4B4"
+   }
+  },
+  {
+   "id": "label_sfx",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "slider_sfx_track",
+   "file": "../gothic/detail/track.png",
+   "ninepatch": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "slider_sfx_fill",
+   "file": "../gothic/slider_fill.png",
+   "ninepatch": [
+    2,
+    0,
+    2,
+    0
+   ]
+  },
+  {
+   "id": "slider_sfx_grabber",
+   "file": "../gothic/slider_grabber_normal.png"
+  },
+  {
+   "id": "pct_sfx",
+   "font": {
+    "family": "Cinzel",
+    "size": 24,
+    "color": "#ADA4B4"
+   }
+  },
+  {
+   "id": "section_display",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#C9B6D6"
+   }
+  },
+  {
+   "id": "label_fullscreen",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "toggle_fullscreen",
+   "states": {
+    "off": "../gothic/toggle_off.png",
+    "on": "../gothic/toggle_on.png"
+   }
+  },
+  {
+   "id": "label_target_lines",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "toggle_target_lines",
+   "states": {
+    "off": "../gothic/toggle_off.png",
+    "on": "../gothic/toggle_on.png"
+   }
+  },
+  {
+   "id": "label_font_scale",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "dropdown_font_scale",
+   "states": {
+    "normal": "../gothic/detail/dropdown.png",
+    "hover": "../gothic/detail/dropdown.png",
+    "pressed": {
+     "file": "../gothic/detail/dropdown.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/dropdown.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    35,
+    0,
+    62,
+    0
+   ],
+   "text_rect": [
+    44,
+    4,
+    140,
+    46
+   ]
+  },
+  {
+   "id": "font_scale_value",
+   "font": {
+    "family": "Cinzel",
+    "size": 24,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "dropdown_arrow",
+   "file": "../gothic/blank.png"
+  },
+  {
+   "id": "section_debug",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#C9B6D6"
+   }
+  },
+  {
+   "id": "label_sim_log",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 26,
+    "color": "#E6E0E8"
+   }
+  },
+  {
+   "id": "toggle_sim_log",
+   "states": {
+    "off": "../gothic/toggle_off.png",
+    "on": "../gothic/toggle_on.png"
+   }
+  },
+  {
+   "id": "log_hint",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#ADA4B4"
+   }
+  },
+  {
+   "id": "separator_footer",
+   "file": "../gothic/blank.png"
+  }
+ ]
+}

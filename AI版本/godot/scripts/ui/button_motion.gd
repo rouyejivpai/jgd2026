@@ -114,6 +114,15 @@ func _capture() -> void:
 	_pressed.add_theme_stylebox_override("panel", _styles["pressed"] as StyleBox)
 
 
+## 外部改了按钮的主题变体（theme_type_variation）时调用：去掉本节点的空样式覆盖，按新主题重新取原样式（2026-10-19：结算按钮按胜负换变体）
+func recapture() -> void:
+	for st: String in _empties.keys():
+		button.remove_theme_stylebox_override(st)
+	_empties.clear()
+	_capture()
+	_apply()
+
+
 func _styles_changed() -> bool:
 	for st: String in WATCH_STATES:
 		if button.get_theme_stylebox(st) != _empties.get(st):

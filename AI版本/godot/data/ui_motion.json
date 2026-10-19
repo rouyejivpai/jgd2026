@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_doc": "10 §1.5 UI 动效参数（P8）。时长单位秒；trans / ease 取 Tween.TransitionType / EaseType 的小写名（sine / quad / cubic / back …；in / out / in_out / out_in）。代码里不写时长与幅度，全部读本文件。一档可写 \"extends\": \"<另一档>\"，只列出不同的项（浅合并）。button = 全部按钮的通用档（UiKit 自动挂）；button_menu = 主界面大按钮（P8 用户目视：加大选中与未选中的差别；Q-072 焦点跟随鼠标）。 scroll_text = 文字溢出遮罩滚动（ScrollText）：自动滚动速度（像素/秒）、两端停顿、滚轮步长、拖动阈值、遮罩两端渐隐宽度。",
+  "_doc": "10 §1.5 UI 动效参数（P8）。时长单位秒；trans / ease 取 Tween.TransitionType / EaseType 的小写名（sine / quad / cubic / back …；in / out / in_out / out_in）。代码里不写时长与幅度，全部读本文件。一档可写 \"extends\": \"<另一档>\"，只列出不同的项（浅合并）。button = 全部按钮的通用档（UiKit 自动挂）；button_menu = 主界面大按钮（P8 用户目视：加大选中与未选中的差别；Q-072 焦点跟随鼠标）。 scroll_text = 文字溢出遮罩滚动（ScrollText）：自动滚动速度（像素/秒）、两端停顿、滚轮步长、拖动阈值、遮罩两端渐隐宽度。 state_ease = 状态切换的缓动（选中 / 非选中、悬停抬起、调色）；panel_in = 弹窗 / 侧栏出现（淡入 + 轻微放大）；toast = 右侧提示栏每条的滑入；result = 结算演出（逐项计分、盖章、打字机、按钮出现），见 scripts/ui/result_panel.gd。 slide_in = 弹窗按贴边方向滑入（UiKit.slide_in）；transition = 场景转场（SceneRouter，菱晶碎裂波）。",
   "button": {
     "hover_in": {
       "duration": 0.14,
@@ -92,5 +92,115 @@
     "fade_out_s": 0.45,
     "rise_px": 18,
     "start_scale": 1.08
+  },
+  "state_ease": {
+    "duration": 0.18,
+    "trans": "sine",
+    "ease": "out"
+  },
+  "panel_in": {
+    "duration": 0.18,
+    "trans": "cubic",
+    "ease": "out",
+    "from_scale": 0.97
+  },
+  "toast": {
+    "in_s": 0.22,
+    "trans": "cubic",
+    "ease": "out"
+  },
+  "result": {
+    "panel_in_s": 0.25,
+    "count_s": 0.9,
+    "count_trans": "expo",
+    "count_ease": "out",
+    "row_gap_s": 0.15,
+    "stamp": {
+      "delay_s": 0.25,
+      "duration": 0.32,
+      "from_scale": 2.6,
+      "angle_deg": -14.0,
+      "trans": "back",
+      "ease": "out",
+      "shake_px": 7.0,
+      "shake_s": 0.18
+    },
+    "type_cps": 42.0,
+    "line_gap_s": 0.1,
+    "buttons_in_s": 0.3,
+    "scroll_s": 0.25
+  },
+  "slide_in": {
+    "edge_s": 0.32,
+    "float_s": 0.24,
+    "float_px": 40,
+    "span_ratio": 0.9,
+    "touch_px": 24,
+    "trans": "quint",
+    "ease": "out"
+  },
+  "transition": {
+    "duration": 0.55,
+    "cells": 14.0,
+    "spread": 0.55,
+    "rim": 0.09,
+    "hold_frames": 2,
+    "rim_color": "#ECE6F2",
+    "ember_color": "#B01C2A",
+    "_note": "转场：旧画面碎成菱晶，从点击处（无点击时为屏幕中心）向外一圈圈收缩消失，菱晶边缘先烧成暗红、再亮成银白；新界面在下面"
+  },
+  "soul_burst": {
+    "hold_s": 0.07,
+    "old_scale": 1.12,
+    "particle_step_px": 1.1,
+    "particle_size_px": [
+      1.4,
+      2.8
+    ],
+    "particle_life_s": [
+      0.45,
+      0.95
+    ],
+    "speed_px_s": [
+      50.0,
+      210.0
+    ],
+    "spread_rad": 0.5,
+    "drag": 3.2,
+    "rise_px_s2": -90.0,
+    "particle_color": "#FFFFFF",
+    "new_delay_s": 0.04,
+    "new_in_s": 0.32,
+    "new_scale_from": 0.82,
+    "new_hot_s": 0.5,
+    "flash_keys": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.04,
+        1.0
+      ],
+      [
+        0.14,
+        0.35
+      ],
+      [
+        0.22,
+        0.85
+      ],
+      [
+        0.6,
+        0.0
+      ]
+    ],
+    "glow_color": "#DCE6FF",
+    "glow_scale": [
+      1.3,
+      2.6
+    ],
+    "handoff_s": 0.62,
+    "_note": "灵魂储量（预算铭牌）被消耗时的数字演出（SoulBurst）：铭牌亮起并闪一下（flash_keys = [秒, 强度] 关键帧，glow_* 为辉光色与相对 Label 的大小）；旧数字白热 hold_s 秒、胀到 old_scale 后按字形化作白色粒子炸开（particle_step_px = 字形采样网格步长，越小越密；速度 / 阻尼 / 上飘加速度 / 寿命 / 大小）；新数字在 new_delay_s 后用 new_in_s 由 new_scale_from 放大浮现、new_hot_s 内由白热回到原字色；handoff_s 时交还原 Label"
   }
 }

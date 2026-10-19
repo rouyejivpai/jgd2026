@@ -26,6 +26,9 @@ func test_title_static_at_t0_then_animates() -> void:
 	await wait_process_frames(2)
 	var title: Control = (menu.get("nodes") as Dictionary)["game_title_art"] as Control
 	var a: ArtText = title.get_node_or_null(ArtText.NODE_NAME) as ArtText
+	if bool((UiKit.layout_element("main_menu", "game_title_art").get("data", {}) as Dictionary).get("no_art_text", false)):
+		assert_null(a, "哥特换皮：标题画在主界面背景图上，不叠艺术字")
+		return
 	assert_not_null(a, "主标题挂上艺术字")
 	assert_true(a.is_animated(), "R6a 有 motion：光晕 + 扫光")
 	assert_eq(title.self_modulate.a, 0.0, "原标题图透明（由艺术字底字代替，同一张图）")

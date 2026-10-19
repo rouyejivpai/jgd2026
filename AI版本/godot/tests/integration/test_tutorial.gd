@@ -125,6 +125,15 @@ func _next(d: TutorialDirector) -> void:
 	await wait_process_frames(2)
 
 
+## 当前是自动插入的「收起指令界面」：高亮「关闭」，按下后回到原步骤
+func _close_panel(d: TutorialDirector, hud: Control) -> void:
+	await _assert_targets_found(d)
+	assert_true(bool(d.current().get("auto", false)) and str(d.current()["event"]) == "panel_closed", "第 %d 步：指令界面挡住高亮 → 先收起" % (d.index + 1))
+	(hud.find_child("DetailClose", true, false) as Button).pressed.emit()
+	await wait_process_frames(2)
+	assert_false(bool(hud.call("side_visible")))
+
+
 func test_c01_budget_card_zone_start() -> void:
 	var root: Node2D = _battle(LEVEL)
 	await wait_process_frames(3)
@@ -157,6 +166,30 @@ func test_c01_budget_card_zone_start() -> void:
 	assert_true(SaveManager.is_tutorial_seen(LEVEL), "完成后记入存档")
 
 
+## 用户 2026-10-20 截图：重进第 1 关时恢复了上次的部署 → 开场指令界面开着、盖住预算，引导走不下去
+func test_restored_deployment_cleared_for_deploy_tutorial() -> void:
+	var root: Node2D = _battle(LEVEL)
+	await wait_process_frames(3)
+	var c: BattleController = root.get_node("BattleController") as BattleController
+	assert_ne(c.add_unit("striker", (root.get("level") as LevelDefinition).deploy_cells[0]), "")
+	var saved: Dictionary = c.config_to_raw()
+	root.queue_free()
+	await wait_process_frames(2)
+	GameState.current_level_id = LEVEL
+	SaveManager.set_level_config(LEVEL, saved)
+	var root2: Node2D = BATTLE_SCENE.instantiate() as Node2D
+	add_child_autofree(root2)
+	(root2.get_node("BattleController") as BattleController).persist = false
+	(root2.find_child("DialogueOverlay", true, false) as CanvasItem).visible = false
+	await wait_process_frames(3)
+	var d: TutorialDirector = _director(root2)
+	var hud: Control = root2.get_node("UI/HUD") as Control
+	assert_true((root2.get_node("BattleController") as BattleController).placements.is_empty(), "引导从放单位教起：撤下恢复的部署")
+	assert_false(bool(hud.call("side_visible")), "指令界面不开着")
+	await _assert_targets_found(d)
+	assert_eq(str(d.current()["title"]), "预算")
+
+
 func test_c02_beacon_purchase_obstacles_and_route() -> void:
 	var root: Node2D = _battle("level_c02")
 	await wait_process_frames(3)
@@ -172,26 +205,30 @@ func test_c02_beacon_purchase_obstacles_and_route() -> void:
 	await _assert_targets_found(d)
 	hud.call("enter_beacon_mode", uid)
 	await wait_process_frames(2)
-	assert_eq(d.index, 2, "进入信标模式 → 障碍物")
+	assert_eq(d.index, 2, "进入信标模式 → 障碍物被指令界面挡住，先插一步收起")
+	await _close_panel(d, hud)
+	assert_eq(d.index, 3, "收起 → 障碍物")
+	assert_eq(hud.call("beacon_mode_slot"), uid, "收起指令界面不退出信标模式")
 	await _assert_targets_found(d)
 	assert_eq(d.target_rects(d.current()).size(), 3, "三组障碍格三处高亮")
+	assert_eq((d.overlay.find_child("StepLabel", true, false) as Label).text.get_slice("　", 0), "3/10", "插入的步骤不计入步数")
 	await _next(d)
 	for i: int in 3:
-		assert_eq(d.index, 3 + i)
+		assert_eq(d.index, 4 + i)
 		await _assert_targets_found(d)
 		var cell: Vector2i = ((d.current()["targets"] as Array[Dictionary])[0]["cells"] as Array)[0] as Vector2i
 		assert_ne(c.add_beacon(uid, cell), "")
 		await wait_process_frames(2)
 	assert_eq(c.beacon_total(), 3)
-	assert_eq(d.index, 6, "放满三个 → 完成")
+	assert_eq(d.index, 7, "放满三个 → 完成")
 	await _assert_targets_found(d)
 	hud.call("exit_beacon_mode")
 	await wait_process_frames(2)
-	assert_eq(d.index, 7, "退出信标模式 → 点击人偶")
+	assert_eq(d.index, 8, "退出信标模式 → 指令界面已收起：点击人偶")
 	await _assert_targets_found(d)
 	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
 	await wait_process_frames(2)
-	assert_eq(d.index, 8, "选中 → 移动策略")
+	assert_eq(d.index, 9, "选中 → 移动策略")
 	await _assert_targets_found(d)
 	await _next(d)
 	await _assert_targets_found(d)
@@ -263,11 +300,21 @@ func test_c03_enemy_info_and_rings() -> void:
 	assert_eq(d.index, 8, "关闭侧栏 → 选中单位")
 	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
 	await wait_process_frames(2)
-	assert_eq(d.index, 9, "选中己方 → 圆环")
+	assert_eq(d.index, 9, "选中己方 → 指令界面盖住了单位和圆环：先收起")
+	await _close_panel(d, hud)
+	assert_eq(d.index, 10, "收起 → 圆环")
 	await _assert_targets_found(d)
 	var rings: Array[Rect2] = d.target_rects(d.current())
 	assert_gt(rings[0].size.x, rings[1].size.x, "视野圈大于射程圈")
+	var board: Rect2 = (root.call("cell_screen_rect", Vector2i.ZERO) as Rect2).merge(root.call("cell_screen_rect", Vector2i(level_w(root) - 1, level_h(root) - 1)) as Rect2)
+	assert_true(board.encloses(rings[0]), "视野圈高亮裁到棋盘内，不照亮两侧界面")
 	await _next(d)
+	assert_eq(str(d.current()["event"]), "ally_selected", "攻击策略要看指令界面：先插一步打开")
+	assert_true(bool(d.current().get("auto", false)))
+	await _assert_targets_found(d)
+	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
+	await wait_process_frames(2)
+	assert_eq(str(d.current()["title"]), "攻击策略")
 	await _assert_targets_found(d)
 	await _next(d)
 	assert_eq(str(d.current()["title"]), "移动策略")
@@ -283,6 +330,14 @@ func test_c03_enemy_info_and_rings() -> void:
 			break
 		c.advance_tick()
 	assert_eq(c.world.result, SimTypes.BattleResult.WIN, "照引导走（预填指令 + 引导信标）能赢")
+
+
+func level_w(root: Node2D) -> int:
+	return (root.get("level") as LevelDefinition).width
+
+
+func level_h(root: Node2D) -> int:
+	return (root.get("level") as LevelDefinition).height
 
 
 ## 引导允许的两个终点格 × 第一块区域的每一格：只用预填指令都能赢（承伤形态射程 2 恰好同时够到甲乙）
@@ -317,18 +372,26 @@ func test_c05_rule_parts_and_farthest() -> void:
 	var d: TutorialDirector = _director(root)
 	var c: BattleController = root.get_node("BattleController") as BattleController
 	await _assert_targets_found(d)
+	var hud: Control = root.get_node("UI/HUD") as Control
+	var first: String = c.add_unit("striker", Vector2i(1, 7))
+	EventBus.unit_selected.emit(c.unit_id_of_slot(first))
+	await wait_process_frames(2)
+	assert_eq(str(d.current()["title"]), DataRegistry.get_string("ui.tutorial_close_panel_title"), "放下一个：指令界面盖住部署区 → 先收起")
+	await _close_panel(d, hud)
+	assert_eq(str(d.current()["title"]), "部署", "收起后继续等第二个")
 	var uid: String = c.add_unit("striker", Vector2i(1, 8))
 	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
 	await wait_process_frames(2)
-	assert_eq(d.index, 1, "放下 → 点击人偶")
+	assert_eq(d.index, 2, "放满两个 → 指令界面（已自动打开，点击继续）")
+	assert_true(bool(hud.call("side_visible")), "放下人偶自动打开指令界面")
 	await _assert_targets_found(d)
-	EventBus.unit_selected.emit(c.unit_id_of_slot(uid))
-	await wait_process_frames(2)
+	assert_true((hud.call("side_rect") as Rect2).encloses(d.target_rects(d.current())[0]), "侧栏高亮不伸到地图上")
+	await _next(d)
 	for i: int in 4:
-		assert_eq(d.index, 2 + i)
+		assert_eq(d.index, 3 + i)
 		await _assert_targets_found(d)
 		await _next(d)
-	assert_eq(d.index, 6, "改成最远")
+	assert_eq(d.index, 7, "改成最远")
 	await _assert_targets_found(d)
 	var sel: OptionButton = d.find_ui("Group_attack/RuleSelector") as OptionButton
 	assert_not_null(sel)
@@ -337,8 +400,15 @@ func test_c05_rule_parts_and_farthest() -> void:
 			sel.select(i)
 			sel.item_selected.emit(i)
 	await wait_process_frames(2)
-	assert_eq(d.index, 7, "改了指令 → 开始")
+	assert_eq(d.index, 8, "改了指令 → 追过去")
 	assert_eq(c.get_rules(uid)[0].target.selector, SimTypes.Selector.FARTHEST)
+	for i: int in 2:                          # 追击、追最远（只验证推进，不真改指令）
+		await wait_process_frames(2)
+		d._fire("rules_changed")
+		await wait_process_frames(2)
+	assert_eq(d.index, 10, "最后一步：去改另一个人偶")
+	assert_false(bool(d.current()["block"]), "不拦截：才能点另一个人偶改指令")
+	assert_false(bool(hud.call("side_visible")), "出现时收起指令界面，露出另一个人偶")
 
 
 func test_c04_and_c06_steps_show() -> void:

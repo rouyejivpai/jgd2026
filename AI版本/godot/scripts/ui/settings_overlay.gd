@@ -62,8 +62,15 @@ func open() -> void:
 			_font_option.select(i)
 	(nodes["log_hint"] as Label).text = DataRegistry.get_string("ui.settings_log_hint").format(
 		{ "path": ProjectSettings.globalize_path(DebugLog.LOG_DIR) })
+	var was_open: bool = visible
 	visible = true
 	_layout()
+	if not was_open:                         # 2026-10-19：面板与控件一起滑入，遮罩淡入
+		var group: Array = []
+		for id: String in nodes.keys():
+			if id != "mask":
+				group.append(nodes[id])
+		UiKit.slide_in(group, (nodes["panel_settings"] as Control).get_global_rect(), [nodes.get("mask")])
 
 
 ## Esc 关闭（先于场景内其他 Esc 处理，例如局内收起侧栏）
@@ -163,6 +170,14 @@ func _build_font_option() -> void:
 	_font_option.focus_mode = Control.FOCUS_NONE
 	_font_option.fit_to_longest_item = false
 	_font_option.add_theme_icon_override("arrow", UiKit.transparent_texture(Vector2i.ONE))   # 箭头用布局里的切片
+	# 布局里的 font_scale_value 文字层与下拉自带文字重叠（且只显示未填充的 "{pct}%"）：隐藏它，把它的字体 / 字号 / 颜色给下拉
+	var value_label: Label = nodes["font_scale_value"] as Label
+	value_label.visible = false
+	_font_option.add_theme_font_override("font", value_label.get_theme_font("font"))
+	_font_option.add_theme_font_size_override("font_size", value_label.get_theme_font_size("font_size"))
+	var value_color: Color = value_label.get_theme_color("font_color")
+	for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+		_font_option.add_theme_color_override(c, value_color)
 	for i: int in FONT_SCALES.size():
 		_font_option.add_item(DataRegistry.get_string("ui.settings_font_scale_option").format({ "pct": roundi(FONT_SCALES[i] * 100.0) }), i)
 	_font_option.select(0)

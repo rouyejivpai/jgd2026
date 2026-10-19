@@ -36,6 +36,26 @@ static func compute(units: int, actions: int, conditions: int, beacons: int, sec
 		"seconds": seconds, "parts": parts, "total": int(round(total)) }
 
 
+## 分数构成的多行说明（悬停提示用）：综合分 + 四项「数量 × 系数 = 分」；score 为 compute 的结果（存档里的最好成绩同结构），空则 ""
+static func tip_text(score: Dictionary) -> String:
+	if score.is_empty() or not score.has("parts"):
+		return ""
+	var c: Dictionary = coefficients()
+	var parts: Dictionary = score["parts"] as Dictionary
+	return DataRegistry.get_string("ui.score_tip").format({
+		"total": int(score.get("total", 0)),
+		"units": int(score.get("unit_count", 0)), "cu": num(c["units"]), "pu": num(parts.get("units", 0.0)),
+		"rules": int(score.get("action_count", 0)) + int(score.get("condition_count", 0)), "ck": num(c["complexity"]), "pk": num(parts.get("complexity", 0.0)),
+		"beacons": int(score.get("beacon_count", 0)), "cb": num(c["beacons"]), "pb": num(parts.get("beacons", 0.0)),
+		"seconds": "%.1f" % float(score.get("seconds", 0.0)), "ct": num(c["time"]), "pt": num(parts.get("time", 0.0)) })
+
+
+## 数字显示：整数不带小数，否则一位小数
+static func num(v: Variant) -> String:
+	var f: float = float(v)
+	return str(int(round(f))) if is_equal_approx(f, round(f)) else "%.1f" % f
+
+
 ## 本局（胜利时）：统计 controller 上已部署单位的指令与信标
 static func from_controller(c: BattleController) -> Dictionary:
 	var units: int = 0

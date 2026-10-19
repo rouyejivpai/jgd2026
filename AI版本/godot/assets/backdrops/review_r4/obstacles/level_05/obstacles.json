@@ -3,6 +3,7 @@
   "pieces": [
     {
       "file": "01.png",
+      "upright": "bones",
       "cells": [
         [
           7,
