@@ -9,7 +9,10 @@
   husk 残骸行者 ← 蜷伏的苍白幽灵少女；priest 低语祭司 ← 手捧光球的高帽幽灵
   hex_priest 咒缚祭司 ← 带面具的兜帽少年（设定「恐惧」）；spitter 骨喉 ← 倾倒罐中骨浆的白袍女
   warden 哭墙守卫 ← 拄杖蒙面的白发老妪；bone_guard 骨花护卫 ← 持矛白甲骑士
-  bone_core 骨花核心 / bone_witch 骨花魔女 ← 彼岸花魔女
+  bone_core 骨花核心 ← 彼岸花魔女；bone_witch 骨花魔女 ← 骨花魔女.webp（白色彼岸花头、黑斗篷）
+  marrow_hulk 髓块 ← 多爪畸形体的黑白版（与袭击者同一设定，去色区分）
+  建筑 / 目标物 transit_node 转运点、echo_pillar 回响骸柱、dummy 试作人偶、supply_crate 物资箱 ← 生成_建筑/（tools/make_structures.py）
+  己方六形态头像：人物背后叠金色发光的形态图标（assets/sprites/form_icons/，tools/make_form_icons.py），区分共用人偶图的形态
   剧情立绘 doll ← 人偶立绘完好发饰版（另存破损版 doll_worn、魔女帽版 doll_witch_hat）；keeper 守火 ← 守火立绘
   地形效果格物件（tile_objects/）：hazard 危险区 ← 裂甲菌簇；mire 缓滞带 ← 僵骨地刺；shrine 净化台 ← 静息祭坛（蓝）
   暂无对应位置、只入库备用（props/）：守火魂灯 ×3（精英关火种）、畸变母核 ×3
@@ -61,6 +64,15 @@ FIGURES = {
     "knight": ("QQ人2/mmexport1792131393427.jpg", True, [0.15, 0.0, 0.85, 0.55]),
     "lily": ("QQ人2/mmexport1792131389731.jpg", False, [0.15, 0.0, 0.85, 0.6]),
     "bell_girl": ("QQ人2/mmexport1792131306396.jpg", True, [0.25, 0.08, 0.95, 0.65]),
+    "flower_witch": ("骨花魔女.webp", False, [0.12, 0.0, 0.88, 0.5]),
+    "transit_node": ("生成_建筑/transit_node.png", False, [0.0, 0.0, 1.0, 1.0]),
+    "echo_pillar": ("生成_建筑/echo_pillar.png", False, [0.0, 0.0, 1.0, 1.0]),
+    "dummy": ("生成_建筑/dummy.png", False, [0.1, 0.0, 0.9, 0.8]),
+    "supply_crate": ("生成_建筑/supply_crate.png", False, [0.0, 0.0, 1.0, 1.0]),
+}
+# 由已有人物派生：名称 → (源人物, 处理)
+DERIVED = {
+    "anger_gray": ("anger", "grayscale"),
 }
 
 # 单位 id → 人物。己方：完好 / 破损 / 魔女帽三版轮用
@@ -70,9 +82,19 @@ UNITS = {
     "hound": "hound", "brute": "werewolf", "raider": "anger", "bone_weaver": "spider",
     "husk": "ghost_girl", "priest": "top_hat", "hex_priest": "masked", "spitter": "jar_robe",
     "warden": "old_witch", "bone_guard": "knight", "bone_core": "lily",
+    "bone_witch": "flower_witch", "marrow_hulk": "anger_gray",
+    "transit_node": "transit_node", "echo_pillar": "echo_pillar", "dummy": "dummy", "supply_crate": "supply_crate",
     # 精英关备用（units.json 尚无这些单位）
     "hound_alpha": "werewolf", "bell_witch": "bell_girl",
 }
+
+# 己方形态 → 头像背后的金色发光图标
+FORM_ICON_DIR = GODOT / "assets/sprites/form_icons"
+FORM_ICON_FORMS = {"striker", "bulwark", "swift", "lancer", "hexer", "binder"}
+PORTRAIT_ICON_SIZE = 0.46   ## 图标边长（占头像，左上角；用户：大小不变，允许被人物遮住一小部分）
+PORTRAIT_ICON_FIG_W = 0.74  ## 有图标时人物宽度（占头像）
+PORTRAIT_ICON_TOP = 0.16    ## 有图标时人物头顶位置（占头像）
+PORTRAIT_ICON_FIG_DX = 0.1  ## 有图标时人物右移（占头像），给左上角图标让位
 
 # 出场卡切片（头像画在切片上）→ 形态
 CARD_FORMS = {"card_striker": "striker", "card_bulwark": "bulwark", "card_swift": "swift", "card_spitter": "lancer"}
@@ -118,6 +140,15 @@ def figure(name: str) -> Image.Image:
     return im.transpose(Image.FLIP_LEFT_RIGHT) if flip else im
 
 
+def grayscale(im: Image.Image) -> Image.Image:
+    """黑白：按亮度去色（保留 alpha），略提对比让线条与明暗仍清楚"""
+    arr = np.array(im.convert("RGBA")).astype(np.float32)
+    lum = arr[..., 0] * 0.299 + arr[..., 1] * 0.587 + arr[..., 2] * 0.114
+    lum = np.clip((lum - 128.0) * 1.12 + 128.0, 0, 255)
+    arr[..., 0] = arr[..., 1] = arr[..., 2] = lum
+    return Image.fromarray(arr.astype(np.uint8), "RGBA")
+
+
 def fit_into(fig: Image.Image, canvas: tuple, box: tuple, bottom: bool = True) -> Image.Image:
     """等比缩放放入 box（x0, y0, x1, y1）；bottom = 底边对齐（否则竖直居中），水平居中"""
     x0, y0, x1, y1 = box
@@ -129,7 +160,12 @@ def fit_into(fig: Image.Image, canvas: tuple, box: tuple, bottom: bool = True) -
     return out
 
 
-def portrait(fig: Image.Image, head: list, size: int = 512) -> Image.Image:
+def gold_icon(form: str, size: int) -> Image.Image:
+    """形态图标（金色 → 形态标志色渐变 + 烘焙外发光，颜色已在 make_form_icons.py 烘焙），size × size"""
+    return Image.open(FORM_ICON_DIR / f"{form}.png").convert("RGBA").resize((size, size), Image.LANCZOS)
+
+
+def portrait(fig: Image.Image, head: list, size: int = 512, icon: str = "") -> Image.Image:
     w, h = fig.size
     x0, y0, x1, y1 = head[0] * w, head[1] * h, head[2] * w, head[3] * h
     side = max(x1 - x0, y1 - y0)
@@ -140,6 +176,16 @@ def portrait(fig: Image.Image, head: list, size: int = 512) -> Image.Image:
     inner, outer = np.array([62, 36, 82]), np.array([16, 9, 22])
     col = inner[None, None, :] * (1 - d) + outer[None, None, :] * d
     bg = Image.fromarray(np.dstack([col, np.full((size, size, 1), 255)]).astype(np.uint8), "RGBA")
+    if icon:                                   # 用户 2026-10-19：金色发光图标放左上角、尽量露出全貌（仍在人物之后）；整个人物（不做方形裁切）按宽缩放、略偏右下
+        ic = gold_icon(icon, int(size * PORTRAIT_ICON_SIZE))
+        bg.alpha_composite(ic, (int(size * 0.01), int(size * 0.01)))
+        k = size * PORTRAIT_ICON_FIG_W / fig.width
+        f = fig.resize((round(fig.width * k), round(fig.height * k)), Image.LANCZOS)
+        layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        top = int(size * PORTRAIT_ICON_TOP)
+        layer.alpha_composite(f.crop((0, 0, f.width, min(f.height, size - top))), ((size - f.width) // 2 + int(size * PORTRAIT_ICON_FIG_DX), top))
+        bg.alpha_composite(layer)
+        return bg
     bg.alpha_composite(crop)
     return bg
 
@@ -218,10 +264,14 @@ def main() -> int:
         preview(sys.argv[sys.argv.index("--preview") + 1])
         return 0
     figs = {n: figure(n) for n in FIGURES}
+    heads = {n: FIGURES[n][2] for n in FIGURES}
+    for n, (base, op) in DERIVED.items():
+        figs[n] = grayscale(figs[base]) if op == "grayscale" else figs[base]
+        heads[n] = heads[base]
     for uid, fname in UNITS.items():
         fig = figs[fname]
         save(fit_into(fig, (UNIT_CANVAS, UNIT_CANVAS), UNIT_BOX), SPR / f"units/{uid}.png")
-        save(portrait(fig, FIGURES[fname][2]), SPR / f"portraits/{uid}.png")
+        save(portrait(fig, heads[fname], icon=uid if uid in FORM_ICON_FORMS else ""), SPR / f"portraits/{uid}.png")
     for card, form in CARD_FORMS.items():
         dst = CARDS / f"{card}.png"
         save(card_with_portrait(original(dst), Image.open(SPR / f"portraits/{form}.png").convert("RGBA")), dst)

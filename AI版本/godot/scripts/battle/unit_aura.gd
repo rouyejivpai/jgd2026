@@ -5,6 +5,8 @@ extends RefCounted
 ## 遮挡：光芒与粒子都在 UnitView 的 Aura 层（Base 之后、Body 之前），被人物本体遮住，只从轮廓四周透出；
 ## 人物本体只在轮廓外有一圈淡光（rim_glow，画在本体之后）。光圈由 UnitView._draw_base 画（脚底，最底层）。
 ## 只碰表现，不读写模拟数据。建筑不加光效（保留方框底座）。
+## 2026-10-19 形态图标（区分共用人偶图的六个形态）：己方单位有 form_icons/<形态>.png 时，金色发光图标绕人物腰部做伪 3D 水平环绕——
+## 转到身后（椭圆上半）画在人物之后、变小变暗；转到身前（椭圆下半）画在人物之前、变大变亮。
 
 const GOLD: Color = Color(1.0, 0.78, 0.32)
 const GOLD_DEEP: Color = Color(1.0, 0.58, 0.16)
@@ -16,6 +18,17 @@ const BLOOD_DROP_TEX: String = "vfx/blood_drop.png"
 const AURA_W_RATIO: float = 1.7
 const AURA_H_RATIO: float = 1.45
 const AURA_MIN_PX: float = 110.0
+
+const FORM_ICON_DIR: String = "form_icons/%s.png"            ## 带烘焙外发光（卡面、头像用）
+const FORM_ICON_SOLID_DIR: String = "form_icons/%s_solid.png" ## 实心剪影（战场环绕用：靠场景辉光发光，形状更清楚）
+## 图标颜色已烘焙：金色 → 形态标志色（避开红色）的斜向渐变，见 tools/make_form_icons.py FORM_COLORS
+const ORBIT_PERIOD: float = 3.4          ## 秒 / 圈
+const ORBIT_RX_RATIO: float = 0.8        ## 水平半径（相对人物可见宽度）
+const ORBIT_RX_MIN: float = 56.0
+const ORBIT_FLATTEN: float = 0.3         ## 竖直半径 = 水平半径 × 此值（俯视压扁）
+const ORBIT_Y_RATIO: float = 0.58        ## 环绕高度：从脚底往上占人物可见高度的比例（腰部）
+const ORBIT_ICON_PX: float = 92.0
+const ORBIT_GOLD: Color = Color(1.45, 1.45, 1.45, 1.0)  ## 亮度略超 1（颜色在贴图里）：透过 CanvasModulate、带一点辉光但不糊掉形状
 
 static var _quad: ImageTexture = null
 static var _rects: Dictionary = {}
@@ -43,7 +56,7 @@ static func visible_rect(tex: Texture2D) -> Rect2i:
 
 
 ## 建光效层：parent = UnitView 的 Aura 节点；tex = 单位精灵；s = 精灵缩放；feet_offset = 精灵 offset.y（脚底在贴图 y = 尺寸/2 - offset）
-static func build(parent: Node2D, ally: bool, tex: Texture2D, s: float, feet_offset: float, seed: float) -> void:
+static func build(parent: Node2D, ally: bool, tex: Texture2D, s: float, feet_offset: float, seed: float, form: String = "") -> void:
 	var vis: Rect2i = visible_rect(tex)
 	var half: float = float(tex.get_height()) * 0.5
 	var top: float = (float(vis.position.y) - half + feet_offset) * s
@@ -53,6 +66,11 @@ static func build(parent: Node2D, ally: bool, tex: Texture2D, s: float, feet_off
 	parent.add_child(_backlight(ally, center, maxf(w * AURA_W_RATIO, AURA_MIN_PX), maxf(h * AURA_H_RATIO, AURA_MIN_PX), seed))
 	if ally:
 		parent.add_child(_gold_motes(center, w, h))
+		var icon: Texture2D = Art.texture(FORM_ICON_SOLID_DIR % form) if form != "" else null
+		if icon != null:
+			var orbit := OrbitIcon.new()
+			orbit.setup(parent, icon, Vector2(0.0, top + h * (1.0 - ORBIT_Y_RATIO)), maxf(w * ORBIT_RX_RATIO, ORBIT_RX_MIN), seed)
+			parent.add_child(orbit)
 	else:
 		parent.add_child(_blood_drops(center, w, h))
 		parent.add_child(_blood_motes(center, w, h))
@@ -200,3 +218,73 @@ static func rim_sprite(ally: bool, tex: Texture2D, offset: Vector2, s: float, se
 	m.set_shader_parameter("opacity", 0.55 if ally else 0.5)
 	sp.material = m
 	return sp
+
+
+## 形态图标环绕：本节点在 Aura 层里画「身后」那半圈；身前半圈由插在 Body 之后的 OrbitFront 节点画（同一张图，按深度切换显示）。
+## 跟随 Aura 层的位置（步伐跳动）与透明度（击败渐隐）。
+class OrbitIcon:
+	extends Node2D
+
+	var _aura: Node2D = null
+	var _front_holder: Node2D = null
+	var _back: Sprite2D = null
+	var _front: Sprite2D = null
+	var _center: Vector2 = Vector2.ZERO
+	var _rx: float = 0.0
+	var _phase: float = 0.0
+
+	func setup(aura: Node2D, icon: Texture2D, center: Vector2, rx: float, seed: float) -> void:
+		name = "FormOrbit"
+		_aura = aura
+		_center = center
+		_rx = rx
+		_phase = seed * TAU
+		_back = _icon_sprite(icon)
+		add_child(_back)
+		_front = _icon_sprite(icon)
+
+	func _ready() -> void:
+		var view: Node = _aura.get_parent()
+		var body: Node = view.get_node_or_null("Body")
+		_front_holder = Node2D.new()
+		_front_holder.name = "OrbitFront"
+		_front_holder.add_child(_front)
+		view.add_child(_front_holder)
+		if body != null:
+			view.move_child(_front_holder, body.get_index() + 1)
+		_update(0.0)
+
+	func _exit_tree() -> void:
+		if is_instance_valid(_front_holder):
+			_front_holder.queue_free()
+
+	func _icon_sprite(icon: Texture2D) -> Sprite2D:
+		var sp := Sprite2D.new()
+		sp.texture = icon
+		sp.modulate = ORBIT_GOLD
+		sp.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		var m := CanvasItemMaterial.new()
+		m.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		sp.material = m
+		return sp
+
+	func _process(delta: float) -> void:
+		_update(delta)
+
+	func _update(delta: float) -> void:
+		_phase = fmod(_phase + TAU * delta / ORBIT_PERIOD, TAU)
+		var depth: float = sin(_phase)                     # > 0：在人物身前（椭圆下半）
+		var p: Vector2 = _center + Vector2(cos(_phase) * _rx, depth * _rx * ORBIT_FLATTEN)
+		var k: float = 0.5 + 0.5 * depth
+		var px: float = ORBIT_ICON_PX * lerpf(0.8, 1.1, k)
+		var sc: float = px / float(maxi(_back.texture.get_width(), 1))
+		var alpha: float = lerpf(0.5, 1.0, k)
+		for sp: Sprite2D in [_back, _front]:
+			sp.position = p
+			sp.scale = Vector2(sc, sc)
+			sp.modulate = Color(ORBIT_GOLD, alpha)
+		_back.visible = depth <= 0.0
+		_front.visible = depth > 0.0
+		if is_instance_valid(_front_holder):
+			_front_holder.position = _aura.position
+			_front_holder.modulate.a = _aura.modulate.a

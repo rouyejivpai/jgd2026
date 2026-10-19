@@ -168,7 +168,7 @@ func _build_aura() -> void:
 	_aura.name = "Aura"
 	add_child(_aura)
 	move_child(_aura, _base.get_index() + 1)
-	UnitAura.build(_aura, unit.faction == SimTypes.Faction.ALLY, _sprite.texture, _sprite.scale.x, SPRITE_FEET_OFFSET, float(unit.id % 17) / 17.0)
+	UnitAura.build(_aura, unit.faction == SimTypes.Faction.ALLY, _sprite.texture, _sprite.scale.x, SPRITE_FEET_OFFSET, float(unit.id % 17) / 17.0, unit.def.id)
 
 
 func _build_light() -> void:

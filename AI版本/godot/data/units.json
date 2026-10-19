@@ -237,7 +237,7 @@
       ],
       "public_rule_text": "攻击会施加「易伤」（受伤 +50%，6 秒）。自身很脆，射程 5 比基础形态远 1 格。",
       "description": "用骨粉在敌人身上画符的术士。她自己的伤害不高，但被她标记过的东西会变得很好杀。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
       "visuals": {"sprite": "res://assets/sprites/units/hexer.png", "portrait": "res://assets/sprites/portraits/hexer.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#c07aff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg"}
     },
     "binder": {
@@ -253,7 +253,7 @@
       ],
       "public_rule_text": "攻击会施加「麻痹」（无法攻击 3 秒）。自身攻击力很低，但能让敌人打不出伤害。",
       "description": "把骨链甩出去缠住对手手脚的狱卒。他杀不死任何东西，但能让任何东西杀不死你。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
       "visuals": {"sprite": "res://assets/sprites/units/binder.png", "portrait": "res://assets/sprites/portraits/binder.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
     },
     "bone_weaver": {
@@ -269,7 +269,7 @@
       ],
       "public_rule_text": "光环：半径 3 格内的我方单位移速 -40%。",
       "description": "一边爬一边吐丝的东西。它自己不追人，但凡是靠近它的东西都会变得迈不开腿。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
       "visuals": {"sprite": "res://assets/sprites/units/bone_weaver.png", "portrait": "res://assets/sprites/portraits/bone_weaver.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
     },
     "hex_priest": {
@@ -285,7 +285,7 @@
       ],
       "public_rule_text": "远程攻击会施加「麻痹」3 秒。专打最远的目标。",
       "description": "披着破布在远处念咒的祭司。它不追人，但你的后排会被它一个个定住。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
       "visuals": {"sprite": "res://assets/sprites/units/hex_priest.png", "portrait": "res://assets/sprites/portraits/hex_priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.05, "light_color": "#e070ff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg"}
     },
     "marrow_hulk": {
@@ -301,8 +301,8 @@
       ],
       "public_rule_text": "近战命中施加「易伤」（受伤 +50%，6 秒）。血极厚、移速极慢。专打血量最低的目标。",
       "description": "一大坨缝合起来的髓质。走得很慢，但被它碰一下之后，任何攻击都会变得很痛。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/brute.png", "portrait": "res://assets/sprites/portraits/brute.png", "projectile": "none", "scale": 1.35, "light_color": "#ff7a3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg"}
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
+      "visuals": {"sprite": "res://assets/sprites/units/marrow_hulk.png", "portrait": "res://assets/sprites/portraits/marrow_hulk.png", "projectile": "none", "scale": 1.35, "light_color": "#ff7a3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg"}
     },
     "bone_witch": {
       "display_name": "骨花魔女",
@@ -317,8 +317,8 @@
       ],
       "public_rule_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝钟缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两只残骸行者）。",
       "description": "骨花温室最深处的东西。她不是植物，也不完全是骨头——她把整片温室的根都连在自己身上。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/bone_core.png", "portrait": "res://assets/sprites/portraits/bone_core.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg"}
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
+      "visuals": {"sprite": "res://assets/sprites/units/bone_witch.png", "portrait": "res://assets/sprites/portraits/bone_witch.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg"}
     },
     "dummy": {
       "display_name": "试作人偶",
@@ -330,8 +330,8 @@
       "default_rules": [
       ],
       "description": "织骸工坊里用来校准的空壳人偶。不会动，也不会反击。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/echo_pillar.png", "portrait": "res://assets/sprites/portraits/echo_pillar.png", "projectile": "none", "scale": 1.1, "light_color": "#d8d0c0", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
+      "visuals": {"sprite": "res://assets/sprites/units/dummy.png", "portrait": "res://assets/sprites/portraits/dummy.png", "projectile": "none", "scale": 1.1, "light_color": "#d8d0c0", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
     },
     "supply_crate": {
       "display_name": "物资箱",
@@ -343,8 +343,8 @@
       "default_rules": [
       ],
       "description": "教学关的目标标记：一只骨箱。",
-      "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/transit_node.png", "portrait": "res://assets/sprites/portraits/transit_node.png", "projectile": "none", "scale": 1.0, "light_color": "#c9a24a", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
+      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
+      "visuals": {"sprite": "res://assets/sprites/units/supply_crate.png", "portrait": "res://assets/sprites/portraits/supply_crate.png", "projectile": "none", "scale": 1.0, "light_color": "#c9a24a", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
     }
   }
 }
