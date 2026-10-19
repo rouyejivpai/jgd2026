@@ -45,7 +45,7 @@ MOD_STATS = {"max_hp", "attack", "attack_speed", "move_speed", "vision", "range"
 OBJ_LOSE = {"unit_dead", "all_allies_dead", "reach_zone"}
 FACTIONS = {"ally", "enemy", "neutral"}
 KINDS = {"unit", "structure"}
-SPEAKERS = {"doll", "witch", "narrator", "system"}
+SPEAKERS = {"doll", "witch", "keeper", "narrator", "system"}
 
 errors = []
 warnings = []

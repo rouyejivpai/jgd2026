@@ -160,5 +160,5 @@
     "目标死亡后，单位会按同一套指令重新选择目标，不需要你做任何事。",
     "1× 和 2× 只改变播放速度，不改变任何战斗结果。"
   ],
-  "speakers": { "doll": "人偶", "witch": "织骸魔女", "narrator": "", "system": "" }
+  "speakers": { "doll": "人偶", "witch": "织骸魔女", "keeper": "守火", "narrator": "", "system": "" }
 }

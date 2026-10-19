@@ -6,3 +6,5 @@ work/meeting/audio.wav
 exports/
 录屏/
 godot/export.7z
+# 2026-10-19 美术交付原图（资源侧，不入库；导入脚本 godot/tools/import_qq_art.py 从这里读）
+work/美术资源_20261019/

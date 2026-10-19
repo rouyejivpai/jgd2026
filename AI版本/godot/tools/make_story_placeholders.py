@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 STORIES = DATA / "stories"
 KINDS = ("intro", "win", "lose")
-ILLUSTRATED = {"doll", "witch"}          # 有立绘的说话人（01 §9：默认人偶，魔女说话时切换）
+ILLUSTRATED = {"doll", "witch", "keeper"}          # 有立绘的说话人（01 §9：默认人偶，魔女说话时切换）
 LEGACY_TO_STORY = {"ch1_boss_outro": "level_08_win"}
 
 

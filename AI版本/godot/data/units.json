@@ -238,7 +238,7 @@
       "public_rule_text": "攻击会施加「易伤」（受伤 +50%，6 秒）。自身很脆，射程 5 比基础形态远 1 格。",
       "description": "用骨粉在敌人身上画符的术士。她自己的伤害不高，但被她标记过的东西会变得很好杀。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#c07aff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/hexer.png", "portrait": "res://assets/sprites/portraits/hexer.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#c07aff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_ally.ogg"}
     },
     "binder": {
       "display_name": "缚锁者", "cost": 3,
@@ -254,7 +254,7 @@
       "public_rule_text": "攻击会施加「麻痹」（无法攻击 3 秒）。自身攻击力很低，但能让敌人打不出伤害。",
       "description": "把骨链甩出去缠住对手手脚的狱卒。他杀不死任何东西，但能让任何东西杀不死你。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/bulwark.png", "portrait": "res://assets/sprites/portraits/bulwark.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/binder.png", "portrait": "res://assets/sprites/portraits/binder.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
     },
     "bone_weaver": {
       "display_name": "织骨者",
@@ -270,7 +270,7 @@
       "public_rule_text": "光环：半径 3 格内的我方单位移速 -40%。",
       "description": "一边爬一边吐丝的东西。它自己不追人，但凡是靠近它的东西都会变得迈不开腿。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/spitter.png", "portrait": "res://assets/sprites/portraits/spitter.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/bone_weaver.png", "portrait": "res://assets/sprites/portraits/bone_weaver.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
     },
     "hex_priest": {
       "display_name": "咒缚祭司",
@@ -286,7 +286,7 @@
       "public_rule_text": "远程攻击会施加「麻痹」3 秒。专打最远的目标。",
       "description": "披着破布在远处念咒的祭司。它不追人，但你的后排会被它一个个定住。",
       "_visuals_note": "30 关战役新单位：外观暂借已有素材（占位），美术交付后替换",
-      "visuals": {"sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.05, "light_color": "#e070ff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/hex_priest.png", "portrait": "res://assets/sprites/portraits/hex_priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.05, "light_color": "#e070ff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg"}
     },
     "marrow_hulk": {
       "display_name": "髓块",

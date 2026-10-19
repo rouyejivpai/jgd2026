@@ -7,6 +7,8 @@ extends Node2D
 ## 第二阶段：朝向迟滞与背步（A04，FacingTracker）；特殊目标头顶常驻图标 + 底座金色脉动（A03）。
 ## 第四阶段（用户 2026-10-08「撤离时容易抽搐」）：撤离中 ① 翻身阈值加大（RETREAT_FLIP_*，多数时候以后仰背步代替翻身）；
 ## ② 显示位置做短时平滑（RETREAT_SMOOTH_TAU，吸收撤离点切换造成的来回小位移）；③ 移动时留下渐隐残影（AFTERIMAGE_*）。只碰表现。
+## 2026-10-19 敌我都用 Q 版人物：阵营光效（UnitAura）——己方金色光圈 + 身后金光与金色光点，敌方暗红光圈 + 身后暗红光芒与血滴；
+## 光芒 / 粒子在 Aura 层（Base 与 Body 之间，被人物遮住），人物只有轮廓外一圈淡光（RimGlow，Body 内、本体之前）。
 
 const BASE_RADIUS: float = 34.0
 const BODY_RADIUS: float = 26.0
@@ -40,6 +42,8 @@ const AFTERIMAGE_LIFE: float = 0.3        ## 秒：残影渐隐时长
 const AFTERIMAGE_ALPHA: float = 0.45
 const AFTERIMAGE_TINT: Color = Color(0.78, 0.7, 1.0)
 const AFTERIMAGE_MIN_PX: float = 0.6      ## 每帧显示位移不足该像素不留残影（原地不动时）
+const RING_PULSE_HZ: float = 0.45         ## 阵营光圈呼吸
+const SELECT_COLOR: Color = Color(1.5, 1.45, 1.3, 1.0)   ## 选中环：亮白（金色已用作己方光圈）
 
 var unit: SimUnit = null
 var grid_height: int = 0
@@ -60,6 +64,8 @@ var objective_kind: int = OBJ_NONE       ## 特殊目标标记（objective_kind_
 var _tweens: Array[Tween] = []
 var _sprite: Sprite2D = null
 var _outline: Sprite2D = null
+var _rim: Sprite2D = null
+var _aura: Node2D = null
 var _body_material: ShaderMaterial = null
 var _light: PointLight2D = null
 var _facing: FacingTracker = FacingTracker.new()
@@ -85,6 +91,7 @@ func bind(u: SimUnit, p_grid_height: int, p_objective_kind: int = OBJ_NONE) -> v
 	grid_height = p_grid_height
 	objective_kind = p_objective_kind
 	_build_sprite()
+	_build_aura()
 	_build_light()
 	snap()
 
@@ -98,6 +105,10 @@ func _build_sprite() -> void:
 	if tex == null:
 		return
 	var s: float = SPRITE_SCALE * _scale()
+	var seed: float = float(unit.id % 17) / 17.0
+	if not unit.is_structure():
+		_rim = UnitAura.rim_sprite(unit.faction == SimTypes.Faction.ALLY, tex, Vector2(0.0, SPRITE_FEET_OFFSET), s, seed)
+		_body.add_child(_rim)
 	_outline = Sprite2D.new()
 	_outline.texture = tex
 	_outline.offset = Vector2(0.0, SPRITE_FEET_OFFSET)
@@ -110,7 +121,7 @@ func _build_sprite() -> void:
 	_sprite.offset = Vector2(0.0, SPRITE_FEET_OFFSET)
 	_sprite.scale = Vector2(s, s)
 	_body_material = Art.material("breathing")
-	_body_material.set_shader_parameter("seed", float(unit.id % 17) / 17.0)
+	_body_material.set_shader_parameter("seed", seed)
 	_sprite.material = _body_material
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_outline.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
@@ -119,6 +130,17 @@ func _build_sprite() -> void:
 	_facing = FacingTracker.new(unit.faction == SimTypes.Faction.ENEMY)
 	_apply_flip()
 	_body.queue_redraw()
+
+
+## 阵营光效层：Base 之后、Body 之前（光芒与粒子被人物本体遮住）
+func _build_aura() -> void:
+	if _sprite == null or unit.is_structure():
+		return
+	_aura = Node2D.new()
+	_aura.name = "Aura"
+	add_child(_aura)
+	move_child(_aura, _base.get_index() + 1)
+	UnitAura.build(_aura, unit.faction == SimTypes.Faction.ALLY, _sprite.texture, _sprite.scale.x, SPRITE_FEET_OFFSET, float(unit.id % 17) / 17.0)
 
 
 func _build_light() -> void:
@@ -165,6 +187,8 @@ func _apply_flip() -> void:
 	if _sprite != null:
 		_sprite.flip_h = _facing.facing_left
 		_outline.flip_h = _facing.facing_left
+		if _rim != null:
+			_rim.flip_h = _facing.facing_left
 
 
 ## 背步：不翻转，身体朝背后方向后仰
@@ -236,8 +260,8 @@ func _process(delta: float) -> void:
 		_smooth = Vector2.INF
 		position = target
 	_overlay.queue_redraw()
-	if objective_kind != OBJ_NONE:
-		_base.queue_redraw()     # 金色脉动
+	if objective_kind != OBJ_NONE or not unit.is_structure():
+		_base.queue_redraw()     # 金色脉动 / 阵营光圈呼吸
 
 
 ## 残影：当前精灵的一份拷贝留在原地（单位层内、画在本单位之后），淡紫色、渐隐后释放
@@ -308,6 +332,13 @@ func play_death() -> void:
 		_sprite.material = dm
 		t.tween_method(func(v: float) -> void: dm.set_shader_parameter("progress", v), 0.0, 1.0, DEATH_SECONDS)
 		t.parallel().tween_property(_base, "modulate:a", 0.0, DEATH_SECONDS)
+		if _rim != null:
+			t.parallel().tween_property(_rim, "modulate:a", 0.0, DEATH_SECONDS * 0.4)
+		if _aura != null:
+			t.parallel().tween_property(_aura, "modulate:a", 0.0, DEATH_SECONDS * 0.6)
+			for c: Node in _aura.get_children():
+				if c is CPUParticles2D:
+					(c as CPUParticles2D).emitting = false
 	else:
 		t.tween_property(self, "modulate:a", 0.0, DEATH_SECONDS)
 	if _light != null:
@@ -347,28 +378,34 @@ func _draw_base() -> void:
 	var c: Color = _faction_color()
 	if unit.is_structure():
 		_base.draw_rect(Rect2(-r, -r, r * 2.0, r * 2.0), c, false, 3.0)
-	elif unit.faction == SimTypes.Faction.ALLY:
-		_base.draw_arc(Vector2.ZERO, r, 0.0, TAU, 48, c, 3.0)
-		_base.draw_arc(Vector2.ZERO, r * 0.8, 0.0, TAU, 48, Color(c, 0.4), 1.5)
 	else:
-		# 荆棘八角：顶点在内外半径间交替 + 8 根外凸尖刺（灰度下也能凭形状与己方圆环区分，04 §4.5-2）
-		var pts: PackedVector2Array = PackedVector2Array()
-		for i: int in 17:
-			var ang: float = TAU * float(i) / 16.0
-			var rr: float = r if i % 2 == 0 else r * 0.78
-			pts.append(Vector2(cos(ang), sin(ang)) * rr)
-		_base.draw_polyline(pts, Palette.WARN_RED, 4.0)
-		for i: int in 8:
-			var a: float = TAU * float(i) / 8.0
-			var dir := Vector2(cos(a), sin(a))
-			var side := Vector2(-dir.y, dir.x) * r * 0.12
-			_base.draw_colored_polygon(PackedVector2Array([dir * r + side, dir * r * 1.32, dir * r - side]), Palette.WARN_RED)
+		_draw_faction_ring(r)
 	if objective_kind != OBJ_NONE and not is_dying:
 		var pulse: float = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.001 * TAU * OBJ_PULSE_HZ)
 		_base.draw_arc(Vector2.ZERO, r * 1.15, 0.0, TAU, 48, Color(Palette.ALCHEMY_GOLD, 0.35 + 0.5 * pulse), 3.0 + 2.0 * pulse)
 	if selected and not is_dying:
-		_base.draw_arc(Vector2.ZERO, r * 1.3, 0.0, TAU, 48, Palette.ALCHEMY_GOLD, 3.0)
+		_base.draw_arc(Vector2.ZERO, r * 1.3, 0.0, TAU, 48, SELECT_COLOR, 3.0)
 	_base.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## 阵营光圈（已在 3/4 视角椭圆变换下）：己方金色圆环；敌方暗红圆环 + 8 根外凸尖刺（灰度下仍凭形状区分，04 §4.5-2）。
+## 外层宽淡弧 + 不透明芯弧 + 内细弧，HDR 提亮让光圈带辉光；整体缓慢呼吸。
+func _draw_faction_ring(r: float) -> void:
+	var ally: bool = unit.faction == SimTypes.Faction.ALLY
+	var col: Color = UnitAura.ring_color(ally)
+	var pulse: float = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.001 * TAU * RING_PULSE_HZ + float(unit.id % 7))
+	var e: float = (2.0 if ally else 1.7) + 0.4 * pulse
+	var hot := Color(col.r * e, col.g * e, col.b * e, 1.0)
+	_base.draw_circle(Vector2.ZERO, r * 0.95, Color(col, 0.16 + 0.06 * pulse))
+	_base.draw_arc(Vector2.ZERO, r, 0.0, TAU, 64, Color(hot, 0.22 + 0.1 * pulse), 11.0)
+	_base.draw_arc(Vector2.ZERO, r, 0.0, TAU, 64, Color(hot, 0.95), 3.0)
+	_base.draw_arc(Vector2.ZERO, r * 0.78, 0.0, TAU, 64, Color(hot, 0.45), 1.5)
+	if not ally:
+		for i: int in 8:
+			var a: float = TAU * float(i) / 8.0 + TAU / 16.0
+			var dir := Vector2(cos(a), sin(a))
+			var side := Vector2(-dir.y, dir.x) * r * 0.1
+			_base.draw_colored_polygon(PackedVector2Array([dir * r * 1.02 + side, dir * r * 1.28, dir * r * 1.02 - side]), Color(hot, 0.9))
 
 
 func _draw_body() -> void:

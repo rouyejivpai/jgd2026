@@ -6,8 +6,13 @@ extends Node2D
 ## 各自颜色的发光边线 + 半透明着色的标志（GlowLines.draw_mark）；标志缺失时退回线条记号。
 ## 部署区（己方出生点）由 DeployZone、Boss 增援区由 StatusOverlay 按同样方式画（标志 spawn）。
 ## 胜利目标区用神性紫（与金色出生点区分）；部署阶段 DeployZone 在出生点之上再画一遍目标区（draw_goal_zones），两者重叠时目标格不被盖住。
+## 2026-10-19 美术物件：地形效果格有全彩物件图（assets/sprites/tile_objects/<kind>.png：危险区 = 裂甲菌簇、缓滞带 = 僵骨地刺、
+## 净化台 = 静息祭坛）时，每格画物件原色（不着色），边线照旧用类型色；没有物件图的类型仍画着色标志。
 
 const BLOCKED_MARK_ALPHA: float = 0.62
+const TILE_OBJECT_DIR: String = "tile_objects/%s.png"
+const TILE_OBJECT_SIZE: float = 0.9      ## 物件边长（格）
+const TILE_OBJECT_TINT: Color = Color(1.2, 1.2, 1.2, 0.95)   ## 略提亮抵消 CanvasModulate 的压暗
 const BLOCKED_COLOR: Color = Color(0.32, 0.22, 0.36)     ## 障碍标志：深梅色（明亮底图上可读）
 const SPECIAL_OVERSHOOT: float = 0.22    ## 特殊地块边线越出长度（格），比底格短，读作一块区域
 ## 底格线颜色：暖白发光芯线，略提亮（>1）抵消 CanvasModulate 的半压暗；GlowLines 自带深色描边
@@ -24,11 +29,17 @@ const TILE_COLOR: Dictionary = {
 
 var level: LevelDefinition = null
 var _marks: Dictionary = {}              ## 名 → Texture2D
+var _objects: Dictionary = {}            ## 地形效果格 kind → 全彩物件 Texture2D
 
 
 func setup(p_level: LevelDefinition) -> void:
 	level = p_level
 	_marks.clear()
+	_objects.clear()
+	for kind: String in TILE_COLOR.keys():
+		var obj: Texture2D = Art.texture(TILE_OBJECT_DIR % kind)
+		if obj != null:
+			_objects[kind] = obj
 	for mark_name: String in ["hazard", "mire", "shrine", "blocked", "goal", "escape"]:
 		var tex: Texture2D = GlowLines.mark_texture(mark_name)
 		if tex != null:
@@ -83,8 +94,14 @@ static func draw_goal_zones(ci: CanvasItem, p_level: LevelDefinition, mark: Text
 ## 一块特殊地块区域：整体发光边线 + 每格一个着色标志
 func _draw_zone(kind: String, cells: Array[Vector2i], color: Color) -> void:
 	GlowLines.draw_cells(self, GlowLines.cell_set(cells), level.height, color, 1.4, true, SPECIAL_OVERSHOOT)
+	var obj: Texture2D = _objects.get(kind) as Texture2D
 	for cell: Vector2i in cells:
-		_draw_mark(kind, cell, color, GlowLines.MARK_ALPHA)
+		if obj != null:
+			var s: float = float(SimTypes.TILE_SIZE) * TILE_OBJECT_SIZE
+			var c: Vector2 = SimTypes.sim_to_screen(SimTypes.cell_center(cell), level.height)
+			draw_texture_rect(obj, Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false, TILE_OBJECT_TINT)
+		else:
+			_draw_mark(kind, cell, color, GlowLines.MARK_ALPHA)
 
 
 func _draw_mark(kind: String, cell: Vector2i, color: Color, alpha: float) -> void:
