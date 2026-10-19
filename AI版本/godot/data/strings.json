@@ -62,7 +62,7 @@
     "settings_master": "主音量", "settings_music": "音乐", "settings_sfx": "音效", "settings_fullscreen": "全屏", "settings_target_lines": "显示目标连线",
     "settings_font_scale": "字体大小", "settings_sim_log": "记录模拟日志（调试用）", "settings_section_audio": "声音", "settings_section_display": "显示", "settings_section_debug": "调试",
     "settings_font_scale_option": "{pct}%", "settings_log_hint": "日志位置：{path}",
-    "game_title": "人工神灵", "game_subtitle": "ARTIFICIAL DIVINITY",
+    "game_title": "人偶补完计划", "game_subtitle": "ARTIFICIAL DIVINITY",
     "menu_start": "开始", "menu_continue": "继续游戏", "menu_new_game": "新游戏", "menu_settings": "设置", "menu_quit": "退出",
     "new_game_confirm_title": "开始新游戏", "new_game_confirm_body": "开始新游戏会清空全部存档（关卡进度、解锁内容、各关配置与已看剧情），且无法恢复。设置项会保留。", "new_game_confirm_ok": "清空并开始", "new_game_confirm_cancel": "取消",
     "data_error": "数据加载出错，请查看日志（user://logs）",
