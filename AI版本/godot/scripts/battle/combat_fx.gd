@@ -1,7 +1,7 @@
 class_name CombatFx
 extends RefCounted
 ## 2026-10-19 战斗打击感（用户：强化战斗的风味感和打击感）。只碰表现，不读写模拟数据；随机数只用于特效外观。
-## · 远程：射弹（菱形 / 三角 / 锥形）+ 拖尾 + 沿途火花 + 出手闪光；命中时朝飞行的反方向崩裂成碎片，并带闪光、冲击环。
+## · 远程：射弹（菱形 / 三角 / 锥形）沿随机弧线飞行 + 拖尾 + 沿途火花 + 出手闪光；命中时朝飞行的反方向崩裂成碎片，并带闪光、冲击环。
 ## · 近身：斩击（横斩 / 竖斩 / 斜斩随机）——斩痕是一段倾斜椭圆上的弧，正面宽亮、背面窄暗（伪 3D）；斩完化为粒子消散。
 ## · 受击：灰黑碎屑总是背离攻击者抛飞，落到战场上（交给 GroundFx）再渐隐。
 ## · 击败：大量碎屑 + 阵营色火花 + 冲击环（震屏、击飞、灰化消散由 BattleRoot / UnitView 负责）。
@@ -11,12 +11,14 @@ enum Shape { DIAMOND, TRIANGLE, CONE }
 
 const PROJECTILE_SPEED: float = 1500.0     ## 本层像素 / 秒
 const PROJECTILE_MIN_TIME: float = 0.12
-const PROJECTILE_MAX_TIME: float = 0.3
+const PROJECTILE_MAX_TIME: float = 0.34
+const ARC_BEND: Vector2 = Vector2(0.12, 0.34)  ## 射弹弧线：控制点沿法线偏出的距离（相对敌我距离）范围
+const ARC_S_CHANCE: float = 0.25           ## 弹道为 S 形（两个控制点异侧）的概率
 const TRAIL_LEN: float = 120.0
 const BODY_SCALE: float = 1.8             ## 弹体放大倍数（战场常按 0.6 倍左右缩放显示）
-const SLASH_SWEEP: float = 0.15            ## 秒：刀光扫过
-const SLASH_FADE: float = 0.26             ## 秒：刀光收细、化为粒子
-const SLASH_HIT_AT: float = 0.07           ## 秒：斩击的命中时刻（受击表现在此刻播放）
+const SLASH_SWEEP: float = 0.1             ## 秒：刀光扫过
+const SLASH_FADE: float = 0.22             ## 秒：刀光收细、化为粒子
+const SLASH_HIT_AT: float = 0.05           ## 秒：斩击的命中时刻（受击表现在此刻播放）
 const DEBRIS_GRAVITY: float = 980.0
 ## 射弹贴图名 → 形状（visuals.projectile_shape 可覆盖："diamond" / "triangle" / "cone"）
 const SHAPE_BY_PROJECTILE: Dictionary = {
@@ -56,7 +58,7 @@ static func shape_for(def: UnitDefinition) -> int:
 	var proj: String = str(def.visuals.get("projectile", "")).get_file().get_basename()
 	if SHAPE_BY_PROJECTILE.has(proj):
 		return int(SHAPE_BY_PROJECTILE[proj])
-	return absi(proj.hash()) % 3
+	return absi((proj if proj != "" and proj != "none" else def.id).hash()) % 3      # 没配射弹的角色（如近战形态）远距离出手时也有固定形状
 
 
 static func _ramp(stops: Array) -> Gradient:
@@ -103,39 +105,76 @@ static func free_after(n: Node, seconds: float) -> void:
 
 # ---------------------------------------------------------------- 射弹 ----
 
+## 射弹沿三次贝塞尔曲线飞行（2026-10-19 用户：不要直线，在空中划出随机弧线）：两个控制点在连线的 1/3、2/3 处
+## 沿法线随机偏出（多数同侧 = 一道弧，少数异侧 = S 形），并略微上挑；拖尾沿曲线回溯采样，弹体朝向 = 曲线切线。
+## bend_side：+1 / −1 指定弧线偏向哪一侧（齐射时交替，让几发弹道散开），0 = 随机。
 class Projectile extends Node2D:
 	var from: Vector2
 	var to: Vector2
 	var ally: bool = true
 	var shape: int = CombatFx.Shape.DIAMOND
 	var size: float = 1.0
+	var bend_side: float = 0.0
 	var on_impact: Callable = Callable()
 	var _t: float = 0.0
 	var _dur: float = 0.2
+	var _k: float = 0.0
+	var _len: float = 1.0
+	var _c1: Vector2
+	var _c2: Vector2
 	var _dir: Vector2 = Vector2.RIGHT
 	var _done: bool = false
 	var _col: Dictionary = {}
 	var _trail_sparks: CPUParticles2D = null
+	const TRAIL_SAMPLES: int = 14
 
 	func _ready() -> void:
 		_col = CombatFx.colors(ally)
 		material = CombatFx.material(ally)
 		position = from
-		_dir = (to - from).normalized() if to != from else Vector2.RIGHT
-		_dur = clampf(from.distance_to(to) / CombatFx.PROJECTILE_SPEED, CombatFx.PROJECTILE_MIN_TIME, CombatFx.PROJECTILE_MAX_TIME)
-		_trail_sparks = CombatFx.sparks(ally, 44, 0.38, -_dir, 32.0, Vector2(30.0, 140.0), Vector2(3.0, 7.0), false)
+		var d: Vector2 = to - from
+		var dist: float = maxf(d.length(), 1.0)
+		var n: Vector2 = d.orthogonal() / dist
+		var side: float = bend_side if bend_side != 0.0 else (1.0 if randf() < 0.5 else -1.0)
+		var b1: float = randf_range(CombatFx.ARC_BEND.x, CombatFx.ARC_BEND.y) * side
+		var b2: float = randf_range(CombatFx.ARC_BEND.x, CombatFx.ARC_BEND.y) * side
+		if randf() < CombatFx.ARC_S_CHANCE:
+			b2 = -b2 * 0.7
+		var lift := Vector2(0.0, -dist * randf_range(0.04, 0.14))
+		_c1 = from + d * 0.33 + n * b1 * dist + lift
+		_c2 = from + d * 0.66 + n * b2 * dist + lift
+		_len = 0.0
+		var prev: Vector2 = from
+		for i: int in range(1, 13):
+			var p: Vector2 = point(float(i) / 12.0)
+			_len += prev.distance_to(p)
+			prev = p
+		_dur = clampf(_len / CombatFx.PROJECTILE_SPEED, CombatFx.PROJECTILE_MIN_TIME, CombatFx.PROJECTILE_MAX_TIME)
+		_dir = tangent(0.0)
+		_trail_sparks = CombatFx.sparks(ally, 44, 0.38, -_dir, 32.0, Vector2(30.0, 140.0), Vector2(3.0, 7.0) * sqrt(size), false)
 		_trail_sparks.gravity = Vector2(0.0, 60.0)
 		add_child(_trail_sparks)
 		get_parent().add_child.call_deferred(MuzzleFlash.make(from, _dir, ally, size))
+
+	func point(u: float) -> Vector2:
+		var v: float = 1.0 - u
+		return from * (v * v * v) + _c1 * (3.0 * v * v * u) + _c2 * (3.0 * v * u * u) + to * (u * u * u)
+
+	func tangent(u: float) -> Vector2:
+		var v: float = 1.0 - u
+		var t: Vector2 = (_c1 - from) * (3.0 * v * v) + (_c2 - _c1) * (6.0 * v * u) + (to - _c2) * (3.0 * u * u)
+		return t.normalized() if t.length_squared() > 0.0001 else (to - from).normalized()
 
 	func _process(delta: float) -> void:
 		if _done:
 			return
 		_t += delta
-		var k: float = minf(_t / _dur, 1.0)
-		position = from.lerp(to, k)
+		_k = minf(_t / _dur, 1.0)
+		position = point(_k)
+		_dir = tangent(_k)
+		_trail_sparks.direction = -_dir
 		queue_redraw()
-		if k >= 1.0:
+		if _k >= 1.0:
 			_impact()
 
 	func _impact() -> void:
@@ -150,20 +189,34 @@ class Projectile extends Node2D:
 	func _draw() -> void:
 		if _done:
 			return
-		var traveled: float = from.distance_to(position)
 		var pop: float = minf(_t / 0.05, 1.0)          # 出手瞬间从小放大
 		var s: float = size * (0.5 + 0.5 * pop)
-		# 拖尾：从弹头向后渐细渐隐的楔形（外晕 + 主色 + 芯）
-		var tail: Vector2 = -_dir * minf(traveled, CombatFx.TRAIL_LEN * size)
-		var n: Vector2 = _dir.orthogonal()
-		if tail.length() > 2.0:
+		# 拖尾：沿曲线回溯一段，向后渐细渐隐（外晕 + 主色 + 芯）
+		var back: float = minf(_k, CombatFx.TRAIL_LEN * size / maxf(_len, 1.0))
+		if back * _len > 2.0:
+			var pts := PackedVector2Array()
+			var nrm := PackedVector2Array()
+			for i: int in TRAIL_SAMPLES:
+				var u: float = _k - back * float(i) / float(TRAIL_SAMPLES - 1)      # i = 0 在弹头
+				pts.append(point(u) - position)
+				nrm.append(tangent(u).orthogonal())
 			for layer: Array in [[15.0, _col["glow"], 0.5], [7.5, _col["main"], 0.9], [2.8, _col["core"], 1.0]]:
-				var w: float = float(layer[0]) * s
 				var c: Color = layer[1] as Color
-				draw_primitive(PackedVector2Array([n * w, tail, -n * w]),
-					PackedColorArray([Color(c, float(layer[2])), Color(c, 0.0), Color(c, float(layer[2]))]), PackedVector2Array())
+				for i: int in TRAIL_SAMPLES - 1:
+					var f0: float = 1.0 - float(i) / float(TRAIL_SAMPLES - 1)
+					var f1: float = 1.0 - float(i + 1) / float(TRAIL_SAMPLES - 1)
+					var w0: float = float(layer[0]) * s * f0
+					var w1: float = float(layer[0]) * s * f1
+					var c0 := Color(c, float(layer[2]) * f0)
+					var c1 := Color(c, float(layer[2]) * f1)
+					var a0: Vector2 = pts[i] + nrm[i] * w0
+					var b0: Vector2 = pts[i] - nrm[i] * w0
+					var a1: Vector2 = pts[i + 1] + nrm[i + 1] * w1
+					var b1: Vector2 = pts[i + 1] - nrm[i + 1] * w1
+					draw_primitive(PackedVector2Array([a0, a1, b1]), PackedColorArray([c0, c1, c1]), PackedVector2Array())
+					draw_primitive(PackedVector2Array([a0, b1, b0]), PackedColorArray([c0, c1, c0]), PackedVector2Array())
 		draw_texture_rect(StatusParticles.dot_texture(), Rect2(Vector2(-44.0, -44.0) * s, Vector2(88.0, 88.0) * s), false, Color(_col["glow"] as Color, 0.8))
-		# 弹体：沿飞行方向；菱形绕飞行轴自转（纵向缩放模拟）
+		# 弹体：沿曲线切线；菱形绕飞行轴自转（纵向缩放模拟）
 		var spin: float = 1.0
 		if shape == CombatFx.Shape.DIAMOND:
 			spin = 0.45 + 0.55 * absf(cos(_t * 26.0))
@@ -314,8 +367,8 @@ class Shatter extends Node2D:
 # ---------------------------------------------------------------- 斩击 ----
 
 ## 斩击：倾斜椭圆（伪 3D 圆环在屏幕上的投影）上的一段弧。参数角 θ 处 sinθ > 0 为朝向镜头的前半圈（宽、亮），
-## 背面半圈窄、暗。刀头沿弧扫过（缓出），刀尾随后追上，形成月牙形刀光；内侧再跟一道细的残影弧。
-## 扫完后刀光收细变淡，沿弧化为粒子消散。
+## 背面半圈窄、暗。刀头沿弧急速扫过（0.1 s，五次缓出），刀尾随后追上，形成针尖刀头、白热刃口的月牙形刀光，
+## 刀头后方跟几道发丝般的刀风细线；命中瞬间沿切线闪出一道笔直的细切痕。扫完后刀光先收成一线再变淡，沿弧化为粒子消散。
 class Slash extends Node2D:
 	var ally: bool = true
 	var radius: float = 70.0
@@ -329,9 +382,10 @@ class Slash extends Node2D:
 	var _flashed: bool = false
 	var _flash_at: Vector2 = Vector2.ZERO
 	var _flash_t: float = -1.0
+	var _flash_dir: Vector2 = Vector2.RIGHT
 	const SAMPLES: int = 34
-	const WIDTH: float = 24.0
-	const ECHO_RADIUS: float = 0.8
+	const WIDTH: float = 22.0
+	const BLADE_PROFILE_MAX: float = 0.5112      ## u^1.6·(1-u)^0.22 的最大值（u ≈ 0.88），宽度归一化用
 
 	## kind：0 横斩，1 竖斩，2 斜斩；-1 随机。toward：攻击者 → 目标方向（决定横斩的挥向）
 	static func make(center: Vector2, p_ally: bool, size: float, toward: Vector2, kind: int = -1) -> Slash:
@@ -381,26 +435,26 @@ class Slash extends Node2D:
 			CombatFx.free_after(self, 0.7)
 		queue_redraw()
 
-	## 刀头 / 刀尾的参数角
+	## 刀头 / 刀尾的参数角：刀头急出（五次缓出），刀尾随后快速追上，刀光收成一线
 	func _span() -> Vector2:
 		var sweep: float = clampf(_t / CombatFx.SLASH_SWEEP, 0.0, 1.0)
-		var head_k: float = 1.0 - pow(1.0 - sweep, 3.0)                       # 刀头缓出
-		var tail_k: float = pow(clampf((_t - 0.04) / (CombatFx.SLASH_SWEEP + 0.1), 0.0, 1.0), 1.8) * 0.55
+		var head_k: float = 1.0 - pow(1.0 - sweep, 5.0)
+		var tail_k: float = pow(clampf((_t - 0.02) / (CombatFx.SLASH_SWEEP + 0.06), 0.0, 1.0), 2.2) * 0.45
 		if _t > CombatFx.SLASH_SWEEP:
 			var fk: float = clampf((_t - CombatFx.SLASH_SWEEP) / CombatFx.SLASH_FADE, 0.0, 1.0)
-			tail_k = lerpf(tail_k, head_k * 0.97, pow(fk, 1.5))
+			tail_k = lerpf(tail_k, head_k * 0.995, pow(fk, 0.8))
 		return Vector2(lerpf(_a0, _a1, tail_k), lerpf(_a0, _a1, head_k))
 
-	## 命中瞬间：弧线最靠镜头的一点爆出星芒与火花
+	## 命中瞬间：沿弧在最靠镜头处的切线方向闪出一道笔直的细切痕 + 细星芒 + 顺挥向的火花
 	func _impact_flash() -> void:
 		var sp_ab: Vector2 = _span()
 		var th: float = lerpf(sp_ab.x, sp_ab.y, 0.85)
 		_flash_at = point(th)
 		_flash_t = _t
-		var tangent: Vector2 = (point(th + 0.05 * signf(_a1 - _a0)) - point(th)).normalized()
-		var sp: CPUParticles2D = CombatFx.sparks(ally, 30, 0.42, tangent, 42.0, Vector2(140.0, 460.0), Vector2(3.0, 7.0), true)
+		_flash_dir = (point(th + 0.05 * signf(_a1 - _a0)) - point(th)).normalized()
+		var sp: CPUParticles2D = CombatFx.sparks(ally, 26, 0.32, _flash_dir, 22.0, Vector2(220.0, 620.0), Vector2(2.0, 4.5), true)
 		sp.position = _flash_at
-		sp.gravity = Vector2(0.0, 220.0)
+		sp.gravity = Vector2(0.0, 180.0)
 		add_child(sp)
 
 	## 化为粒子：沿当前可见的整段刀光（定向点发射），顺挥向、略向外飘散并缓缓上浮
@@ -420,22 +474,22 @@ class Slash extends Node2D:
 			if out.dot(at) < 0.0:
 				out = -out
 			pts.append(at)
-			nrm.append((tang * 0.65 + out * 0.35).normalized())
+			nrm.append((tang * 0.75 + out * 0.25).normalized())
 		p.emission_points = pts
 		p.emission_normals = nrm
-		p.amount = 96
-		p.lifetime = 0.7
+		p.amount = 90
+		p.lifetime = 0.6
 		p.one_shot = true
-		p.explosiveness = 0.8
-		p.spread = 25.0
-		p.initial_velocity_min = 30.0
-		p.initial_velocity_max = 150.0
-		p.damping_min = 90.0
-		p.damping_max = 180.0
+		p.explosiveness = 0.85
+		p.spread = 18.0
+		p.initial_velocity_min = 40.0
+		p.initial_velocity_max = 190.0
+		p.damping_min = 140.0
+		p.damping_max = 260.0
 		p.gravity = Vector2(0.0, -50.0)
 		p.texture = StatusParticles.dot_texture()
-		p.scale_amount_min = 2.5 / float(StatusParticles.TEX_SIZE)
-		p.scale_amount_max = 7.0 / float(StatusParticles.TEX_SIZE)
+		p.scale_amount_min = 1.8 / float(StatusParticles.TEX_SIZE)
+		p.scale_amount_max = 4.5 / float(StatusParticles.TEX_SIZE)
 		p.color_ramp = CombatFx._ramp([[0.0, _col["core"]], [0.3, _col["main"]], [1.0, Color(_col["glow"] as Color, 0.0)]])
 		p.material = CombatFx.material(ally)
 		p.emitting = true
@@ -445,55 +499,74 @@ class Slash extends Node2D:
 		if _t >= CombatFx.SLASH_SWEEP + CombatFx.SLASH_FADE:
 			return
 		var fk: float = clampf((_t - CombatFx.SLASH_SWEEP) / CombatFx.SLASH_FADE, 0.0, 1.0)
-		var fade: float = 1.0 - fk
+		var alpha: float = 1.0 - fk * fk                        # 先收细、后变淡
+		var wk: float = 1.0 - pow(fk, 0.7) * 0.92
 		var sp_ab: Vector2 = _span()
+		var s: float = radius / 70.0
 		if absf(sp_ab.y - sp_ab.x) > 0.02:
-			# 内侧残影弧（细、淡、略滞后）
-			_draw_band(sp_ab.x, lerpf(sp_ab.x, sp_ab.y, 0.9), ECHO_RADIUS, 0.4 * lerpf(1.0, 0.3, fk), 0.5 * fade, false)
-			_draw_band(sp_ab.x, sp_ab.y, 1.0, lerpf(1.0, 0.3, fk), fade, true)
-			if fade > 0.4:
+			_draw_blade(sp_ab.x, sp_ab.y, wk, alpha)
+			# 刀风细线：刀头后方、与刀光同心的几道发丝弧
+			for line: Array in [[1.13, 0.55, 0.7], [0.88, 0.62, 0.5], [1.24, 0.72, 0.35]]:
+				var pts := PackedVector2Array()
+				for i: int in 12:
+					pts.append(point(lerpf(lerpf(sp_ab.x, sp_ab.y, float(line[1])), sp_ab.y, float(i) / 11.0), float(line[0])))
+				draw_polyline(pts, Color(_col["main"] as Color, float(line[2]) * alpha), 1.4 * s, true)
+			# 刀尖：沿切线的细长星芒
+			if alpha > 0.3:
 				var hp: Vector2 = point(sp_ab.y)
-				var r: float = 22.0 * radius / 70.0
-				draw_texture_rect(StatusParticles.dot_texture(), Rect2(hp - Vector2(r, r), Vector2(r, r) * 2.0), false, Color(_col["core"] as Color, fade))
+				var ht: Vector2 = (point(sp_ab.y + 0.02 * signf(_a1 - _a0)) - hp).normalized()
+				CombatFx.glint(self, hp, ht.angle(), 20.0 * s, 2.2 * s, Color(_col["core"] as Color, alpha))
 		if _flash_t >= 0.0:
 			var k: float = clampf((_t - _flash_t) / 0.16, 0.0, 1.0)
 			if k < 1.0:
 				var a: float = 1.0 - k
-				var s: float = radius / 70.0
-				draw_texture_rect(StatusParticles.dot_texture(), Rect2(_flash_at - Vector2(60.0, 60.0) * s, Vector2(120.0, 120.0) * s), false, Color(_col["glow"] as Color, a))
-				CombatFx.glint(self, _flash_at, _rot + 0.4, (34.0 + 40.0 * k) * s, 6.0 * s * a, Color(_col["core"] as Color, a))
+				var grow: float = 1.0 - pow(1.0 - clampf(k / 0.3, 0.0, 1.0), 3.0)
+				var half: Vector2 = _flash_dir * radius * (0.6 + 0.6 * grow)
+				# 切痕：外晕 + 白热发丝，越来越细
+				draw_line(_flash_at - half, _flash_at + half, Color(_col["glow"] as Color, 0.4 * a), 9.0 * s * a, true)
+				draw_line(_flash_at - half, _flash_at + half, Color(_col["main"] as Color, a), 3.5 * s * a, true)
+				draw_line(_flash_at - half * 0.85, _flash_at + half * 0.85, Color(_col["core"] as Color, a), 1.6 * s * a + 0.4, true)
+				draw_texture_rect(StatusParticles.dot_texture(), Rect2(_flash_at - Vector2(34.0, 34.0) * s, Vector2(68.0, 68.0) * s), false, Color(_col["glow"] as Color, 0.6 * a))
+				CombatFx.glint(self, _flash_at, _flash_dir.angle() + PI * 0.5, (14.0 + 22.0 * k) * s, 2.0 * s * a, Color(_col["core"] as Color, a))
 
-	## 一条月牙形刀光带：tail→head；rk = 半径倍数；wk = 宽度倍数；alpha = 整体不透明度；full = 画外晕与白热芯
-	func _draw_band(tail: float, head: float, rk: float, wk: float, alpha: float, full: bool) -> void:
+	## 刀光：tail→head 的月牙刃。宽度在靠近刀头处最大（≈88%），刀头是针尖、刀尾细长渐隐；
+	## 外缘是锐利的刃口（白热发丝描边），内缘薄；背面半圈窄而暗（伪 3D）。wk = 宽度倍数，alpha = 整体不透明度
+	func _draw_blade(tail: float, head: float, wk: float, alpha: float) -> void:
 		var outer_g := PackedVector2Array()
 		var inner_g := PackedVector2Array()
 		var outer_m := PackedVector2Array()
 		var inner_m := PackedVector2Array()
 		var outer_c := PackedVector2Array()
 		var inner_c := PackedVector2Array()
+		var edge := PackedVector2Array()
+		var edge_cols := PackedColorArray()
 		var alphas := PackedFloat32Array()
+		var core: Color = _col["core"] as Color
 		for i: int in SAMPLES:
 			var u: float = float(i) / float(SAMPLES - 1)                         # 0 = 刀尾，1 = 刀头
 			var th: float = lerpf(tail, head, u)
-			var p: Vector2 = point(th, rk)
+			var p: Vector2 = point(th)
 			var depth: float = 0.5 + 0.5 * sin(th)                               # 1 = 前半圈（朝镜头）
-			var tang: Vector2 = point(th + 0.01, rk) - point(th - 0.01, rk)
+			var tang: Vector2 = point(th + 0.01) - point(th - 0.01)
 			var nrm: Vector2 = tang.orthogonal().normalized()
 			if nrm.dot(p) < 0.0:
 				nrm = -nrm
-			var w: float = WIDTH * (radius / 70.0) * wk * pow(sin(PI * pow(u, 1.5)), 0.75) * (0.3 + 0.7 * depth)
-			outer_g.append(p + nrm * w * 1.9)
-			inner_g.append(p - nrm * w * 1.3)
+			var prof: float = pow(u, 1.6) * pow(1.0 - u, 0.22) / BLADE_PROFILE_MAX
+			var w: float = WIDTH * (radius / 70.0) * wk * prof * (0.25 + 0.75 * depth)
+			outer_g.append(p + nrm * w * 1.5)
+			inner_g.append(p - nrm * w * 0.6)
 			outer_m.append(p + nrm * w)
-			inner_m.append(p - nrm * w * 0.55)
-			outer_c.append(p + nrm * w * 0.8)
-			inner_c.append(p + nrm * w * 0.12)
-			alphas.append((0.3 + 0.7 * depth) * alpha)
-		if full:
-			_strip(outer_g, inner_g, alphas, _col["glow"] as Color, 0.42)
+			inner_m.append(p - nrm * w * 0.18)
+			outer_c.append(p + nrm * w * 0.96)
+			inner_c.append(p + nrm * w * 0.42)
+			edge.append(p + nrm * w)
+			var da: float = (0.3 + 0.7 * depth) * alpha
+			alphas.append(da)
+			edge_cols.append(Color(core, da * clampf(u * 3.0, 0.0, 1.0)))
+		_strip(outer_g, inner_g, alphas, _col["glow"] as Color, 0.22)
 		_strip(outer_m, inner_m, alphas, _col["main"] as Color, 1.0)
-		if full:
-			_strip(outer_c, inner_c, alphas, _col["core"] as Color, 1.0)
+		_strip(outer_c, inner_c, alphas, core, 1.0)
+		draw_polyline_colors(edge, edge_cols, 1.3 * radius / 70.0, true)
 
 	func _strip(outer: PackedVector2Array, inner: PackedVector2Array, alphas: PackedFloat32Array, c: Color, a: float) -> void:
 		for i: int in outer.size() - 1:

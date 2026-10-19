@@ -8,9 +8,10 @@ var _markers: Dictionary = {}   ## blast_id -> BlastMarker
 var _debris: CombatFx.DebrisFlight = null
 
 
-## 射弹：from → to（本层坐标）。on_impact 在弹头到达时调用（受击表现）
-func spawn_projectile(from: Vector2, to: Vector2, ally: bool, shape: int, size: float = 1.0, on_impact: Callable = Callable()) -> void:
+## 射弹：from → to（本层坐标），沿随机弧线飞行。on_impact 在弹头到达时调用（受击表现）；bend_side 见 CombatFx.Projectile
+func spawn_projectile(from: Vector2, to: Vector2, ally: bool, shape: int, size: float = 1.0, on_impact: Callable = Callable(), bend_side: float = 0.0) -> void:
 	var p := CombatFx.Projectile.new()
+	p.bend_side = bend_side
 	p.from = from
 	p.to = to
 	p.ally = ally
@@ -21,8 +22,9 @@ func spawn_projectile(from: Vector2, to: Vector2, ally: bool, shape: int, size: 
 
 
 ## 斩击：center = 目标胸口（本层坐标）；toward = 攻击者 → 目标方向
-func spawn_slash(center: Vector2, ally: bool, size: float, toward: Vector2) -> void:
-	add_child(CombatFx.Slash.make(center, ally, size, toward))
+## kind：0 横斩，1 竖斩，2 斜斩，-1 随机
+func spawn_slash(center: Vector2, ally: bool, size: float, toward: Vector2, kind: int = -1) -> void:
+	add_child(CombatFx.Slash.make(center, ally, size, toward, kind))
 
 
 ## 灰黑碎屑：从 feet 上方 height 处背离攻击者（dir）抛飞，落地后交给 GroundFx

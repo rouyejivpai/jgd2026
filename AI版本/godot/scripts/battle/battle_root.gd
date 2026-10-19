@@ -10,6 +10,10 @@ const SHAKE_PX: float = 9.0
 const SHAKE_SECONDS: float = 0.32
 const SHAKE_HZ: float = 38.0
 const BLAST_SHAKE_SECONDS: float = 0.24          ## 延迟爆炸到期：短一些的震屏
+const MELEE_FX_CELLS: float = 1.6                 ## 普通攻击出手时敌我距离（格）不超过此值用斩击，否则用射弹
+const VOLLEY_SHOTS: Vector2i = Vector2i(1, 3)     ## 普通攻击每次打出的发数范围（只是动画，伤害一次结算）
+const VOLLEY_INTERVAL: float = 0.08               ## 齐射每发间隔（秒）
+const VOLLEY_SIZE: float = 0.5                    ## 多发时每发大小（相对常规；只有 1 发时为常规大小）
 const KNOCK_MARGIN: Vector2 = Vector2(0.45, 0.2)   ## 击飞落点离战场 / 可视区边缘的余量（格）：左右、下
 const KNOCK_TOP_MARGIN: float = 1.25               ## 击飞落点离上边缘的余量（格，人物约 1.2 格高）
 const UNIT_HIT_RADIUS: float = 0.5        ## 单位点击命中：离身体线段的距离（格）
@@ -591,17 +595,66 @@ func _on_sim_event(e: Dictionary) -> void:
 				_show_death(e, _source_pos(int(e.get("killer", -1))))
 
 
-## 攻击特效：有射弹（visuals.projectile 非 none）= 射弹，否则 = 斩击；受击表现推迟到命中时刻
+## 普通攻击特效按出手时的敌我距离决定（用户 2026-10-19：取决于位置关系，而非角色本身）：
+## 距离 ≤ MELEE_FX_CELLS = 斩击，否则 = 射弹（形状仍按角色）。
+## 每次出手随机打出 1–3 发（只是动画）：只有 1 发时为常规大小；多发时每发间隔 VOLLEY_INTERVAL、弹道 / 斩向各不相同、
+## 大小为常规的 VOLLEY_SIZE。每一发命中都播放受击表现（白闪、后挫、碎屑）；最后一发才结算本次伤害（模拟伤害照常一次结算，
+## 倒下表现也在最后一发播放）。
+## 特殊攻击（延迟爆炸的炮击，BLAST_PLACED）不走这里，始终是单发常规大小的射弹 + 落点预警。
 func _spawn_attack_fx(src: UnitView, dst: UnitView) -> void:
 	var ally: bool = src.unit.faction == SimTypes.Faction.ALLY
 	var rec: Dictionary = { "src_pos": src.position, "events": [], "done": false, "gen": _fx_gen }
 	_pending_hits["%d>%d" % [src.unit.id, dst.unit.id]] = rec
-	var proj: String = str(src.unit.def.visuals.get("projectile", "none"))
-	if proj != "none" and proj != "":
-		_fx.call("spawn_projectile", src.chest_pos(), dst.chest_pos(), ally, CombatFx.shape_for(src.unit.def), src.view_scale(), _flush_hit.bind(rec))
+	var melee: bool = src.unit.pos.distance_to(dst.unit.pos) <= MELEE_FX_CELLS
+	var shots: int = randi_range(VOLLEY_SHOTS.x, VOLLEY_SHOTS.y)
+	var kinds: Array = [0, 1, 2]
+	kinds.shuffle()
+	var side: float = 1.0 if randf() < 0.5 else -1.0
+	var shape: int = CombatFx.shape_for(src.unit.def)
+	var info: Dictionary = { "from": src.chest_pos(), "to": dst.chest_pos(), "toward": dst.position - src.position,
+		"src_size": src.view_scale(), "dst_size": dst.view_scale(), "ally": ally, "src": src.unit.id, "dst": dst.unit.id,
+		"size": 1.0 if shots == 1 else VOLLEY_SIZE }
+	for i: int in shots:
+		var last: bool = i == shots - 1
+		var shot: Callable = _volley_shot.bind(rec, info, melee, shape, int(kinds[i % 3]), side * (1.0 if i % 2 == 0 else -1.0), last)
+		if i == 0:
+			shot.call()
+		else:
+			get_tree().create_timer(VOLLEY_INTERVAL * float(i)).timeout.connect(shot)
+
+
+## 齐射中的一发。攻击者 / 目标的视图可能已释放（倒下、重置）：取不到时用出手时记下的位置
+func _volley_shot(rec: Dictionary, info: Dictionary, melee: bool, shape: int, kind: int, side: float, last: bool) -> void:
+	if int(rec["gen"]) != _fx_gen:
+		return
+	var ally: bool = bool(info["ally"])
+	var src: UnitView = _view(int(info["src"]))
+	var dst: UnitView = _view(int(info["dst"]))
+	var from: Vector2 = src.chest_pos() if src != null and not src.is_dying else info["from"] as Vector2
+	var to: Vector2 = dst.chest_pos() if dst != null else info["to"] as Vector2
+	var hit: Callable = _flush_hit.bind(rec) if last else _volley_hit.bind(rec, info)
+	var k: float = float(info["size"])
+	var spread: float = 0.0 if is_equal_approx(k, 1.0) else 1.0     # 单发不加抖动
+	if melee:
+		var jitter := Vector2(randf_range(-10.0, 10.0), randf_range(-12.0, 8.0)) * float(info["dst_size"]) * spread
+		_fx.call("spawn_slash", to + jitter, ally, float(info["dst_size"]) * k, info["toward"], kind if spread > 0.0 else -1)
+		get_tree().create_timer(CombatFx.SLASH_HIT_AT).timeout.connect(hit)
 	else:
-		_fx.call("spawn_slash", dst.chest_pos(), ally, dst.view_scale(), dst.position - src.position)
-		get_tree().create_timer(CombatFx.SLASH_HIT_AT).timeout.connect(_flush_hit.bind(rec))
+		var jitter := Vector2(randf_range(-6.0, 6.0), randf_range(-8.0, 8.0)) * float(info["src_size"]) * spread
+		_fx.call("spawn_projectile", from + jitter, to, ally, shape, float(info["src_size"]) * k, hit, side)
+
+
+## 非最后一发命中：只播放受击表现（白闪、后挫、少量碎屑、受击音效），不结算伤害、不播放倒下
+func _volley_hit(rec: Dictionary, info: Dictionary) -> void:
+	if int(rec["gen"]) != _fx_gen:
+		return
+	var hit: UnitView = _view(int(info["dst"]))
+	if hit == null or hit.is_dying:
+		return
+	var dir: Vector2 = hit.position - (rec["src_pos"] as Vector2)
+	hit.play_hit(dir)
+	AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")))
+	_fx.call("spawn_debris", hit.position, -hit.chest_offset().y, dir, 4, 0.8)
 
 
 func _flush_hit(rec: Dictionary) -> void:

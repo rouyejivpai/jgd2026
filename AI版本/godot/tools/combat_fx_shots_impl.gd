@@ -61,9 +61,13 @@ func run(tree: SceneTree) -> void:
 			var at: Vector2 = target.chest_pos() + Vector2(-260.0 + 260.0 * k, -150.0)
 			fx.add_child(CombatFx.Slash.make(at, true, 1.0, Vector2.RIGHT, k))
 			fx.add_child(CombatFx.Slash.make(at + Vector2(0.0, 190.0), false, 1.0, Vector2.LEFT, k))
-		await _wait(0.07)
+		await _wait(0.035)
+		_shot("03a_slash_sweep.png")
+		await _wait(0.035)
 		_shot("03_slash_mid.png")
-		await _wait(0.12)
+		await _wait(0.06)
+		_shot("03b_slash_close.png")
+		await _wait(0.08)
 		_shot("04_slash_dissolve.png")
 		await _wait(0.6)
 
@@ -129,11 +133,15 @@ func run(tree: SceneTree) -> void:
 	# 6. 开战：脚印、目标锁定线、实战特效（连拍）
 	c.start()
 	var run_shots: int = 16
+	var run_every: float = 0.3
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--run-every="):
+			run_every = float(a.trim_prefix("--run-every="))
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--run-shots="):
 			run_shots = int(a.trim_prefix("--run-shots="))
 	for i: int in run_shots:
-		await _wait(0.3)
+		await _wait(run_every)
 		_shot("20_running_%02d.png" % i)
 
 	if save_bytes.is_empty():
