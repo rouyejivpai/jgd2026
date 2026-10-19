@@ -6,9 +6,12 @@ extends Node2D
 ## 阵营区分不只靠颜色（策划已定）：底座形状（己方圆环 / 敌方荆棘八角 / 建筑方框）与血条形状（圆角 / 尖角 / 方角）。
 ## 第二阶段：朝向迟滞与背步（A04，FacingTracker）；特殊目标头顶常驻图标 + 底座金色脉动（A03）。
 ## 第四阶段（用户 2026-10-08「撤离时容易抽搐」）：撤离中 ① 翻身阈值加大（RETREAT_FLIP_*，多数时候以后仰背步代替翻身）；
-## ② 显示位置做短时平滑（RETREAT_SMOOTH_TAU，吸收撤离点切换造成的来回小位移）；③ 移动时留下渐隐残影（AFTERIMAGE_*）。只碰表现。
+## ② 显示位置做短时平滑（2026-10-19 起由通用的显示弹簧 _spring_to 承担）；③ 移动时留下渐隐残影（AFTERIMAGE_*）。只碰表现。
 ## 2026-10-19 敌我都用 Q 版人物：阵营光效（UnitAura）——己方金色光圈 + 身后金光与金色光点，敌方暗红光圈 + 身后暗红光芒与血滴；
 ## 光芒 / 粒子在 Aura 层（Base 与 Body 之间，被人物遮住），人物只有轮廓外一圈淡光（RimGlow，Body 内、本体之前）。
+## 2026-10-19 战斗打击感：① 显示位置用临界阻尼弹簧追模拟位置（起步加速、匀速、停下减速，过渡约 0.2 s，无过冲）；
+## ② 移动时一步一跳（Gait 节点：跳起高度 + 左右交替倾斜 + 落地压扁），每落一步发 footstep 信号留脚印；
+## ③ 受击背离攻击者小幅后挫并压扁；④ 击败：白闪 → 背离击杀者击飞（落点限制在 bounds 内）→ 灰化 → 自上而下化为灰烬粒子。
 
 const BASE_RADIUS: float = 34.0
 const BODY_RADIUS: float = 26.0
@@ -36,14 +39,31 @@ const LIGHT_SCALE: float = 2.6
 const DEATH_SECONDS: float = 1.0
 const RETREAT_FLIP_CELLS: float = 1.2
 const RETREAT_FLIP_SECONDS: float = 0.9
-const RETREAT_SMOOTH_TAU: float = 0.09    ## 秒：撤离时显示位置向插值位置靠拢的时间常数
 const AFTERIMAGE_INTERVAL: float = 0.06   ## 秒：残影间隔
 const AFTERIMAGE_LIFE: float = 0.3        ## 秒：残影渐隐时长
 const AFTERIMAGE_ALPHA: float = 0.45
-const AFTERIMAGE_TINT: Color = Color(0.78, 0.7, 1.0)
+const AFTERIMAGE_TINT: Color = Color(1.0, 0.86, 0.55)          ## 己方金色残影
+const AFTERIMAGE_TINT_ENEMY: Color = Color(1.0, 0.42, 0.42)    ## 敌方红色残影
 const AFTERIMAGE_MIN_PX: float = 0.6      ## 每帧显示位移不足该像素不留残影（原地不动时）
 const RING_PULSE_HZ: float = 0.45         ## 阵营光圈呼吸
 const SELECT_COLOR: Color = Color(1.5, 1.45, 1.3, 1.0)   ## 选中环：亮白（金色已用作己方光圈）
+const MOVE_OMEGA: float = 22.0            ## 显示位置弹簧角频率：越大越跟手；加减速过渡约 4.7 / ω 秒
+const HOP_PX: float = 9.0                 ## 每步跳起高度（像素，乘单位缩放）
+const SWAY_DEG: float = 8.0               ## 每步左右倾斜（以脚底为轴）
+const LAND_SQUASH: float = 0.07           ## 落地压扁幅度
+const GAIT_SPEED_MIN: float = 14.0        ## 显示速度（像素/秒）低于此不跳
+const GAIT_SPEED_FULL: float = 70.0       ## 显示速度达到此时跳动幅度满额
+const STEP_RATE: Vector2 = Vector2(3.2, 6.5)   ## 每秒步数范围（随速度）
+const FOOT_SPREAD_PX: float = 7.0         ## 左右脚印离行进中线的距离
+const CHEST_Y: float = -46.0              ## 胸口高度（像素，乘单位缩放）：射弹出手 / 命中、斩击中心、碎屑起点
+const HIT_KNOCK_PX: float = 6.0
+const KNOCK_PX: float = 110.0             ## 击飞距离（像素，乘单位缩放；被 bounds 截短）
+const KNOCK_SECONDS: float = 0.42
+const KNOCK_HEIGHT: float = 46.0
+const GRAY_SECONDS: float = 0.28
+const ASH_SECONDS: float = 0.95           ## 自上而下化为粒子
+
+signal footstep(pos: Vector2, ally: bool, size: float)
 
 var unit: SimUnit = null
 var grid_height: int = 0
@@ -72,8 +92,13 @@ var _facing: FacingTracker = FacingTracker.new()
 var _flip_tween: Tween = null
 var _lean_tween: Tween = null
 var _leaning: bool = false
-var _smooth: Vector2 = Vector2.INF       ## 撤离平滑中的显示位置（屏幕局部），INF = 未在平滑
 var _ghost_clock: float = 0.0
+var _gait: Node2D = null                 ## 精灵的父节点（Body 之内）：跳动 / 倾斜 / 压扁只作用于人物
+var _vel: Vector2 = Vector2.ZERO         ## 显示位置速度（本层像素 / 秒）
+var _gait_phase: float = 0.0             ## 每 π 一步
+var _gait_amt: float = 0.0               ## 跳动幅度 0–1（随速度平滑）
+var _ash: CPUParticles2D = null          ## 击败灰烬发射器（挂在单位层，跟随剔除线）
+var _ash_cut: float = 0.0
 
 @onready var _base: Node2D = $Base
 @onready var _body: Node2D = $Body
@@ -106,16 +131,19 @@ func _build_sprite() -> void:
 		return
 	var s: float = SPRITE_SCALE * _scale()
 	var seed: float = float(unit.id % 17) / 17.0
+	_gait = Node2D.new()
+	_gait.name = "Gait"
+	_body.add_child(_gait)
 	if not unit.is_structure():
 		_rim = UnitAura.rim_sprite(unit.faction == SimTypes.Faction.ALLY, tex, Vector2(0.0, SPRITE_FEET_OFFSET), s, seed)
-		_body.add_child(_rim)
+		_gait.add_child(_rim)
 	_outline = Sprite2D.new()
 	_outline.texture = tex
 	_outline.offset = Vector2(0.0, SPRITE_FEET_OFFSET)
 	_outline.scale = Vector2(s, s)
 	_outline.material = Art.material("outline")
 	_outline.visible = selected
-	_body.add_child(_outline)
+	_gait.add_child(_outline)
 	_sprite = Sprite2D.new()
 	_sprite.texture = tex
 	_sprite.offset = Vector2(0.0, SPRITE_FEET_OFFSET)
@@ -125,7 +153,7 @@ func _build_sprite() -> void:
 	_sprite.material = _body_material
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_outline.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	_body.add_child(_sprite)
+	_gait.add_child(_sprite)
 	# 默认面向右；敌方开局在右侧，面向左
 	_facing = FacingTracker.new(unit.faction == SimTypes.Faction.ENEMY)
 	_apply_flip()
@@ -154,11 +182,31 @@ func _build_light() -> void:
 	add_child(_light)
 
 
-## 直接对齐到当前模拟位置（部署、暂停、重建时）
+## 直接对齐到当前模拟位置（部署、重建时）
 func snap() -> void:
 	prev_pos = unit.pos
 	cur_pos = unit.pos
 	position = SimTypes.sim_to_screen(cur_pos, grid_height)
+	_vel = Vector2.ZERO
+
+
+## 暂停 / 结束：插值端点对齐到模拟位置，显示位置由弹簧平滑停过去（不跳变）
+func settle() -> void:
+	prev_pos = unit.pos
+	cur_pos = unit.pos
+
+
+## 胸口相对脚底的偏移（本层像素）
+func chest_offset() -> Vector2:
+	return Vector2(0.0, CHEST_Y * _scale())
+
+
+func chest_pos() -> Vector2:
+	return position + chest_offset()
+
+
+func view_scale() -> float:
+	return _scale()
 
 
 ## 一个 tick 推进后更新插值端点；sim_dt = 本 tick 推进的模拟时间（用于朝向迟滞计时）
@@ -242,29 +290,73 @@ func is_retreating() -> bool:
 func _process(delta: float) -> void:
 	if unit == null:
 		return
+	if is_dying:
+		_update_ash()
+		return
 	var p: Vector2 = cur_pos
 	if interpolate:
 		p = prev_pos.lerp(cur_pos, Engine.get_physics_interpolation_fraction())
 	var target: Vector2 = SimTypes.sim_to_screen(p, grid_height)
 	var before: Vector2 = position
+	_spring_to(target, delta)
 	if interpolate and is_retreating():
-		if _smooth == Vector2.INF:
-			_smooth = position
-		_smooth = _smooth.lerp(target, 1.0 - exp(-delta / RETREAT_SMOOTH_TAU))
-		position = _smooth
 		_ghost_clock += delta
 		if _ghost_clock >= AFTERIMAGE_INTERVAL and before.distance_to(position) >= AFTERIMAGE_MIN_PX:
 			_ghost_clock = 0.0
 			_spawn_afterimage()
-	else:
-		_smooth = Vector2.INF
-		position = target
+	_update_gait(delta)
 	_overlay.queue_redraw()
 	if objective_kind != OBJ_NONE or not unit.is_structure():
 		_base.queue_redraw()     # 金色脉动 / 阵营光圈呼吸
 
 
-## 残影：当前精灵的一份拷贝留在原地（单位层内、画在本单位之后），淡紫色、渐隐后释放
+## 临界阻尼弹簧（SmoothDamp 精确解）：起步加速、匀速时略滞后、停下时减速贴合，无过冲。也吸收撤离点切换造成的来回小位移
+func _spring_to(target: Vector2, delta: float) -> void:
+	if position.distance_squared_to(target) < 0.0001 and _vel.length_squared() < 0.01:
+		position = target
+		_vel = Vector2.ZERO
+		return
+	var x: Vector2 = position - target
+	var e: float = exp(-MOVE_OMEGA * delta)
+	var tmp: Vector2 = (_vel + x * MOVE_OMEGA) * delta
+	_vel = (_vel - tmp * MOVE_OMEGA) * e
+	position = target + (x + tmp) * e
+
+
+## 一步一跳：|sin| 为跳起高度，sin 的正负交替为左右倾斜（左右脚交替），落地瞬间轻微压扁；每落一步留一个脚印
+func _update_gait(delta: float) -> void:
+	if _gait == null:
+		return
+	var spd: float = _vel.length()
+	var want: float = clampf((spd - GAIT_SPEED_MIN) / (GAIT_SPEED_FULL - GAIT_SPEED_MIN), 0.0, 1.0)
+	_gait_amt = move_toward(_gait_amt, want, delta * 7.0)
+	if _gait_amt <= 0.001:
+		_gait_phase = 0.0
+		_gait.position = Vector2.ZERO
+		_gait.rotation = 0.0
+		_gait.scale = Vector2.ONE
+		if _aura != null:
+			_aura.position = Vector2.ZERO
+		return
+	var rate: float = clampf(STEP_RATE.x + spd / float(SimTypes.TILE_SIZE) * 0.9, STEP_RATE.x, STEP_RATE.y)
+	var step_before: int = int(floor(_gait_phase / PI))
+	_gait_phase += PI * rate * delta
+	var step_now: int = int(floor(_gait_phase / PI))
+	var sn: float = sin(_gait_phase)
+	var h: float = absf(sn) * HOP_PX * _scale() * _gait_amt
+	var squash: float = pow(1.0 - absf(sn), 6.0) * LAND_SQUASH * _gait_amt
+	_gait.position = Vector2(0.0, -h)
+	_gait.rotation = sn * deg_to_rad(SWAY_DEG) * _gait_amt
+	_gait.scale = Vector2(1.0 + squash, 1.0 - squash)
+	if _aura != null:
+		_aura.position = _gait.position
+	if step_now != step_before and _gait_amt > 0.3 and spd > GAIT_SPEED_MIN:
+		var side: float = 1.0 if step_now % 2 == 0 else -1.0
+		var across: Vector2 = _vel.normalized().orthogonal() * Vector2(1.0, 0.6)
+		footstep.emit(position + across * FOOT_SPREAD_PX * side * _scale(), unit.faction == SimTypes.Faction.ALLY, _scale())
+
+
+## 残影：当前精灵的一份拷贝留在原地（单位层内、画在本单位之后），阵营色（己方金 / 敌方红）、渐隐后释放
 func _spawn_afterimage() -> void:
 	if _sprite == null or get_parent() == null or not UiKit.motion_enabled:
 		return
@@ -272,12 +364,12 @@ func _spawn_afterimage() -> void:
 	g.name = "Afterimage"
 	g.texture = _sprite.texture
 	g.offset = _sprite.offset
-	g.scale = _sprite.scale * Vector2(_body.scale.x, 1.0)
+	g.scale = _sprite.scale * Vector2(_body.scale.x, 1.0) * _gait.scale
 	g.flip_h = _sprite.flip_h
-	g.rotation = _body.rotation
-	g.position = position + _body.position
+	g.rotation = _body.rotation + _gait.rotation
+	g.position = position + _body.position + _gait.position
 	g.texture_filter = _sprite.texture_filter
-	g.modulate = Color(AFTERIMAGE_TINT, AFTERIMAGE_ALPHA)
+	g.modulate = Color(AFTERIMAGE_TINT if unit.faction == SimTypes.Faction.ALLY else AFTERIMAGE_TINT_ENEMY, AFTERIMAGE_ALPHA)
 	get_parent().add_child(g)
 	get_parent().move_child(g, get_index())
 	var t: Tween = g.create_tween()
@@ -297,21 +389,30 @@ func play_attack(target_screen_pos: Vector2) -> void:
 	t.tween_property(_body, "position", Vector2.ZERO, 0.15)
 
 
-func play_hit() -> void:
+## dir：攻击者 → 本单位的方向（零向量 = 原地抖动）。白闪 + 背离攻击者后挫 + 压扁回弹
+func play_hit(dir: Vector2 = Vector2.ZERO) -> void:
 	if is_dying:
 		return
 	if _body_material != null:
 		_set_flash(1.0)
 		var f: Tween = _new_tween()
-		f.tween_method(_set_flash, 1.0, 0.0, 0.08)
+		f.tween_method(_set_flash, 1.0, 0.0, 0.1)
 	else:
 		var t: Tween = _new_tween()
 		_body.modulate = Color(3.0, 3.0, 3.0, 1.0)
 		t.tween_property(_body, "modulate", Color.WHITE, 0.08)
 	var s: Tween = _new_tween()
-	s.tween_property(_body, "position", Vector2(2.0, 0.0), 0.03)
-	s.tween_property(_body, "position", Vector2(-2.0, 0.0), 0.03)
-	s.tween_property(_body, "position", Vector2.ZERO, 0.03)
+	if dir.length() > 0.01:
+		var knock: Vector2 = dir.normalized() * Vector2(1.0, 0.5) * HIT_KNOCK_PX * _scale()
+		s.tween_property(_body, "position", knock, 0.04).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		s.tween_property(_body, "position", Vector2.ZERO, 0.14).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	else:
+		s.tween_property(_body, "position", Vector2(2.0, 0.0), 0.03)
+		s.tween_property(_body, "position", Vector2(-2.0, 0.0), 0.03)
+		s.tween_property(_body, "position", Vector2.ZERO, 0.03)
+	var q: Tween = _new_tween()
+	q.tween_property(_body, "scale:y", 0.88, 0.04)
+	q.tween_property(_body, "scale:y", 1.0, 0.16).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 
 func _set_flash(v: float) -> void:
@@ -319,31 +420,160 @@ func _set_flash(v: float) -> void:
 		_body_material.set_shader_parameter("flash", v)
 
 
-func play_death() -> void:
+## 击败：白闪 → 背离击杀者击飞（抛物线 + 翻转，落点限制在 bounds 内，不出战场 / 屏幕）→ 落地一弹 → 灰化 →
+## 自上而下化为灰烬粒子（剔除线由 death_ash 着色器画，粒子发射器跟随剔除线）→ 释放。
+## dir：击杀者 → 本单位方向（零向量 = 按朝向向后）；bounds：本层坐标下允许的脚底落点范围（空 = 不限制）
+func play_death(dir: Vector2 = Vector2.ZERO, bounds: Rect2 = Rect2()) -> void:
 	if is_dying:
 		return
 	is_dying = true
+	_vel = Vector2.ZERO
 	_base.queue_redraw()
+	_overlay.queue_redraw()
 	if _outline != null:
 		_outline.visible = false
+	for tw: Tween in _tweens:
+		if tw.is_valid():
+			tw.kill()
+	_tweens.clear()
+	_body.position = Vector2.ZERO
+	_body.scale = Vector2(1.0, 1.0)
+	if _gait != null:
+		_gait.position = Vector2.ZERO
+		_gait.rotation = 0.0
+		_gait.scale = Vector2.ONE
+	if _sprite == null:
+		_death_fallback()
+		return
+	var d: Vector2 = dir.normalized() if dir.length() > 0.01 else Vector2(1.0 if _facing.facing_left else -1.0, 0.0)
+	var rooted: bool = unit.is_structure()            # 建筑不击飞、不翻转：原地闪白 → 灰化 → 自上而下崩成灰烬
+	var dest: Vector2 = position if rooted else position + d * Vector2(1.0, 0.55) * KNOCK_PX * _scale()
+	if bounds.has_area():
+		dest = Vector2(clampf(dest.x, bounds.position.x, bounds.end.x), clampf(dest.y, bounds.position.y, bounds.end.y))
+	# 着色器：灰化 + 自上而下剔除（同时承担白闪）
+	var vis: Rect2i = UnitAura.visible_rect(_sprite.texture)
+	var th: float = float(_sprite.texture.get_height())
+	var dm: ShaderMaterial = Art.material("death_ash")
+	dm.set_shader_parameter("uv_top", float(vis.position.y) / th)
+	dm.set_shader_parameter("uv_bottom", float(vis.end.y) / th)
+	dm.set_shader_parameter("edge_color", Color(1.0, 0.86, 0.6) if unit.faction == SimTypes.Faction.ALLY else Color(1.0, 0.45, 0.4))
+	dm.set_shader_parameter("flash", 1.0)
+	_sprite.material = dm
+	var spin: float = 0.0 if rooted else (1.0 if d.x >= 0.0 else -1.0) * deg_to_rad(28.0)
+	var lift: float = 0.0 if rooted else KNOCK_HEIGHT
+	var t: Tween = _new_tween()
+	# 击飞：水平缓出 + 抛物线高度 + 向后翻
+	t.tween_method(func(v: float) -> void: dm.set_shader_parameter("flash", v), 1.0, 0.0, 0.16)
+	t.parallel().tween_property(self, "position", dest, KNOCK_SECONDS).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	t.parallel().tween_method(func(k: float) -> void: _gait.position = Vector2(0.0, -lift * _scale() * 4.0 * k * (1.0 - k)), 0.0, 1.0, KNOCK_SECONDS)
+	t.parallel().tween_property(_gait, "rotation", spin, KNOCK_SECONDS * 0.8).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	if _rim != null:
+		t.parallel().tween_property(_rim, "modulate:a", 0.0, 0.2)
+	if _aura != null:
+		t.parallel().tween_property(_aura, "modulate:a", 0.0, 0.3)
+		for c: Node in _aura.get_children():
+			if c is CPUParticles2D:
+				(c as CPUParticles2D).emitting = false
+	t.parallel().tween_property(_base, "modulate:a", 0.0, KNOCK_SECONDS)
+	if _light != null:
+		t.parallel().tween_property(_light, "energy", 0.0, KNOCK_SECONDS + GRAY_SECONDS)
+	# 落地：压扁一下、再弹起一点；同时灰化
+	t.tween_property(_gait, "scale", Vector2(1.12, 0.86), 0.06)
+	t.parallel().tween_method(func(v: float) -> void: dm.set_shader_parameter("gray", v), 0.0, 1.0, GRAY_SECONDS)
+	t.tween_method(func(k: float) -> void: _gait.position = Vector2(0.0, -lift * 0.22 * _scale() * 4.0 * k * (1.0 - k)), 0.0, 1.0, 0.16)
+	t.parallel().tween_property(_gait, "scale", Vector2.ONE, 0.16)
+	t.parallel().tween_property(_gait, "rotation", spin * 0.55, 0.16)
+	t.tween_interval(maxf(0.0, GRAY_SECONDS - 0.22))
+	# 自上而下化为灰烬
+	t.tween_callback(_start_ash)
+	t.tween_method(_set_ash_cut.bind(dm), 0.0, 1.0, ASH_SECONDS)
+	t.tween_callback(_stop_ash)
+	t.tween_callback(queue_free)
+
+
+func _set_ash_cut(v: float, dm: ShaderMaterial) -> void:
+	_ash_cut = v
+	dm.set_shader_parameter("cut", v)
+
+
+## 无精灵（占位绘制）：保持原来的整体淡出
+func _death_fallback() -> void:
 	var t: Tween = _new_tween()
 	if _sprite != null:
 		var dm: ShaderMaterial = Art.material("dissolve")
 		_sprite.material = dm
 		t.tween_method(func(v: float) -> void: dm.set_shader_parameter("progress", v), 0.0, 1.0, DEATH_SECONDS)
 		t.parallel().tween_property(_base, "modulate:a", 0.0, DEATH_SECONDS)
-		if _rim != null:
-			t.parallel().tween_property(_rim, "modulate:a", 0.0, DEATH_SECONDS * 0.4)
-		if _aura != null:
-			t.parallel().tween_property(_aura, "modulate:a", 0.0, DEATH_SECONDS * 0.6)
-			for c: Node in _aura.get_children():
-				if c is CPUParticles2D:
-					(c as CPUParticles2D).emitting = false
 	else:
 		t.tween_property(self, "modulate:a", 0.0, DEATH_SECONDS)
 	if _light != null:
 		t.parallel().tween_property(_light, "energy", 0.0, DEATH_SECONDS)
 	t.tween_callback(queue_free)
+
+
+## 人物可见区域在本节点坐标下的纵向范围（x = 顶，y = 底）与宽度（z）
+func _sprite_span() -> Vector3:
+	var vis: Rect2i = UnitAura.visible_rect(_sprite.texture)
+	var half: float = float(_sprite.texture.get_height()) * 0.5
+	var s: float = _sprite.scale.y
+	var top: float = (float(vis.position.y) - half + SPRITE_FEET_OFFSET) * s
+	var bottom: float = (float(vis.end.y) - half + SPRITE_FEET_OFFSET) * s
+	return Vector3(top, bottom, float(vis.size.x) * _sprite.scale.x)
+
+
+## 灰烬发射器：挂在单位层（本单位释放后粒子仍飘完），z 抬高画在单位之上
+func _start_ash() -> void:
+	if get_parent() == null:
+		return
+	var span: Vector3 = _sprite_span()
+	var lean: float = 1.0 if _gait.rotation >= 0.0 else -1.0
+	var p := CPUParticles2D.new()
+	p.name = "AshEmitter"
+	p.z_index = 1
+	p.local_coords = false
+	p.texture = StatusParticles.dot_texture()
+	p.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	p.emission_rect_extents = Vector2(span.z * 0.36, 3.0)
+	p.amount = 90
+	p.lifetime = 1.0
+	p.direction = Vector2(0.35 * lean, -1.0)
+	p.spread = 40.0
+	p.initial_velocity_min = 20.0
+	p.initial_velocity_max = 75.0
+	p.gravity = Vector2(25.0 * lean, -40.0)
+	p.damping_min = 8.0
+	p.damping_max = 20.0
+	p.scale_amount_min = 2.0 / float(StatusParticles.TEX_SIZE)
+	p.scale_amount_max = 5.0 / float(StatusParticles.TEX_SIZE)
+	var g := Gradient.new()
+	g.set_color(0, Color(1.6, 1.5, 1.4, 1.0))
+	g.set_color(1, Color(0.35, 0.35, 0.36, 0.0))
+	g.add_point(0.25, Color(0.78, 0.76, 0.75, 0.9))
+	p.color_ramp = g
+	var m := CanvasItemMaterial.new()
+	m.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	p.material = m
+	p.emitting = true
+	get_parent().add_child(p)
+	_ash = p
+	_ash_cut = 0.0
+	_update_ash()
+
+
+func _update_ash() -> void:
+	if _ash == null or not is_instance_valid(_ash) or _sprite == null:
+		return
+	var span: Vector3 = _sprite_span()
+	var y: float = lerpf(span.x, span.y, clampf(_ash_cut, 0.0, 1.0))
+	_ash.position = position + _gait.position + Vector2(0.0, y).rotated(_gait.rotation)
+	_ash.rotation = _gait.rotation
+
+
+func _stop_ash() -> void:
+	if _ash != null and is_instance_valid(_ash):
+		_ash.emitting = false
+		CombatFx.free_after(_ash, _ash.lifetime + 0.1)
+	_ash = null
 
 
 func _new_tween() -> Tween:

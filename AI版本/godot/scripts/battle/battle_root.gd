@@ -4,6 +4,14 @@ extends Node2D
 const UNIT_VIEW_SCENE: PackedScene = preload("res://scenes/battle/unit_view.tscn")
 const STATUS_OVERLAY_SCRIPT: Script = preload("res://scripts/battle/status_overlay.gd")
 const RELIC_LAYER_SCRIPT: Script = preload("res://scripts/battle/relic_layer.gd")
+const GROUND_FX_SCRIPT: Script = preload("res://scripts/battle/ground_fx.gd")
+## 2026-10-19 战斗打击感：击败震屏（整个战场画布平移，HUD 不动）
+const SHAKE_PX: float = 9.0
+const SHAKE_SECONDS: float = 0.32
+const SHAKE_HZ: float = 38.0
+const BLAST_SHAKE_SECONDS: float = 0.24          ## 延迟爆炸到期：短一些的震屏
+const KNOCK_MARGIN: Vector2 = Vector2(0.45, 0.2)   ## 击飞落点离战场 / 可视区边缘的余量（格）：左右、下
+const KNOCK_TOP_MARGIN: float = 1.25               ## 击飞落点离上边缘的余量（格，人物约 1.2 格高）
 const UNIT_HIT_RADIUS: float = 0.5        ## 单位点击命中：离身体线段的距离（格）
 const UNIT_HIT_BODY_CELLS: float = 0.9    ## 身体线段高度（格，脚底 → 胸口；精灵约 1.2 格高）
 
@@ -53,6 +61,15 @@ var _status_overlay: Node2D = null       ## 30 关战役：异常状态 / Boss �
 var _relic_ground: Node2D = null         ## 遗物地块 / 放置预览（单位之下，relic_layer.gd GROUND）
 var _relic_top: Node2D = null            ## 遗物点选目标圈 / 生效特效（单位之上，relic_layer.gd TOP）
 var tutorial: TutorialDirector = null    ## 第五阶段：强制引导
+var _ground_fx: Node2D = null            ## 脚印 / 落地碎屑（ground_fx.gd，地图之上、目标连线之下）
+## 本 tick 内发出、尚未命中的攻击："源>目标" → { src_pos, events, done, gen }。同 tick 的受击 / 倒下事件挂到记录上，
+## 等射弹命中或斩击命中时刻再播放受击表现（模拟结果不等待）
+var _pending_hits: Dictionary = {}
+var _fx_gen: int = 0                     ## 世界重建时递增，作废尚未播放的受击表现
+var _blast_from: Dictionary = {}         ## 本 tick 被爆炸波及的单位 id → 爆心（本层坐标）：碎屑 / 击飞背离爆心
+var _shake_left: float = 0.0
+var _shake_seed: float = 0.0
+var _last_placements: Dictionary = {}    ## 上一次的部署（槽位 → 格），用于找出新落位的单位
 
 
 func _ready() -> void:
@@ -94,6 +111,12 @@ func _ready() -> void:
 	move_child(_status_overlay, _unit_layer.get_index() + 1)
 	_status_overlay.set("controller", controller)
 	_status_overlay.set("grid_height", level.height)
+	_ground_fx = Node2D.new()
+	_ground_fx.name = "GroundFx"
+	_ground_fx.set_script(GROUND_FX_SCRIPT)
+	add_child(_ground_fx)
+	move_child(_ground_fx, _target_lines.get_index())
+	_fx.set("ground", _ground_fx)
 	_relic_ground = _make_relic_layer("RelicGround", 0)
 	move_child(_relic_ground, _unit_layer.get_index())
 	_relic_top = _make_relic_layer("RelicTop", 1)
@@ -104,6 +127,7 @@ func _ready() -> void:
 	_hud.call("setup", self)
 	controller.setup(level, SaveManager.get_level_config(level.id))
 	_placed_count = controller.placements.size()
+	_last_placements = controller.placements.duplicate()
 	EventBus.deployment_changed.connect(_on_deployment_changed)
 	AudioManager.play_bgm(level.bgm)
 	AudioManager.play_ambient(str(AMBIENT_BY_BIOME.get(level.biome, AMBIENT_DEFAULT)))
@@ -179,7 +203,7 @@ func _apply_playfield() -> void:
 
 func _panned_layers() -> Array[Node2D]:
 	var out: Array[Node2D] = [_map_layer, _target_lines, _unit_layer, _fx, _range, _debug]
-	for n: Node2D in [_status_overlay, _relic_ground, _relic_top]:
+	for n: Node2D in [_status_overlay, _relic_ground, _relic_top, _ground_fx]:
 		if n != null:
 			out.append(n)
 	return out
@@ -275,7 +299,10 @@ func recenter_pan() -> void:
 
 
 func _process(delta: float) -> void:
-	if level == null or DisplayServer.get_name() == "headless" or not get_window().has_focus():
+	if level == null:
+		return
+	_update_shake(delta)
+	if DisplayServer.get_name() == "headless" or not get_window().has_focus():
 		return
 	var mouse: Vector2 = get_viewport().get_mouse_position()
 	if get_viewport_rect().has_point(mouse):
@@ -401,11 +428,15 @@ func _on_world_rebuilt() -> void:
 		v.queue_free()
 	_views.clear()
 	_fx.call("clear")
+	_ground_fx.call("clear")
+	_pending_hits.clear()
+	_fx_gen += 1
 	for u: SimUnit in controller.world.units:
 		var v: UnitView = UNIT_VIEW_SCENE.instantiate() as UnitView
 		_unit_layer.add_child(v)
 		v.bind(u, level.height, UnitView.objective_kind_for(level, u))
 		v.selected = u.id == selected_id
+		v.footstep.connect(_on_footstep)
 		_views[u.id] = v
 	_range.call("show_for", _view(selected_id))
 
@@ -415,6 +446,12 @@ func _on_ticked() -> void:
 	var sim_dt: float = SimTypes.SIM_DT * float(controller.speed)
 	for v: UnitView in _alive_views():
 		v.push_pos(sim_dt)
+	_pending_hits.clear()      # 同 tick 的受击 / 倒下事件已挂到各自的攻击记录上
+	_blast_from.clear()
+
+
+func _on_footstep(pos: Vector2, ally: bool, size: float) -> void:
+	_ground_fx.call("add_footprint", pos, ally, size)
 
 
 ## 顶栏任务句被点击（07 §6）：特殊目标闪烁
@@ -436,8 +473,10 @@ func _on_phase_changed(phase: int) -> void:
 	for v: UnitView in _alive_views():
 		v.interpolate = running
 		v.show_state = running or phase == SimTypes.Phase.PAUSED
-		if not running:
+		if phase == SimTypes.Phase.DEPLOY:
 			v.snap()
+		elif not running:
+			v.settle()         # 暂停 / 结束：显示位置平滑停到模拟位置
 
 
 ## 战斗中途加入的单位（Boss 召唤、换阶段增援）补建视图；部署阶段由 world_rebuilt 整体重建
@@ -451,7 +490,11 @@ func _sync_views() -> void:
 		_unit_layer.add_child(v)
 		v.bind(u, level.height, UnitView.objective_kind_for(level, u))
 		v.show_state = controller.phase != SimTypes.Phase.DEPLOY
+		v.interpolate = controller.phase == SimTypes.Phase.RUNNING
+		v.footstep.connect(_on_footstep)
 		_views[u.id] = v
+		if controller.phase != SimTypes.Phase.DEPLOY:     # 增援 / 召唤出场：阵营色光柱
+			_fx.call("spawn_pillar", v.position, u.faction == SimTypes.Faction.ALLY, v.view_scale(), "spawn")
 
 
 ## 多阶段 Boss 到达切换阈值：战斗已暂停。播放该阶段说明（data/stories/<level>_phase<N>.json），提示玩家改指令 / 补增援后「继续」
@@ -468,6 +511,12 @@ func _on_deployment_changed() -> void:
 	var n: int = controller.placements.size()
 	AudioManager.play_sfx("deploy_place" if n >= _placed_count else "deploy_remove")
 	_placed_count = n
+	# 部署落位（新放下或挪到新格）：金色小光柱
+	for slot: Variant in controller.placements.keys():
+		var cell: Variant = controller.placements[slot]
+		if cell is Vector2i and _last_placements.get(slot, null) != cell:
+			_fx.call("spawn_pillar", SimTypes.sim_to_screen(SimTypes.cell_center(cell as Vector2i), level.height), true, 1.0, "place")
+	_last_placements = controller.placements.duplicate()
 	# 10 §4：选中的己方单位被移除（移除按钮 / 拖出战场 / 清空）→ 收起侧栏
 	if selected_id >= 0 and controller.world.get_unit(selected_id) == null:
 		EventBus.unit_selected.emit(-1)
@@ -500,36 +549,148 @@ func _on_sim_event(e: Dictionary) -> void:
 			if src != null and dst != null:
 				src.play_attack(dst.position)
 				AudioManager.play_sfx(str(src.unit.def.visuals.get("attack_sfx", "")))
-				var proj: String = str(src.unit.def.visuals.get("projectile", "none"))
-				if proj != "none":
-					var c: Color = Palette.BONE if src.unit.faction == SimTypes.Faction.ALLY else Palette.WARN_RED
-					_fx.call("spawn_projectile", src.position + Vector2(0.0, -24.0), dst.position + Vector2(0.0, -24.0), c, Art.texture(proj))
+				_spawn_attack_fx(src, dst)
 		SimTypes.EventType.DAMAGE_APPLIED:
-			var hit: UnitView = _view(int(e["target"]))
-			if hit != null:
-				hit.play_hit()
-				AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")))
+			var key: String = "%d>%d" % [int(e.get("source", -1)), int(e["target"])]
+			if _pending_hits.has(key):
+				((_pending_hits[key] as Dictionary)["events"] as Array).append(e)
+			elif _blast_from.has(int(e["target"])):
+				_show_hit(e, _blast_from[int(e["target"])])
+			else:
+				_show_hit(e, _source_pos(int(e.get("source", -1))))
 		SimTypes.EventType.BLAST_PLACED:
 			var at: Vector2 = SimTypes.sim_to_screen(e["pos"] as Vector2, level.height)
 			var caster: UnitView = _view(int(e["source"]))
 			if caster != null:
 				caster.play_attack(at)
 				AudioManager.play_sfx(str(caster.unit.def.visuals.get("attack_sfx", "")))
-				_fx.call("spawn_projectile", caster.position + Vector2(0.0, -24.0), at, Palette.FLESH_HI, Art.texture(str(caster.unit.def.visuals.get("projectile", "none"))))
+				_fx.call("spawn_projectile", caster.chest_pos(), at, caster.unit.faction == SimTypes.Faction.ALLY,
+					CombatFx.shape_for(caster.unit.def), caster.view_scale())
 			var trait_delay: float = float(e["remaining"])
-			_fx.call("spawn_blast_marker", controller.world, int(e["blast_id"]), at, float(e["radius"]), trait_delay)
+			var src_unit: SimUnit = controller.world.get_unit(int(e["source"]))
+			var ally_blast: bool = src_unit != null and src_unit.faction == SimTypes.Faction.ALLY
+			_fx.call("spawn_blast_marker", controller.world, int(e["blast_id"]), at, float(e["radius"]), trait_delay, ally_blast)
 		SimTypes.EventType.BLAST_DETONATED:
 			_fx.call("detonate_marker", int(e["blast_id"]))
 			AudioManager.play_sfx("blast_detonate")
+			shake(BLAST_SHAKE_SECONDS)
+			var center: Vector2 = SimTypes.sim_to_screen(e["pos"] as Vector2, level.height)
+			for hid: int in e.get("hits", []) as Array:
+				_blast_from[hid] = center
 		SimTypes.EventType.RELIC_USED:
 			_on_relic_used(e)
 		SimTypes.EventType.UNIT_DIED:
-			var dead: UnitView = _view(int(e["unit"]))
-			if dead != null:
-				dead.play_death()
-				AudioManager.play_sfx(str(dead.unit.def.visuals.get("death_sfx", "")))
-				if int(e["unit"]) == selected_id:
-					EventBus.unit_selected.emit(-1)
+			if int(e["unit"]) == selected_id:
+				EventBus.unit_selected.emit(-1)
+			var key: String = "%d>%d" % [int(e.get("killer", -1)), int(e["unit"])]
+			if _pending_hits.has(key):
+				((_pending_hits[key] as Dictionary)["events"] as Array).append(e)
+			elif _blast_from.has(int(e["unit"])):
+				_show_death(e, _blast_from[int(e["unit"])])
+			else:
+				_show_death(e, _source_pos(int(e.get("killer", -1))))
+
+
+## 攻击特效：有射弹（visuals.projectile 非 none）= 射弹，否则 = 斩击；受击表现推迟到命中时刻
+func _spawn_attack_fx(src: UnitView, dst: UnitView) -> void:
+	var ally: bool = src.unit.faction == SimTypes.Faction.ALLY
+	var rec: Dictionary = { "src_pos": src.position, "events": [], "done": false, "gen": _fx_gen }
+	_pending_hits["%d>%d" % [src.unit.id, dst.unit.id]] = rec
+	var proj: String = str(src.unit.def.visuals.get("projectile", "none"))
+	if proj != "none" and proj != "":
+		_fx.call("spawn_projectile", src.chest_pos(), dst.chest_pos(), ally, CombatFx.shape_for(src.unit.def), src.view_scale(), _flush_hit.bind(rec))
+	else:
+		_fx.call("spawn_slash", dst.chest_pos(), ally, dst.view_scale(), dst.position - src.position)
+		get_tree().create_timer(CombatFx.SLASH_HIT_AT).timeout.connect(_flush_hit.bind(rec))
+
+
+func _flush_hit(rec: Dictionary) -> void:
+	if bool(rec["done"]) or int(rec["gen"]) != _fx_gen:
+		return
+	rec["done"] = true
+	for e: Dictionary in rec["events"] as Array:
+		if int(e["type"]) == SimTypes.EventType.UNIT_DIED:
+			_show_death(e, rec["src_pos"])
+		else:
+			_show_hit(e, rec["src_pos"])
+
+
+## 攻击者当前位置；没有（遗物、已移除）为 null
+func _source_pos(unit_id: int) -> Variant:
+	var v: UnitView = _view(unit_id)
+	return v.position if v != null else null
+
+
+## 受击：白闪后挫 + 背离攻击者抛飞灰黑碎屑
+func _show_hit(e: Dictionary, from_pos: Variant) -> void:
+	var hit: UnitView = _view(int(e["target"]))
+	if hit == null or hit.is_dying:
+		return
+	var dir: Vector2 = Vector2(randf_range(-0.4, 0.4), -1.0)
+	if from_pos != null:
+		dir = hit.position - (from_pos as Vector2)
+	hit.play_hit(dir)
+	AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")))
+	var amount: float = float(e.get("amount", 0.0))
+	var count: int = clampi(5 + int(amount / 12.0), 5, 11)
+	_fx.call("spawn_debris", hit.position, -hit.chest_offset().y, dir, count, 1.0)
+
+
+## 击败：震屏 → 爆散 → 击飞（不出战场 / 可视区）→ 灰化 → 自上而下化为灰烬
+func _show_death(e: Dictionary, from_pos: Variant) -> void:
+	var dead: UnitView = _view(int(e["unit"]))
+	if dead == null or dead.is_dying:
+		return
+	var dir: Vector2 = Vector2(-1.0 if dead.position.x > float(level.width * SimTypes.TILE_SIZE) * 0.5 else 1.0, 0.0)
+	if from_pos != null and dead.position.distance_to(from_pos as Vector2) > 1.0:
+		dir = (dead.position - (from_pos as Vector2)).normalized()
+	shake()
+	_fx.call("spawn_death_burst", dead.position, -dead.chest_offset().y, dir, dead.unit.faction == SimTypes.Faction.ALLY, dead.view_scale())
+	dead.play_death(dir, knock_bounds(dead.view_scale()))
+	AudioManager.play_sfx(str(dead.unit.def.visuals.get("death_sfx", "")))
+
+
+## 击飞落点范围（单位层坐标，脚底）：战场矩形 ∩ 当前可视区（扣掉 HUD 上下带），再留出人物身高 / 半宽的余量
+func knock_bounds(size: float = 1.0) -> Rect2:
+	var tile: float = float(SimTypes.TILE_SIZE)
+	var field := Rect2(Vector2.ZERO, Vector2(level.width, level.height) * tile)
+	var inv: Transform2D = _unit_layer.get_global_transform_with_canvas().affine_inverse()
+	var vp: Vector2 = get_viewport_rect().size
+	var b: Vector2 = Playfield.bands()
+	var a: Vector2 = inv * Vector2(0.0, b.x)
+	var c: Vector2 = inv * Vector2(vp.x, vp.y - b.y)
+	var visible_rect := Rect2(a, Vector2.ZERO).expand(c)
+	var r: Rect2 = field.intersection(visible_rect) if field.intersects(visible_rect) else field
+	var left: float = r.position.x + KNOCK_MARGIN.x * tile * size
+	var right: float = r.end.x - KNOCK_MARGIN.x * tile * size
+	var top: float = r.position.y + KNOCK_TOP_MARGIN * tile * size
+	var bottom: float = r.end.y - KNOCK_MARGIN.y * tile
+	if right <= left or bottom <= top:
+		return Rect2(r.get_center(), Vector2(0.001, 0.001))
+	return Rect2(left, top, right - left, bottom - top)
+
+
+## 震屏：整个战场画布（第 0 层）抖动，HUD 不动；衰减到 0 时复位
+func shake(seconds: float = SHAKE_SECONDS) -> void:
+	if not UiKit.motion_enabled:
+		return
+	_shake_left = maxf(_shake_left, seconds)
+	_shake_seed = randf() * 100.0
+
+
+func _update_shake(delta: float) -> void:
+	if _shake_left <= 0.0:
+		return
+	_shake_left = maxf(0.0, _shake_left - delta)
+	var k: float = _shake_left / SHAKE_SECONDS
+	var tt: float = (SHAKE_SECONDS - _shake_left) * SHAKE_HZ + _shake_seed
+	var off := Vector2(sin(tt * 1.7) + 0.5 * sin(tt * 3.1), cos(tt * 1.3) + 0.5 * sin(tt * 2.7)) * SHAKE_PX * k * k / 1.5
+	get_viewport().canvas_transform = Transform2D(0.0, off.round() if _shake_left > 0.0 else Vector2.ZERO)
+
+
+func _exit_tree() -> void:
+	if is_inside_tree() and get_viewport() != null:
+		get_viewport().canvas_transform = Transform2D.IDENTITY
 
 
 func _view(unit_id: int) -> UnitView:
@@ -596,6 +757,13 @@ func _on_relic_used(e: Dictionary) -> void:
 		return
 	var heal: bool = str(e.get("kind", "")) == "heal"
 	var amount: int = roundi(float(e.get("amount", 0.0)))
+	# 遗物由玩家施放：一律金色。骨刃 = 自上劈落的光柱 + 竖斩；徽章 = 上浮的治疗光柱
+	var tv: UnitView = _view(target.id)
+	var feet: Vector2 = tv.position if tv != null else SimTypes.sim_to_screen(target.pos, level.height)
+	var sz: float = tv.view_scale() if tv != null else 1.0
+	_fx.call("spawn_pillar", feet, true, sz, "heal" if heal else "strike")
+	if not heal:
+		_fx.add_child(CombatFx.Slash.make(feet + Vector2(0.0, UnitView.CHEST_Y * sz), true, sz, Vector2.DOWN, 1))
 	_relic_top.call("spawn_fx", target.pos, RelicLayer.relic_color(rid), ("+%d" if heal else "-%d") % amount)
 	AudioManager.play_sfx("deploy_place" if heal else "hit_bone")
 	var v: UnitView = _view(target.id)
