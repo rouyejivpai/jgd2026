@@ -51,8 +51,6 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_desc.clip_text = false
 	ScrollText.wrap(_desc, ScrollText.Mode.MANUAL)
 	_stats = DetailKit.stats(self)
-	var note: Label = DetailKit.label(self, "det_note", DataRegistry.get_string("ui.rule_priority_note_side"))
-	ScrollText.wrap(note, ScrollText.Mode.AUTO)
 	var body: VBoxContainer = DetailKit.scroll_body(self)
 	body.add_theme_constant_override("separation", 12)
 	_editor = RULE_EDITOR_SCENE.instantiate() as RuleEditor
@@ -61,8 +59,8 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_build_beacon_section(body)
 	_editor.picker_toggled.connect(func(open: bool) -> void:
 		for c: Control in _beacon_nodes:
-			c.visible = not open
-		_route_row.visible = not open and not level.routes.is_empty()
+			c.visible = false                 # 2026-10-20：详情里不再显示信标说明 / 列表 / 预设路线（只留底部「信标」按钮）
+		_route_row.visible = false
 		if not open:
 			_refresh_beacons())
 	var add: Button = _editor.take_add_button()
@@ -73,11 +71,14 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_beacon_button.text = DataRegistry.get_string("ui.beacon_mode_button")
 	_beacon_button.tooltip_text = DataRegistry.get_string("ui.beacon_mode_button_tip")
 	_beacon_button.focus_mode = Control.FOCUS_NONE
+	_beacon_button.theme_type_variation = DetailKit.tt("det_c1")        # 与指令行的框同款（居中）
+	_beacon_button.add_theme_font_size_override("font_size", 22)
 	_beacon_button.pressed.connect(func() -> void: beacon_mode_requested.emit(slot_id))
 	DetailKit.place(self, _beacon_button, DetailKit.rel("det_beacon_btn"))
 	DetailKit.footer_line(self)
 	DetailKit.footer_tab(self)
 	_footer = DetailKit.label(self, "det_beacons")
+	_footer.visible = false                  # 2026-10-20：底部「信标：N 个 · 模式」不再显示
 	ScrollText.wrap(_footer, ScrollText.Mode.AUTO)
 	EventBus.beacons_changed.connect(func(_id: int) -> void: _refresh_beacons())
 	EventBus.battle_phase_changed.connect(func(_p: int) -> void:
@@ -122,8 +123,10 @@ func _build_beacon_section(body: VBoxContainer) -> void:
 	_copy_button.focus_mode = Control.FOCUS_NONE
 	_copy_button.pressed.connect(_on_copy_route)
 	_route_row.add_child(_copy_button)
-	_route_row.visible = not level.routes.is_empty()
+	_route_row.visible = false
 	_beacon_nodes.append(_beacon_list)
+	for c: Control in _beacon_nodes:
+		c.visible = false
 
 
 func _refresh_beacons() -> void:
@@ -231,8 +234,11 @@ func _update_stats() -> void:
 		return
 	var u: SimUnit = controller.world.get_unit(controller.unit_id_of_slot(slot_id)) if controller.world != null else null
 	var values: Array[String] = RuleText.stat_values(u, udef)
+	var tips: Array[String] = RuleText.stat_tips(u, udef)
 	for i: int in _stats.size():
 		_stats[i].text = values[i]
+		_stats[i].tooltip_text = tips[i]                     # 有关卡加成时悬停看完整说明
+		_stats[i].mouse_filter = Control.MOUSE_FILTER_PASS if tips[i] != "" else Control.MOUSE_FILTER_IGNORE
 
 
 ## 侧栏比设计高 extra 像素（视口高于 1080）：滚动区加高、底部件下移

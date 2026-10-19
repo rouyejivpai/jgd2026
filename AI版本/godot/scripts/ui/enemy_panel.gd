@@ -50,6 +50,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	DetailKit.footer_line(self)
 	DetailKit.footer_tab(self)
 	_footer = DetailKit.label(self, "det_beacons", DataRegistry.get_string("ui.enemy_rules_footer"))
+	_footer.visible = false                  # 2026-10-20：底部说明不再显示
 	show_unit(-1)
 
 
@@ -91,8 +92,11 @@ func _update() -> void:
 	if u == null:
 		return
 	var values: Array[String] = RuleText.stat_values(u, u.def)
+	var tips: Array[String] = RuleText.stat_tips(u, u.def)
 	for i: int in _stats.size():
 		_stats[i].text = values[i]
+		_stats[i].tooltip_text = tips[i]                     # 有关卡加成时悬停看完整说明
+		_stats[i].mouse_filter = Control.MOUSE_FILTER_PASS if tips[i] != "" else Control.MOUSE_FILTER_IGNORE
 	var running: bool = controller.phase != SimTypes.Phase.DEPLOY and u.alive
 	_runtime.visible = running
 	if running:

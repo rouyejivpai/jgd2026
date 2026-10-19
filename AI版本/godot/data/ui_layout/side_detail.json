@@ -8,41 +8,26 @@
   "elements": [
     {
       "id": "det_panel",
-      "kind": "ninepatch",
-      "rect": [
-        1264,
-        0,
-        653,
-        1074
-      ],
-      "ninepatch": [
-        48,
-        48,
-        48,
-        48
-      ],
-      "file": "res://assets/ui/side_detail/slices/panel.png",
-      "theme_type": "side_detail__det_panel"
-    },
-    {
-      "id": "det_portrait_ring",
       "kind": "image",
       "rect": [
-        1288,
-        37,
-        134,
-        132
+        0,
+        0,
+        1004,
+        1080
       ],
-      "file": "res://assets/ui/side_detail/slices/portrait_ring.png"
+      "data": {
+        "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置"
+      },
+      "file": "res://assets/ui/gothic/cmd_panel.png"
     },
     {
       "id": "det_portrait",
       "kind": "flatbox",
       "rect": [
-        1298,
-        46,
-        114,
-        114
+        38,
+        56,
+        150,
+        150
       ],
       "theme_type": "side_detail__det_portrait"
     },
@@ -50,15 +35,15 @@
       "id": "det_remove",
       "kind": "button",
       "rect": [
-        1675,
-        22,
-        107,
-        52
+        500,
+        18,
+        100,
+        42
       ],
       "text_rect": [
-        12,
-        11,
-        84,
+        20,
+        10,
+        67,
         33
       ],
       "align": "center",
@@ -72,16 +57,22 @@
         "ref_text": "移除"
       },
       "ninepatch": [
-        14,
-        14,
-        14,
-        14
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_dark.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_dark.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_dark.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_dark.png"
+        "normal": "res://assets/ui/gothic/detail/plate_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_small.png"
       },
       "theme_type": "side_detail__det_remove"
     },
@@ -89,15 +80,15 @@
       "id": "det_close",
       "kind": "button",
       "rect": [
-        1788,
-        23,
-        107,
-        51
+        650,
+        18,
+        100,
+        42
       ],
       "text_rect": [
-        12,
-        9,
-        84,
+        20,
+        10,
+        67,
         33
       ],
       "align": "center",
@@ -111,43 +102,31 @@
         "ref_text": "关闭"
       },
       "ninepatch": [
-        14,
-        14,
-        14,
-        14
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_red_large.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_red_large.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_red_large.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_red_large.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson_small.png"
       },
       "theme_type": "side_detail__det_close"
-    },
-    {
-      "id": "det_stats",
-      "kind": "ninepatch",
-      "rect": [
-        1279,
-        207,
-        637,
-        107
-      ],
-      "ninepatch": [
-        32,
-        32,
-        32,
-        32
-      ],
-      "file": "res://assets/ui/side_detail/slices/stats.png",
-      "theme_type": "side_detail__det_stats"
     },
     {
       "id": "det_stat_icon_0",
       "kind": "flatbox",
       "rect": [
-        1308,
-        227,
+        230,
+        200,
         22,
         22
       ],
@@ -157,8 +136,8 @@
       "id": "det_stat_icon_1",
       "kind": "flatbox",
       "rect": [
-        1504,
-        227,
+        410,
+        200,
         22,
         22
       ],
@@ -168,8 +147,8 @@
       "id": "det_stat_icon_2",
       "kind": "flatbox",
       "rect": [
-        1700,
-        227,
+        590,
+        200,
         22,
         22
       ],
@@ -179,8 +158,8 @@
       "id": "det_stat_icon_3",
       "kind": "flatbox",
       "rect": [
-        1308,
-        271,
+        230,
+        240,
         22,
         22
       ],
@@ -190,8 +169,8 @@
       "id": "det_stat_icon_4",
       "kind": "flatbox",
       "rect": [
-        1504,
-        271,
+        410,
+        240,
         22,
         22
       ],
@@ -201,8 +180,8 @@
       "id": "det_stat_icon_5",
       "kind": "flatbox",
       "rect": [
-        1700,
-        271,
+        590,
+        240,
         22,
         22
       ],
@@ -212,10 +191,10 @@
       "id": "det_scroll",
       "kind": "flatbox",
       "rect": [
-        1290,
-        344,
-        584,
-        568
+        8,
+        290,
+        790,
+        684
       ],
       "theme_type": "side_detail__det_scroll"
     },
@@ -223,10 +202,10 @@
       "id": "det_track",
       "kind": "ninepatch",
       "rect": [
-        1882,
-        350,
-        8,
-        552
+        792,
+        296,
+        6,
+        672
       ],
       "ninepatch": [
         0,
@@ -234,16 +213,16 @@
         0,
         6
       ],
-      "file": "res://assets/ui/side_detail/slices/track.png",
+      "file": "res://assets/ui/gothic/detail/track.png",
       "theme_type": "side_detail__det_track"
     },
     {
       "id": "det_thumb",
       "kind": "ninepatch",
       "rect": [
-        1882,
-        352,
-        8,
+        792,
+        298,
+        6,
         150
       ],
       "ninepatch": [
@@ -252,84 +231,96 @@
         0,
         6
       ],
-      "file": "res://assets/ui/side_detail/slices/thumb.png",
+      "file": "res://assets/ui/gothic/detail/thumb.png",
       "theme_type": "side_detail__det_thumb"
     },
     {
       "id": "det_row1",
       "kind": "ninepatch",
       "rect": [
-        1286,
-        338,
-        592,
-        259
+        8,
+        290,
+        774,
+        62
       ],
       "ninepatch": [
-        36,
-        36,
-        36,
-        36
+        40,
+        46,
+        40,
+        46
       ],
-      "file": "res://assets/ui/side_detail/slices/card.png",
+      "expand": [
+        0,
+        0,
+        0,
+        31
+      ],
+      "file": "res://assets/ui/gothic/cmd_strip.png",
       "theme_type": "side_detail__det_row1"
     },
     {
       "id": "det_row2",
       "kind": "ninepatch",
       "rect": [
-        1286,
-        594,
-        592,
-        259
+        8,
+        352,
+        774,
+        62
       ],
       "ninepatch": [
-        36,
-        36,
-        36,
-        36
+        40,
+        46,
+        40,
+        46
       ],
-      "file": "res://assets/ui/side_detail/slices/card.png",
+      "expand": [
+        0,
+        0,
+        0,
+        31
+      ],
+      "file": "res://assets/ui/gothic/cmd_strip.png",
       "theme_type": "side_detail__det_row2"
     },
     {
       "id": "det_handle",
       "kind": "image",
       "rect": [
-        1309,
-        367,
+        20,
+        302,
         18,
         28
       ],
-      "file": "res://assets/ui/side_detail/slices/handle.png"
+      "file": "res://assets/ui/gothic/detail/handle.png"
     },
     {
       "id": "det_override",
       "kind": "toggle",
       "rect": [
-        1474,
-        363,
-        35,
-        34
+        330,
+        346,
+        30,
+        30
       ],
       "states": {
-        "off": "res://assets/ui/side_detail/slices/check_off.png",
-        "on": "res://assets/ui/side_detail/slices/check_on.png"
+        "off": "res://assets/ui/gothic/detail/check_off.png",
+        "on": "res://assets/ui/gothic/detail/check_on.png"
       }
     },
     {
       "id": "det_delete",
       "kind": "button",
       "rect": [
-        1765,
-        355,
-        96,
-        49
+        6,
+        301,
+        34,
+        34
       ],
       "text_rect": [
-        13,
-        10,
-        70,
-        30
+        0,
+        0,
+        34,
+        34
       ],
       "align": "center",
       "data": {
@@ -342,16 +333,22 @@
         "ref_text": "删除"
       },
       "ninepatch": [
-        14,
-        14,
-        14,
-        14
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_red.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_red.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_red.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_red.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson_small.png"
       },
       "theme_type": "side_detail__det_delete"
     },
@@ -359,18 +356,18 @@
       "id": "det_action",
       "kind": "button",
       "rect": [
-        1360,
-        411,
-        218,
+        43,
+        295,
+        122,
         47
       ],
       "text_rect": [
-        15,
-        9,
-        166,
+        12,
+        8,
+        98,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1375.0,
@@ -381,16 +378,16 @@
         "ref_text": "沿我的信标"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+        "normal": "res://assets/ui/gothic/cmd_act_on.png",
+        "hover": "res://assets/ui/gothic/cmd_act_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_act_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_act_on.png"
       },
       "theme_type": "side_detail__det_action"
     },
@@ -398,18 +395,18 @@
       "id": "det_p1",
       "kind": "button",
       "rect": [
-        1583,
-        411,
-        145,
+        168,
+        295,
+        122,
         47
       ],
       "text_rect": [
-        15,
-        9,
-        94,
+        12,
+        8,
+        98,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1598.0,
@@ -420,16 +417,16 @@
         "ref_text": "沿路径"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+        "normal": "res://assets/ui/gothic/cmd_act_on.png",
+        "hover": "res://assets/ui/gothic/cmd_act_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_act_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_act_on.png"
       },
       "theme_type": "side_detail__det_p1"
     },
@@ -437,18 +434,18 @@
       "id": "det_p2",
       "kind": "button",
       "rect": [
-        1733,
-        411,
-        128,
+        294,
+        295,
+        122,
         47
       ],
       "text_rect": [
-        16,
-        9,
-        76,
+        12,
+        8,
+        98,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1749.0,
@@ -459,16 +456,16 @@
         "ref_text": "1"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+        "normal": "res://assets/ui/gothic/cmd_act_on.png",
+        "hover": "res://assets/ui/gothic/cmd_act_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_act_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_act_on.png"
       },
       "theme_type": "side_detail__det_p2"
     },
@@ -476,18 +473,18 @@
       "id": "det_c1",
       "kind": "button",
       "rect": [
-        1377,
-        466,
-        427,
-        45
+        431,
+        295,
+        169,
+        47
       ],
       "text_rect": [
-        16,
+        12,
         8,
-        370,
+        145,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1393.0,
@@ -498,16 +495,16 @@
         "ref_text": "始终"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+        "normal": "res://assets/ui/gothic/cmd_cond_on.png",
+        "hover": "res://assets/ui/gothic/cmd_cond_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_cond_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_cond_on.png"
       },
       "theme_type": "side_detail__det_c1"
     },
@@ -515,18 +512,18 @@
       "id": "det_c1_narrow",
       "kind": "button",
       "rect": [
-        1377,
-        722,
-        306,
-        45
+        431,
+        295,
+        169,
+        47
       ],
       "text_rect": [
-        19,
+        10,
         8,
-        250,
+        98,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1396.0,
@@ -537,16 +534,16 @@
         "ref_text": "目标距离"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+        "normal": "res://assets/ui/gothic/cmd_cond_on.png",
+        "hover": "res://assets/ui/gothic/cmd_cond_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_cond_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_cond_on.png"
       },
       "theme_type": "side_detail__det_c1_narrow"
     },
@@ -554,16 +551,16 @@
       "id": "det_cparam",
       "kind": "button",
       "rect": [
-        1686,
-        722,
-        116,
-        45
+        538,
+        301,
+        58,
+        35
       ],
       "text_rect": [
-        16,
-        8,
-        66,
-        30
+        0,
+        0,
+        58,
+        35
       ],
       "align": "left",
       "data": {
@@ -576,16 +573,16 @@
         "ref_text": "< 3"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        35,
+        0,
+        62,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+        "normal": "res://assets/ui/gothic/detail/dropdown.png",
+        "hover": "res://assets/ui/gothic/detail/dropdown.png",
+        "pressed": "res://assets/ui/gothic/detail/dropdown.png",
+        "disabled": "res://assets/ui/gothic/detail/dropdown.png"
       },
       "theme_type": "side_detail__det_cparam"
     },
@@ -593,18 +590,18 @@
       "id": "det_c2",
       "kind": "button",
       "rect": [
-        1377,
-        536,
-        427,
-        45
+        609,
+        295,
+        169,
+        47
       ],
       "text_rect": [
-        16,
-        9,
-        370,
+        12,
+        8,
+        145,
         30
       ],
-      "align": "left",
+      "align": "center",
       "data": {
         "ref_ink": [
           1393.0,
@@ -615,55 +612,33 @@
         "ref_text": "无"
       },
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown_wide.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown_wide.png"
+        "normal": "res://assets/ui/gothic/cmd_cond_on.png",
+        "hover": "res://assets/ui/gothic/cmd_cond_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_cond_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_cond_on.png"
       },
       "theme_type": "side_detail__det_c2"
-    },
-    {
-      "id": "det_logic_line_l",
-      "kind": "flatbox",
-      "rect": [
-        1380,
-        528,
-        174,
-        1
-      ],
-      "theme_type": "side_detail__det_logic_line_l"
-    },
-    {
-      "id": "det_logic_line_r",
-      "kind": "flatbox",
-      "rect": [
-        1606,
-        528,
-        196,
-        1
-      ],
-      "theme_type": "side_detail__det_logic_line_r"
     },
     {
       "id": "det_logic",
       "kind": "button",
       "rect": [
-        1560,
-        516,
-        40,
-        24
+        585,
+        299,
+        38,
+        38
       ],
       "text_rect": [
-        5,
-        -2,
-        30,
-        30
+        0,
+        0,
+        38,
+        38
       ],
       "align": "center",
       "data": {
@@ -681,9 +656,9 @@
       "id": "det_footer_line",
       "kind": "flatbox",
       "rect": [
-        1290,
-        918,
-        604,
+        20,
+        980,
+        740,
         1
       ],
       "theme_type": "side_detail__det_footer_line"
@@ -692,10 +667,10 @@
       "id": "det_add",
       "kind": "button",
       "rect": [
-        1295,
-        926,
-        294,
-        59
+        20,
+        986,
+        300,
+        50
       ],
       "text_rect": [
         22,
@@ -714,16 +689,22 @@
         "ref_text": "＋ 添加指令"
       },
       "ninepatch": [
-        18,
-        14,
-        18,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_teal.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_teal.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_teal.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_teal.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
       },
       "theme_type": "side_detail__det_add"
     },
@@ -731,10 +712,10 @@
       "id": "det_beacon_btn",
       "kind": "button",
       "rect": [
-        1598,
-        925,
-        297,
-        61
+        43,
+        990,
+        235,
+        47
       ],
       "text_rect": [
         24,
@@ -753,16 +734,22 @@
         "ref_text": "信标"
       },
       "ninepatch": [
-        18,
-        14,
-        18,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_purple.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_purple.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_purple.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_purple.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__det_beacon_btn"
     },
@@ -770,29 +757,29 @@
       "id": "det_wait_box",
       "kind": "button",
       "rect": [
-        1733,
-        411,
-        128,
+        168,
+        295,
+        122,
         47
       ],
       "text_rect": [
-        16,
-        9,
-        76,
+        12,
+        8,
+        98,
         30
       ],
-      "align": "left",
+      "align": "center",
       "ninepatch": [
-        14,
-        14,
-        40,
-        14
+        22,
+        20,
+        22,
+        20
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/dropdown.png",
-        "hover": "res://assets/ui/side_detail/slices/dropdown.png",
-        "pressed": "res://assets/ui/side_detail/slices/dropdown.png",
-        "disabled": "res://assets/ui/side_detail/slices/dropdown.png"
+        "normal": "res://assets/ui/gothic/cmd_act_on.png",
+        "hover": "res://assets/ui/gothic/cmd_act_on.png",
+        "pressed": "res://assets/ui/gothic/cmd_act_on.png",
+        "disabled": "res://assets/ui/gothic/cmd_act_on.png"
       },
       "theme_type": "side_detail__det_wait_box"
     },
@@ -806,12 +793,12 @@
         224
       ],
       "ninepatch": [
-        36,
-        36,
-        36,
-        36
+        48,
+        39,
+        48,
+        39
       ],
-      "file": "res://assets/ui/side_detail/slices/bar.png",
+      "file": "res://assets/ui/gothic/detail/card.png",
       "theme_type": "side_detail__beacon_bar"
     },
     {
@@ -820,13 +807,13 @@
       "rect": [
         460,
         952,
-        174,
+        150,
         60
       ],
       "text_rect": [
-        18,
+        10,
         14,
-        140,
+        130,
         33
       ],
       "align": "center",
@@ -840,16 +827,22 @@
         "ref_text": "沿路径"
       },
       "ninepatch": [
-        16,
-        14,
-        16,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
-        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
-        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
-        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__beacon_mode_once"
     },
@@ -857,15 +850,15 @@
       "id": "beacon_mode_loop",
       "kind": "button",
       "rect": [
-        641,
+        650,
         952,
-        173,
-        59
+        150,
+        60
       ],
       "text_rect": [
-        16,
+        10,
         14,
-        140,
+        130,
         33
       ],
       "align": "center",
@@ -879,16 +872,22 @@
         "ref_text": "循环"
       },
       "ninepatch": [
-        16,
-        14,
-        16,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
-        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
-        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
-        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__beacon_mode_loop"
     },
@@ -896,15 +895,15 @@
       "id": "beacon_mode_pingpong",
       "kind": "button",
       "rect": [
-        820,
-        953,
-        172,
-        58
+        840,
+        952,
+        150,
+        60
       ],
       "text_rect": [
-        15,
-        13,
-        140,
+        10,
+        14,
+        130,
         33
       ],
       "align": "center",
@@ -918,16 +917,22 @@
         "ref_text": "往返"
       },
       "ninepatch": [
-        16,
-        14,
-        16,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
-        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
-        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
-        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__beacon_mode_pingpong"
     },
@@ -935,16 +940,16 @@
       "id": "beacon_mode_auto",
       "kind": "button",
       "rect": [
-        998,
-        953,
-        172,
-        58
+        1030,
+        952,
+        150,
+        60
       ],
       "text_rect": [
+        10,
         14,
-        15,
-        140,
-        30
+        130,
+        33
       ],
       "align": "center",
       "data": {
@@ -957,16 +962,22 @@
         "ref_text": "自动寻路"
       },
       "ninepatch": [
-        16,
-        14,
-        16,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/mode_off.png",
-        "hover": "res://assets/ui/side_detail/slices/mode_off.png",
-        "pressed": "res://assets/ui/side_detail/slices/mode_on.png",
-        "disabled": "res://assets/ui/side_detail/slices/mode_auto.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__beacon_mode_auto"
     },
@@ -975,14 +986,14 @@
       "kind": "button",
       "rect": [
         1079,
-        865,
-        158,
-        56
+        852,
+        150,
+        50
       ],
       "text_rect": [
-        18,
-        13,
-        120,
+        10,
+        8,
+        130,
         33
       ],
       "align": "center",
@@ -996,16 +1007,22 @@
         "ref_text": "完成"
       },
       "ninepatch": [
-        16,
-        14,
-        16,
-        14
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/side_detail/slices/btn_done.png",
-        "hover": "res://assets/ui/side_detail/slices/btn_done.png",
-        "pressed": "res://assets/ui/side_detail/slices/btn_done.png",
-        "disabled": "res://assets/ui/side_detail/slices/btn_done.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "side_detail__beacon_done"
     },
@@ -1013,16 +1030,16 @@
       "id": "det_title",
       "kind": "text_style",
       "rect": [
-        1434,
-        73,
-        236,
-        53
+        230,
+        36,
+        540,
+        56
       ],
       "text_rect": [
         0,
         0,
-        236,
-        53
+        540,
+        56
       ],
       "align": "left",
       "overflow": "auto",
@@ -1041,15 +1058,15 @@
       "id": "det_cost",
       "kind": "text_style",
       "rect": [
-        1435,
-        181,
-        300,
+        230,
+        150,
+        400,
         24
       ],
       "text_rect": [
         0,
         0,
-        300,
+        400,
         24
       ],
       "align": "left",
@@ -1069,16 +1086,16 @@
       "id": "det_note",
       "kind": "text_style",
       "rect": [
-        1294,
-        314,
-        580,
-        24
+        230,
+        272,
+        540,
+        22
       ],
       "text_rect": [
         0,
         0,
-        580,
-        24
+        540,
+        22
       ],
       "align": "left",
       "overflow": "auto",
@@ -1097,8 +1114,8 @@
       "id": "det_stat_name_0",
       "kind": "text_style",
       "rect": [
-        1341,
-        223,
+        260,
+        196,
         50,
         30
       ],
@@ -1124,9 +1141,9 @@
       "id": "det_stat_value_0",
       "kind": "text_style",
       "rect": [
-        1393,
-        225,
-        100,
+        312,
+        198,
+        92,
         30
       ],
       "text_rect": [
@@ -1152,8 +1169,8 @@
       "id": "det_stat_name_1",
       "kind": "text_style",
       "rect": [
-        1538,
-        224,
+        440,
+        196,
         50,
         30
       ],
@@ -1179,9 +1196,9 @@
       "id": "det_stat_value_1",
       "kind": "text_style",
       "rect": [
-        1591,
-        224,
-        100,
+        492,
+        198,
+        92,
         30
       ],
       "text_rect": [
@@ -1207,8 +1224,8 @@
       "id": "det_stat_name_2",
       "kind": "text_style",
       "rect": [
-        1733,
-        224,
+        620,
+        196,
         50,
         30
       ],
@@ -1234,9 +1251,9 @@
       "id": "det_stat_value_2",
       "kind": "text_style",
       "rect": [
-        1786,
-        224,
-        100,
+        672,
+        198,
+        92,
         30
       ],
       "text_rect": [
@@ -1262,8 +1279,8 @@
       "id": "det_stat_name_3",
       "kind": "text_style",
       "rect": [
-        1341,
-        268,
+        260,
+        236,
         50,
         30
       ],
@@ -1289,9 +1306,9 @@
       "id": "det_stat_value_3",
       "kind": "text_style",
       "rect": [
-        1393,
-        268,
-        100,
+        312,
+        238,
+        92,
         30
       ],
       "text_rect": [
@@ -1317,8 +1334,8 @@
       "id": "det_stat_name_4",
       "kind": "text_style",
       "rect": [
-        1538,
-        268,
+        440,
+        236,
         50,
         30
       ],
@@ -1344,9 +1361,9 @@
       "id": "det_stat_value_4",
       "kind": "text_style",
       "rect": [
-        1589,
-        268,
-        100,
+        492,
+        238,
+        92,
         30
       ],
       "text_rect": [
@@ -1372,8 +1389,8 @@
       "id": "det_stat_name_5",
       "kind": "text_style",
       "rect": [
-        1734,
-        267,
+        620,
+        236,
         50,
         30
       ],
@@ -1399,9 +1416,9 @@
       "id": "det_stat_value_5",
       "kind": "text_style",
       "rect": [
-        1784,
-        267,
-        100,
+        672,
+        238,
+        92,
         30
       ],
       "text_rect": [
@@ -1427,16 +1444,16 @@
       "id": "det_prio",
       "kind": "text_style",
       "rect": [
-        1340,
-        363,
-        124,
-        35
+        24,
+        388,
+        140,
+        30
       ],
       "text_rect": [
         0,
         0,
-        124,
-        35
+        140,
+        30
       ],
       "align": "left",
       "data": {
@@ -1454,10 +1471,10 @@
       "id": "det_override_label",
       "kind": "text_style",
       "rect": [
-        1515,
-        367,
+        366,
+        348,
         70,
-        30
+        28
       ],
       "text_rect": [
         0,
@@ -1562,16 +1579,16 @@
       "id": "det_beacons",
       "kind": "text_style",
       "rect": [
-        1375,
-        1006,
-        440,
-        30
+        30,
+        1044,
+        700,
+        22
       ],
       "text_rect": [
         0,
         0,
-        440,
-        30
+        700,
+        22
       ],
       "align": "center",
       "overflow": "auto",
@@ -1646,10 +1663,10 @@
       "id": "det_cunit",
       "kind": "text_style",
       "rect": [
-        1809,
-        730,
-        40,
-        30
+        538,
+        301,
+        20,
+        35
       ],
       "text_rect": [
         0,
@@ -1709,15 +1726,15 @@
       "id": "det_desc",
       "kind": "text_style",
       "rect": [
-        1435,
-        128,
-        404,
+        230,
+        94,
+        540,
         52
       ],
       "text_rect": [
         0,
         0,
-        404,
+        540,
         52
       ],
       "align": "left",
@@ -1736,9 +1753,9 @@
       "id": "det_pick",
       "kind": "flatbox",
       "rect": [
-        1290,
-        344,
-        584,
+        8,
+        290,
+        774,
         38
       ],
       "data": {

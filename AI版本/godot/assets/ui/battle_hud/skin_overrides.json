@@ -1,0 +1,1747 @@
+{
+ "_comment": "2026-10-19 哥特换皮（01.zip HUD 切图 E01–E10，整图 ../gothic/design_hud.png）。叠在 manifest.json 之上，由 apply_ui_manifest.py 合并；坐标即切图在整图中的位置。新整图没有的元素（关卡名、设置、机制说明、清空、提示、出场卡卡面、弹窗 / 结算）暂用同套空白六角牌或旧切图，见 docs/UI拼接_哥特换皮.md。",
+ "reserved": {
+  "top": 203,
+  "bottom": 261,
+  "_note": "沿用旧带宽（玩法矩形 / 背景对齐不变）。新倍速一排（208–234）会压在战场最上一行中段，是否把上带改到 248 待用户确认（改后各关 cell_px 与玩法矩形规格表要重定）"
+ },
+ "elements": [
+  {
+   "id": "frame",
+   "kind": "image",
+   "rect": [
+    0,
+    0,
+    1920,
+    1080
+   ],
+   "file": "../gothic/hud_frame.png",
+   "_before": "quest",
+   "data": {
+    "_note": "E01 整屏框体（计时纹饰、灵魂储量底框、卡位底纹、开始战斗光晕；「灵魂储量」字已画在图上），铺满视口，画在全部 HUD 之下；no_cover：与按钮 / 文字一样按设计画布居中、不缩放（铺满会在非 16:9 窗口与灵魂储量 / 开始战斗错位）",
+    "no_cover": true
+   }
+  },
+  {
+   "id": "quest",
+   "rect": [
+    0,
+    37,
+    640,
+    76
+   ],
+   "file": "../gothic/title_shade.png",
+   "data": {
+    "_note": "关卡名后的黑色渐变衬底（左实右透，上下羽化；tools 生成 640×76，与 rect 同比例不裁切）"
+   }
+  },
+  {
+   "id": "quest_title",
+   "rect": [
+    40,
+    52,
+    560,
+    46
+   ],
+   "text_rect": [
+    0,
+    0,
+    560,
+    46
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 26,
+    "color": "#E8E2EA",
+    "shadow": "#000000C0",
+    "outline_size": 4,
+    "outline_color": "#1A1420"
+   }
+  },
+  {
+   "id": "obj_header",
+   "kind": "image",
+   "rect": [
+    0,
+    109,
+    274,
+    128
+   ],
+   "file": "../gothic/objective_header.png",
+   "_after": "quest",
+   "data": {
+    "_note": "E02「任务目标」标题（字在图上）；其上叠透明的「任务」按钮（ObjectivesButton），点击打开任务弹窗"
+   }
+  },
+  {
+   "id": "obj_row",
+   "kind": "image",
+   "rect": [
+    0,
+    214,
+    376,
+    35
+   ],
+   "file": "../gothic/objective_row.png",
+   "_after": "obj_header",
+   "data": {
+    "pitch": 36,
+    "max_rows": 3,
+    "_note": "E03 任务行底纹：第 1 行 = 任务句（quest_objective），其后按 pitch 每行一条胜利 / 失败条件，最多 max_rows 行"
+   }
+  },
+  {
+   "id": "quest_objective",
+   "rect": [
+    87,
+    215,
+    430,
+    32
+   ],
+   "text_rect": [
+    0,
+    0,
+    430,
+    32
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#E6B422",
+    "shadow": "#000000B0"
+   }
+  },
+  {
+   "id": "obj_row_text",
+   "kind": "text_style",
+   "rect": [
+    87,
+    251,
+    430,
+    32
+   ],
+   "text_rect": [
+    0,
+    0,
+    430,
+    32
+   ],
+   "_after": "quest_objective",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EBEBEB",
+    "shadow": "#000000B0"
+   },
+   "overflow": "auto",
+   "data": {
+    "lose_color": "#C9A0A8",
+    "_note": "第 2 行起的条件句；失败条件用 lose_color"
+   }
+  },
+  {
+   "id": "progress",
+   "kind": "text_style",
+   "rect": [
+    60,
+    330,
+    460,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    460,
+    30
+   ],
+   "_after": "obj_row_text",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#CFC6D4",
+    "shadow": "#000000B0"
+   },
+   "data": {
+    "gap": 6,
+    "_note": "进度（生存剩余 / 保护对象生命 / 威胁已清除）：紧接最后一行任务之下"
+   }
+  },
+  {
+   "id": "timer",
+   "file": "../gothic/blank.png",
+   "rect": [
+    760,
+    30,
+    400,
+    170
+   ]
+  },
+  {
+   "id": "timer_value",
+   "rect": [
+    796,
+    36,
+    124,
+    130
+   ],
+   "text_rect": [
+    0,
+    0,
+    124,
+    130
+   ],
+   "font": {
+    "family": "Cinzel",
+    "size": 88,
+    "color": "#D4D2DAC8"
+   },
+   "overflow": "auto",
+   "data": {
+    "format": "%02d",
+    "_note": "计时左组 = 整秒（两位），右组 timer_value2 = 百分秒；倒计时最后 5 秒两组都变红"
+   }
+  },
+  {
+   "id": "timer_value2",
+   "kind": "text_style",
+   "rect": [
+    1000,
+    36,
+    124,
+    130
+   ],
+   "text_rect": [
+    0,
+    0,
+    124,
+    130
+   ],
+   "align": "center",
+   "_after": "timer_value",
+   "font": {
+    "family": "Cinzel",
+    "size": 88,
+    "color": "#D4D2DAC8"
+   },
+   "overflow": "auto"
+  },
+  {
+   "id": "timer_phase",
+   "rect": [
+    860,
+    146,
+    200,
+    44
+   ],
+   "text_rect": [
+    0,
+    0,
+    200,
+    44
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 28,
+    "color": "#F0EEF0",
+    "shadow": "#000000C0"
+   }
+  },
+  {
+   "id": "speed_bg",
+   "kind": "image",
+   "rect": [
+    785,
+    208,
+    126,
+    26
+   ],
+   "file": "../gothic/hex_gray.png",
+   "_after": "timer",
+   "data": {
+    "_note": "E10 倍速底板；当前倍速的按钮画 E08 深色牌（按钮 pressed 态）"
+   }
+  },
+  {
+   "id": "btn_speed1",
+   "rect": [
+    785,
+    208,
+    63,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    63,
+    26
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/blank.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF80"
+    },
+    "pressed": "../gothic/hex_dark.png",
+    "disabled": "../gothic/blank.png"
+   },
+   "font": {
+    "family": "NotoSansSC",
+    "size": 17,
+    "color": "#E4E0E4",
+    "disabled_color": "#8A848C"
+   }
+  },
+  {
+   "id": "btn_speed2",
+   "rect": [
+    848,
+    208,
+    63,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    63,
+    26
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/blank.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF80"
+    },
+    "pressed": "../gothic/hex_dark.png",
+    "disabled": "../gothic/blank.png"
+   },
+   "font": {
+    "family": "NotoSansSC",
+    "size": 17,
+    "color": "#E4E0E4",
+    "disabled_color": "#8A848C"
+   }
+  },
+  {
+   "id": "btn_pause",
+   "rect": [
+    930,
+    208,
+    62,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    62,
+    26
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/btn_pause.png",
+    "hover": {
+     "file": "../gothic/btn_pause.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_pause.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_pause.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "E05 暂停（图标在图上；「继续」态暂用同图，缺继续图标）"
+   }
+  },
+  {
+   "id": "btn_retry",
+   "rect": [
+    1013,
+    208,
+    63,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    63,
+    26
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/btn_retry.png",
+    "hover": {
+     "file": "../gothic/btn_retry.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_retry.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_retry.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "E06 重试"
+   }
+  },
+  {
+   "id": "btn_exit",
+   "rect": [
+    1783,
+    2,
+    108,
+    106
+   ],
+   "text_rect": [
+    0,
+    0,
+    108,
+    106
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/btn_leave.png",
+    "hover": {
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "02.zip G01 离开：原来在计时器右侧（中间）的退出按钮移到最右上角，中间不再有"
+   }
+  },
+  {
+   "id": "btn_settings",
+   "rect": [
+    1683,
+    2,
+    107,
+    106
+   ],
+   "text_rect": [
+    0,
+    0,
+    107,
+    106
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/btn_gear.png",
+    "hover": {
+     "file": "../gothic/btn_gear.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_gear.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_gear.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "02.zip G02 设置：图标在图上；左上角被关卡名占用，设置 / 离开改到右上角（设置在左，离开在最右上角，与参考图左右镜像）"
+   }
+  },
+  {
+   "id": "btn_task",
+   "rect": [
+    0,
+    140,
+    274,
+    60
+   ],
+   "text_rect": [
+    0,
+    0,
+    274,
+    60
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/blank.png",
+    "hover": "../gothic/blank.png",
+    "pressed": "../gothic/blank.png",
+    "disabled": "../gothic/blank.png"
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "透明热区，叠在 E02「任务目标」标题上"
+   }
+  },
+  {
+   "id": "btn_mechanics",
+   "rect": [
+    290,
+    152,
+    150,
+    32
+   ],
+   "text_rect": [
+    14,
+    0,
+    122,
+    32
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_gray.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 17,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   }
+  },
+  {
+   "id": "btn_clear",
+   "rect": [
+    1592,
+    872,
+    124,
+    32
+   ],
+   "text_rect": [
+    14,
+    0,
+    96,
+    32
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_gray.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   }
+  },
+  {
+   "id": "btn_hint",
+   "rect": [
+    1724,
+    872,
+    176,
+    32
+   ],
+   "text_rect": [
+    14,
+    0,
+    148,
+    32
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_gray.png",
+    "hover": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 17,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   }
+  },
+  {
+   "id": "btn_start",
+   "rect": [
+    1652,
+    921,
+    175,
+    69
+   ],
+   "text_rect": [
+    0,
+    0,
+    175,
+    69
+   ],
+   "ninepatch": null,
+   "states": {
+    "normal": "../gothic/btn_start.png",
+    "hover": {
+     "file": "../gothic/btn_start.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/btn_start.png",
+     "modulate": "#C8C0C8"
+    },
+    "disabled": {
+     "file": "../gothic/btn_start.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "_note": "E04 开始战斗（字在图上）"
+   }
+  },
+  {
+   "id": "budget",
+   "file": "../gothic/blank.png"
+  },
+  {
+   "id": "budget_title",
+   "rect": [
+    80,
+    890,
+    200,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    200,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 12,
+    "color": "#00000000"
+   },
+   "data": {
+    "_note": "「灵魂储量」已画在 E01 上，标题文字透明（增援阶段的「增援预算」暂不单独显示）"
+   }
+  },
+  {
+   "id": "budget_value",
+   "rect": [
+    70,
+    928,
+    250,
+    58
+   ],
+   "text_rect": [
+    0,
+    0,
+    250,
+    58
+   ],
+   "font": {
+    "family": "Cinzel",
+    "size": 34,
+    "color": "#ECE6EE",
+    "shadow": "#000000C0"
+   }
+  },
+  {
+   "id": "budget_fixed",
+   "rect": [
+    70,
+    928,
+    250,
+    58
+   ],
+   "text_rect": [
+    0,
+    0,
+    250,
+    58
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 28,
+    "color": "#ECE6EE",
+    "shadow": "#000000C0"
+   }
+  },
+  {
+   "id": "relic_bar",
+   "kind": "flatbox",
+   "rect": [
+    44,
+    744,
+    356,
+    84
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_5",
+   "data": {
+    "_note": "遗物栏（四枚）：灵魂储量纹饰之上"
+   }
+  },
+  {
+   "id": "card_back",
+   "kind": "image",
+   "rect": [
+    588,
+    824,
+    141,
+    256
+   ],
+   "file": "../gothic/card_back.png",
+   "_after": "card_5",
+   "data": {
+    "_note": "出场卡按参考整图 design_hud.png 量取（2026-10-19 用户：与参考图不符需修复）：E12 条纹片在后、顶在卡位上沿（824）；Q 版立绘约 150×170 放大到卡宽；E11 徽记片在前遮住下半身——未选中时顶在 984（徽记在屏外），悬停 / 选中时上移 rest_dy=30 到 954 露出徽记；卡面不放文字（参考图没有），名称与 Cost 在悬停提示里。位置都相对 card_slot_1"
+   }
+  },
+  {
+   "id": "card_portrait",
+   "kind": "flatbox",
+   "rect": [
+    544,
+    846,
+    230,
+    230
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_back",
+   "data": {
+    "_note": "Q 版单位精灵（256 画布）按 0.9 倍画：人物约 155×198，头顶对齐约 857（参考图人物铺满卡宽）"
+   }
+  },
+  {
+   "id": "card_front",
+   "kind": "image",
+   "rect": [
+    587,
+    954,
+    150,
+    126
+   ],
+   "file": "../gothic/card_front.png",
+   "_after": "card_portrait",
+   "data": {
+    "rest_dy": 30,
+    "_note": "徽记片：rect = 升起（悬停 / 选中）位置；平时下沉 rest_dy"
+   }
+  },
+  {
+   "id": "card_g_name",
+   "kind": "text_style",
+   "rect": [
+    588,
+    1048,
+    142,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    142,
+    26
+   ],
+   "align": "center",
+   "_after": "card_front",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 16,
+    "color": "#EDE8EE",
+    "shadow": "#000000C0"
+   },
+   "overflow": "auto",
+   "data": {
+    "_note": "卡名在卡底（用户 2026-10-19）"
+   }
+  },
+  {
+   "id": "card_g_cost",
+   "kind": "text_style",
+   "rect": [
+    588,
+    1028,
+    142,
+    20
+   ],
+   "text_rect": [
+    0,
+    0,
+    142,
+    20
+   ],
+   "align": "center",
+   "_after": "card_g_name",
+   "font": {
+    "family": "Cinzel",
+    "size": 14,
+    "color": "#E6B422",
+    "shadow": "#000000C0"
+   },
+   "overflow": "auto",
+   "data": {
+    "_note": "Cost 缩小放在卡名之上（用户 2026-10-19；新手引导第 1 步高亮它）"
+   }
+  },
+  {
+   "id": "card_slot_1",
+   "kind": "flatbox",
+   "rect": [
+    584,
+    826,
+    150,
+    254
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_g_cost"
+  },
+  {
+   "id": "card_slot_2",
+   "kind": "flatbox",
+   "rect": [
+    736,
+    826,
+    150,
+    254
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_g_cost"
+  },
+  {
+   "id": "card_slot_3",
+   "kind": "flatbox",
+   "rect": [
+    888,
+    826,
+    150,
+    254
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_g_cost"
+  },
+  {
+   "id": "card_slot_4",
+   "kind": "flatbox",
+   "rect": [
+    1040,
+    826,
+    150,
+    254
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_g_cost"
+  },
+  {
+   "id": "card_slot_5",
+   "kind": "flatbox",
+   "rect": [
+    1192,
+    826,
+    150,
+    254
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "card_g_cost"
+  },
+  {
+   "id": "toast",
+   "kind": "text_style",
+   "rect": [
+    540,
+    252,
+    840,
+    40
+   ],
+   "text_rect": [
+    0,
+    0,
+    840,
+    40
+   ],
+   "align": "right",
+   "_after": "relic_bar",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#E6B422",
+    "shadow": "#000000C0"
+   },
+   "data": {
+    "_note": "局内 Toast：倍速 / 暂停一排之下（原场景位置 y=90 会压在新计时器上）；字色仍由脚本设为金色"
+   }
+  },
+  {
+   "id": "toast_area",
+   "kind": "flatbox",
+   "rect": [
+    1080,
+    160,
+    800,
+    640
+   ],
+   "style": {
+    "bg": "#00000000"
+   },
+   "_after": "toast",
+   "data": {
+    "seconds": 3.0,
+    "fade_s": 0.4,
+    "gap": 6,
+    "max": 6,
+    "_note": "所有提示（Toast 与不可放置等气泡）的区域（用户 2026-10-19；2026-10-20 加宽到 800，常用提示单行显示）：右对齐，自下而上堆叠——新提示接在最下面、旧的上移，各自停留 seconds 后淡出"
+   }
+  },
+  {
+   "id": "toast_item",
+   "kind": "ninepatch",
+   "rect": [
+    1080,
+    740,
+    800,
+    60
+   ],
+   "file": "../gothic/toast_bg.png",
+   "ninepatch": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "_after": "toast_area",
+   "data": {
+    "pad": [
+     40,
+     8,
+     16,
+     10
+    ],
+    "color": "#E6B422",
+    "warn_color": "#E8635A",
+    "_note": "单条提示的底：右实左淡的黑条 + 底部银线；文字右对齐，警示（不可放置等）用 warn_color"
+   }
+  },
+  {
+   "id": "obj_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "mech_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "hint_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "rec_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "win_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "lose_panel",
+   "file": "../gothic/detail/panel.png",
+   "ninepatch": [
+    100,
+    167,
+    100,
+    167
+   ],
+   "expand": [
+    29,
+    23,
+    29,
+    21
+   ]
+  },
+  {
+   "id": "problems_panel",
+   "file": "../gothic/detail/card.png",
+   "ninepatch": [
+    48,
+    39,
+    48,
+    39
+   ]
+  },
+  {
+   "id": "obj_close",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    31,
+    19,
+    92,
+    31
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "mech_close",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    19,
+    6,
+    92,
+    31
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "hint_close",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    14,
+    5,
+    87,
+    31
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "rec_apply",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson_small.png",
+    "hover": "../gothic/detail/plate_crimson_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    12,
+    106,
+    31
+   ],
+   "rect": [
+    1038,
+    737,
+    146,
+    54
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "rec_cancel",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate_small.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 21,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    12,
+    106,
+    31
+   ],
+   "rect": [
+    1206,
+    737,
+    146,
+    54
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "win_retry",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    13,
+    166,
+    33
+   ],
+   "rect": [
+    612,
+    709,
+    206,
+    59
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "win_next",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson.png",
+    "hover": "../gothic/detail/plate_crimson.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    13,
+    166,
+    33
+   ],
+   "rect": [
+    857,
+    709,
+    206,
+    59
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "win_back",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    13,
+    166,
+    33
+   ],
+   "rect": [
+    1102,
+    709,
+    206,
+    59
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "lose_retry",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson.png",
+    "hover": "../gothic/detail/plate_crimson.png",
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    14,
+    253,
+    33
+   ],
+   "rect": [
+    652,
+    690,
+    293,
+    62
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "lose_back",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    20,
+    14,
+    253,
+    33
+   ],
+   "rect": [
+    979,
+    690,
+    293,
+    62
+   ],
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "id": "obj_moon",
+   "file": "../gothic/blank.png",
+   "data": null
+  },
+  {
+   "id": "obj_close_gem",
+   "file": "../gothic/blank.png",
+   "data": null
+  },
+  {
+   "id": "win_title_crescent",
+   "file": "../gothic/blank.png",
+   "data": null
+  },
+  {
+   "id": "win_title_lines",
+   "file": "../gothic/blank.png",
+   "data": null
+  },
+  {
+   "id": "lose_sep",
+   "file": "../gothic/blank.png",
+   "data": null
+  },
+  {
+   "id": "win_title_sigil",
+   "rect": [
+    652,
+    195,
+    620,
+    236
+   ],
+   "file": "../gothic/result_win.png",
+   "data": {
+    "modulate": "#FFFFFF8C",
+    "_note": "胜利徽记（GPT 绘图）：衬在「战斗胜利」之后，半透明"
+   }
+  },
+  {
+   "id": "obj_sep",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "mech_sep",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "hint_sep",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "rec_sep",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "win_sep",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "lose_sep2",
+   "style": {
+    "bg": "#6E6774"
+   }
+  },
+  {
+   "id": "obj_box",
+   "style": {
+    "bg": "#17121CE6",
+    "border": "#5A5262",
+    "border_width": 1.5,
+    "radius": 2
+   }
+  },
+  {
+   "id": "obj_box2",
+   "style": {
+    "bg": "#17121CE6",
+    "border": "#5A5262",
+    "border_width": 1.5,
+    "radius": 2
+   }
+  },
+  {
+   "id": "mech_box",
+   "style": {
+    "bg": "#17121CE6",
+    "border": "#5A5262",
+    "border_width": 1.5,
+    "radius": 2
+   }
+  },
+  {
+   "id": "mech_box2",
+   "style": {
+    "bg": "#17121CE6",
+    "border": "#5A5262",
+    "border_width": 1.5,
+    "radius": 2
+   }
+  },
+  {
+   "id": "hint_dot_off",
+   "style": {
+    "bg": "#4A4250",
+    "radius": 5.2
+   }
+  },
+  {
+   "id": "mech_track",
+   "file": "../gothic/detail/track.png"
+  },
+  {
+   "id": "mech_thumb",
+   "file": "../gothic/detail/thumb.png"
+  },
+  {
+   "id": "lose_title_compass",
+   "rect": [
+    652,
+    180,
+    620,
+    278
+   ],
+   "file": "../gothic/result_lose.png",
+   "data": {
+    "modulate": "#FFFFFF80",
+    "_note": "失败徽记（GPT 绘图）：衬在「战斗失败」之后，半透明"
+   }
+  },
+  {
+   "id": "lose_title",
+   "rect": [
+    719,
+    282,
+    482,
+    69
+   ],
+   "text_rect": [
+    0,
+    0,
+    482,
+    69
+   ],
+   "align": "center"
+  }
+ ]
+}

@@ -1,0 +1,1325 @@
+{
+ "_comment": "2026-10-19 哥特换皮：角色 / 敌人详情侧栏与指令编辑（用户：指令界面要更新）。面板框、指令卡框、下拉框、按钮牌、头像环为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（绿幕抠图，提示词与原图在 docs/reference/gothic_gen），勾选框 / 拖动柄 / 滚动条为程序绘制；只换贴图与按钮字色，位置不变。",
+ "elements": [
+  {
+   "id": "det_panel",
+   "kind": "image",
+   "file": "../gothic/cmd_panel.png",
+   "rect": [
+    0,
+    0,
+    1004,
+    1080
+   ],
+   "ninepatch": null,
+   "expand": null,
+   "data": {
+    "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置"
+   }
+  },
+  {
+   "id": "det_portrait_ring",
+   "file": "../gothic/detail/portrait_ring.png",
+   "rect": [
+    1252,
+    0,
+    206,
+    206
+   ],
+   "_remove": true
+  },
+  {
+   "id": "det_remove",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#E8E2E2",
+    "disabled_color": "#8A848C"
+   },
+   "rect": [
+    500,
+    18,
+    100,
+    42
+   ],
+   "text_rect": [
+    20,
+    10,
+    67,
+    33
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "det_close",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson_small.png",
+    "hover": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 22,
+    "color": "#F7F1EE",
+    "disabled_color": "#8A848C"
+   },
+   "rect": [
+    650,
+    18,
+    100,
+    42
+   ],
+   "text_rect": [
+    20,
+    10,
+    67,
+    33
+   ],
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "id": "det_stats",
+   "file": "../gothic/detail/card.png",
+   "ninepatch": [
+    48,
+    39,
+    48,
+    39
+   ],
+   "_remove": true
+  },
+  {
+   "id": "det_track",
+   "file": "../gothic/detail/track.png",
+   "ninepatch": [
+    0,
+    6,
+    0,
+    6
+   ],
+   "rect": [
+    792,
+    296,
+    6,
+    672
+   ]
+  },
+  {
+   "id": "det_thumb",
+   "file": "../gothic/detail/thumb.png",
+   "ninepatch": [
+    0,
+    6,
+    0,
+    6
+   ],
+   "rect": [
+    792,
+    298,
+    6,
+    150
+   ]
+  },
+  {
+   "id": "det_row1",
+   "file": "../gothic/cmd_strip.png",
+   "ninepatch": [
+    40,
+    46,
+    40,
+    46
+   ],
+   "rect": [
+    8,
+    290,
+    774,
+    62
+   ],
+   "expand": [
+    0,
+    0,
+    0,
+    31
+   ]
+  },
+  {
+   "id": "det_row2",
+   "file": "../gothic/cmd_strip.png",
+   "ninepatch": [
+    40,
+    46,
+    40,
+    46
+   ],
+   "rect": [
+    8,
+    352,
+    774,
+    62
+   ],
+   "expand": [
+    0,
+    0,
+    0,
+    31
+   ]
+  },
+  {
+   "id": "det_handle",
+   "file": "../gothic/detail/handle.png",
+   "rect": [
+    20,
+    302,
+    18,
+    28
+   ]
+  },
+  {
+   "id": "det_override",
+   "states": {
+    "off": "../gothic/detail/check_off.png",
+    "on": "../gothic/detail/check_on.png"
+   },
+   "rect": [
+    330,
+    346,
+    30,
+    30
+   ]
+  },
+  {
+   "id": "det_delete",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson_small.png",
+    "hover": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson_small.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    33,
+    0,
+    25,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#EDE1E0",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    16,
+    0,
+    4,
+    0
+   ],
+   "rect": [
+    6,
+    301,
+    34,
+    34
+   ],
+   "text_rect": [
+    0,
+    0,
+    34,
+    34
+   ]
+  },
+  {
+   "id": "det_action",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    98,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    43,
+    295,
+    122,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_p1",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    98,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    168,
+    295,
+    122,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_p2",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    98,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    294,
+    295,
+    122,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_c1",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    145,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    431,
+    295,
+    169,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_c1_narrow",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    10,
+    8,
+    98,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    431,
+    295,
+    169,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_cparam",
+   "states": {
+    "normal": "../gothic/detail/dropdown.png",
+    "hover": {
+     "file": "../gothic/detail/dropdown.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/dropdown.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/dropdown.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    35,
+    0,
+    62,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 20,
+    "color": "#C2B9BE",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    0,
+    0,
+    58,
+    35
+   ],
+   "_note": "下拉框左端尖角画在框内（左侧紧贴标签，不能外扩），文字左缩进 40",
+   "rect": [
+    538,
+    301,
+    58,
+    35
+   ]
+  },
+  {
+   "id": "det_c2",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_cond_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    145,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    609,
+    295,
+    169,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "det_add",
+   "states": {
+    "normal": "../gothic/detail/plate_crimson.png",
+    "hover": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate_crimson.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    20,
+    986,
+    300,
+    50
+   ]
+  },
+  {
+   "id": "det_beacon_btn",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    43,
+    990,
+    235,
+    47
+   ]
+  },
+  {
+   "id": "det_wait_box",
+   "states": {
+    "normal": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#E6E0E6"
+    },
+    "hover": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#B9B1BA"
+    },
+    "disabled": {
+     "file": "../gothic/cmd_act_on.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    22,
+    20,
+    22,
+    20
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#E4DCE4",
+    "disabled_color": "#8A848C"
+   },
+   "text_rect": [
+    12,
+    8,
+    98,
+    30
+   ],
+   "_note": "02.zip 刻印界面（F01–F04）：左侧停靠，坐标即参考图 刻印.png 中的位置",
+   "rect": [
+    168,
+    295,
+    122,
+    47
+   ],
+   "align": "center",
+   "expand": null
+  },
+  {
+   "id": "beacon_bar",
+   "file": "../gothic/detail/card.png",
+   "ninepatch": [
+    48,
+    39,
+    48,
+    39
+   ]
+  },
+  {
+   "id": "beacon_mode_once",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": "../gothic/detail/plate_crimson.png",
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    460,
+    952,
+    150,
+    60
+   ],
+   "text_rect": [
+    10,
+    14,
+    130,
+    33
+   ]
+  },
+  {
+   "id": "beacon_mode_loop",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": "../gothic/detail/plate_crimson.png",
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    650,
+    952,
+    150,
+    60
+   ],
+   "text_rect": [
+    10,
+    14,
+    130,
+    33
+   ]
+  },
+  {
+   "id": "beacon_mode_pingpong",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": "../gothic/detail/plate_crimson.png",
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    840,
+    952,
+    150,
+    60
+   ],
+   "text_rect": [
+    10,
+    14,
+    130,
+    33
+   ]
+  },
+  {
+   "id": "beacon_mode_auto",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": "../gothic/detail/plate.png",
+    "pressed": "../gothic/detail/plate_crimson.png",
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 20,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    1030,
+    952,
+    150,
+    60
+   ],
+   "text_rect": [
+    10,
+    14,
+    130,
+    33
+   ]
+  },
+  {
+   "id": "beacon_done",
+   "states": {
+    "normal": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#C9C2C9"
+    },
+    "disabled": {
+     "file": "../gothic/detail/plate.png",
+     "modulate": "#7E7882"
+    }
+   },
+   "ninepatch": [
+    52,
+    0,
+    40,
+    0
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 22,
+    "color": "#EDE8EE",
+    "disabled_color": "#8A848C"
+   },
+   "expand": [
+    26,
+    0,
+    6,
+    0
+   ],
+   "rect": [
+    1079,
+    852,
+    150,
+    50
+   ],
+   "text_rect": [
+    10,
+    8,
+    130,
+    33
+   ]
+  },
+  {
+   "id": "det_portrait",
+   "rect": [
+    38,
+    56,
+    150,
+    150
+   ]
+  },
+  {
+   "id": "det_stat_icon_0",
+   "rect": [
+    230,
+    200,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_0",
+   "rect": [
+    260,
+    196,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_0",
+   "rect": [
+    312,
+    198,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_icon_1",
+   "rect": [
+    410,
+    200,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_1",
+   "rect": [
+    440,
+    196,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_1",
+   "rect": [
+    492,
+    198,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_icon_2",
+   "rect": [
+    590,
+    200,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_2",
+   "rect": [
+    620,
+    196,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_2",
+   "rect": [
+    672,
+    198,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_icon_3",
+   "rect": [
+    230,
+    240,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_3",
+   "rect": [
+    260,
+    236,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_3",
+   "rect": [
+    312,
+    238,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_icon_4",
+   "rect": [
+    410,
+    240,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_4",
+   "rect": [
+    440,
+    236,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_4",
+   "rect": [
+    492,
+    238,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_icon_5",
+   "rect": [
+    590,
+    240,
+    22,
+    22
+   ]
+  },
+  {
+   "id": "det_stat_name_5",
+   "rect": [
+    620,
+    236,
+    50,
+    30
+   ]
+  },
+  {
+   "id": "det_stat_value_5",
+   "rect": [
+    672,
+    238,
+    92,
+    30
+   ]
+  },
+  {
+   "id": "det_title",
+   "rect": [
+    230,
+    36,
+    540,
+    56
+   ],
+   "text_rect": [
+    0,
+    0,
+    540,
+    56
+   ]
+  },
+  {
+   "id": "det_desc",
+   "rect": [
+    230,
+    94,
+    540,
+    52
+   ],
+   "text_rect": [
+    0,
+    0,
+    540,
+    52
+   ]
+  },
+  {
+   "id": "det_cost",
+   "rect": [
+    230,
+    150,
+    400,
+    24
+   ],
+   "text_rect": [
+    0,
+    0,
+    400,
+    24
+   ]
+  },
+  {
+   "id": "det_note",
+   "rect": [
+    230,
+    272,
+    540,
+    22
+   ],
+   "text_rect": [
+    0,
+    0,
+    540,
+    22
+   ]
+  },
+  {
+   "id": "det_scroll",
+   "rect": [
+    8,
+    290,
+    790,
+    684
+   ]
+  },
+  {
+   "id": "det_override_label",
+   "rect": [
+    366,
+    348,
+    70,
+    28
+   ]
+  },
+  {
+   "id": "det_prio",
+   "rect": [
+    24,
+    388,
+    140,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    140,
+    30
+   ]
+  },
+  {
+   "id": "det_cunit",
+   "rect": [
+    538,
+    301,
+    20,
+    35
+   ]
+  },
+  {
+   "id": "det_logic_line_l",
+   "_remove": true
+  },
+  {
+   "id": "det_logic_line_r",
+   "_remove": true
+  },
+  {
+   "id": "det_logic",
+   "rect": [
+    585,
+    299,
+    38,
+    38
+   ],
+   "text_rect": [
+    0,
+    0,
+    38,
+    38
+   ]
+  },
+  {
+   "id": "det_footer_line",
+   "rect": [
+    20,
+    980,
+    740,
+    1
+   ]
+  },
+  {
+   "id": "det_beacons",
+   "rect": [
+    30,
+    1044,
+    700,
+    22
+   ],
+   "text_rect": [
+    0,
+    0,
+    700,
+    22
+   ]
+  },
+  {
+   "id": "det_pick",
+   "rect": [
+    8,
+    290,
+    774,
+    38
+   ]
+  }
+ ]
+}

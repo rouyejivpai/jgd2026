@@ -11,11 +11,20 @@ extends PanelContainer
 ## 条件带参数（生命低于 %、目标距离、到达信标）时下拉变窄，参数在右（整图第二行版式）。
 ## 无启用勾选（10 §5.2：UI 写出 enabled 恒为 true）。target_distance 需要目标而行为无目标时，目标选择放在行为行的参数格。
 ## 敌人只读面板同布局，条件可多于两条，按条件行距向下排、行高随之增加。运行中当前生效行金边高亮；拖拽排序。
+## 2026-10-20 刻印界面（02.zip F02–F04，参考图 刻印.png）：一条指令 = 一条底纹（F02），上排 [行为][参数一][参数二]｜[条件一][条件二] 五个框
+## （F03 / F04：有内容的是亮框、用不到的参数格是暗框带星芒），下排（底纹下半的纹饰里）= 运行原因、「且 / 或」；删除是行为框左边的小图标，不显示「优先级 N」；
+## 「行为 / 条件1 / 条件2」列标题画在面板底图上（每行不再带标签），没有拖拽柄（整行可拖）。条件带参数时参数叠在条件框右端（无框）。
 
 const HANDLE_GLYPH: String = "≡"
 const NONE_KEY: String = ""              ## 条件二「无」
 const UI_MAX_CONDITIONS: int = 2         ## 10 §5.2：玩家编辑的条件 ≤ 2
 const OPTION_MIN_WIDTH: float = 64.0     ## 下拉不按最长项撑宽（侧栏固定 520，08 ⑥），文字过长时省略
+const SLOT_OFF: Texture2D = preload("res://assets/ui/gothic/cmd_act_off.png")     ## 用不到的参数格（暗框带星芒）
+const DELETE_ICON: Texture2D = preload("res://assets/ui/gothic/cmd_delete.png")
+const LOGIC_AND: Texture2D = preload("res://assets/ui/gothic/cmd_logic_and.png")     ## 与 / 或标志（韦恩图：交集亮 = 与，并集亮 = 或），摆在条件框之间
+const LOGIC_OR: Texture2D = preload("res://assets/ui/gothic/cmd_logic_or.png")
+const REASON_EXTRA: float = 20.0         ## 运行中有「为何不成立」/ 等待剩余时，行下方多出的一行
+const EXTRA_COND_PITCH: float = 52.0     ## 敌人条件多于两条时，第 3 条起每两条一排的行距
 const SKIN: String = DetailKit.SKIN
 
 var editor: RuleEditor = null
@@ -45,6 +54,7 @@ var _note: String = ""
 var _body: Control                       ## 行内容（绝对定位）
 var _highlight: Panel                    ## 运行中生效行的金边
 var _content_h: float = 0.0              ## 条件区底（不含运行原因行）
+var _low_dy: float = 0.0                 ## 条件多于两条时下排（优先级 / 逻辑 / 删除）下移的距离
 
 
 ## 布局元素相对行框（det_row1；row2 版式取自 det_row2）的矩形，设计像素
@@ -78,13 +88,16 @@ func setup(p_editor: RuleEditor, p_index: int, p_rule: RuleDef) -> void:
 	_highlight.add_theme_stylebox_override("panel", hl)
 	_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_highlight.visible = false
-	_build_action_line()
 	var conds: Array[ConditionDef] = rule.conditions
 	var shown: int = maxi(conds.size(), 1)
 	if not editor.read_only:
 		shown = UI_MAX_CONDITIONS          # 玩家行恒显示条件一、条件二（二默认「无」）
+	_low_dy = EXTRA_COND_PITCH * ceilf(maxf(shown - UI_MAX_CONDITIONS, 0.0) / 2.0)
+	_build_action_line()
 	for k: int in shown:
 		_build_condition_line(k, conds[k] if k < conds.size() else null)
+	if _logic != null:
+		_body.move_child(_logic, -1)               # 与 / 或标志压在两个条件框之上
 	_sentence = UiKit.label(RuleText.rule_sentence(rule, editor.level), "", true)
 	_sentence.visible = false            # 整图不显示整句（保留供拖拽预览与测试）
 	_body.add_child(_sentence)
@@ -101,9 +114,10 @@ func setup(p_editor: RuleEditor, p_index: int, p_rule: RuleDef) -> void:
 	_reason.clip_text = true             # 原因短句一行（换行后的高度要到下一帧才确定，会把行撑高）
 	_reason.add_theme_color_override("font_color", Palette.WARN_RED)
 	_body.add_child(_reason)
-	var c1l: Rect2 = rel("det_c1_label")
 	_why.theme_type_variation = tt("det_c1_label")
-	_why.size = Vector2(c1l.size.x * 1.6, c1l.size.y)
+	_why.add_theme_font_size_override("font_size", 14)
+	_reason.add_theme_font_size_override("font_size", 14)
+	_why.size = Vector2(74.0, 18.0)
 	_body.add_child(_highlight)
 	var editable: bool = editor.editable()
 	if _logic != null and bool(_logic.get_meta(&"single", false)):
@@ -140,14 +154,7 @@ func _text(text: String, id: String, r: Rect2) -> Label:
 
 # ---- 行为行 ----
 func _build_action_line() -> void:
-	var handle := TextureRect.new()
-	handle.texture = load(str(UiKit.layout_element(SKIN, "det_handle").get("file", ""))) as Texture2D
-	handle.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	handle.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	handle.visible = not editor.read_only
-	_place(handle, rel("det_handle"))
-	_text(DataRegistry.get_string("ui.rule_priority").format({ "n": (order if order >= 0 else index) + 1 }), "det_prio", rel("det_prio"))
+	var low := Vector2(0.0, _low_dy)
 	_override = UiKit.node_for(UiKit.layout_element(SKIN, "det_override")) as TextureButton
 	_override.name = "OverrideToggle"
 	_override.toggle_mode = true
@@ -155,20 +162,21 @@ func _build_action_line() -> void:
 	_override.tooltip_text = DataRegistry.get_string("ui.rule_override_tip")
 	_override.focus_mode = Control.FOCUS_NONE
 	_override.toggled.connect(_on_override)
-	_place(_override, rel("det_override"))
-	var ovl: Label = _text(DataRegistry.get_string("ui.rule_override"), "det_override_label", rel("det_override_label"))
+	_place(_override, _moved(rel("det_override"), low))
+	var ovl: Label = _text(DataRegistry.get_string("ui.rule_override"), "det_override_label", _moved(rel("det_override_label"), low))
 	_override_label = ovl
 	ovl.mouse_filter = Control.MOUSE_FILTER_STOP              # 点文字也能切换
 	ovl.gui_input.connect(func(e: InputEvent) -> void:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
 		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and not _override.disabled:
 			_override.button_pressed = not _override.button_pressed)
-	_text(DataRegistry.get_string("ui.rule_action_label"), "det_act_label", rel("det_act_label"))
 	var act_key: String = SimTypes.action_to_string(rule.action.type)
 	_action = _option(editor.action_items(act_key), act_key, _on_action, "det_action")
 	_action.name = "RuleAction"                # 固定名字供引导 / 配置器拾取（如 Group_attack/RuleAction）
 	_place(_action, rel("det_action"))
 	var t: int = rule.action.type
+	var p1_used: bool = true
+	var p2_used: bool = true
 	if rule.action.needs_target() or (rule.has_condition(SimTypes.ConditionType.TARGET_DISTANCE) and t != SimTypes.ActionType.FOLLOW_BEACONS and t != SimTypes.ActionType.WAIT and t != SimTypes.ActionType.FOLLOW_ROUTE \
 			and t != SimTypes.ActionType.IDLE and t != SimTypes.ActionType.HOLD_FIRE and t != SimTypes.ActionType.RETREAT):
 		_add_target_options()
@@ -180,24 +188,48 @@ func _build_action_line() -> void:
 		_from.name = "RuleFrom"
 		_place(_from, rel("det_p2"))
 	elif t == SimTypes.ActionType.WAIT:
-		_text(DataRegistry.get_string("ui.wait_duration"), "det_wait_label", rel("det_wait_label"))
-		_seconds = _spin(SimTypes.WAIT_MIN_SECONDS, SimTypes.WAIT_MAX_SECONDS, SimTypes.WAIT_MIN_SECONDS, "", "det_wait_box")
+		# 持续时间：参数一格里一个数值框（后缀「秒」），参数二格暗
+		_seconds = _spin(SimTypes.WAIT_MIN_SECONDS, SimTypes.WAIT_MAX_SECONDS, SimTypes.WAIT_MIN_SECONDS, " " + DataRegistry.get_string("ui.seconds_unit"), "det_wait_box")
+		_seconds.tooltip_text = DataRegistry.get_string("ui.wait_duration")
 		_seconds.set_value_no_signal(rule.action.seconds)
 		_seconds.value_changed.connect(_on_seconds)
 		_place(_seconds, rel("det_wait_box"))
-		_text(DataRegistry.get_string("ui.seconds_unit"), "det_wait_unit", rel("det_wait_unit"))
+		p2_used = false
 	elif t == SimTypes.ActionType.FOLLOW_ROUTE:
 		_route = _option(editor.route_items(), rule.action.route_id, _on_route, "det_p1")
 		_place(_route, rel("det_p1").merge(rel("det_p2")))
-	_delete = Button.new()
-	_delete.text = DataRegistry.get_string("ui.delete_rule")
+	else:
+		p1_used = false
+		p2_used = false
+	for pair: Array in [[p1_used, "det_p1"], [p2_used, "det_p2"]]:
+		if not bool(pair[0]):
+			var off := TextureRect.new()
+			off.name = "SlotOff_" + str(pair[1])
+			off.texture = SLOT_OFF
+			off.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			off.stretch_mode = TextureRect.STRETCH_SCALE
+			off.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_place(off, rel(str(pair[1])))
+	_delete = Button.new()                           # 刻印界面：删除 = 行为框左边的小图标（不再有「优先级 N」与「删除」字样）
+	_delete.icon = DELETE_ICON
+	_delete.expand_icon = true
 	_delete.tooltip_text = DataRegistry.get_string("ui.delete_rule_tip")
-	_delete.theme_type_variation = tt("det_delete")
+	_delete.flat = true
+	var plain := StyleBoxEmpty.new()
+	for st: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
+		_delete.add_theme_stylebox_override(st, plain)
+	_delete.add_theme_color_override("icon_normal_color", Color(0.85, 0.8, 0.8))
+	_delete.add_theme_color_override("icon_hover_color", Color(1.25, 1.1, 1.1))
+	_delete.add_theme_color_override("icon_pressed_color", Color(1.0, 0.8, 0.8))
 	_delete.focus_mode = Control.FOCUS_NONE
 	_delete.pressed.connect(func() -> void: editor.delete_rule(index))
 	_delete.visible = not editor.read_only and editor.editable()     # 战斗中不可编辑：不显示删除（批准整图 ui_13）
 	_place(_delete, rel("det_delete"))
 	_controls.append(_delete)
+
+
+static func _moved(r: Rect2, by: Vector2) -> Rect2:
+	return Rect2(r.position + by, r.size)
 
 
 ## 目标选择 + 目标类型（参数一 / 参数二格）
@@ -212,66 +244,64 @@ func _add_target_options() -> void:
 	_place(_filter, rel("det_p2"))
 
 
-# ---- 条件行：第 k 条（k ≥ 1 时上方为与 / 或分隔）----
+# ---- 条件行：第 k 条（条件一 / 条件二两个框；敌人的第 3 条起每两条一排向下排）----
+func _cond_slot(k: int) -> Rect2:
+	var base: Rect2 = rel("det_c1") if k % 2 == 0 else rel("det_c2")
+	if k >= UI_MAX_CONDITIONS:
+		base.position.y += EXTRA_COND_PITCH * float((k - UI_MAX_CONDITIONS) / 2 + 1)
+	return base
+
+
 func _build_condition_line(k: int, c: ConditionDef) -> void:
-	var pitch: float = rel("det_c2").position.y - rel("det_c1").position.y
-	var dy: float = pitch * k
-	if k >= 1:
-		for lid: String in ["det_logic_line_l", "det_logic_line_r"]:     # 两条件之间的分隔线（1 px，颜色取布局）
-			var line := ColorRect.new()
-			line.color = Color(str((UiKit.layout_element(SKIN, lid).get("style", {}) as Dictionary).get("bg", "#FFFFFF")))
-			line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			_place(line, _shift(rel(lid), dy - pitch))
+	var slot: Rect2 = _cond_slot(k)
+	if k == 1:
 		var glyph: String = DataRegistry.get_string("ui.logic_or_glyph" if rule.condition_mode == SimTypes.ConditionMode.ANY else "ui.logic_and_glyph")
-		if k == 1:
-			_logic = Button.new()
-			_logic.text = glyph
-			_logic.tooltip_text = DataRegistry.get_string("ui.logic_or" if rule.condition_mode == SimTypes.ConditionMode.ANY else "ui.logic_and")
-			_logic.theme_type_variation = tt("det_logic")
-			_logic.focus_mode = Control.FOCUS_NONE
-			_logic.visible = true                                 # 侧栏整图：分隔处恒显示 ∧ / ∨；只有一个条件时不可切换
-			_logic.set_meta(&"single", rule.conditions.size() < 2)
-			_logic.pressed.connect(_on_logic)
-			_place(_logic, _shift(rel("det_logic"), dy - pitch))
-			_controls.append(_logic)
-		else:
-			_text(glyph, "det_logic", _shift(rel("det_logic"), dy - pitch)).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var title: String = DataRegistry.get_string("ui.condition_n").format({ "n": k + 1 })
-	if k == 0:
-		title = DataRegistry.get_string("ui.condition_one")
-	elif k == 1:
-		title = DataRegistry.get_string("ui.condition_two")
-	_text(title, "det_c1_label", _shift(rel("det_c1_label"), dy))
+		_logic = Button.new()
+		_logic.icon = LOGIC_OR if rule.condition_mode == SimTypes.ConditionMode.ANY else LOGIC_AND
+		_logic.expand_icon = true
+		_logic.flat = true
+		var plain_logic := StyleBoxEmpty.new()
+		for st: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
+			_logic.add_theme_stylebox_override(st, plain_logic)
+		_logic.add_theme_color_override("icon_hover_color", Color(1.2, 1.2, 1.2))
+		_logic.focus_mode = Control.FOCUS_NONE
+		_logic.visible = true                                 # 条件一 / 条件二之间的与 / 或标志；只有一个条件时变暗、不可切换
+		_logic.set_meta(&"single", rule.conditions.size() < 2)
+		_logic.pressed.connect(_on_logic)
+		_place(_logic, rel("det_logic"))
+		_controls.append(_logic)
 	var key: String = SimTypes.condition_to_string(c.type) if c != null else ("always" if k == 0 else NONE_KEY)
 	var items: Array = editor.condition_items(key if key != NONE_KEY else "")
 	if k >= 1 and not editor.read_only:
 		items.push_front([DataRegistry.get_string("ui.condition_none"), NONE_KEY])
 	var has_param: bool = c != null and c.type in [SimTypes.ConditionType.SELF_HP_BELOW, SimTypes.ConditionType.TARGET_DISTANCE, SimTypes.ConditionType.AT_BEACON, SimTypes.ConditionType.SIGNAL_IS]
-	var opt: OptionButton = _option(items, key, _on_cond.bind(k), "det_c1")
+	var opt: OptionButton = _option(items, key, _on_cond.bind(k), "det_c1_narrow" if has_param else "det_c1")
 	opt.name = "RuleCond%d" % (k + 1)
-	_place(opt, _shift(rel("det_c1_narrow", "det_row2"), dy, rel("det_c1").position.y) if has_param else _shift(rel("det_c1"), dy))
+	_place(opt, slot)
 	_cond_options.append(opt)
 	_content_h = maxf(_content_h, opt.position.y + opt.size.y)
 	if c == null:
 		return
-	var prm: Rect2 = _shift(rel("det_cparam", "det_row2"), dy, rel("det_c1").position.y)
-	var unit: Rect2 = _shift(rel("det_cunit", "det_row2"), dy, rel("det_c1").position.y)
+	# 参数叠在条件框右端（无框，只有字）
+	var off: Vector2 = rel("det_cparam").position - rel("det_c1").position
+	var prm := Rect2(slot.position + off, rel("det_cparam").size)
 	match c.type:
 		SimTypes.ConditionType.SELF_HP_BELOW:
-			var ratio: SpinBox = _spin(1.0, 99.0, 1.0, "", "det_cparam")
+			var ratio: SpinBox = _spin(1.0, 99.0, 1.0, "%", "det_cparam", true)
 			ratio.set_value_no_signal(round(c.ratio * 100.0))
 			ratio.value_changed.connect(_on_ratio.bind(k))
 			_place(ratio, prm)
-			_text("%", "det_cunit", unit)
 		SimTypes.ConditionType.TARGET_DISTANCE:
-			# 第四阶段（侧栏批准整图）：比较与距离合成一个下拉「< 3」，右侧单位「格」
+			# 比较与距离合成一个下拉「< 3」（单位「格」放在悬停提示里，条件框右端放不下）
 			var dist: OptionButton = _option(editor.distance_items(c.op, c.value), RuleEditor.distance_key(c.op, c.value), Callable(), "det_cparam")
 			dist.item_selected.connect(_on_distance.bind(k, dist))
+			dist.tooltip_text = DataRegistry.get_string("ui.distance_unit")
+			_flat_param(dist)
 			_place(dist, prm)
-			_text(DataRegistry.get_string("ui.distance_unit"), "det_cunit", unit)
 		SimTypes.ConditionType.AT_BEACON:
 			var beacon: OptionButton = _option(editor.beacon_items(c.beacon), c.beacon, Callable(), "det_cparam")
 			beacon.item_selected.connect(_on_beacon.bind(k, beacon))
+			_flat_param(beacon)
 			_place(beacon, prm)
 		SimTypes.ConditionType.SIGNAL_IS:
 			var sig_items: Array = []
@@ -279,15 +309,22 @@ func _build_condition_line(k: int, c: ConditionDef) -> void:
 				sig_items.append([DataRegistry.get_string("names.signals." + sig), sig])
 			var sig_opt: OptionButton = _option(sig_items, c.sig, Callable(), "det_cparam")
 			sig_opt.item_selected.connect(_on_signal.bind(k, sig_opt))
+			_flat_param(sig_opt)
 			_place(sig_opt, prm)
 
 
-## 第 k 条条件的矩形：从第一条条件的位置下移 dy；row2 版式的元素先对齐到第一条条件的高度（base_y）
-func _shift(r: Rect2, dy: float, base_y: float = NAN) -> Rect2:
-	if not is_nan(base_y):
-		var c1n: Rect2 = rel("det_c1_narrow", "det_row2")
-		r.position.y += base_y - c1n.position.y
-	return Rect2(r.position + Vector2(0.0, dy), r.size)
+## 条件参数下拉：去掉框（叠在条件框上），字号与条件框一致
+func _flat_param(o: OptionButton) -> void:
+	var plain := StyleBoxEmpty.new()
+	plain.content_margin_left = 2.0
+	plain.content_margin_right = 2.0
+	for st: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
+		o.add_theme_stylebox_override(st, plain)
+	o.add_theme_font_size_override("font_size", 18)
+	o.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
+	o.add_theme_color_override("font_hover_color", Palette.ALCHEMY_GOLD.lightened(0.25))
+	o.add_theme_color_override("font_pressed_color", Palette.ALCHEMY_GOLD.lightened(0.25))
+	o.alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 
 func _option(items: Array, current: String, on_selected: Callable, skin_id: String = "") -> OptionButton:
@@ -298,6 +335,7 @@ func _option(items: Array, current: String, on_selected: Callable, skin_id: Stri
 	if skin_id != "":
 		o.theme_type_variation = tt(skin_id)
 		o.add_theme_icon_override("arrow", UiKit.transparent_texture(Vector2i.ONE))     # 箭头已画在下拉切片上
+		o.alignment = HORIZONTAL_ALIGNMENT_CENTER                                        # 刻印界面的框内文字居中
 	UiKit.fill_option(o, items, current)
 	if on_selected.is_valid():
 		o.item_selected.connect(on_selected)
@@ -305,7 +343,7 @@ func _option(items: Array, current: String, on_selected: Callable, skin_id: Stri
 	return o
 
 
-func _spin(lo: float, hi: float, step: float, suffix: String, skin_id: String = "") -> SpinBox:
+func _spin(lo: float, hi: float, step: float, suffix: String, skin_id: String = "", flat: bool = false) -> SpinBox:
 	var sb := SpinBox.new()
 	sb.min_value = lo
 	sb.max_value = hi
@@ -324,6 +362,13 @@ func _spin(lo: float, hi: float, step: float, suffix: String, skin_id: String = 
 		le.expand_to_text_length = false
 		le.custom_minimum_size = Vector2.ZERO
 		le.add_theme_constant_override("minimum_character_width", 0)       # 否则最小宽 = 4 个字 + 边距，会把框撑宽
+		if flat:                                                           # 条件参数：无框，叠在条件框右端
+			var plain := StyleBoxEmpty.new()
+			for st2: String in ["normal", "focus", "read_only"]:
+				le.add_theme_stylebox_override(st2, plain)
+			le.add_theme_font_size_override("font_size", 18)
+			le.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
+			le.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_controls.append(sb)
 	return sb
 
@@ -354,20 +399,19 @@ func _apply_runtime() -> void:
 	_layout_height()
 
 
-## 行高 = 整图行框高（条件更多或显示运行原因时加高）
+## 行高 = 底纹高（敌人条件多于两条时加高；运行中有原因 / 等待剩余时再加一行）。底纹自带的下沿纹饰画在行框外（expand），相邻指令行靠得很近
 func _layout_height() -> void:
-	var pad: float = rel("det_row1").size.y - rel("det_c2").end.y          # 最后一条条件到行框底的边距（整图）
-	var h: float = maxf(rel("det_row1").size.y, _content_h + pad)
-	if _why.visible or _reason.visible:            # 运行原因 / 等待剩余：条件区下方一行
-		_why.position = Vector2(rel("det_c1_label").position.x, _content_h + 6.0)
-		_reason.position = Vector2(_why.position.x + (_why.size.x if _why.visible else 0.0), _why.position.y)
-		_reason.custom_minimum_size = Vector2(rel("det_delete").end.x - _reason.position.x, 0.0)     # 先定宽，换行后的高度才对
-		_reason.size = Vector2(_reason.custom_minimum_size.x, 0.0)
-		h = maxf(h, _reason.position.y + maxf(_reason.get_combined_minimum_size().y, _why.size.y) + pad * 0.6)
+	var reason_on: bool = _why.visible or _reason.visible
+	var y: float = rel("det_action").end.y + 2.0 + _low_dy
+	var x: float = rel("det_action").position.x
+	_why.position = Vector2(x, y)
+	_reason.position = Vector2(x + (_why.size.x if _why.visible else 0.0), y)
+	_reason.size = Vector2(maxf(rel("det_c2").end.x - _reason.position.x, 40.0), 18.0)
+	_reason.custom_minimum_size = Vector2.ZERO
+	var h: float = rel("det_row1").size.y + _low_dy + (REASON_EXTRA if reason_on else 0.0)
 	_body.custom_minimum_size = Vector2(rel("det_row1").size.x, h)
-	var inset: float = rel("det_action").position.y * 0.75      # 金边贴着切片的可见边框（切片四周有透明留白）
-	_highlight.position = Vector2(inset, inset)
-	_highlight.size = _body.custom_minimum_size - Vector2(inset, inset) * 2.0
+	_highlight.position = Vector2(4.0, 2.0)                  # 金边只框住框行
+	_highlight.size = Vector2(_body.custom_minimum_size.x - 8.0, rel("det_action").end.y + _low_dy + 4.0)
 
 
 # ---- 写回：克隆 → 修改 → 规整 → 提交 ----
@@ -433,6 +477,8 @@ func _on_override(on: bool) -> void:
 func _on_logic() -> void:
 	var r: RuleDef = rule.clone()
 	r.condition_mode = SimTypes.ConditionMode.ALL if r.condition_mode == SimTypes.ConditionMode.ANY else SimTypes.ConditionMode.ANY
+	if _logic != null and not editor.read_only:       # 切换提示：从标志上冒出一行字，向上飘并淡出（行随后重建，提示挂在编辑器上）
+		editor.show_logic_hint(_logic.get_global_rect().get_center(), DataRegistry.get_string("ui.logic_or_hint" if r.condition_mode == SimTypes.ConditionMode.ANY else "ui.logic_and_hint"))
 	_commit(r)
 
 

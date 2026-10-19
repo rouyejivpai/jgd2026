@@ -49,6 +49,8 @@ func _settle() -> void:
 ## 第四阶段：详情为停靠屏幕一侧、上下铺满的侧栏（批准整图 side_detail/design.png）：单位在左半屏 → 侧栏贴右边，反之贴左边；
 ## 没有遮罩（侧栏以外的战场照常可点）；「关闭」只收起（保留选中）；点击空地 = 取消选中并收起
 func test_detail_modal_follows_reference() -> void:
+	var saved_motion: bool = UiKit.motion_enabled
+	UiKit.motion_enabled = false              # 只查摆放：不要侧栏滑入的中间位置
 	var root: Node2D = _battle("level_02")
 	await wait_process_frames(2)
 	var c: BattleController = root.get_node("BattleController") as BattleController
@@ -63,16 +65,13 @@ func test_detail_modal_follows_reference() -> void:
 	var vp: Vector2 = hud.get_viewport_rect().size
 	var frame: Control = side.get_node("Frame") as Control
 	var design: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "det_panel", UiKit.design_size(DetailKit.SKIN))
-	var unit_x: float = (root.call("unit_screen_pos", ally) as Vector2).x
 	var fr: Rect2 = frame.get_global_rect()
-	assert_eq(bool(hud.call("side_on_right")), unit_x < vp.x * 0.5, "侧栏在单位的对侧")
-	if bool(hud.call("side_on_right")):
-		assert_lt(unit_x, fr.position.x, "侧栏不遮挡该单位")
-	else:
-		assert_gt(unit_x, fr.end.x, "侧栏不遮挡该单位")
-	assert_eq(fr.size.x, design.size.x, "宽 = 布局")
+	assert_false(bool(hud.call("side_on_right")), "刻印界面：侧栏恒停靠左侧")
+	assert_eq(fr.position.x, design.position.x, "贴左缘 = 布局")
 	assert_eq(fr.position.y, design.position.y, "上沿 = 布局")
-	assert_almost_eq(vp.y - fr.end.y, UiKit.design_size(DetailKit.SKIN).y - design.end.y, 0.5, "上下铺满（下边距 = 布局）")
+	assert_eq(fr.size.y, design.size.y, "高 = 布局（不随视口拉伸）")
+	assert_gt(fr.size.x, 700.0, "可点击区宽度覆盖指令框")
+	assert_lte(fr.size.x, design.size.x, "可点击区不超过底图宽")
 	assert_eq(side.mouse_filter, Control.MOUSE_FILTER_IGNORE, "没有遮罩")
 	assert_null(side.get_node_or_null("Skin_det_scrim"))
 	(side.find_child("DetailClose", true, false) as Button).pressed.emit()
@@ -106,6 +105,7 @@ func test_detail_modal_follows_reference() -> void:
 	esc.pressed = true
 	hud.call("_unhandled_input", esc)
 	assert_false(side.visible, "Esc 隐藏")
+	UiKit.motion_enabled = saved_motion
 
 
 func test_running_is_viewable_but_read_only() -> void:
@@ -213,7 +213,8 @@ func test_top_right_group_and_bottom_follow_layout() -> void:
 	assert_not_null(group, "右上角功能组")
 	var names: Array[String] = []
 	for ch: Node in group.get_children():
-		names.append(String(ch.name))
+		if not String(ch.name).begins_with("Skin_"):      # 换皮贴图（哥特倍速底板）不算功能按钮
+			names.append(String(ch.name))
 	assert_eq(names, ["RetryButton", "Speed1Button", "Speed2Button", "PauseButton", "SettingsButton", "ExitButton"] as Array[String], "速度、暂停 / 继续、设置、退出集中在右上角")
 	var vp: Vector2 = (group as Control).get_viewport_rect().size
 	var ids: Dictionary = {
@@ -228,7 +229,8 @@ func test_top_right_group_and_bottom_follow_layout() -> void:
 	var cards: Array[Node] = root.find_children("*", "RosterCard", true, false)
 	assert_eq(cards.size(), 5, "五个卡位")
 	for i: int in cards.size():
-		assert_eq((cards[i] as Control).get_global_rect(), UiKit.layout_rect("battle_hud", "card_%d" % (i + 1), vp), "卡位 %d = 布局" % (i + 1))
+		var slot: String = ("card_slot_%d" if RosterCard.gothic() else "card_%d") % (i + 1)      # 哥特换皮：卡位 card_slot_N
+		assert_eq((cards[i] as Control).get_global_rect(), UiKit.layout_rect("battle_hud", slot, vp), "卡位 %d = 布局" % (i + 1))
 	var bands: Vector2 = Playfield.bands()
 	var rect: Rect2 = root.get("playfield_rect") as Rect2
 	assert_true(rect.position.y >= bands.x and rect.end.y <= vp.y - bands.y, "战场在 HUD 让出的上下带之间，不被 HUD 遮挡")
@@ -277,6 +279,8 @@ func test_objectives_popup_opens_and_closes() -> void:
 
 ## P6 ui_05：开始校验问题面板按批准整图摆放——两行时与整图同高、下沿固定；标题与各行在面板内；行多时向上长、超出可用高度时列表滚动
 func test_problems_panel_follows_reference() -> void:
+	var saved_motion: bool = UiKit.motion_enabled
+	UiKit.motion_enabled = false              # 只查摆放：不要滑入动效的中间位置
 	var root: Node2D = _battle("level_03")
 	await wait_process_frames(2)
 	var hud: Node = root.find_child("HUD", true, false)
@@ -303,3 +307,4 @@ func test_problems_panel_follows_reference() -> void:
 	var scroll: ScrollText = root.find_child("Scroll_ProblemsList", true, false) as ScrollText
 	assert_gt(scroll.overflow(), 0.0, "超出可用高度时列表可滚动（滚轮 / 拖动）")
 	assert_eq(scroll.mode, ScrollText.Mode.MANUAL)
+	UiKit.motion_enabled = saved_motion

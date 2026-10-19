@@ -131,7 +131,7 @@ func test_row_layout_action_first_two_conditions() -> void:
 	assert_eq(conds.size(), 2, "玩家行：条件一、条件二（上限两条）")
 	assert_eq(UiKit.option_value(conds[0] as OptionButton, (conds[0] as OptionButton).selected), "always", "条件一默认「始终」")
 	assert_eq(UiKit.option_value(conds[1] as OptionButton, (conds[1] as OptionButton).selected), "", "条件二默认「无」")
-	assert_true((row.get("_logic") as Button).visible, "第四阶段侧栏整图：两条件之间恒显示 ∧ / ∨")
+	assert_true((row.get("_logic") as Button).visible, "条件一、二之间恒显示与 / 或标志")
 	assert_true((row.get("_logic") as Button).disabled, "一条件时不可切换与 / 或")
 	assert_not_null(row.get("_selector"), "attack 显示目标选择")
 	assert_not_null(row.get("_filter"), "attack 显示目标类型")
@@ -152,11 +152,11 @@ func test_second_condition_shows_logic_and_writes_mode() -> void:
 	await wait_process_frames(1)
 	var logic: Button = _rows()[0].get("_logic") as Button
 	assert_true(logic.visible, "两条件时显示与 / 或")
-	assert_eq(logic.text, DataRegistry.get_string("ui.logic_and_glyph"), "∧（批准整图）")
+	assert_eq(logic.icon, RuleRow.LOGIC_AND, "与标志")
 	logic.pressed.emit()
 	assert_eq(_c.get_rules(SLOT)[0].condition_mode, SimTypes.ConditionMode.ANY, "切到「或」写入 condition_mode = any")
 	await wait_process_frames(1)
-	assert_eq((_rows()[0].get("_logic") as Button).text, DataRegistry.get_string("ui.logic_or_glyph"))
+	assert_eq((_rows()[0].get("_logic") as Button).icon, RuleRow.LOGIC_OR)
 	assert_string_contains((_rows()[0].get("_sentence") as Label).text, DataRegistry.get_string("ui.sentence_or"))
 	_pick((_rows()[0].get("_cond_options") as Array)[1] as OptionButton, "")
 	r = _c.get_rules(SLOT)[0]

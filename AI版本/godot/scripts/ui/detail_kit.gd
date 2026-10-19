@@ -56,8 +56,8 @@ static func portrait(parent: Control) -> TextureRect:
 
 ## 属性行：底板 + 六组（图标、名称、数值）；返回数值 Label
 static func stats(parent: Control) -> Array[Label]:
-	var bg: Control = UiKit.node_for(UiKit.layout_element(SKIN, "det_stats"))
-	place(parent, bg, rel("det_stats"))
+	if not UiKit.layout_element(SKIN, "det_stats").is_empty():      # 2026-10-20 刻印界面：属性行没有底板（直接写在面板上）
+		place(parent, UiKit.node_for(UiKit.layout_element(SKIN, "det_stats")), rel("det_stats"))
 	var values: Array[Label] = []
 	for i: int in STAT_KEYS.size():
 		var icon := TextureRect.new()
@@ -67,7 +67,9 @@ static func stats(parent: Control) -> Array[Label]:
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		place(parent, icon, rel("det_stat_icon_%d" % i))
 		label(parent, "det_stat_name_%d" % i, DataRegistry.get_string("ui." + STAT_KEYS[i]))
-		values.append(label(parent, "det_stat_value_%d" % i))
+		var v: Label = label(parent, "det_stat_value_%d" % i)
+		values.append(v)
+		ScrollText.wrap(v, ScrollText.Mode.AUTO)            # 2026-10-19：数值偏长（如生命 160/160（+40））时在格内往返滚动，不出框
 	return values
 
 

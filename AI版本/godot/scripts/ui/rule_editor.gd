@@ -10,6 +10,8 @@ extends VBoxContainer
 ## UI 暂用简单分区 + 侧栏滚动，正式版式待拼 UI。敌人（旧单列表口径）仍显示为一个列表。
 
 const RULE_ROW_SCENE: PackedScene = preload("res://scenes/ui/rule_row.tscn")
+const HEADER_TEX: Texture2D = preload("res://assets/ui/gothic/cmd_header.png")     ## 列标题切图（行为 / 条件1 / 条件2）
+const HEADER_X: float = 18.0             ## 切图左缘相对指令行底纹的偏移（让「行为」对准行为框）
 const BEACON_MODES: Array[String] = ["once", "loop", "pingpong"]
 
 var controller: BattleController = null
@@ -116,20 +118,39 @@ func _build_sections() -> void:
 		box.add_child(title)
 		var note: Label = UiKit.label(DataRegistry.get_string("ui.rule_group_note_" + SimTypes.group_to_string(g)), "SmallLabel", true)
 		note.name = "Note"
+		note.visible = false            # 2026-10-20：不再显示分组说明文字
 		box.add_child(note)
+		var hdr := Control.new()        # 列标题「行为 / 条件1 / 条件2」（02.zip 刻印界面底图上的装饰字，抠成切图）画在每组标题下面
+		hdr.name = "Header"
+		hdr.custom_minimum_size = Vector2(0.0, HEADER_TEX.get_height())
+		hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var hdr_tex := TextureRect.new()
+		hdr_tex.texture = HEADER_TEX
+		hdr_tex.position = Vector2(HEADER_X, 0.0)
+		hdr_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hdr.add_child(hdr_tex)
+		box.add_child(hdr)
 		var list := VBoxContainer.new()
 		list.name = "Rows"
 		list.add_theme_constant_override("separation", _row_gap)
 		box.add_child(list)
-		var add := Button.new()
+		var add := Button.new()          # 2026-10-20：「＋」占一整行，用条件框（目标距离那种白框）的样式，与指令行的框对齐
 		add.name = "Add"
-		add.text = DataRegistry.get_string("ui.add_rule_" + SimTypes.group_to_string(g))
-		add.theme_type_variation = StringName(str(UiKit.layout_element(DetailKit.SKIN, "det_add").get("theme_type", "")))
+		add.text = "+"
+		add.tooltip_text = DataRegistry.get_string("ui.add_rule_" + SimTypes.group_to_string(g))
+		add.theme_type_variation = DetailKit.tt("det_c1")
+		add.add_theme_font_size_override("font_size", 28)
+		add.custom_minimum_size = Vector2(0.0, DetailKit.rel("det_c1").size.y)
 		add.focus_mode = Control.FOCUS_NONE
 		add.pressed.connect(open_picker.bind(g))
-		box.add_child(add)
+		var add_box := MarginContainer.new()
+		add_box.name = "AddBox"
+		add_box.add_theme_constant_override("margin_left", int(DetailKit.rel("det_action").position.x - DetailKit.rel("det_row1").position.x))
+		add_box.add_theme_constant_override("margin_right", int(DetailKit.rel("det_row1").end.x - DetailKit.rel("det_c2").end.x))
+		add_box.add_child(add)
+		box.add_child(add_box)
 		_list.add_child(box)
-		_sections[g] = { "box": box, "title": title, "note": note, "list": list, "add": add }
+		_sections[g] = { "box": box, "title": title, "note": note, "header": hdr, "list": list, "add": add, "add_box": add_box }
 
 
 func _rebuild() -> void:
@@ -138,7 +159,7 @@ func _rebuild() -> void:
 		UiKit.clear((_sections[g] as Dictionary)["list"] as VBoxContainer)
 	_rows.clear()
 	_lock_note.text = DataRegistry.get_string("ui.enemy_rules_readonly" if read_only else "ui.rule_editing_locked")
-	_add.visible = not read_only
+	_add.visible = false
 	var rules: Array[RuleDef] = []
 	if read_only:
 		var e: SimUnit = _enemy()
@@ -167,16 +188,43 @@ func _rebuild() -> void:
 		var limit: int = DataRegistry.get_commands().group_limit(g)
 		(sec["title"] as Label).text = DataRegistry.get_string("ui.rule_group_title").format({ "group": RuleText.group_name(g), "n": idx.size(), "max": limit })
 		(sec["title"] as Label).visible = grouped
-		(sec["note"] as Label).visible = grouped and editable()
+		(sec["note"] as Label).visible = false            # 2026-10-20：不再显示分组说明
 		(sec["box"] as Control).visible = grouped or g == SimTypes.RuleGroup.ATTACK
 		var add: Button = sec["add"] as Button
+		(sec["add_box"] as Control).visible = grouped and editable()
 		add.visible = grouped and editable()
 		add.disabled = idx.size() >= limit or not _group_has_actions(g)
 		add.tooltip_text = DataRegistry.get_string("ui.rule_group_full").format({ "max": limit }) if idx.size() >= limit else ""
 	_lock_note.visible = false            # P6：不可编辑的说明在详情底部一行（UnitPanel）
 	_add.disabled = not editable()
-	_add.visible = not read_only and editable()          # 战斗中底部只留「战斗中无法编辑指令」（批准整图 ui_13）
+	_add.visible = false                  # 2026-10-20：底部的「添加指令」去掉（各组自带「＋」整行）；节点保留给行为列表逻辑
 	_fill_add_menu()
+
+
+## 与 / 或切换提示（2026-10-20）：在标志上方冒出一行带微光的字，向上移动并渐隐。top_level：不受容器排版与滚动区裁切影响
+func show_logic_hint(center: Vector2, text: String) -> void:
+	if not UiKit.motion_enabled:
+		return
+	var l := Label.new()
+	l.text = text
+	l.top_level = true
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.add_theme_font_size_override("font_size", 22)
+	l.add_theme_color_override("font_color", Color("#FFF3D6"))
+	l.add_theme_color_override("font_outline_color", Color(1.0, 0.82, 0.52, 0.30))     # 轻微发光：暖色半透明描边
+	l.add_theme_constant_override("outline_size", 7)
+	l.add_theme_color_override("font_shadow_color", Color(1.0, 0.7, 0.4, 0.25))
+	l.add_theme_constant_override("shadow_outline_size", 10)
+	l.modulate.a = 0.0
+	add_child(l)
+	l.size = l.get_combined_minimum_size()
+	l.global_position = center - Vector2(l.size.x * 0.5, l.size.y + 18.0)
+	var t: Tween = l.create_tween()
+	t.set_parallel(true)
+	t.tween_property(l, "modulate:a", 1.0, 0.12)
+	t.tween_property(l, "global_position:y", l.global_position.y - 40.0, 1.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(l, "modulate:a", 0.0, 0.6).from(1.0).set_delay(0.4)
+	t.chain().tween_callback(l.queue_free)
 
 
 ## 第五阶段：该组还能否添加（条数未满）
@@ -321,6 +369,7 @@ func open_picker(group: int) -> void:
 	_fill_add_menu()
 	(_picker.get_parent() as Control).visible = true
 	_list.visible = false
+	UiKit.slide_in([_picker.get_parent()])       # 2026-10-19：添加指令列表缓动出现
 	picker_toggled.emit(true)
 
 

@@ -7,30 +7,78 @@
   ],
   "elements": [
     {
+      "id": "frame",
+      "kind": "image",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "data": {
+        "_note": "E01 整屏框体（计时纹饰、灵魂储量底框、卡位底纹、开始战斗光晕；「灵魂储量」字已画在图上），铺满视口，画在全部 HUD 之下；no_cover：与按钮 / 文字一样按设计画布居中、不缩放（铺满会在非 16:9 窗口与灵魂储量 / 开始战斗错位）",
+        "no_cover": true
+      },
+      "file": "res://assets/ui/gothic/hud_frame.png"
+    },
+    {
       "id": "quest",
       "kind": "image",
       "rect": [
-        46,
-        35,
-        358,
-        124
+        0,
+        37,
+        640,
+        76
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/quest.png"
+      "data": {
+        "_note": "关卡名后的黑色渐变衬底（左实右透，上下羽化；tools 生成 640×76，与 rect 同比例不裁切）"
+      },
+      "file": "res://assets/ui/gothic/title_shade.png"
+    },
+    {
+      "id": "obj_header",
+      "kind": "image",
+      "rect": [
+        0,
+        109,
+        274,
+        128
+      ],
+      "data": {
+        "_note": "E02「任务目标」标题（字在图上）；其上叠透明的「任务」按钮（ObjectivesButton），点击打开任务弹窗"
+      },
+      "file": "res://assets/ui/gothic/objective_header.png"
+    },
+    {
+      "id": "obj_row",
+      "kind": "image",
+      "rect": [
+        0,
+        214,
+        376,
+        35
+      ],
+      "data": {
+        "pitch": 36,
+        "max_rows": 3,
+        "_note": "E03 任务行底纹：第 1 行 = 任务句（quest_objective），其后按 pitch 每行一条胜利 / 失败条件，最多 max_rows 行"
+      },
+      "file": "res://assets/ui/gothic/objective_row.png"
     },
     {
       "id": "quest_title",
       "kind": "text_style",
       "rect": [
-        148,
-        68,
-        211,
-        37
+        40,
+        52,
+        560,
+        46
       ],
       "text_rect": [
         0,
         0,
-        211,
-        37
+        560,
+        46
       ],
       "align": "left",
       "overflow": "auto",
@@ -49,16 +97,16 @@
       "id": "quest_objective",
       "kind": "text_style",
       "rect": [
-        149,
-        105,
-        211,
-        25
+        87,
+        215,
+        430,
+        32
       ],
       "text_rect": [
         0,
         0,
-        211,
-        25
+        430,
+        32
       ],
       "align": "left",
       "overflow": "manual",
@@ -74,58 +122,131 @@
       "theme_type": "battle_hud__quest_objective"
     },
     {
+      "id": "obj_row_text",
+      "kind": "text_style",
+      "rect": [
+        87,
+        251,
+        430,
+        32
+      ],
+      "text_rect": [
+        0,
+        0,
+        430,
+        32
+      ],
+      "align": "left",
+      "overflow": "auto",
+      "data": {
+        "lose_color": "#C9A0A8",
+        "_note": "第 2 行起的条件句；失败条件用 lose_color"
+      },
+      "theme_type": "battle_hud__obj_row_text"
+    },
+    {
+      "id": "progress",
+      "kind": "text_style",
+      "rect": [
+        60,
+        330,
+        460,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        460,
+        30
+      ],
+      "align": "left",
+      "data": {
+        "gap": 6,
+        "_note": "进度（生存剩余 / 保护对象生命 / 威胁已清除）：紧接最后一行任务之下"
+      },
+      "theme_type": "battle_hud__progress"
+    },
+    {
       "id": "timer",
       "kind": "image",
       "rect": [
-        808,
-        25,
-        312,
-        122
+        760,
+        30,
+        400,
+        170
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/timer.png"
+      "file": "res://assets/ui/gothic/blank.png"
+    },
+    {
+      "id": "speed_bg",
+      "kind": "image",
+      "rect": [
+        785,
+        208,
+        126,
+        26
+      ],
+      "data": {
+        "_note": "E10 倍速底板；当前倍速的按钮画 E08 深色牌（按钮 pressed 态）"
+      },
+      "file": "res://assets/ui/gothic/hex_gray.png"
     },
     {
       "id": "timer_value",
       "kind": "text_style",
       "rect": [
-        931,
-        71,
-        57,
-        33
+        796,
+        36,
+        124,
+        130
       ],
       "text_rect": [
         0,
         0,
-        57,
-        33
+        124,
+        130
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          937.0,
-          78.0,
-          47.1,
-          18.4
-        ],
-        "ref_text": "00.0"
+        "format": "%02d",
+        "_note": "计时左组 = 整秒（两位），右组 timer_value2 = 百分秒；倒计时最后 5 秒两组都变红"
       },
       "theme_type": "battle_hud__timer_value"
+    },
+    {
+      "id": "timer_value2",
+      "kind": "text_style",
+      "rect": [
+        1000,
+        36,
+        124,
+        130
+      ],
+      "text_rect": [
+        0,
+        0,
+        124,
+        130
+      ],
+      "align": "center",
+      "overflow": "auto",
+      "theme_type": "battle_hud__timer_value2"
     },
     {
       "id": "timer_phase",
       "kind": "text_style",
       "rect": [
-        1010,
-        78,
-        73,
-        21
+        860,
+        146,
+        200,
+        44
       ],
       "text_rect": [
         0,
         0,
-        73,
-        21
+        200,
+        44
       ],
       "align": "center",
       "overflow": "auto",
@@ -144,33 +265,27 @@
       "id": "btn_retry",
       "kind": "button",
       "rect": [
-        1354,
-        39,
-        80,
-        96
+        1013,
+        208,
+        63,
+        26
       ],
       "text_rect": [
-        21,
-        44,
-        46,
-        23
+        0,
+        0,
+        63,
+        26
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1383.4,
-          86.1,
-          29.9,
-          16.1
-        ],
-        "ref_text": "重试"
+        "_note": "E06 重试"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/retry.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/retry.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/retry.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/retry.png"
+        "normal": "res://assets/ui/gothic/btn_retry.png",
+        "hover": "res://assets/ui/gothic/btn_retry.png",
+        "pressed": "res://assets/ui/gothic/btn_retry.png",
+        "disabled": "res://assets/ui/gothic/btn_retry.png"
       },
       "theme_type": "battle_hud__btn_retry"
     },
@@ -178,16 +293,16 @@
       "id": "btn_speed1",
       "kind": "button",
       "rect": [
-        1434,
-        40,
-        79,
-        95
+        785,
+        208,
+        63,
+        26
       ],
       "text_rect": [
-        19,
-        41,
-        46,
-        25
+        0,
+        0,
+        63,
+        26
       ],
       "align": "center",
       "overflow": "auto",
@@ -200,11 +315,17 @@
         ],
         "ref_text": "1×"
       },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/speed1.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/speed1.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/speed1.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/speed1.png"
+        "normal": "res://assets/ui/gothic/blank.png",
+        "hover": "res://assets/ui/gothic/hex_dark.png",
+        "pressed": "res://assets/ui/gothic/hex_dark.png",
+        "disabled": "res://assets/ui/gothic/blank.png"
       },
       "theme_type": "battle_hud__btn_speed1"
     },
@@ -212,16 +333,16 @@
       "id": "btn_speed2",
       "kind": "button",
       "rect": [
-        1513,
-        39,
-        80,
-        96
+        848,
+        208,
+        63,
+        26
       ],
       "text_rect": [
-        16,
-        42,
-        46,
-        25
+        0,
+        0,
+        63,
+        26
       ],
       "align": "center",
       "overflow": "auto",
@@ -234,11 +355,17 @@
         ],
         "ref_text": "2×"
       },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/speed2.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/speed2.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/speed2.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/speed2.png"
+        "normal": "res://assets/ui/gothic/blank.png",
+        "hover": "res://assets/ui/gothic/hex_dark.png",
+        "pressed": "res://assets/ui/gothic/hex_dark.png",
+        "disabled": "res://assets/ui/gothic/blank.png"
       },
       "theme_type": "battle_hud__btn_speed2"
     },
@@ -246,33 +373,27 @@
       "id": "btn_pause",
       "kind": "button",
       "rect": [
-        1593,
-        39,
-        80,
-        96
+        930,
+        208,
+        62,
+        26
       ],
       "text_rect": [
-        15,
-        44,
-        46,
-        21
+        0,
+        0,
+        62,
+        26
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1616.1,
-          86.1,
-          31.0,
-          14.9
-        ],
-        "ref_text": "暂停"
+        "_note": "E05 暂停（图标在图上；「继续」态暂用同图，缺继续图标）"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/pause.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/pause.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/pause.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/pause.png"
+        "normal": "res://assets/ui/gothic/btn_pause.png",
+        "hover": "res://assets/ui/gothic/btn_pause.png",
+        "pressed": "res://assets/ui/gothic/btn_pause.png",
+        "disabled": "res://assets/ui/gothic/btn_pause.png"
       },
       "theme_type": "battle_hud__btn_pause"
     },
@@ -280,33 +401,27 @@
       "id": "btn_settings",
       "kind": "button",
       "rect": [
-        1678,
-        40,
-        80,
-        96
+        1683,
+        2,
+        107,
+        106
       ],
       "text_rect": [
-        16,
-        43,
-        46,
-        23
+        0,
+        0,
+        107,
+        106
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1701.6,
-          86.1,
-          31.0,
-          14.9
-        ],
-        "ref_text": "设置"
+        "_note": "02.zip G02 设置：图标在图上；左上角被关卡名占用，设置 / 离开改到右上角（设置在左，离开在最右上角，与参考图左右镜像）"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/settings.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/settings.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/settings.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/settings.png"
+        "normal": "res://assets/ui/gothic/btn_gear.png",
+        "hover": "res://assets/ui/gothic/btn_gear.png",
+        "pressed": "res://assets/ui/gothic/btn_gear.png",
+        "disabled": "res://assets/ui/gothic/btn_gear.png"
       },
       "theme_type": "battle_hud__btn_settings"
     },
@@ -314,33 +429,27 @@
       "id": "btn_exit",
       "kind": "button",
       "rect": [
-        1766,
-        39,
-        80,
-        96
+        1783,
+        2,
+        108,
+        106
       ],
       "text_rect": [
-        16,
-        44,
-        46,
-        23
+        0,
+        0,
+        108,
+        106
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1788.7,
-          86.1,
-          32.2,
-          14.9
-        ],
-        "ref_text": "退出"
+        "_note": "02.zip G01 离开：原来在计时器右侧（中间）的退出按钮移到最右上角，中间不再有"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/exit.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/exit.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/exit.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/exit.png"
+        "normal": "res://assets/ui/gothic/btn_leave.png",
+        "hover": "res://assets/ui/gothic/btn_leave.png",
+        "pressed": "res://assets/ui/gothic/btn_leave.png",
+        "disabled": "res://assets/ui/gothic/btn_leave.png"
       },
       "theme_type": "battle_hud__btn_exit"
     },
@@ -348,33 +457,27 @@
       "id": "btn_task",
       "kind": "button",
       "rect": [
-        1617,
-        137,
-        134,
-        57
+        0,
+        140,
+        274,
+        60
       ],
       "text_rect": [
-        45,
-        16,
-        51,
-        21
+        0,
+        0,
+        274,
+        60
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1673.1,
-          157.2,
-          28.7,
-          13.8
-        ],
-        "ref_text": "任务"
+        "_note": "透明热区，叠在 E02「任务目标」标题上"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_task_clean.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_task_clean.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_task_clean.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_task_clean.png"
+        "normal": "res://assets/ui/gothic/blank.png",
+        "hover": "res://assets/ui/gothic/blank.png",
+        "pressed": "res://assets/ui/gothic/blank.png",
+        "disabled": "res://assets/ui/gothic/blank.png"
       },
       "theme_type": "battle_hud__btn_task"
     },
@@ -382,16 +485,16 @@
       "id": "btn_mechanics",
       "kind": "button",
       "rect": [
-        1753,
-        137,
-        134,
-        57
+        290,
+        152,
+        150,
+        32
       ],
       "text_rect": [
-        32,
-        17,
-        70,
-        21
+        14,
+        0,
+        122,
+        32
       ],
       "align": "center",
       "overflow": "auto",
@@ -404,11 +507,17 @@
         ],
         "ref_text": "机制说明"
       },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/mechanics.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/mechanics.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/mechanics.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/mechanics.png"
+        "normal": "res://assets/ui/gothic/hex_gray.png",
+        "hover": "res://assets/ui/gothic/hex_dark.png",
+        "pressed": "res://assets/ui/gothic/hex_dark.png",
+        "disabled": "res://assets/ui/gothic/hex_gray.png"
       },
       "theme_type": "battle_hud__btn_mechanics"
     },
@@ -416,16 +525,16 @@
       "id": "btn_clear",
       "kind": "button",
       "rect": [
-        1563,
-        857,
-        165,
-        68
+        1592,
+        872,
+        124,
+        32
       ],
       "text_rect": [
-        43,
-        23,
-        83,
-        24
+        14,
+        0,
+        96,
+        32
       ],
       "align": "center",
       "overflow": "auto",
@@ -438,11 +547,17 @@
         ],
         "ref_text": "清空"
       },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_clear_clean.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_clear_clean.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_clear_clean.png",
-        "disabled": "res://assets/ui/battle_hud/derived/clear_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_gray.png",
+        "hover": "res://assets/ui/gothic/hex_dark.png",
+        "pressed": "res://assets/ui/gothic/hex_dark.png",
+        "disabled": "res://assets/ui/gothic/hex_gray.png"
       },
       "theme_type": "battle_hud__btn_clear"
     },
@@ -450,16 +565,16 @@
       "id": "btn_hint",
       "kind": "button",
       "rect": [
-        1727,
-        856,
-        169,
-        69
+        1724,
+        872,
+        176,
+        32
       ],
       "text_rect": [
-        39,
-        24,
-        78,
-        25
+        14,
+        0,
+        148,
+        32
       ],
       "align": "center",
       "data": {
@@ -471,11 +586,17 @@
         ],
         "ref_text": "提示"
       },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/hint.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/hint.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/hint.png",
-        "disabled": "res://assets/ui/battle_hud/derived/hint_disabled.png"
+        "normal": "res://assets/ui/gothic/hex_gray.png",
+        "hover": "res://assets/ui/gothic/hex_dark.png",
+        "pressed": "res://assets/ui/gothic/hex_dark.png",
+        "disabled": "res://assets/ui/gothic/hex_gray.png"
       },
       "theme_type": "battle_hud__btn_hint"
     },
@@ -483,33 +604,27 @@
       "id": "btn_start",
       "kind": "button",
       "rect": [
-        1544,
-        917,
-        360,
-        139
+        1652,
+        921,
+        175,
+        69
       ],
       "text_rect": [
-        96,
-        31,
-        172,
-        59
+        0,
+        0,
+        175,
+        69
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          1684.6,
-          958.3,
-          85.0,
-          40.2
-        ],
-        "ref_text": "开始"
+        "_note": "E04 开始战斗（字在图上）"
       },
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_start_clean.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_start_clean.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_start_clean.png",
-        "disabled": "res://assets/ui/battle_hud/derived/start_disabled.png"
+        "normal": "res://assets/ui/gothic/btn_start.png",
+        "hover": "res://assets/ui/gothic/btn_start.png",
+        "pressed": "res://assets/ui/gothic/btn_start.png",
+        "disabled": "res://assets/ui/gothic/btn_start.png"
       },
       "theme_type": "battle_hud__btn_start"
     },
@@ -522,33 +637,27 @@
         325,
         130
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/budget.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "budget_title",
       "kind": "text_style",
       "rect": [
-        120,
-        953,
-        172,
-        24
+        80,
+        890,
+        200,
+        30
       ],
       "text_rect": [
         0,
         0,
-        172,
-        24
+        200,
+        30
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          188.3,
-          956.0,
-          35.6,
-          17.2
-        ],
-        "ref_text": "预算"
+        "_note": "「灵魂储量」已画在 E01 上，标题文字透明（增援阶段的「增援预算」暂不单独显示）"
       },
       "theme_type": "battle_hud__budget_title"
     },
@@ -556,16 +665,16 @@
       "id": "budget_value",
       "kind": "text_style",
       "rect": [
-        118,
-        979,
-        172,
-        44
+        70,
+        928,
+        250,
+        58
       ],
       "text_rect": [
         0,
         0,
-        172,
-        44
+        250,
+        58
       ],
       "align": "center",
       "overflow": "auto",
@@ -586,16 +695,16 @@
       "id": "budget_fixed",
       "kind": "text_style",
       "rect": [
-        123,
-        957,
-        172,
-        44
+        70,
+        928,
+        250,
+        58
       ],
       "text_rect": [
         0,
         0,
-        172,
-        44
+        250,
+        58
       ],
       "align": "center",
       "overflow": "auto",
@@ -712,6 +821,230 @@
       "file": "res://assets/ui/unified_low_noise/slices/card_locked.png"
     },
     {
+      "id": "card_back",
+      "kind": "image",
+      "rect": [
+        588,
+        824,
+        141,
+        256
+      ],
+      "data": {
+        "_note": "出场卡按参考整图 design_hud.png 量取（2026-10-19 用户：与参考图不符需修复）：E12 条纹片在后、顶在卡位上沿（824）；Q 版立绘约 150×170 放大到卡宽；E11 徽记片在前遮住下半身——未选中时顶在 984（徽记在屏外），悬停 / 选中时上移 rest_dy=30 到 954 露出徽记；卡面不放文字（参考图没有），名称与 Cost 在悬停提示里。位置都相对 card_slot_1"
+      },
+      "file": "res://assets/ui/gothic/card_back.png"
+    },
+    {
+      "id": "card_portrait",
+      "kind": "flatbox",
+      "rect": [
+        544,
+        846,
+        230,
+        230
+      ],
+      "data": {
+        "_note": "Q 版单位精灵（256 画布）按 0.9 倍画：人物约 155×198，头顶对齐约 857（参考图人物铺满卡宽）"
+      },
+      "theme_type": "battle_hud__card_portrait"
+    },
+    {
+      "id": "card_front",
+      "kind": "image",
+      "rect": [
+        587,
+        954,
+        150,
+        126
+      ],
+      "data": {
+        "rest_dy": 30,
+        "_note": "徽记片：rect = 升起（悬停 / 选中）位置；平时下沉 rest_dy"
+      },
+      "file": "res://assets/ui/gothic/card_front.png"
+    },
+    {
+      "id": "card_g_name",
+      "kind": "text_style",
+      "rect": [
+        588,
+        1048,
+        142,
+        26
+      ],
+      "text_rect": [
+        0,
+        0,
+        142,
+        26
+      ],
+      "align": "center",
+      "overflow": "auto",
+      "data": {
+        "_note": "卡名在卡底（用户 2026-10-19）"
+      },
+      "theme_type": "battle_hud__card_g_name"
+    },
+    {
+      "id": "card_g_cost",
+      "kind": "text_style",
+      "rect": [
+        588,
+        1028,
+        142,
+        20
+      ],
+      "text_rect": [
+        0,
+        0,
+        142,
+        20
+      ],
+      "align": "center",
+      "overflow": "auto",
+      "data": {
+        "_note": "Cost 缩小放在卡名之上（用户 2026-10-19；新手引导第 1 步高亮它）"
+      },
+      "theme_type": "battle_hud__card_g_cost"
+    },
+    {
+      "id": "card_slot_5",
+      "kind": "flatbox",
+      "rect": [
+        1192,
+        826,
+        150,
+        254
+      ],
+      "theme_type": "battle_hud__card_slot_5"
+    },
+    {
+      "id": "card_slot_4",
+      "kind": "flatbox",
+      "rect": [
+        1040,
+        826,
+        150,
+        254
+      ],
+      "theme_type": "battle_hud__card_slot_4"
+    },
+    {
+      "id": "card_slot_3",
+      "kind": "flatbox",
+      "rect": [
+        888,
+        826,
+        150,
+        254
+      ],
+      "theme_type": "battle_hud__card_slot_3"
+    },
+    {
+      "id": "card_slot_2",
+      "kind": "flatbox",
+      "rect": [
+        736,
+        826,
+        150,
+        254
+      ],
+      "theme_type": "battle_hud__card_slot_2"
+    },
+    {
+      "id": "card_slot_1",
+      "kind": "flatbox",
+      "rect": [
+        584,
+        826,
+        150,
+        254
+      ],
+      "theme_type": "battle_hud__card_slot_1"
+    },
+    {
+      "id": "relic_bar",
+      "kind": "flatbox",
+      "rect": [
+        44,
+        744,
+        356,
+        84
+      ],
+      "data": {
+        "_note": "遗物栏（四枚）：灵魂储量纹饰之上"
+      },
+      "theme_type": "battle_hud__relic_bar"
+    },
+    {
+      "id": "toast",
+      "kind": "text_style",
+      "rect": [
+        540,
+        252,
+        840,
+        40
+      ],
+      "text_rect": [
+        0,
+        0,
+        840,
+        40
+      ],
+      "align": "right",
+      "data": {
+        "_note": "局内 Toast：倍速 / 暂停一排之下（原场景位置 y=90 会压在新计时器上）；字色仍由脚本设为金色"
+      },
+      "theme_type": "battle_hud__toast"
+    },
+    {
+      "id": "toast_area",
+      "kind": "flatbox",
+      "rect": [
+        1080,
+        160,
+        800,
+        640
+      ],
+      "data": {
+        "seconds": 3.0,
+        "fade_s": 0.4,
+        "gap": 6,
+        "max": 6,
+        "_note": "所有提示（Toast 与不可放置等气泡）的区域（用户 2026-10-19；2026-10-20 加宽到 800，常用提示单行显示）：右对齐，自下而上堆叠——新提示接在最下面、旧的上移，各自停留 seconds 后淡出"
+      },
+      "theme_type": "battle_hud__toast_area"
+    },
+    {
+      "id": "toast_item",
+      "kind": "ninepatch",
+      "rect": [
+        1080,
+        740,
+        800,
+        60
+      ],
+      "data": {
+        "pad": [
+          40,
+          8,
+          16,
+          10
+        ],
+        "color": "#E6B422",
+        "warn_color": "#E8635A",
+        "_note": "单条提示的底：右实左淡的黑条 + 底部银线；文字右对齐，警示（不可放置等）用 warn_color"
+      },
+      "ninepatch": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "file": "res://assets/ui/gothic/toast_bg.png",
+      "theme_type": "battle_hud__toast_item"
+    },
+    {
       "id": "card_name",
       "kind": "text_style",
       "rect": [
@@ -808,12 +1141,12 @@
         176
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        48,
+        39,
+        48,
+        39
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "file": "res://assets/ui/gothic/detail/card.png",
       "theme_type": "battle_hud__problems_panel"
     },
     {
@@ -884,12 +1217,18 @@
         577
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__obj_panel"
     },
     {
@@ -917,11 +1256,23 @@
         ],
         "ref_text": "关闭"
       },
+      "ninepatch": [
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/button_delete.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/button_delete.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/button_delete.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/button_delete.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "battle_hud__obj_close"
     },
@@ -934,7 +1285,7 @@
         67,
         88
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_crescent_moon.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "obj_close_gem",
@@ -945,7 +1296,7 @@
         20,
         25
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_close_gem.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "obj_title",
@@ -1130,12 +1481,18 @@
         644
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__mech_panel"
     },
     {
@@ -1163,11 +1520,23 @@
         ],
         "ref_text": "关闭"
       },
+      "ninepatch": [
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png"
+        "normal": "res://assets/ui/gothic/detail/plate_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_small.png"
       },
       "theme_type": "battle_hud__mech_close"
     },
@@ -1306,7 +1675,7 @@
         0,
         8
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/scroll_track.png",
+      "file": "res://assets/ui/gothic/detail/track.png",
       "theme_type": "battle_hud__mech_track"
     },
     {
@@ -1324,7 +1693,7 @@
         0,
         8
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/scroll_thumb.png",
+      "file": "res://assets/ui/gothic/detail/thumb.png",
       "theme_type": "battle_hud__mech_thumb"
     },
     {
@@ -1337,12 +1706,18 @@
         418
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__hint_panel"
     },
     {
@@ -1398,11 +1773,23 @@
         ],
         "ref_text": "关闭"
       },
+      "ninepatch": [
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_close_outline.png"
+        "normal": "res://assets/ui/gothic/detail/plate_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_small.png"
       },
       "theme_type": "battle_hud__hint_close"
     },
@@ -1503,12 +1890,18 @@
         650
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__rec_panel"
     },
     {
@@ -1586,9 +1979,9 @@
         54
       ],
       "text_rect": [
-        10,
-        10,
-        126,
+        20,
+        12,
+        106,
         31
       ],
       "align": "center",
@@ -1601,11 +1994,23 @@
         ],
         "ref_text": "摆放"
       },
+      "ninepatch": [
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_place.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_place.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_place.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_place.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson_small.png"
       },
       "theme_type": "battle_hud__rec_apply"
     },
@@ -1613,15 +2018,15 @@
       "id": "rec_cancel",
       "kind": "button",
       "rect": [
-        1209,
+        1206,
         737,
-        141,
+        146,
         54
       ],
       "text_rect": [
-        10,
-        10,
-        122,
+        20,
+        12,
+        106,
         31
       ],
       "align": "center",
@@ -1634,11 +2039,23 @@
         ],
         "ref_text": "取消"
       },
+      "ninepatch": [
+        33,
+        0,
+        25,
+        0
+      ],
+      "expand": [
+        16,
+        0,
+        4,
+        0
+      ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_cancel.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_cancel.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_cancel.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_cancel.png"
+        "normal": "res://assets/ui/gothic/detail/plate_small.png",
+        "hover": "res://assets/ui/gothic/detail/plate_small.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_small.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_small.png"
       },
       "theme_type": "battle_hud__rec_cancel"
     },
@@ -1733,24 +2150,34 @@
         613
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__win_panel"
     },
     {
       "id": "win_title_sigil",
       "kind": "image",
       "rect": [
-        871,
-        217,
-        180,
-        180
+        652,
+        195,
+        620,
+        236
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_victory_sigil.png"
+      "data": {
+        "modulate": "#FFFFFF8C",
+        "_note": "胜利徽记（GPT 绘图）：衬在「战斗胜利」之后，半透明"
+      },
+      "file": "res://assets/ui/gothic/result_win.png"
     },
     {
       "id": "win_title_crescent",
@@ -1761,7 +2188,7 @@
         54,
         70
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_crescent_moon.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "win_title_lines",
@@ -1772,7 +2199,7 @@
         661,
         22
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_victory_title_lines.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "win_title",
@@ -1955,15 +2382,15 @@
       "id": "win_retry",
       "kind": "button",
       "rect": [
-        619,
+        612,
         709,
-        192,
+        206,
         59
       ],
       "text_rect": [
-        31,
-        12,
-        134,
+        20,
+        13,
+        166,
         33
       ],
       "align": "center",
@@ -1977,16 +2404,22 @@
         "ref_text": "重试"
       },
       "ninepatch": [
-        34,
-        16,
-        34,
-        16
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "battle_hud__win_retry"
     },
@@ -1994,15 +2427,15 @@
       "id": "win_next",
       "kind": "button",
       "rect": [
-        850,
+        857,
         709,
-        220,
+        206,
         59
       ],
       "text_rect": [
-        35,
-        12,
-        163,
+        20,
+        13,
+        166,
         33
       ],
       "align": "center",
@@ -2016,16 +2449,22 @@
         "ref_text": "下一关"
       },
       "ninepatch": [
-        34,
-        16,
-        34,
-        16
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
       },
       "theme_type": "battle_hud__win_next"
     },
@@ -2033,15 +2472,15 @@
       "id": "win_back",
       "kind": "button",
       "rect": [
-        1110,
+        1102,
         709,
-        191,
+        206,
         59
       ],
       "text_rect": [
-        28,
-        12,
-        133,
+        20,
+        13,
+        166,
         33
       ],
       "align": "center",
@@ -2055,16 +2494,22 @@
         "ref_text": "返回"
       },
       "ninepatch": [
-        34,
-        16,
-        34,
-        16
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "battle_hud__win_back"
     },
@@ -2078,31 +2523,41 @@
         609
       ],
       "ninepatch": [
-        32,
-        32,
-        32,
-        32
+        100,
+        167,
+        100,
+        167
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/modal_panel.png",
+      "expand": [
+        29,
+        23,
+        29,
+        21
+      ],
+      "file": "res://assets/ui/gothic/detail/panel.png",
       "theme_type": "battle_hud__lose_panel"
     },
     {
       "id": "lose_title_compass",
       "kind": "image",
       "rect": [
-        998,
-        209,
-        293,
-        293
+        652,
+        180,
+        620,
+        278
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_defeat_compass.png"
+      "data": {
+        "modulate": "#FFFFFF80",
+        "_note": "失败徽记（GPT 绘图）：衬在「战斗失败」之后，半透明"
+      },
+      "file": "res://assets/ui/gothic/result_lose.png"
     },
     {
       "id": "lose_title",
       "kind": "text_style",
       "rect": [
-        563,
-        225,
+        719,
+        282,
         482,
         69
       ],
@@ -2112,7 +2567,7 @@
         482,
         69
       ],
-      "align": "left",
+      "align": "center",
       "overflow": "auto",
       "data": {
         "ref_ink": [
@@ -2134,7 +2589,7 @@
         815,
         18
       ],
-      "file": "res://assets/ui/unified_low_noise/slices/p6_defeat_divider.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "lose_level",
@@ -2263,15 +2718,15 @@
       "id": "lose_retry",
       "kind": "button",
       "rect": [
-        655,
+        652,
         690,
-        287,
+        293,
         62
       ],
       "text_rect": [
-        26,
-        12,
-        230,
+        20,
+        14,
+        253,
         33
       ],
       "align": "center",
@@ -2285,16 +2740,22 @@
         "ref_text": "重试"
       },
       "ninepatch": [
-        34,
-        16,
-        34,
-        16
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_result_teal.png"
+        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
+        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
       },
       "theme_type": "battle_hud__lose_retry"
     },
@@ -2302,15 +2763,15 @@
       "id": "lose_back",
       "kind": "button",
       "rect": [
-        976,
+        979,
         690,
-        299,
+        293,
         62
       ],
       "text_rect": [
-        26,
-        12,
-        241,
+        20,
+        14,
+        253,
         33
       ],
       "align": "center",
@@ -2324,16 +2785,22 @@
         "ref_text": "返回"
       },
       "ninepatch": [
-        34,
-        16,
-        34,
-        16
+        52,
+        0,
+        40,
+        0
+      ],
+      "expand": [
+        26,
+        0,
+        6,
+        0
       ],
       "states": {
-        "normal": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "hover": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "pressed": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png",
-        "disabled": "res://assets/ui/unified_low_noise/slices/p6_button_result_purple.png"
+        "normal": "res://assets/ui/gothic/detail/plate.png",
+        "hover": "res://assets/ui/gothic/detail/plate.png",
+        "pressed": "res://assets/ui/gothic/detail/plate.png",
+        "disabled": "res://assets/ui/gothic/detail/plate.png"
       },
       "theme_type": "battle_hud__lose_back"
     },
@@ -3812,7 +4279,7 @@
   "reserved": {
     "top": 203,
     "bottom": 261,
-    "_note": "战场让出的上下带（用户 2026-10-05 选择缩小战场区）：上 = 「任务」「机制说明」底（195）+ 8，下 = 角色卡顶（827）− 8（设计坐标）"
+    "_note": "沿用旧带宽（玩法矩形 / 背景对齐不变）。新倍速一排（208–234）会压在战场最上一行中段，是否把上带改到 248 待用户确认（改后各关 cell_px 与玩法矩形规格表要重定）"
   },
   "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/battle_hud/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
 }

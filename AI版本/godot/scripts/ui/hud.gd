@@ -27,7 +27,8 @@ const SKIN_NODES: Dictionary = {
 	"budget_title": "BudgetTitle", "budget_value": "BudgetLabel", "budget_fixed": "BudgetFixedLabel",
 }
 ## 贴图元素 id → 放在哪个节点下（画在同组文字 / 按钮之下）
-const SKIN_IMAGES: Dictionary = { "quest": "TopBar/Row", "timer": "TopBar/Row", "budget": "BottomBar/Row/BudgetBox" }
+const SKIN_IMAGES: Dictionary = { "quest": "TopBar/Row", "timer": "TopBar/Row", "budget": "BottomBar/Row/BudgetBox",
+	"frame": ".", "obj_header": "TopBar/Row", "obj_row": "TopBar/Row", "speed_bg": "TopBar/Row/ControlGroup" }   ## 后四个为 2026-10-19 哥特换皮（布局里有才建）
 
 const TOAST_SECONDS: float = 2.5
 const COUNTDOWN_WARN_SECONDS: float = 5.0   ## 生存倒计时最后 5 秒变红（与 04 §3.2 timer_tick 同口径）
@@ -36,7 +37,7 @@ var _root: Node2D = null
 var _controller: BattleController = null
 var _level: LevelDefinition = null
 var _cards: Array[RosterCard] = []
-var _side_on_right: bool = true
+var _side_on_right: bool = false      ## 2026-10-20 刻印界面（02.zip）只做了左侧停靠版：侧栏恒在左侧，不再按单位位置换边
 var _toast_tween: Tween = null
 var _last_tick_second: int = -1
 var _last_phase: int = SimTypes.Phase.DEPLOY
@@ -56,6 +57,13 @@ var _relic_bar: Control = null
 var _relic_slots: Array[RelicSlot] = []
 var _relic_armed: String = ""              ## 正在点选目标 / 落点的遗物（"" = 无）
 var _relic_tick: int = 0
+var _timer_frac: Label = null              ## 哥特计时右组（百分秒）；布局没有 timer_value2 时为 null，计时仍是一个「00.0」
+var _toast_stack: VBoxContainer = null   ## 右侧提示栏（布局 toast_area）
+var _obj_rows: Array[Control] = []         ## 哥特任务行：第 2 行起的底纹与胜利条件句（第 1 行 = quest_objective，显示第一条胜利条件）
+var _soul_armed: bool = false              ## 灵魂储量消耗演出（SoulBurst）：begin() 之后才播（读档恢复配置不算消耗）
+var _soul_mode: String = ""                ## 上次显示的是哪种储量（"roster" 出场预算 / "reinforce" 增援预算）
+var _soul_used: int = -1                   ## 上次显示的已用量
+var _soul_burst: SoulBurst = null
 
 @onready var _title: Label = %TitleLabel
 @onready var _objective: Label = %ObjectiveLabel
@@ -117,6 +125,8 @@ func setup(root: Node2D) -> void:
 	_objectives_button.text = DataRegistry.get_string("ui.objectives_popup")
 	_settings_button.text = DataRegistry.get_string("ui.menu_settings")
 	_exit_button.text = DataRegistry.get_string("ui.exit")
+	_settings_button.tooltip_text = DataRegistry.get_string("ui.menu_settings")      # 2026-10-20：设置 / 离开改为无字图标（02.zip G02 / G01），悬停提示文字
+	_exit_button.tooltip_text = DataRegistry.get_string("ui.leave")
 	_start_button.text = DataRegistry.get_string("ui.start")
 	_retry_button.text = DataRegistry.get_string("ui.retry")
 	_clear_button.text = DataRegistry.get_string("ui.clear_units")
@@ -181,6 +191,7 @@ func setup(root: Node2D) -> void:
 func begin() -> void:
 	_build_cards()
 	_update_budget()
+	_soul_armed = true
 	_refresh_relics()
 	# 07 §10.2：开始剧情 <level_id>_intro，其后接本关机制提示卡；剧情不存在则不弹出（提示仍可在"机制说明"中查看）
 	var hint: String = str(_level.briefing.get("mechanic_hint", ""))
@@ -212,6 +223,8 @@ func _apply_skin() -> void:
 	_problems_title.clip_text = true
 	_problems_list.add_theme_constant_override("separation", int(_problem_line_gap()))
 	for id: String in SKIN_IMAGES.keys():
+		if UiKit.layout_element(SKIN, id).is_empty():
+			continue
 		var img: Control = UiKit.node_for(UiKit.layout_element(SKIN, id))
 		img.name = "Skin_" + id
 		var parent: Node = get_node(str(SKIN_IMAGES[id]))
@@ -230,6 +243,12 @@ func _apply_skin() -> void:
 			(c as Label).horizontal_alignment = UiKit.text_align(str(e.get("align", "left")))
 			(c as Label).vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			(c as Label).clip_text = true           # 不撑大、不出框（需要滚动的再由 ScrollText 接管）
+	if not UiKit.layout_element(SKIN, "timer_value2").is_empty():
+		_timer_frac = _skin_label("timer_value2", "TimerFracLabel", _timer.get_parent())
+		_skin_nodes["timer_value2"] = _timer_frac
+	if not UiKit.layout_element(SKIN, "progress").is_empty():
+		_progress.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "progress").get("theme_type", "")))
+	_build_objective_rows()
 	_relayout_skin()
 	_problems_scroll = ScrollText.wrap_box(_problems_list, ScrollText.Mode.MANUAL, Rect2())
 	ScrollText.wrap(_problems_title, ScrollText.Mode.AUTO, Rect2(Vector2.ZERO, Vector2.ONE))
@@ -243,6 +262,8 @@ func _apply_skin() -> void:
 			UiKit.button_scroll_text(c as Button, st_mode)      # 代理在按钮内部自行跟随文字区；摆放的仍是按钮本身
 		else:
 			_skin_nodes[id] = ScrollText.wrap(c as Label, st_mode)
+	if _timer_frac != null and str(UiKit.layout_element(SKIN, "timer_value2").get("overflow", "")) != "":
+		_skin_nodes["timer_value2"] = ScrollText.wrap(_timer_frac, ScrollText.Mode.AUTO)
 	_relayout_skin()
 
 
@@ -270,9 +291,75 @@ func _relayout_skin() -> void:
 	_layout_beacon_bar()
 	_layout_relic_bar()
 	_layout_problems()
+	_place_objective_rows()
+	_place_toast_stack()
+	if not UiKit.layout_element(SKIN, "toast").is_empty():        # 哥特换皮：Toast 移到倍速一排之下（不压计时器）
+		_toast.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		_toast.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "toast").get("theme_type", "")))
+		UiKit.place(_toast, UiKit.layout_text_rect(SKIN, "toast", vp))
+	if not UiKit.layout_element(SKIN, "progress").is_empty():     # 哥特换皮：进度紧接最后一行任务之下
+		var pr: Rect2 = UiKit.layout_text_rect(SKIN, "progress", vp)
+		var last: Rect2 = UiKit.layout_rect(SKIN, "obj_row", vp)
+		last.position.y += float(_obj_pitch()) * (_obj_rows.size() / 2)
+		var gap: float = float((UiKit.layout_element(SKIN, "progress").get("data", {}) as Dictionary).get("gap", 0.0))
+		UiKit.place(_progress, Rect2(pr.position.x, last.end.y + gap, pr.size.x, _progress.get_combined_minimum_size().y))
+		return
 	# 进度（生存关剩余时间 / 清除情况）：计时铭牌正下方
 	var timer: Rect2 = UiKit.layout_rect(SKIN, "timer", vp)
 	UiKit.place(_progress, Rect2(timer.position.x, timer.end.y, timer.size.x, _progress.get_combined_minimum_size().y))
+
+
+func _skin_label(id: String, node_name: String, parent: Node) -> Label:
+	var e: Dictionary = UiKit.layout_element(SKIN, id)
+	var l := Label.new()
+	l.name = node_name
+	l.theme_type_variation = StringName(str(e.get("theme_type", "")))
+	l.horizontal_alignment = UiKit.text_align(str(e.get("align", "left")))
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.clip_text = true
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(l)
+	return l
+
+
+func _obj_pitch() -> int:
+	return int((UiKit.layout_element(SKIN, "obj_row").get("data", {}) as Dictionary).get("pitch", 0))
+
+
+## 哥特任务目标（整图 E02 / E03）：只列胜利条件（用户 2026-10-20：任务句、失败条件不上 HUD，完整内容在「任务」弹窗）。
+## 第 1 行 = quest_objective（点击打开任务弹窗），文字换成第一条胜利条件；其余胜利条件各一行，
+## 行底纹 = obj_row 下移 pitch，文字 = obj_row_text 的样式，最多 obj_row.data.max_rows 行
+func _build_objective_rows() -> void:
+	var e: Dictionary = UiKit.layout_element(SKIN, "obj_row")
+	if e.is_empty() or UiKit.layout_element(SKIN, "obj_row_text").is_empty():
+		return
+	var max_rows: int = int((e.get("data", {}) as Dictionary).get("max_rows", 1))
+	var lines: Array[String] = []
+	for o: ObjectiveDef in _level.win:
+		lines.append(RuleText.objective_sentence(o, _level))
+	if lines.is_empty():
+		return
+	_objective.text = lines.pop_front()
+	var parent: Node = _objective.get_parent()
+	for i: int in mini(lines.size(), max_rows - 1):
+		var bg: Control = UiKit.node_for(e)
+		bg.name = "Skin_obj_row_%d" % (i + 2)
+		parent.add_child(bg)
+		parent.move_child(bg, 0)
+		var l: Label = _skin_label("obj_row_text", "ObjectiveRow%d" % (i + 2), parent)
+		l.text = lines[i]
+		_obj_rows.append(bg)
+		_obj_rows.append(ScrollText.wrap(l, ScrollText.Mode.AUTO) if str(UiKit.layout_element(SKIN, "obj_row_text").get("overflow", "")) != "" else l)
+
+
+func _place_objective_rows() -> void:
+	var vp: Vector2 = get_viewport_rect().size
+	var row: Rect2 = UiKit.layout_rect(SKIN, "obj_row", vp)
+	var text: Rect2 = UiKit.layout_text_rect(SKIN, "obj_row_text", vp)
+	for i: int in _obj_rows.size() / 2:
+		var dy: float = float(_obj_pitch()) * (i + 1)
+		UiKit.place(_obj_rows[i * 2], Rect2(row.position + Vector2(0.0, dy), row.size))
+		UiKit.place(_obj_rows[i * 2 + 1], Rect2(text.position + Vector2(0.0, dy - float(_obj_pitch())), text.size))
 
 
 ## 「任务」弹窗（批准整图 ui_06）：居中的九宫格框体、标题、「关闭」、分隔线；正文（ObjectivePanel）超出时上下滚动
@@ -377,26 +464,51 @@ func _place_cards() -> void:
 	for i: int in all.size():
 		all[i].visible = i < CARD_SLOTS
 		if i < CARD_SLOTS:
-			UiKit.place(all[i], UiKit.layout_rect(SKIN, "card_%d" % (i + 1), vp))
+			var r: Rect2 = UiKit.layout_rect(SKIN, "card_%d" % (i + 1), vp)
+			if RosterCard.gothic():                 # 哥特卡（三层图）：卡位 card_slot_N；card_N 只作旧卡面文字的参照
+				r = UiKit.layout_rect(SKIN, "card_slot_%d" % (i + 1), vp)
+			UiKit.place(all[i], r)
 
 
 func _update_budget() -> void:
 	_clear_button.disabled = _controller.phase != SimTypes.Phase.DEPLOY or _controller.placements.is_empty()
+	var old_text: String = _budget_label.text
+	var mode: String = ""
+	var used: int = -1
 	if _controller.boss_pending:                                     # Boss 换阶段暂停：显示增援预算
+		mode = "reinforce"
+		used = _controller.reinforce_cost()
 		_budget_title.text = DataRegistry.get_string("ui.reinforce_budget")
-		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": _controller.reinforce_cost(), "budget": _controller.reinforce_budget })
+		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": used, "budget": _controller.reinforce_budget })
 		_budget_label.remove_theme_color_override("font_color")
 	elif _level.is_free():
+		mode = "roster"
+		used = _controller.budget_used()
 		_budget_title.text = DataRegistry.get_string("ui.budget")
-		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": _controller.budget_used(), "budget": _level.roster_budget })
+		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": used, "budget": _level.roster_budget })
 		_budget_label.tooltip_text = _budget_breakdown()
-		if _controller.budget_used() > _level.roster_budget:          # 超出预算：批准整图 ui_05 的红色
+		if used > _level.roster_budget:          # 超出预算：批准整图 ui_05 的红色
 			_budget_label.add_theme_color_override("font_color", Color(str((UiKit.layout_element(SKIN, "budget_value").get("data", {}) as Dictionary).get("over_color", "#FF0000"))))
 		else:
 			_budget_label.remove_theme_color_override("font_color")
+	_soul_burst_check(mode, used, old_text)
 	for c: RosterCard in _cards:
 		c.refresh()
 	_refresh_beacon_bar()
+
+
+## 灵魂储量被消耗（同一种储量的已用量变大）：旧数字炸成白色粒子、新数字从下面浮现，铭牌闪一下（SoulBurst）。
+## 退回 / 收回（已用量变小）不播；连续消耗时上一场只把粒子放完，Label 交给新的一场。
+func _soul_burst_check(mode: String, used: int, old_text: String) -> void:
+	var consumed: bool = _soul_armed and mode != "" and mode == _soul_mode and used > _soul_used and old_text != _budget_label.text
+	_soul_mode = mode
+	var prev: int = _soul_used
+	_soul_used = used
+	if not consumed or not UiKit.motion_enabled or not _budget_label.is_visible_in_tree():
+		return
+	if is_instance_valid(_soul_burst):
+		_soul_burst.release()
+	_soul_burst = SoulBurst.play(self, _budget_label, old_text, _budget_label.text, str(prev), str(used))
 
 
 ## 预算悬停明细（信标收费的关卡）：单位与指令 + 信标包
@@ -428,27 +540,22 @@ func _skin_detail() -> void:
 	_place_side(false)
 
 
-## 单位在屏幕左半 → 侧栏停靠右侧，反之停靠左侧（不遮挡该单位）
-func _show_side(unit_id: int) -> void:
-	var on_right: bool = true
-	var view_pos: Variant = _root.call("unit_screen_pos", unit_id)
-	if view_pos is Vector2:
-		on_right = (view_pos as Vector2).x < get_viewport_rect().size.x * 0.5
-	_side_on_right = on_right
+## 侧栏恒停靠左侧（刻印界面的底图是左侧版，右上角留给设置 / 离开）
+func _show_side(_unit_id: int) -> void:
+	var was_open: bool = _side_panel.visible
 	_side_panel.visible = true
 	_place_side(false)
 	_layout_beacon_bar()
+	if not was_open:                          # 2026-10-19：先摆好，再从左侧屏幕边滑入
+		UiKit.slide_in([_side_panel.get_node("Frame")], side_rect())
 
 
-## 侧栏框体在视口中的矩形：设计矩形贴右边（停靠左侧时按设计画布镜像贴左边）；上下边距同设计，视口更高时侧栏随之加高
+## 侧栏可点击区域（Frame）在视口中的矩形：贴左上；底图（det_panel）比它宽——右缘的纹饰伸到地图上、不拦截点击，
+## 视口比设计高时侧栏不拉伸（贴上缘）
 func side_rect() -> Rect2:
-	var vp: Vector2 = get_viewport_rect().size
-	var design: Vector2 = UiKit.design_size(DetailKit.SKIN)
-	var r: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "det_panel", design)
-	var right_gap: float = design.x - r.end.x
-	var bottom_gap: float = design.y - r.end.y
-	var x: float = vp.x - right_gap - r.size.x if _side_on_right else right_gap
-	return Rect2(x, r.position.y, r.size.x, vp.y - r.position.y - bottom_gap)
+	var d: Vector2 = UiKit.design_size(DetailKit.SKIN)
+	var r: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "det_panel", d)
+	return Rect2(r.position, Vector2(DetailKit.rel("det_scroll").end.x + 12.0, r.size.y))
 
 
 ## 鼠标是否在侧栏上（侧栏与屏幕边之间的几像素缝也算，免得贴边时误触边平移）
@@ -456,30 +563,28 @@ func mouse_over_side(screen_pos: Vector2) -> bool:
 	if not _side_panel.visible:
 		return false
 	var r: Rect2 = side_rect()
-	var vp: Vector2 = get_viewport_rect().size
-	var hit := Rect2(r.position.x, 0.0, vp.x - r.position.x, vp.y) if _side_on_right else Rect2(0.0, 0.0, r.end.x, vp.y)
-	return hit.has_point(screen_pos)
+	return Rect2(0.0, 0.0, r.end.x, get_viewport_rect().size.y).has_point(screen_pos)
 
 
-## 框体与内容按 side_rect 摆放；关闭键与内容相对框体（内容不镜像，与批准整图一致）
+## 框体与内容按 side_rect 摆放；关闭键与内容相对框体
 func _place_side(_slide: bool) -> void:
 	var frame: Control = _side_panel.get_node_or_null("Frame") as Control
 	if frame == null or not frame.has_node("Skin_det_panel"):
 		return
 	var r: Rect2 = side_rect()
+	var full: Vector2 = DetailKit.rel("det_panel").size
 	frame.position = r.position
 	frame.size = r.size
 	(frame.get_node("Skin_det_panel") as Control).position = Vector2.ZERO
-	(frame.get_node("Skin_det_panel") as Control).size = r.size
+	(frame.get_node("Skin_det_panel") as Control).size = full
 	var close: Control = frame.get_node("DetailClose") as Control
 	var cr: Rect2 = DetailKit.rel("det_close")
 	close.position = cr.position
 	close.size = cr.size
-	var extra: float = r.size.y - DetailKit.rel("det_panel").size.y
 	for c: Control in [_unit_panel, _enemy_panel]:
 		c.position = Vector2.ZERO
-		c.size = r.size
-		c.call("stretch", extra)
+		c.size = full
+		c.call("stretch", 0.0)
 
 
 func hide_side() -> void:
@@ -513,17 +618,18 @@ func _process(_delta: float) -> void:
 	var left: float = ObjectivePanel.survive_time_left(w, _level)
 	if left >= 0.0:
 		# 生存关：顶栏显示倒计时（模拟时间，暂停不走、倍速不改变），最后几秒变红
-		_timer.text = UiKit.TIMER_FORMAT % left
+		_show_time(left)
 		var whole: int = int(ceil(left))
 		if left <= COUNTDOWN_WARN_SECONDS and whole != _last_tick_second and _controller.phase == SimTypes.Phase.RUNNING:
 			AudioManager.play_sfx("timer_tick")
 		_last_tick_second = whole
-		if left <= COUNTDOWN_WARN_SECONDS:
-			_timer.add_theme_color_override("font_color", Palette.WARN_RED)
-		else:
-			_timer.remove_theme_color_override("font_color")      # 布局字色（批准整图）
+		for t: Label in ([_timer, _timer_frac] if _timer_frac != null else [_timer]):
+			if left <= COUNTDOWN_WARN_SECONDS:
+				t.add_theme_color_override("font_color", Palette.WARN_RED)
+			else:
+				t.remove_theme_color_override("font_color")      # 布局字色（批准整图）
 	else:
-		_timer.text = UiKit.TIMER_FORMAT % w.clock.time
+		_show_time(w.clock.time)
 	_progress.text = ObjectivePanel.progress_text(w, _level, false).replace("\n", "  ")
 	_progress.visible = _progress.text != ""
 	var cleared: bool = left >= 0.0 and w.clock.steps > 0 and ObjectiveSystem.enemies_cleared(w)
@@ -533,6 +639,16 @@ func _process(_delta: float) -> void:
 	_relic_tick += 1
 	if _relic_tick % 6 == 0 and _controller.relic_active != "":     # 冷却读秒 / 悬停说明随模拟时间更新
 		_refresh_relics()
+
+
+## 计时：哥特换皮为两组两位数（左 = 整秒，右 = 百分秒，格式取布局 timer_value.data.format），否则一个「00.0」
+func _show_time(t: float) -> void:
+	if _timer_frac == null:
+		_timer.text = UiKit.TIMER_FORMAT % t
+		return
+	var fmt: String = str((UiKit.layout_element(SKIN, "timer_value").get("data", {}) as Dictionary).get("format", "%02d"))
+	_timer.text = fmt % int(t)
+	_timer_frac.text = fmt % int(fposmod(t, 1.0) * 100.0)
 
 
 ## 10 §6.1「清空」（决策 ⑥ 不弹确认）：移除全部已放置角色、收起侧栏、toast 人数
@@ -621,7 +737,10 @@ func _show_problems(title: String, problems: Array[Dictionary]) -> void:
 		if not bool(p.get("blocking", true)):
 			l.add_theme_color_override("font_color", warn)
 		_problems_list.add_child(l)
+	var was_open: bool = _problems_panel.visible
 	_problems_panel.visible = _problems_list.get_child_count() > 0
+	if _problems_panel.visible and not was_open:
+		UiKit.slide_in.call_deferred([_problems_panel])
 	_layout_problems()
 	_layout_problems.call_deferred()          # 换行后的行高下一帧才确定
 
@@ -680,7 +799,7 @@ func _build_beacon_bar() -> void:
 	_beacon_bar.visible = false
 	_beacon_bar.theme = UiKit.ui_theme(DetailKit.SKIN)
 	add_child(_beacon_bar)
-	move_child(_beacon_bar, _side_panel.get_index())
+	move_child(_beacon_bar, _side_panel.get_index() + 1)     # 2026-10-20：侧栏在左，信标栏在其右、略压住侧栏右缘的纹饰
 	for id: String in BEACON_BAR_IDS:
 		var c: Control = UiKit.node_for(UiKit.layout_element(DetailKit.SKIN, id))
 		c.name = "Beacon_" + id
@@ -718,11 +837,14 @@ func _layout_beacon_bar() -> void:
 	var bar: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "beacon_bar", design)
 	var dy: float = vp.y - design.y
 	var center_x: float = vp.x * 0.5
+	var bar_shift: float = 0.0
+	if _side_panel.visible:
+		bar_shift = maxf(0.0, side_rect().end.x + 12.0 - (center_x - design.x * 0.5 + bar.position.x))
 	for id: String in _beacon_nodes.keys():
 		var e: Dictionary = UiKit.layout_element(DetailKit.SKIN, id)
 		var r: Rect2 = UiKit.layout_text_rect(DetailKit.SKIN, id, design) if str(e.get("kind", "")) == "text_style" else UiKit.layout_rect(DetailKit.SKIN, id, design)
 		# 侧栏在左时底板按设计画布镜像，内部元素随底板整体平移（不反排）；横向相对视口中线、纵向贴底
-		var xd: float = r.position.x if _side_on_right else (design.x - bar.end.x) + (r.position.x - bar.position.x)
+		var xd: float = r.position.x + bar_shift          # 侧栏在左：信标栏整体右移到侧栏右边（内部元素随底板平移）
 		UiKit.place(_beacon_nodes[id] as Control, Rect2(center_x - design.x * 0.5 + xd, r.position.y + dy, r.size.x, r.size.y))
 
 
@@ -738,7 +860,9 @@ func enter_beacon_mode(slot_id: String) -> void:
 		return
 	_beacon_slot = slot_id
 	_card_list.visible = false
-	_beacon_bar.visible = true
+	if not _beacon_bar.visible:
+		_beacon_bar.visible = true
+		UiKit.slide_in.call_deferred(_beacon_bar.get_children(), (_beacon_nodes["beacon_bar"] as Control).get_global_rect())     # 贴底：从下方滑入
 	var uid: int = _controller.unit_id_of_slot(slot_id)
 	if _root.get("selected_id") != uid:
 		EventBus.unit_selected.emit(uid)
@@ -909,6 +1033,8 @@ func _on_objective_clicked() -> void:
 func _on_objectives_pressed() -> void:
 	_objective_popup.visible = not _objective_popup.visible
 	if _objective_popup.visible:
+		UiKit.pop_in(_objective_popup)
+	if _objective_popup.visible:
 		_layout_objective_popup()
 		_mechanics_popup.visible = false
 		_hint_panel.close_panel()
@@ -920,6 +1046,8 @@ func is_objectives_open() -> bool:
 
 func _on_mechanics_pressed() -> void:
 	_mechanics_popup.visible = not _mechanics_popup.visible
+	if _mechanics_popup.visible:
+		UiKit.pop_in(_mechanics_popup)
 	if _mechanics_popup.visible:
 		_objective_popup.visible = false
 		_hint_panel.close_panel()
@@ -948,6 +1076,8 @@ func hide_tooltip() -> void:
 
 ## 不可放置气泡（批准整图 ui_21）：深红底红边、下沿三角指向格子；样式 / 内边距 / 显示时长取布局 fx_toast；同屏只保留一个
 func show_bubble(text: String, anchor: Vector2) -> void:
+	if _push_toast(text, true):                 # 哥特换皮：提示统一进右侧提示栏
+		return
 	var old: Node = get_node_or_null("WarnBubble")
 	if old != null:
 		old.free()
@@ -989,6 +1119,8 @@ func show_bubble(text: String, anchor: Vector2) -> void:
 
 func show_toast(text: String) -> void:
 	_toast.text = text
+	if _push_toast(text, false):
+		return
 	_toast.visible = true
 	_toast.modulate.a = 1.0
 	if _toast_tween != null and _toast_tween.is_valid():
@@ -997,6 +1129,60 @@ func show_toast(text: String) -> void:
 	_toast_tween.tween_interval(TOAST_SECONDS)
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.4)
 	_toast_tween.tween_callback(func() -> void: _toast.visible = false)
+
+
+## 右侧提示栏（布局 toast_area / toast_item，用户 2026-10-19）：所有提示右对齐、自下而上堆叠——新提示接在最下面，旧的上移，
+## 各自停留 seconds 后淡出，超过 max 条时最早的直接移除。布局没有 toast_area 时返回 false（走旧的顶部 Toast / 格上气泡）
+func _push_toast(text: String, warn: bool) -> bool:
+	var area: Dictionary = UiKit.layout_element(SKIN, "toast_area")
+	if area.is_empty():
+		return false
+	var ad: Dictionary = area.get("data", {}) as Dictionary
+	var ie: Dictionary = UiKit.layout_element(SKIN, "toast_item")
+	var idd: Dictionary = ie.get("data", {}) as Dictionary
+	_toast.visible = false
+	if _toast_stack == null:
+		_toast_stack = VBoxContainer.new()
+		_toast_stack.name = "ToastStack"
+		_toast_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_toast_stack.alignment = BoxContainer.ALIGNMENT_END
+		_toast_stack.add_theme_constant_override("separation", int(ad.get("gap", 6)))
+		add_child(_toast_stack)
+		_place_toast_stack()
+	var item := PanelContainer.new()
+	item.name = "ToastItem"
+	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxTexture.new()
+	sb.texture = Art.texture(str(ie.get("file", "")))
+	var pad: Array = idd.get("pad", [16, 8, 16, 8]) as Array
+	for i: int in 4:
+		sb.set_content_margin(i as Side, float(pad[i]))
+	item.add_theme_stylebox_override("panel", sb)
+	var l := Label.new()
+	l.text = text
+	l.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "toast").get("theme_type", "")))
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	l.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	l.add_theme_color_override("font_color", Color(str(idd.get("warn_color" if warn else "color", "#FFFFFF"))))
+	item.add_child(l)
+	_toast_stack.add_child(item)
+	if UiKit.motion_enabled:                      # 新提示淡入（容器内不做位移，避免与排版冲突）（参数 ui_motion.json 的 toast）
+		var tp: Dictionary = UiKit.motion_params("toast")
+		item.modulate.a = 0.0
+		var ti: Tween = item.create_tween()
+		ti.tween_property(item, "modulate:a", 1.0, float(tp.get("in_s", 0.22))).set_trans(UiKit.motion_trans(tp)).set_ease(UiKit.motion_ease(tp))
+	while _toast_stack.get_child_count() > int(ad.get("max", 6)):
+		_toast_stack.get_child(0).free()
+	var t: Tween = item.create_tween()
+	t.tween_interval(float(ad.get("seconds", 3.0)))
+	t.tween_property(item, "modulate:a", 0.0, float(ad.get("fade_s", 0.4)))
+	t.tween_callback(item.queue_free)
+	return true
+
+
+func _place_toast_stack() -> void:
+	if _toast_stack != null:
+		UiKit.place(_toast_stack, UiKit.layout_rect(SKIN, "toast_area", get_viewport_rect().size))
 
 
 ## 结算：结算面板 + 结束剧情（胜利 <level_id>_win / 失败 <level_id>_lose，不存在则不触发，07 §10.2）
