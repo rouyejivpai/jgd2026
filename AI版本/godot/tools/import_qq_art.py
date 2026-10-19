@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 GODOT = Path(__file__).resolve().parent.parent
@@ -86,6 +86,13 @@ UNITS = {
     "transit_node": "transit_node", "echo_pillar": "echo_pillar", "dummy": "dummy", "supply_crate": "supply_crate",
     # 精英关备用（units.json 尚无这些单位）
     "hound_alpha": "werewolf", "bell_witch": "bell_girl",
+}
+
+# 单位精灵的个别摆放（用户 2026-10-20：物资箱像浮在空中、太大）：
+#   size = 在标准框内再缩放；bottom = 底边所在画布 y（标准 232 = 脚底锚点；更大 = 往下压到底座前沿，3/4 视角下才像落在格上）；
+#   shadow = 在底边画一道柔和接触阴影
+UNIT_LAYOUT = {
+    "supply_crate": {"size": 0.8, "bottom": 252, "shadow": True},
 }
 
 # 己方形态 → 头像背后的金色发光图标
@@ -163,6 +170,25 @@ def fit_into(fig: Image.Image, canvas: tuple, box: tuple, bottom: bool = True) -
 def gold_icon(form: str, size: int) -> Image.Image:
     """形态图标（金色 → 形态标志色渐变 + 烘焙外发光，颜色已在 make_form_icons.py 烘焙），size × size"""
     return Image.open(FORM_ICON_DIR / f"{form}.png").convert("RGBA").resize((size, size), Image.LANCZOS)
+
+
+def unit_canvas(fig: Image.Image, layout: dict) -> Image.Image:
+    """单位精灵画布：标准框内等比放入；按 UNIT_LAYOUT 缩小、下移、加接触阴影"""
+    if not layout:
+        return fit_into(fig, (UNIT_CANVAS, UNIT_CANVAS), UNIT_BOX)
+    x0, y0, x1, y1 = UNIT_BOX
+    k = min((x1 - x0) / fig.width, (y1 - y0) / fig.height) * layout.get("size", 1.0)
+    f = fig.resize((max(1, round(fig.width * k)), max(1, round(fig.height * k))), Image.LANCZOS)
+    bottom = int(layout.get("bottom", y1))
+    out = Image.new("RGBA", (UNIT_CANVAS, UNIT_CANVAS), (0, 0, 0, 0))
+    if layout.get("shadow"):
+        sh = Image.new("L", (UNIT_CANVAS * 4, UNIT_CANVAS * 4), 0)
+        cx, w, h = UNIT_CANVAS * 2, f.width * 0.48 * 4, 7 * 4
+        ImageDraw.Draw(sh).ellipse([cx - w, bottom * 4 - h, cx + w, bottom * 4 + h], fill=120)
+        sh = sh.resize((UNIT_CANVAS, UNIT_CANVAS), Image.LANCZOS).filter(ImageFilter.GaussianBlur(2.5))
+        out.alpha_composite(Image.merge("RGBA", (Image.new("L", sh.size, 20), Image.new("L", sh.size, 10), Image.new("L", sh.size, 24), sh)))
+    out.alpha_composite(f, (round(UNIT_CANVAS / 2 - f.width / 2), bottom - f.height))
+    return out
 
 
 def portrait(fig: Image.Image, head: list, size: int = 512, icon: str = "") -> Image.Image:
@@ -270,7 +296,7 @@ def main() -> int:
         heads[n] = heads[base]
     for uid, fname in UNITS.items():
         fig = figs[fname]
-        save(fit_into(fig, (UNIT_CANVAS, UNIT_CANVAS), UNIT_BOX), SPR / f"units/{uid}.png")
+        save(unit_canvas(fig, UNIT_LAYOUT.get(uid, {})), SPR / f"units/{uid}.png")
         save(portrait(fig, heads[fname], icon=uid if uid in FORM_ICON_FORMS else ""), SPR / f"portraits/{uid}.png")
     for card, form in CARD_FORMS.items():
         dst = CARDS / f"{card}.png"
