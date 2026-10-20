@@ -12,6 +12,9 @@ extends Control
 ## 胜利：框体淡入 → 计分四行（人数 / 指令要素 / 信标 / 用时）逐行出现，数字从 0 涨到该项分数，越接近越慢（expo out）
 ## → 右侧斜着「盖章」综合分（大号落下 + 轻震）→ 其余结算（时间、存活、解锁）打字机逐字出现，超出正文区时自动滚到底 → 最后按钮淡入。
 ## 失败：框体淡入 → 文字打字机 → 按钮。演出中任意处点击或按确认 / 取消键 = 跳到终态。
+## 2026-10-20 03.zip 换皮：胜负共用一张框（H01，标题字已从图上抹掉，由程序两字一行写在标题牌里），正文全在框内深色区；
+## 印章换成框右侧的得分圆环（H05，「综合得分」「最高得分」在图上，程序写两个数字）；按钮字烘在切图上（布局 data.baked_text）。
+## 框体只在一条窄带纵向拉伸：正文放不下时连同框外的按钮一起算可加高的空间（修复：无解锁时计分区没算进正文高度，框体不加高、计分被截掉）。
 
 var controller: BattleController = null
 var level: LevelDefinition = null
@@ -37,16 +40,18 @@ var _body: VBoxContainer                ## 失败：原因 + 最后一击；胜�
 var _body_scroll: ScrollText
 var _score_block: Control = null        ## 胜利计分区：左 = 四行明细，右 = 印章
 var _score_rows: Array[Dictionary] = [] ## { key, row, value, detail, target }
-var _stamp: Control = null
+var _stamp: Control = null              ## 得分圆环（胜利时「盖章」落下）：子节点 = 综合分、最高分、新纪录
 var _stamp_total: Label = null
+var _stamp_best: Label = null
 var _stamp_note: Label = null
+var _dim: ColorRect = null              ## 全屏压暗底（布局 <k>_panel.data.dim），不拦截点击
 var _show_tween: Tween = null           ## 结算演出（点击跳过时停掉）
 var _typing: Array[Label] = []          ## 本次要打字机显示的文字
-const STAMP_PX: float = 176.0           ## 印章边长（设计像素）
-const SCORE_ROW_H: float = 40.0
-const STAMP_INSET: float = 64.0          ## 印章离正文右缘（正文区右缘贴着框线，留出倾斜后的角）
+const SCORE_ROW_H: float = 30.0
+const SCORE_NAME_W: float = 96.0
+const SCORE_VALUE_W: float = 64.0
 const SCORE_KEYS: Array[String] = ["units", "complexity", "beacons", "time"]
-const STAMP_INK: Color = Color(0.66, 0.11, 0.15, 0.95)
+const RESULT_Z: int = 10                 ## 高于 HUD 其他节点（默认 0），低于剧情层
 
 const SKIN: String = "battle_hud"
 const WIN_DECOR: Array[String] = ["win_title_sigil", "win_title_crescent", "win_title_lines"]
@@ -58,6 +63,13 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	level = p_level
 	diagnosis = FailDiagnosis.new(level)
 	theme = UiKit.ui_theme(SKIN)
+	# 结算压在 HUD 其余一切之上（含之后才加入的提示栏、弹窗），压暗层因此盖住所有其他界面；
+	# 只抬 z 不挪节点顺序：剧情层（z 近上限）仍在结算之上，且仍先收到点击（胜利剧情盖在结算上播放）
+	z_index = RESULT_Z
+	_dim = ColorRect.new()
+	_dim.name = "Dim"
+	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_dim)
 	_bg = UiKit.node_for(UiKit.layout_element(SKIN, "win_panel"))
 	add_child(_bg)
 	for id: String in WIN_DECOR + LOSE_DECOR:           # 装饰在框体之上、文字之下（纹章 / 罗盘衬在标题后面）
@@ -82,6 +94,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_score.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 	_score.visible = false                   # 2026-10-19：综合分改由计分区 + 印章显示，此标签只保留文字（两行明细）供查阅
 	_build_score_block()
+	_build_score_badge()
 	_reason = _body_label()
 	_last_hit = _body_label()
 	_last_hit.add_theme_color_override("font_color", Palette.WARN_RED)
@@ -101,7 +114,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	EventBus.battle_phase_changed.connect(_on_phase_changed)
 
 
-## 计分区：四行（名称 · 数量 × 系数 · 分数）+ 右侧印章（AI 生成的印框 + 「综合分」+ 总分 + 新纪录 / 最佳）
+## 计分区：四行（名称 · 数量 × 系数 · 分数），占正文全宽
 func _build_score_block() -> void:
 	_score_block = Control.new()
 	_score_block.name = "ScoreBlock"
@@ -121,16 +134,15 @@ func _build_score_block() -> void:
 		var name_l := Label.new()
 		name_l.name = "Name"
 		name_l.text = DataRegistry.get_string("ui.score_row_" + ("rules" if k == "complexity" else k))
-		name_l.custom_minimum_size = Vector2(150.0, 0.0)
+		name_l.custom_minimum_size = Vector2(SCORE_NAME_W, 0.0)
 		var detail := Label.new()
 		detail.name = "Detail"
 		detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		detail.modulate = Color(1.0, 1.0, 1.0, 0.7)
 		var value := Label.new()
 		value.name = "Value"
-		value.custom_minimum_size = Vector2(110.0, 0.0)
+		value.custom_minimum_size = Vector2(SCORE_VALUE_W, 0.0)
 		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		value.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 		for l: Label in [name_l, detail, value]:
 			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			l.clip_text = true
@@ -138,58 +150,39 @@ func _build_score_block() -> void:
 			row.add_child(l)
 		col.add_child(row)
 		_score_rows.append({ "key": k, "row": row, "value": value, "detail": detail, "target": 0.0 })
-	_stamp = Control.new()
-	_stamp.name = "Stamp"
-	_stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stamp.size = Vector2(STAMP_PX, STAMP_PX)
-	_stamp.pivot_offset = _stamp.size * 0.5
-	_score_block.add_child(_stamp)
-	# 朴素印章：红色双线圆框（外粗内细），不用荆棘环贴图
-	for ring_def: Array in [[0.0, 5], [10.0, 2]]:
-		var ring := Panel.new()
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.0, 0.0, 0.0, 0.0)
-		sb.border_color = STAMP_INK
-		sb.set_border_width_all(int(ring_def[1]))
-		sb.set_corner_radius_all(int(STAMP_PX))
-		sb.anti_aliasing = true
-		ring.add_theme_stylebox_override("panel", sb)
-		ring.set_anchors_preset(Control.PRESET_FULL_RECT)
-		ring.offset_left = float(ring_def[0])
-		ring.offset_top = float(ring_def[0])
-		ring.offset_right = -float(ring_def[0])
-		ring.offset_bottom = -float(ring_def[0])
-		ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_stamp.add_child(ring)
-	var col2 := VBoxContainer.new()
-	col2.set_anchors_preset(Control.PRESET_FULL_RECT)
-	col2.alignment = BoxContainer.ALIGNMENT_CENTER
-	col2.add_theme_constant_override("separation", -4)
-	col2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stamp.add_child(col2)
-	var head := Label.new()
-	head.text = DataRegistry.get_string("ui.score_stamp_head")
-	_stamp_total = Label.new()
-	_stamp_note = Label.new()
-	for pair: Array in [[head, 18, "res://assets/fonts/NotoSerifSC-Bold.otf"], [_stamp_total, 52, "res://assets/fonts/Cinzel-Regular.ttf"], [_stamp_note, 16, "res://assets/fonts/NotoSerifSC-Bold.otf"]]:
-		var l: Label = pair[0] as Label
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		l.add_theme_font_override("font", load(str(pair[2])) as Font)
-		l.add_theme_font_size_override("font_size", int(pair[1]))
-		l.add_theme_color_override("font_color", STAMP_INK)
-		col2.add_child(l)
 
 
-## 计分区摆放：四行占左侧，印章贴右、竖直居中；返回计分区高度
+## 得分圆环（H05）：圆环贴图 + 综合分 / 最高分 / 新纪录三个文字（位置按布局，相对圆环）
+func _build_score_badge() -> void:
+	_stamp = UiKit.node_for(UiKit.layout_element(SKIN, "win_score_ring"))
+	_stamp.name = "ScoreRing"
+	add_child(_stamp)
+	var ring: Rect2 = _r("win_score_ring")
+	_stamp.size = ring.size
+	_stamp.pivot_offset = ring.size * 0.5
+	var labels: Array[Label] = []
+	for id: String in ["win_score_total", "win_score_best", "win_score_note"]:
+		var l: Label = UiKit.node_for(UiKit.layout_element(SKIN, id)) as Label
+		var r: Rect2 = _r(id, true)
+		l.position = r.position - ring.position
+		l.size = r.size
+		_stamp.add_child(l)
+		labels.append(l)
+	_stamp_total = labels[0]
+	_stamp_best = labels[1]
+	_stamp_note = labels[2]
+	_stamp_note.text = DataRegistry.get_string("ui.score_stamp_record")
+	_stamp.visible = false
+
+
+## 计分区摆放：四行占满正文宽；返回计分区高度
 func _layout_score_block(width: float) -> float:
 	var rows_h: float = SCORE_ROW_H * float(SCORE_KEYS.size())
-	var h: float = maxf(rows_h, STAMP_PX) + 8.0
+	var h: float = rows_h + 8.0
 	_score_block.custom_minimum_size = Vector2(width, h)
 	var col: Control = _score_block.get_node("Rows") as Control
 	col.position = Vector2(0.0, (h - rows_h) * 0.5)
-	col.size = Vector2(width - STAMP_PX - STAMP_INSET - 24.0, rows_h)
-	_stamp.position = Vector2(width - STAMP_PX - STAMP_INSET, (h - STAMP_PX) * 0.5)
+	col.size = Vector2(width, rows_h)
 	return h
 
 
@@ -212,6 +205,7 @@ func _body_label() -> Label:
 func _button(text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
+	b.set_meta(TEXT_META, text)              # 换皮时字烘在切图上则清空，原文留在这里
 	b.focus_mode = Control.FOCUS_NONE
 	b.clip_text = true
 	b.pressed.connect(cb)
@@ -232,6 +226,8 @@ func _tt(id: String) -> StringName:
 func _apply_layout(won: bool) -> void:
 	var k: String = "win_" if won else "lose_"
 	var panel: Rect2 = _r(k + "panel")
+	var panel_e: Dictionary = UiKit.layout_element(SKIN, k + "panel")
+	var panel_data: Dictionary = panel_e.get("data", {}) as Dictionary
 	UiKit.place(self, UiKit.layout_rect(SKIN, k + "panel", get_viewport_rect().size))
 	_bg.theme_type_variation = _tt(k + "panel")
 	_bg.position = Vector2.ZERO
@@ -243,8 +239,10 @@ func _apply_layout(won: bool) -> void:
 	put.call(_title, _r(k + "title", true))
 	_title.theme_type_variation = _tt(k + "title")
 	_title.horizontal_alignment = UiKit.text_align(str(UiKit.layout_element(SKIN, k + "title").get("align", "left")))
+	_title.text = _wrap_chars(_title.text, int((UiKit.layout_element(SKIN, k + "title").get("data", {}) as Dictionary).get("wrap_chars", 0)))
 	put.call(_level_name, _r(k + "level", true))
 	_level_name.theme_type_variation = _tt(k + "level")
+	_level_name.horizontal_alignment = UiKit.text_align(str(UiKit.layout_element(SKIN, k + "level").get("align", "left")))
 	put.call(_time, _r(k + "time", true))
 	_time.theme_type_variation = _tt(k + "time")
 	put.call(_survivors, _r(k + "survivors", true))
@@ -258,23 +256,31 @@ func _apply_layout(won: bool) -> void:
 		c.visible = (id in WIN_DECOR) == won
 		put.call(c, _r(id))
 	_reward_head.visible = won and _rewards.text != ""
-	var btn_top: float = _r(k + "retry").position.y
+	var buttons: Array[Button] = [_retry, _back]
+	var ids: Array[String] = ["lose_retry", "lose_back"]        # 无「下一关」时两个按钮，按失败版式的两键位置
+	if _next.visible:
+		buttons = [_retry, _next, _back]
+		ids = ["win_retry", "win_next", "win_back"]
+	var btn_top: float = _r(ids[0]).position.y
+	var btn_bottom: float = _r(ids[0]).end.y
 	var body_top: Rect2
 	if won:
 		_reward_head.theme_type_variation = _tt("win_reward_head")
 		var head_r: Rect2 = _r("win_reward_head", true)
-		body_top = Rect2(head_r.position, _r("win_reward", true).size)      # 正文从原「解锁」标题位置开始：综合分 → 解锁 → 奖励
+		body_top = Rect2(head_r.position, _r("win_reward", true).size)      # 正文从原「解锁」标题位置开始：计分 → 解锁 → 奖励
 		_rewards.theme_type_variation = _tt("win_reward")
 		_score.theme_type_variation = _tt("win_reward")
 		for r: Dictionary in _score_rows:
-			for n: String in ["Name", "Detail", "Value"]:
-				((r["row"] as Control).get_node(n) as Label).theme_type_variation = _tt("win_time")
+			for n: String in ["Name", "Detail"]:
+				((r["row"] as Control).get_node(n) as Label).theme_type_variation = _tt("win_score_row")
+			(r["value"] as Label).theme_type_variation = _tt("win_score_value")
 	else:
 		body_top = _r("lose_reason", true)
 		_reason.theme_type_variation = _tt("lose_reason")
 		_last_hit.theme_type_variation = _tt("lose_reason")
 	var line_gap: float = body_top.size.y * 0.15
-	var body_h: float = btn_top - body_top.position.y - line_gap * 2.0 - BODY_BOTTOM_PAD
+	var body_bottom: float = float(panel_data.get("body_bottom", btn_top - line_gap * 2.0 - BODY_BOTTOM_PAD))   # 正文下沿：布局给了就用框内深色区底（按钮在框外）
+	var body_h: float = body_bottom - body_top.position.y
 	_body_scroll.position = body_top.position - panel.position
 	_body_scroll.size = Vector2(body_top.size.x, body_h)
 	for l: Label in [_score, _reason, _last_hit, _reward_head, _rewards]:
@@ -282,46 +288,78 @@ func _apply_layout(won: bool) -> void:
 	_score_block.visible = won and not controller.last_score.is_empty()
 	if _score_block.visible:
 		_layout_score_block(body_top.size.x)
-	var extra: float = _fit_body(body_top.size.x, body_h)
+	# 可加高的空间：框体连同框外按钮整体（保持居中）不超出视口留边
+	var span: float = maxf(panel.end.y, btn_bottom) - panel.position.y
+	var room: float = maxf(get_viewport_rect().size.y - span - SCREEN_MARGIN * 2.0, 0.0)
+	var extra: float = _fit_body(body_top.size.x, body_h, room)
+	var stretch_top: float = float((panel_e.get("ninepatch", [0, 0, 0, 0]) as Array)[1])     # 框体拉伸带以下的部件随框体下移
 	if extra > 0.0:                      # 正文放不下：框体向下加高（保持居中），按钮随之下移
 		position.y -= extra * 0.5
 		size.y += extra
 		_bg.size.y += extra
 		_body_scroll.size.y += extra
-	var buttons: Array[Button] = [_retry, _back]
-	var ids: Array[String] = ["lose_retry", "lose_back"]        # 无「下一关」时两个按钮，按失败整图的两键位置
-	if _next.visible:
-		buttons = [_retry, _next, _back]
-		ids = ["win_retry", "win_next", "win_back"]
+	_stamp.visible = _score_block.visible
+	put.call(_stamp, _r("win_score_ring"))
+	if extra > 0.0 and _stamp.position.y >= stretch_top:
+		_stamp.position.y += extra
+	_fit_label_width(_stamp_total)
 	for i: int in buttons.size():
 		put.call(buttons[i], _r(ids[i]))
 		buttons[i].position.y += extra
 		buttons[i].theme_type_variation = _tt(ids[i])
+		var baked: bool = bool((UiKit.layout_element(SKIN, ids[i]).get("data", {}) as Dictionary).get("baked_text", false))
+		buttons[i].text = "" if baked else str(buttons[i].get_meta(TEXT_META, ""))      # 字在切图上就不再写字
 		if buttons[i].has_meta(ButtonMotion.META):      # 按钮动效已按旧变体接管了样式：按新变体重新取
 			(buttons[i].get_node(ButtonMotion.NODE_NAME) as ButtonMotion).recapture()
+	_dim.visible = panel_data.has("dim")
+	_dim.color = Color(str(panel_data.get("dim", "#00000000")))
+	_dim.position = -position
+	_dim.size = get_viewport_rect().size
 
 
-## 结算页不翻页（2026-10-18）：正文（解锁 / 失败原因）按实际字体与换行宽度量高，超出按钮上方的区域时先把框体向下加高
-## （不超过视口留边），仍放不下再逐级缩小字号（最小 BODY_MIN_SCALE 倍），保证全部内容一屏显示、不需要滚动。返回框体加高量。
+## 标题按 n 字一行（布局 data.wrap_chars：结算框顶的标题牌窄，两字一行叠放）；n ≤ 0 不换行
+static func _wrap_chars(text: String, n: int) -> String:
+	var t: String = text.replace("\n", "")
+	if n <= 0:
+		return t
+	var lines: PackedStringArray = PackedStringArray()
+	for i: int in range(0, t.length(), n):
+		lines.append(t.substr(i, n))
+	return "\n".join(lines)
+
+
+## 单行文字超出文字区宽度时逐级缩小字号（综合分位数多时）
+static func _fit_label_width(l: Label) -> void:
+	l.remove_theme_font_size_override("font_size")
+	var font: Font = l.get_theme_font("font")
+	var fs: int = l.get_theme_font_size("font_size")
+	while fs > 10 and font.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs).x > l.size.x:
+		fs -= 2
+	l.add_theme_font_size_override("font_size", fs)
+
+
+## 结算页不翻页（2026-10-18）：正文（计分 / 解锁 / 失败原因）按实际字体与换行宽度量高，超出正文区时先把框体向下加高
+## （不超过 room），仍放不下再逐级缩小字号（最小 BODY_MIN_SCALE 倍），保证全部内容一屏显示、不需要滚动。返回框体加高量。
+## 2026-10-20 修复：没有解锁（奖励为空）时正文里只剩计分区，原来直接返回 0，计分区没算进高度，框体不加高、计分被截掉一截。
 const BODY_MIN_SCALE: float = 0.6
-const BODY_BOTTOM_PAD: float = 14.0       ## 正文滚动区下沿离按钮的留白（按钮按钮切图有外扩尖角）
+const BODY_BOTTOM_PAD: float = 14.0       ## 正文滚动区下沿离按钮的留白（布局给了 body_bottom 时不用）
 const SCREEN_MARGIN: float = 24.0
+const TEXT_META: StringName = &"result_text"
 
 
-func _fit_body(width: float, max_h: float) -> float:
+func _fit_body(width: float, max_h: float, room: float) -> float:
 	var labels: Array[Label] = []
 	for l: Label in [_score, _reason, _last_hit, _reward_head, _rewards]:
 		l.remove_theme_font_size_override("font_size")
 		if l.visible and l.text != "":
 			labels.append(l)
-	if labels.is_empty():
+	if labels.is_empty() and not _score_block.visible:
 		return 0.0
-	var base: int = labels[0].get_theme_font_size("font_size")
+	var base: int = labels[0].get_theme_font_size("font_size") if not labels.is_empty() else 0
 	var gap: float = float(_body.get_theme_constant("separation"))
-	var room: float = maxf(get_viewport_rect().size.y - size.y - SCREEN_MARGIN * 2.0, 0.0)
 	var extra: float = clampf(_body_height(labels, width, base, gap) - max_h, 0.0, room)
 	var fs: int = base
-	while fs > int(base * BODY_MIN_SCALE) and _body_height(labels, width, fs, gap) > max_h + extra:
+	while not labels.is_empty() and fs > int(base * BODY_MIN_SCALE) and _body_height(labels, width, fs, gap) > max_h + extra:
 		fs -= 1
 	if fs != base:
 		for l: Label in labels:
@@ -330,14 +368,16 @@ func _fit_body(width: float, max_h: float) -> float:
 
 
 func _body_height(labels: Array[Label], width: float, size: int, gap: float) -> float:
-	var h: float = gap * float(labels.size() - 1)
+	var parts: int = labels.size()
+	var h: float = 0.0
 	if _score_block != null and _score_block.visible:        # 计分区（固定高）
-		h += _score_block.custom_minimum_size.y + gap
+		h += _score_block.custom_minimum_size.y
+		parts += 1
+	h += gap * float(maxi(parts - 1, 0))
 	for l: Label in labels:
 		var font: Font = l.get_theme_font("font")
 		var lines: int = 0
-		for para: String in l.text.split("
-"):
+		for para: String in l.text.split("\n"):
 			var w: float = font.get_string_size(para, HORIZONTAL_ALIGNMENT_LEFT, -1.0, size).x
 			lines += maxi(1, ceili(w / maxf(width, 1.0)))
 		h += float(lines) * (font.get_height(size) + float(l.get_theme_constant("line_spacing")))
@@ -418,15 +458,9 @@ func _fill_score_rows(won: bool) -> void:
 		(r["detail"] as Label).text = detail
 		(r["value"] as Label).text = _score_value(float(r["target"]), float(r["target"]))
 	_stamp_total.text = str(int(sc["total"]))
-	var best: int = SaveManager.best_score(level.id) if controller.persist else -1
-	if controller.last_score_record:
-		_stamp_note.text = DataRegistry.get_string("ui.score_stamp_record")
-	elif best >= 0:
-		_stamp_note.text = DataRegistry.get_string("ui.result_best_line").format({ "best": best })
-	else:
-		_stamp_note.text = ""
-	_stamp_note.visible = _stamp_note.text != ""
-	_stamp.rotation = deg_to_rad(float((UiKit.motion_params("result").get("stamp", {}) as Dictionary).get("angle_deg", -14.0)))
+	var best: int = SaveManager.best_score(level.id) if controller.persist else -1      # 已含本局（record_score 在结算前写入）
+	_stamp_best.text = str(best) if best >= 0 else DataRegistry.get_string("ui.score_best_none")
+	_stamp_note.visible = controller.last_score_record
 
 
 ## 计分数字：目标为整数时显示整数，否则一位小数

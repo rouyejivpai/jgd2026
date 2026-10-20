@@ -1602,7 +1602,7 @@
           961.1,
           20.7
         ],
-        "ref_text": "本关要点：先让它看见谁，会改变它接下来追谁。哭墙守卫锁定首个进入视野的分裂体，直到它死亡或",
+        "ref_text": "本关要点：先让它看见谁，会改变它接下来追谁。哭墙守卫锁定首个进入视野的人偶，直到它死亡或",
         "lines_ref": 2,
         "_note": "整图两行，行高取 hint 两行 ink 之差"
       },
@@ -1827,7 +1827,7 @@
           736.1,
           20.7
         ],
-        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的人偶」。"
       },
       "theme_type": "battle_hud__hint_line"
     },
@@ -2082,7 +2082,7 @@
           721.1,
           20.7
         ],
-        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的分裂体」。"
+        "ref_text": "1. 点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的人偶」。"
       },
       "theme_type": "battle_hud__rec_hint1"
     },
@@ -2144,24 +2144,23 @@
       "id": "win_panel",
       "kind": "ninepatch",
       "rect": [
-        551,
-        203,
-        816,
-        613
+        435,
+        108,
+        1051,
+        849
       ],
+      "data": {
+        "body_bottom": 742,
+        "dim": "#000000DD",
+        "_note": "03.zip（2026-10-20）结算框 H01：烘进的「战斗胜利」已抹掉（tools/import_result_ui.py），标题由程序写；只在 y 220–258 一条窄带纵向拉伸（正文放不下时框体加高）"
+      },
       "ninepatch": [
-        100,
-        167,
-        100,
-        167
+        0,
+        220,
+        0,
+        591
       ],
-      "expand": [
-        29,
-        23,
-        29,
-        21
-      ],
-      "file": "res://assets/ui/gothic/detail/panel.png",
+      "file": "res://assets/ui/gothic/result_frame.png",
       "theme_type": "battle_hud__win_panel"
     },
     {
@@ -2173,11 +2172,7 @@
         620,
         236
       ],
-      "data": {
-        "modulate": "#FFFFFF8C",
-        "_note": "胜利徽记（GPT 绘图）：衬在「战斗胜利」之后，半透明"
-      },
-      "file": "res://assets/ui/gothic/result_win.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "win_title_crescent",
@@ -2205,27 +2200,22 @@
       "id": "win_title",
       "kind": "text_style",
       "rect": [
-        721,
-        269,
-        482,
-        88
+        860,
+        174,
+        200,
+        100
       ],
       "text_rect": [
         0,
         0,
-        482,
-        88
+        200,
+        100
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          841.7,
-          286.9,
-          237.7,
-          67.7
-        ],
-        "ref_text": "战斗胜利"
+        "wrap_chars": 2,
+        "_note": "两字一行，叠在框顶标题牌里（参考图字形 905–1019 × 185–265）"
       },
       "theme_type": "battle_hud__win_title"
     },
@@ -2233,9 +2223,9 @@
       "id": "win_sep",
       "kind": "flatbox",
       "rect": [
-        586,
-        381,
-        746,
+        824,
+        375,
+        274,
         1
       ],
       "theme_type": "battle_hud__win_sep"
@@ -2244,182 +2234,229 @@
       "id": "win_level",
       "kind": "text_style",
       "rect": [
-        621,
-        411,
-        735,
-        44
+        784,
+        328,
+        354,
+        40
       ],
       "text_rect": [
         0,
         0,
-        735,
-        44
+        354,
+        40
       ],
-      "align": "left",
+      "align": "center",
       "overflow": "auto",
-      "data": {
-        "ref_ink": [
-          621.2,
-          420.1,
-          60.9,
-          28.7
-        ],
-        "ref_text": "墙缝"
-      },
       "theme_type": "battle_hud__win_level"
     },
     {
       "id": "win_time",
       "kind": "text_style",
       "rect": [
-        630,
-        480,
-        735,
-        38
+        784,
+        384,
+        354,
+        30
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        30
       ],
       "align": "left",
-      "data": {
-        "ref_ink": [
-          630.4,
-          486.6,
-          183.7,
-          24.1
-        ],
-        "ref_text": "完成时间：24.8"
-      },
       "theme_type": "battle_hud__win_time"
     },
     {
       "id": "win_survivors",
       "kind": "text_style",
       "rect": [
-        630,
-        531,
-        735,
-        38
+        784,
+        414,
+        354,
+        30
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        30
       ],
       "align": "left",
       "overflow": "auto",
-      "data": {
-        "ref_ink": [
-          630.4,
-          538.3,
-          423.7,
-          24.1
-        ],
-        "ref_text": "存活单位：快速形态、基础攻击形态"
-      },
       "theme_type": "battle_hud__win_survivors"
     },
     {
       "id": "win_reward_head",
       "kind": "text_style",
       "rect": [
-        632,
-        608,
-        735,
-        38
+        784,
+        450,
+        354,
+        28
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        28
       ],
       "align": "left",
-      "data": {
-        "ref_ink": [
-          631.6,
-          615.2,
-          45.9,
-          23.0
-        ],
-        "ref_text": "解锁"
-      },
       "theme_type": "battle_hud__win_reward_head"
     },
     {
       "id": "win_reward",
       "kind": "text_style",
       "rect": [
-        630,
-        644,
-        735,
-        38
+        784,
+        478,
+        354,
+        26
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        26
+      ],
+      "align": "left",
+      "theme_type": "battle_hud__win_reward"
+    },
+    {
+      "id": "win_score_row",
+      "kind": "text_style",
+      "rect": [
+        784,
+        450,
+        354,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        354,
+        30
       ],
       "align": "left",
       "data": {
-        "ref_ink": [
-          630.4,
-          650.8,
-          274.4,
-          23.0
-        ],
-        "ref_text": "新选敌：最远、生命最低",
-        "_note": "奖励多行时在「解锁」与按钮之间上下滚动"
+        "_note": "计分四行的名称 / 明细；数值用 win_score_value"
       },
-      "theme_type": "battle_hud__win_reward"
+      "theme_type": "battle_hud__win_score_row"
+    },
+    {
+      "id": "win_score_value",
+      "kind": "text_style",
+      "rect": [
+        784,
+        450,
+        354,
+        30
+      ],
+      "text_rect": [
+        0,
+        0,
+        354,
+        30
+      ],
+      "align": "right",
+      "theme_type": "battle_hud__win_score_value"
+    },
+    {
+      "id": "win_score_ring",
+      "kind": "image",
+      "rect": [
+        1210,
+        519,
+        217,
+        211
+      ],
+      "data": {
+        "_note": "H05 得分圆环（「综合得分」「最高得分」在图上），胜利时「盖章」落下"
+      },
+      "file": "res://assets/ui/gothic/result_score_ring.png"
+    },
+    {
+      "id": "win_score_total",
+      "kind": "text_style",
+      "rect": [
+        1262,
+        586,
+        94,
+        76
+      ],
+      "text_rect": [
+        0,
+        0,
+        94,
+        76
+      ],
+      "align": "center",
+      "data": {
+        "_note": "综合分数字（参考图字形 1282–1346 × 603–645）；位数多时缩字号放进文字区"
+      },
+      "theme_type": "battle_hud__win_score_total"
+    },
+    {
+      "id": "win_score_best",
+      "kind": "text_style",
+      "rect": [
+        1257,
+        669,
+        80,
+        26
+      ],
+      "text_rect": [
+        0,
+        0,
+        80,
+        26
+      ],
+      "align": "center",
+      "theme_type": "battle_hud__win_score_best"
+    },
+    {
+      "id": "win_score_note",
+      "kind": "text_style",
+      "rect": [
+        1257,
+        694,
+        80,
+        20
+      ],
+      "text_rect": [
+        0,
+        0,
+        80,
+        20
+      ],
+      "align": "center",
+      "theme_type": "battle_hud__win_score_note"
     },
     {
       "id": "win_retry",
       "kind": "button",
       "rect": [
-        612,
-        709,
-        206,
-        59
+        537,
+        977,
+        267,
+        55
       ],
       "text_rect": [
-        20,
-        13,
-        166,
-        33
+        0,
+        0,
+        267,
+        55
       ],
       "align": "center",
       "data": {
-        "ref_ink": [
-          694.7,
-          727.7,
-          43.6,
-          21.8
-        ],
-        "ref_text": "重试"
+        "baked_text": true,
+        "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
       },
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate.png",
-        "hover": "res://assets/ui/gothic/detail/plate.png",
-        "pressed": "res://assets/ui/gothic/detail/plate.png",
-        "disabled": "res://assets/ui/gothic/detail/plate.png"
+        "normal": "res://assets/ui/gothic/result_btn_retry.png",
+        "hover": "res://assets/ui/gothic/result_btn_retry.png",
+        "pressed": "res://assets/ui/gothic/result_btn_retry.png",
+        "disabled": "res://assets/ui/gothic/result_btn_retry.png"
       },
       "theme_type": "battle_hud__win_retry"
     },
@@ -2427,44 +2464,27 @@
       "id": "win_next",
       "kind": "button",
       "rect": [
-        857,
-        709,
-        206,
-        59
+        828,
+        977,
+        266,
+        55
       ],
       "text_rect": [
-        20,
-        13,
-        166,
-        33
+        0,
+        0,
+        266,
+        55
       ],
       "align": "center",
       "data": {
-        "ref_ink": [
-          933.6,
-          727.7,
-          60.9,
-          21.8
-        ],
-        "ref_text": "下一关"
+        "baked_text": true,
+        "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
       },
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
+        "normal": "res://assets/ui/gothic/result_btn_next.png",
+        "hover": "res://assets/ui/gothic/result_btn_next.png",
+        "pressed": "res://assets/ui/gothic/result_btn_next.png",
+        "disabled": "res://assets/ui/gothic/result_btn_next.png"
       },
       "theme_type": "battle_hud__win_next"
     },
@@ -2472,44 +2492,27 @@
       "id": "win_back",
       "kind": "button",
       "rect": [
-        1102,
-        709,
-        206,
-        59
+        1118,
+        977,
+        266,
+        55
       ],
       "text_rect": [
-        20,
-        13,
-        166,
-        33
+        0,
+        0,
+        266,
+        55
       ],
       "align": "center",
       "data": {
-        "ref_ink": [
-          1182.8,
-          727.7,
-          45.9,
-          21.8
-        ],
-        "ref_text": "返回"
+        "baked_text": true,
+        "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
       },
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate.png",
-        "hover": "res://assets/ui/gothic/detail/plate.png",
-        "pressed": "res://assets/ui/gothic/detail/plate.png",
-        "disabled": "res://assets/ui/gothic/detail/plate.png"
+        "normal": "res://assets/ui/gothic/result_btn_back.png",
+        "hover": "res://assets/ui/gothic/result_btn_back.png",
+        "pressed": "res://assets/ui/gothic/result_btn_back.png",
+        "disabled": "res://assets/ui/gothic/result_btn_back.png"
       },
       "theme_type": "battle_hud__win_back"
     },
@@ -2517,24 +2520,23 @@
       "id": "lose_panel",
       "kind": "ninepatch",
       "rect": [
-        494,
-        187,
-        933,
-        609
+        435,
+        108,
+        1051,
+        849
       ],
+      "data": {
+        "body_bottom": 742,
+        "dim": "#000000DD",
+        "_note": "03.zip（2026-10-20）结算框 H01：烘进的「战斗胜利」已抹掉（tools/import_result_ui.py），标题由程序写；只在 y 220–258 一条窄带纵向拉伸（正文放不下时框体加高）"
+      },
       "ninepatch": [
-        100,
-        167,
-        100,
-        167
+        0,
+        220,
+        0,
+        591
       ],
-      "expand": [
-        29,
-        23,
-        29,
-        21
-      ],
-      "file": "res://assets/ui/gothic/detail/panel.png",
+      "file": "res://assets/ui/gothic/result_frame.png",
       "theme_type": "battle_hud__lose_panel"
     },
     {
@@ -2546,37 +2548,28 @@
         620,
         278
       ],
-      "data": {
-        "modulate": "#FFFFFF80",
-        "_note": "失败徽记（GPT 绘图）：衬在「战斗失败」之后，半透明"
-      },
-      "file": "res://assets/ui/gothic/result_lose.png"
+      "file": "res://assets/ui/gothic/blank.png"
     },
     {
       "id": "lose_title",
       "kind": "text_style",
       "rect": [
-        719,
-        282,
-        482,
-        69
+        860,
+        174,
+        200,
+        100
       ],
       "text_rect": [
         0,
         0,
-        482,
-        69
+        200,
+        100
       ],
       "align": "center",
       "overflow": "auto",
       "data": {
-        "ref_ink": [
-          562.7,
-          238.7,
-          190.6,
-          45.9
-        ],
-        "ref_text": "战斗失败"
+        "wrap_chars": 2,
+        "_note": "两字一行，叠在框顶标题牌里（参考图字形 905–1019 × 185–265）"
       },
       "theme_type": "battle_hud__lose_title"
     },
@@ -2595,92 +2588,65 @@
       "id": "lose_level",
       "kind": "text_style",
       "rect": [
-        560,
-        344,
-        735,
-        42
+        784,
+        328,
+        354,
+        40
       ],
       "text_rect": [
         0,
         0,
-        735,
-        42
+        354,
+        40
       ],
-      "align": "left",
+      "align": "center",
       "overflow": "auto",
-      "data": {
-        "ref_ink": [
-          560.4,
-          351.2,
-          56.3,
-          27.5
-        ],
-        "ref_text": "墙缝"
-      },
       "theme_type": "battle_hud__lose_level"
     },
     {
       "id": "lose_time",
       "kind": "text_style",
       "rect": [
-        562,
-        421,
-        735,
-        38
+        784,
+        384,
+        354,
+        30
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        30
       ],
       "align": "left",
-      "data": {
-        "ref_ink": [
-          561.5,
-          428.1,
-          180.3,
-          23.0
-        ],
-        "ref_text": "完成时间：24.8"
-      },
       "theme_type": "battle_hud__lose_time"
     },
     {
       "id": "lose_survivors",
       "kind": "text_style",
       "rect": [
-        563,
-        469,
-        735,
-        38
+        784,
+        414,
+        354,
+        30
       ],
       "text_rect": [
         0,
         0,
-        735,
-        38
+        354,
+        30
       ],
       "align": "left",
       "overflow": "auto",
-      "data": {
-        "ref_ink": [
-          562.7,
-          476.3,
-          151.6,
-          24.1
-        ],
-        "ref_text": "存活单位：无"
-      },
       "theme_type": "battle_hud__lose_survivors"
     },
     {
       "id": "lose_sep2",
       "kind": "flatbox",
       "rect": [
-        551,
-        546,
-        815,
+        824,
+        454,
+        274,
         1
       ],
       "theme_type": "battle_hud__lose_sep2"
@@ -2689,73 +2655,45 @@
       "id": "lose_reason",
       "kind": "text_style",
       "rect": [
-        563,
-        576,
-        816,
-        35
+        784,
+        466,
+        354,
+        28
       ],
       "text_rect": [
         0,
         0,
-        816,
-        35
+        354,
+        28
       ],
       "align": "left",
-      "data": {
-        "ref_ink": [
-          562.7,
-          583.0,
-          800.4,
-          23.0
-        ],
-        "ref_text": "原因：分裂体全部倒下。回看守卫锁定了谁：如果快速形态离开了守卫视野，",
-        "lines_ref": 2,
-        "_note": "原因（与最后一击来源）在两条分隔线下方，多行时在按钮以上上下滚动"
-      },
       "theme_type": "battle_hud__lose_reason"
     },
     {
       "id": "lose_retry",
       "kind": "button",
       "rect": [
-        652,
-        690,
-        293,
-        62
+        681,
+        977,
+        267,
+        55
       ],
       "text_rect": [
-        20,
-        14,
-        253,
-        33
+        0,
+        0,
+        267,
+        55
       ],
       "align": "center",
       "data": {
-        "ref_ink": [
-          774.0,
-          709.3,
-          45.9,
-          23.0
-        ],
-        "ref_text": "重试"
+        "baked_text": true,
+        "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
       },
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "hover": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "pressed": "res://assets/ui/gothic/detail/plate_crimson.png",
-        "disabled": "res://assets/ui/gothic/detail/plate_crimson.png"
+        "normal": "res://assets/ui/gothic/result_btn_retry.png",
+        "hover": "res://assets/ui/gothic/result_btn_retry.png",
+        "pressed": "res://assets/ui/gothic/result_btn_retry.png",
+        "disabled": "res://assets/ui/gothic/result_btn_retry.png"
       },
       "theme_type": "battle_hud__lose_retry"
     },
@@ -2763,44 +2701,27 @@
       "id": "lose_back",
       "kind": "button",
       "rect": [
-        979,
-        690,
-        293,
-        62
+        972,
+        977,
+        266,
+        55
       ],
       "text_rect": [
-        20,
-        14,
-        253,
-        33
+        0,
+        0,
+        266,
+        55
       ],
       "align": "center",
       "data": {
-        "ref_ink": [
-          1100.1,
-          709.3,
-          48.2,
-          23.0
-        ],
-        "ref_text": "返回"
+        "baked_text": true,
+        "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
       },
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate.png",
-        "hover": "res://assets/ui/gothic/detail/plate.png",
-        "pressed": "res://assets/ui/gothic/detail/plate.png",
-        "disabled": "res://assets/ui/gothic/detail/plate.png"
+        "normal": "res://assets/ui/gothic/result_btn_back.png",
+        "hover": "res://assets/ui/gothic/result_btn_back.png",
+        "pressed": "res://assets/ui/gothic/result_btn_back.png",
+        "disabled": "res://assets/ui/gothic/result_btn_back.png"
       },
       "theme_type": "battle_hud__lose_back"
     },

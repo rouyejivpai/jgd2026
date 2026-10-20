@@ -153,6 +153,8 @@ def font_props(tw: TresWriter, var: str, font: dict, ctx: str, extra_colors=()):
         tw.props.append(f"{var}/colors/font_shadow_color = {color_tres(font['shadow'])}")
         tw.props.append(f"{var}/constants/shadow_offset_x = {int(off[0])}")
         tw.props.append(f"{var}/constants/shadow_offset_y = {int(off[1])}")
+    if font.get("line_spacing") is not None:      # 行距（多行文字，可为负：结算标题两字一行叠紧）
+        tw.props.append(f"{var}/constants/line_spacing = {int(font['line_spacing'])}")
     if font.get("outline_size"):                  # 描边："outline_size" 像素 + "outline_color"
         tw.props.append(f"{var}/constants/outline_size = {int(font['outline_size'])}")
         tw.props.append(f"{var}/colors/font_outline_color = {color_tres(font.get('outline_color', '#000000'))}")

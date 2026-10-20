@@ -1094,35 +1094,47 @@
   },
   {
    "id": "win_panel",
-   "file": "../gothic/detail/panel.png",
+   "file": "../gothic/result_frame.png",
    "ninepatch": [
-    100,
-    167,
-    100,
-    167
+    0,
+    220,
+    0,
+    591
    ],
-   "expand": [
-    29,
-    23,
-    29,
-    21
-   ]
+   "expand": null,
+   "rect": [
+    435,
+    108,
+    1051,
+    849
+   ],
+   "data": {
+    "body_bottom": 742,
+    "dim": "#000000DD",
+    "_note": "03.zip（2026-10-20）结算框 H01：烘进的「战斗胜利」已抹掉（tools/import_result_ui.py），标题由程序写；只在 y 220–258 一条窄带纵向拉伸（正文放不下时框体加高）"
+   }
   },
   {
    "id": "lose_panel",
-   "file": "../gothic/detail/panel.png",
+   "file": "../gothic/result_frame.png",
    "ninepatch": [
-    100,
-    167,
-    100,
-    167
+    0,
+    220,
+    0,
+    591
    ],
-   "expand": [
-    29,
-    23,
-    29,
-    21
-   ]
+   "expand": null,
+   "rect": [
+    435,
+    108,
+    1051,
+    849
+   ],
+   "data": {
+    "body_bottom": 742,
+    "dim": "#000000DD",
+    "_note": "03.zip（2026-10-20）结算框 H01：烘进的「战斗胜利」已抹掉（tools/import_result_ui.py），标题由程序写；只在 y 220–258 一条窄带纵向拉伸（正文放不下时框体加高）"
+   }
   },
   {
    "id": "problems_panel",
@@ -1356,26 +1368,18 @@
   {
    "id": "win_retry",
    "states": {
-    "normal": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#D8D2DA"
-    },
-    "hover": "../gothic/detail/plate.png",
+    "normal": "../gothic/result_btn_retry.png",
+    "hover": "../gothic/result_btn_retry.png",
     "pressed": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/result_btn_retry.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate.png",
+     "file": "../gothic/result_btn_retry.png",
      "modulate": "#7E7882"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
     "family": "NotoSerifSC",
     "size": 22,
@@ -1383,44 +1387,38 @@
     "disabled_color": "#8A848C"
    },
    "text_rect": [
-    20,
-    13,
-    166,
-    33
+    0,
+    0,
+    267,
+    55
    ],
    "rect": [
-    612,
-    709,
-    206,
-    59
+    537,
+    977,
+    267,
+    55
    ],
-   "expand": [
-    26,
-    0,
-    6,
-    0
-   ]
+   "expand": null,
+   "data": {
+    "baked_text": true,
+    "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
+   }
   },
   {
    "id": "win_next",
    "states": {
-    "normal": "../gothic/detail/plate_crimson.png",
-    "hover": "../gothic/detail/plate_crimson.png",
+    "normal": "../gothic/result_btn_next.png",
+    "hover": "../gothic/result_btn_next.png",
     "pressed": {
-     "file": "../gothic/detail/plate_crimson.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/result_btn_next.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate_crimson.png",
+     "file": "../gothic/result_btn_next.png",
      "modulate": "#7E7882"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
     "family": "NotoSerifSC",
     "size": 22,
@@ -1428,47 +1426,38 @@
     "disabled_color": "#8A848C"
    },
    "text_rect": [
-    20,
-    13,
-    166,
-    33
+    0,
+    0,
+    266,
+    55
    ],
    "rect": [
-    857,
-    709,
-    206,
-    59
+    828,
+    977,
+    266,
+    55
    ],
-   "expand": [
-    26,
-    0,
-    6,
-    0
-   ]
+   "expand": null,
+   "data": {
+    "baked_text": true,
+    "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
+   }
   },
   {
    "id": "win_back",
    "states": {
-    "normal": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#D8D2DA"
-    },
-    "hover": "../gothic/detail/plate.png",
+    "normal": "../gothic/result_btn_back.png",
+    "hover": "../gothic/result_btn_back.png",
     "pressed": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/result_btn_back.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate.png",
+     "file": "../gothic/result_btn_back.png",
      "modulate": "#7E7882"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
     "family": "NotoSerifSC",
     "size": 22,
@@ -1476,44 +1465,38 @@
     "disabled_color": "#8A848C"
    },
    "text_rect": [
-    20,
-    13,
-    166,
-    33
+    0,
+    0,
+    266,
+    55
    ],
    "rect": [
-    1102,
-    709,
-    206,
-    59
+    1118,
+    977,
+    266,
+    55
    ],
-   "expand": [
-    26,
-    0,
-    6,
-    0
-   ]
+   "expand": null,
+   "data": {
+    "baked_text": true,
+    "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
+   }
   },
   {
    "id": "lose_retry",
    "states": {
-    "normal": "../gothic/detail/plate_crimson.png",
-    "hover": "../gothic/detail/plate_crimson.png",
+    "normal": "../gothic/result_btn_retry.png",
+    "hover": "../gothic/result_btn_retry.png",
     "pressed": {
-     "file": "../gothic/detail/plate_crimson.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/result_btn_retry.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate_crimson.png",
+     "file": "../gothic/result_btn_retry.png",
      "modulate": "#7E7882"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
     "family": "NotoSerifSC",
     "size": 22,
@@ -1521,47 +1504,38 @@
     "disabled_color": "#8A848C"
    },
    "text_rect": [
-    20,
-    14,
-    253,
-    33
+    0,
+    0,
+    267,
+    55
    ],
    "rect": [
-    652,
-    690,
-    293,
-    62
+    681,
+    977,
+    267,
+    55
    ],
-   "expand": [
-    26,
-    0,
-    6,
-    0
-   ]
+   "expand": null,
+   "data": {
+    "baked_text": true,
+    "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
+   }
   },
   {
    "id": "lose_back",
    "states": {
-    "normal": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#D8D2DA"
-    },
-    "hover": "../gothic/detail/plate.png",
+    "normal": "../gothic/result_btn_back.png",
+    "hover": "../gothic/result_btn_back.png",
     "pressed": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/result_btn_back.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate.png",
+     "file": "../gothic/result_btn_back.png",
      "modulate": "#7E7882"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
     "family": "NotoSerifSC",
     "size": 22,
@@ -1569,23 +1543,22 @@
     "disabled_color": "#8A848C"
    },
    "text_rect": [
-    20,
-    14,
-    253,
-    33
+    0,
+    0,
+    266,
+    55
    ],
    "rect": [
-    979,
-    690,
-    293,
-    62
+    972,
+    977,
+    266,
+    55
    ],
-   "expand": [
-    26,
-    0,
-    6,
-    0
-   ]
+   "expand": null,
+   "data": {
+    "baked_text": true,
+    "_note": "按钮字在切图上（H02 返回选关 / H03 重新开始 / H04 下一关），程序不再写字"
+   }
   },
   {
    "id": "obj_moon",
@@ -1620,11 +1593,8 @@
     620,
     236
    ],
-   "file": "../gothic/result_win.png",
-   "data": {
-    "modulate": "#FFFFFF8C",
-    "_note": "胜利徽记（GPT 绘图）：衬在「战斗胜利」之后，半透明"
-   }
+   "file": "../gothic/blank.png",
+   "data": null
   },
   {
    "id": "obj_sep",
@@ -1653,14 +1623,26 @@
   {
    "id": "win_sep",
    "style": {
-    "bg": "#6E6774"
-   }
+    "bg": "#FFFFFF1C"
+   },
+   "rect": [
+    824,
+    375,
+    274,
+    1
+   ]
   },
   {
    "id": "lose_sep2",
    "style": {
-    "bg": "#6E6774"
-   }
+    "bg": "#FFFFFF1C"
+   },
+   "rect": [
+    824,
+    454,
+    274,
+    1
+   ]
   },
   {
    "id": "obj_box",
@@ -1721,27 +1703,387 @@
     620,
     278
    ],
-   "file": "../gothic/result_lose.png",
-   "data": {
-    "modulate": "#FFFFFF80",
-    "_note": "失败徽记（GPT 绘图）：衬在「战斗失败」之后，半透明"
-   }
+   "file": "../gothic/blank.png",
+   "data": null
   },
   {
    "id": "lose_title",
    "rect": [
-    719,
-    282,
-    482,
-    69
+    860,
+    174,
+    200,
+    100
    ],
    "text_rect": [
     0,
     0,
-    482,
-    69
+    200,
+    100
    ],
-   "align": "center"
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 42,
+    "color": "#999999",
+    "line_spacing": -20
+   },
+   "data": {
+    "wrap_chars": 2,
+    "_note": "两字一行，叠在框顶标题牌里（参考图字形 905–1019 × 185–265）"
+   }
+  },
+  {
+   "id": "win_title",
+   "rect": [
+    860,
+    174,
+    200,
+    100
+   ],
+   "text_rect": [
+    0,
+    0,
+    200,
+    100
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 42,
+    "color": "#999999",
+    "line_spacing": -20
+   },
+   "data": {
+    "wrap_chars": 2,
+    "_note": "两字一行，叠在框顶标题牌里（参考图字形 905–1019 × 185–265）"
+   }
+  },
+  {
+   "id": "win_level",
+   "rect": [
+    784,
+    328,
+    354,
+    40
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    40
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#DCD6DE"
+   },
+   "data": null
+  },
+  {
+   "id": "win_time",
+   "rect": [
+    784,
+    384,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B7B0B9"
+   },
+   "data": null
+  },
+  {
+   "id": "win_survivors",
+   "rect": [
+    784,
+    414,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B7B0B9"
+   },
+   "data": null
+  },
+  {
+   "id": "lose_level",
+   "rect": [
+    784,
+    328,
+    354,
+    40
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    40
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#DCD6DE"
+   },
+   "data": null
+  },
+  {
+   "id": "lose_time",
+   "rect": [
+    784,
+    384,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B7B0B9"
+   },
+   "data": null
+  },
+  {
+   "id": "lose_survivors",
+   "rect": [
+    784,
+    414,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B7B0B9"
+   },
+   "data": null
+  },
+  {
+   "id": "win_reward_head",
+   "rect": [
+    784,
+    450,
+    354,
+    28
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    28
+   ],
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 18,
+    "color": "#C8566E"
+   },
+   "data": null
+  },
+  {
+   "id": "win_reward",
+   "rect": [
+    784,
+    478,
+    354,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    26
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 17,
+    "color": "#D2C8CF"
+   },
+   "data": null
+  },
+  {
+   "id": "lose_reason",
+   "rect": [
+    784,
+    466,
+    354,
+    28
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    28
+   ],
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#D27A86"
+   },
+   "data": null
+  },
+  {
+   "id": "win_score_row",
+   "_after": "win_reward",
+   "kind": "text_style",
+   "rect": [
+    784,
+    450,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "align": "left",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#B7B0B9"
+   },
+   "data": {
+    "_note": "计分四行的名称 / 明细；数值用 win_score_value"
+   }
+  },
+  {
+   "id": "win_score_value",
+   "_after": "win_score_row",
+   "kind": "text_style",
+   "rect": [
+    784,
+    450,
+    354,
+    30
+   ],
+   "text_rect": [
+    0,
+    0,
+    354,
+    30
+   ],
+   "align": "right",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 18,
+    "color": "#EDE8EE"
+   }
+  },
+  {
+   "id": "win_score_ring",
+   "_after": "win_score_value",
+   "kind": "image",
+   "rect": [
+    1210,
+    519,
+    217,
+    211
+   ],
+   "file": "../gothic/result_score_ring.png",
+   "data": {
+    "_note": "H05 得分圆环（「综合得分」「最高得分」在图上），胜利时「盖章」落下"
+   }
+  },
+  {
+   "id": "win_score_total",
+   "_after": "win_score_ring",
+   "kind": "text_style",
+   "rect": [
+    1262,
+    586,
+    94,
+    76
+   ],
+   "text_rect": [
+    0,
+    0,
+    94,
+    76
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 60,
+    "color": "#CCCCCC"
+   },
+   "data": {
+    "_note": "综合分数字（参考图字形 1282–1346 × 603–645）；位数多时缩字号放进文字区"
+   }
+  },
+  {
+   "id": "win_score_best",
+   "_after": "win_score_total",
+   "kind": "text_style",
+   "rect": [
+    1257,
+    669,
+    80,
+    26
+   ],
+   "text_rect": [
+    0,
+    0,
+    80,
+    26
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC",
+    "size": 18,
+    "color": "#CCCCCC"
+   }
+  },
+  {
+   "id": "win_score_note",
+   "_after": "win_score_best",
+   "kind": "text_style",
+   "rect": [
+    1257,
+    694,
+    80,
+    20
+   ],
+   "text_rect": [
+    0,
+    0,
+    80,
+    20
+   ],
+   "align": "center",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 13,
+    "color": "#D0566E"
+   }
   }
  ]
 }
