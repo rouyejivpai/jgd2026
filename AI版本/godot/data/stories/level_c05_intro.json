@@ -1,0 +1,65 @@
+{
+  "id": "level_c05_intro",
+  "scenes": [
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "看清楚。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "近处那具开始动，它挣开一截链子，背上的骨刺跟着长出来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "六根，长短不齐——一看就不是一次长出来的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它撞在链上，骨刺又长了一根。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它在生气。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "血肉术法不用力气，用情绪，它越疼越气，越气，术法就长得越动。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "所以别想着先把它打服。这种东西没有“服”。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "远处那具不动。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它的手臂垂下去，很长——比身体还长。它在抖。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "那一具在怕。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "怕的东西会先跑，可它射得最远，让它跑了，你得追一路。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你自己挑先杀谁。"
+    }
+  ]
+}

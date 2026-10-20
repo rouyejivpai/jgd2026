@@ -1,0 +1,70 @@
+{
+  "id": "level_c07_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "塌口外面是灰黄色的天。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她第一次看见天空，天空没有边界，只是一直灰下去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "天上挂着一颗太阳，肉色的，模糊的，不死不活。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸站在她身后。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "下去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶的背后传来轻柔而不可抗拒的推力"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "穿过云，穿过那块肉色的光斑，穿过一片什么都不完整的天空。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "坠落的过程没有声音，因为她没有用来喊叫的东西。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "地面砸穿了她的背。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "灰白的秸秆碎屑慢慢落下来，落在她脸上。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸的声音第一次隔得这么远。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "吞食失控者。斩杀畸变体。抵达神战遗址核心。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶坐了起来。"
+    }
+  ]
+}

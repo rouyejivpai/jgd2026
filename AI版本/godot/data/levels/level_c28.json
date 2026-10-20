@@ -37,11 +37,23 @@
         15,
         5
       ],
-      "display_name": "骨花核心",
+      "display_name": "骨花",
       "overrides": {
         "vision": 16,
         "max_hp": 100
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/bone_weaver.png",
+        "portrait": "res://assets/sprites/portraits/bone_weaver.png",
+        "scale": 1.1,
+        "projectile": "res://assets/sprites/projectiles/pollen_orb.png",
+        "skill_color": "#f0a6bc"
+      },
+      "description": "由魔女们死后散落的神性碎片长成，固定不动，成片生长。长在活物身上时，会一点一点把宿主变成自己的骨头。",
+      "traits": [
+        "bloom_spore_great"
+      ],
+      "public_rule_text": "扎根不动。开战 3 秒后，每 5 秒朝视野内最远的人偶当时所在的位置吐出大团孢种，2.5 秒后炸开（半径 2 格，35 伤害）。"
     },
     {
       "id": "S1",
@@ -51,10 +63,18 @@
         13,
         2
       ],
-      "display_name": "骨喉·下",
+      "display_name": "悲伤魔女·下",
       "overrides": {
         "vision": 16
-      }
+      },
+      "description": "觉醒魔女力量时感情为「悲伤」的魔女。失控后归寂术法作用在自己身上，生命力一点点归寂；石化完成之前，她只能无声地哭。",
+      "traits": [
+        "sorrow_tears"
+      ],
+      "visuals": {
+        "skill_color": "#bcd2f2"
+      },
+      "public_rule_text": "站在原地无声地哭，不会移动。每 4 秒把眼泪洒向视野内最远的人偶当时所在的位置，2 秒后归寂（半径 1.5 格，30 伤害）。不做普通攻击。"
     },
     {
       "id": "S2",
@@ -64,10 +84,18 @@
         13,
         8
       ],
-      "display_name": "骨喉·上",
+      "display_name": "悲伤魔女·上",
       "overrides": {
         "vision": 16
-      }
+      },
+      "description": "觉醒魔女力量时感情为「悲伤」的魔女。失控后归寂术法作用在自己身上，生命力一点点归寂；石化完成之前，她只能无声地哭。",
+      "traits": [
+        "sorrow_tears"
+      ],
+      "visuals": {
+        "skill_color": "#bcd2f2"
+      },
+      "public_rule_text": "站在原地无声地哭，不会移动。每 4 秒把眼泪洒向视野内最远的人偶当时所在的位置，2 秒后归寂（半径 1.5 格，30 伤害）。不做普通攻击。"
     },
     {
       "id": "G1",
@@ -83,7 +111,7 @@
         "attack": 8,
         "max_hp": 150
       },
-      "public_rule_text": "锁定首个进入 6 格视野的分裂体并追击。"
+      "public_rule_text": "锁定首个进入 6 格视野的人偶并追击。"
     },
     {
       "id": "G2",
@@ -302,7 +330,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "白纸地图，三具爆裂源，前面站着两名护卫。拆掉核心和两具骨喉就赢——护卫不必杀。",
+    "objective_text": "白纸地图，三具爆裂源，前面站着两名护卫。拆掉骨花和两具悲伤魔女就赢——护卫不必杀。",
     "win": [
       {
         "id": "win_blasters",
@@ -349,8 +377,8 @@
   "region_cn": "骨花温室",
   "id": "level_c28",
   "index": 128,
-  "title": "无遮蔽",
-  "subtitle": "Boss 区 · 第二关：没有墙可借",
+  "title": "暴露",
+  "subtitle": "这次没有墙。",
   "biome": "bone_greenhouse",
   "rewards": {
     "unlock_forms": [],
@@ -364,7 +392,7 @@
     "重做：开阔场 + 两名护卫当阻挡（评审：缺少有效阻挡）；胜利条件改为拆三具爆裂源；护卫 150 血 / 攻击 8，核心 100 血；原数据实跑 11 秒全灭——不是「冲进去就赢」，而是「怎么都赢不了」；信标计费、预算 14→16（4 人 14 + 2 包信标）。"
   ],
   "display_index": 28,
-  "summary": "Boss 区 · 第二关：没有墙可借",
+  "summary": "这次没有墙。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -412,8 +440,8 @@
   ],
   "hints": [
     "没有墙可以躲。爆裂只砸最远的人：派一个人在后方绕圈；护卫只认第一个看见的人：让承伤先进场。输出跟在后面。",
-    "白纸地图，三具爆裂源，前面站着两名护卫。拆掉核心和两具骨喉就赢——护卫不必杀。",
-    "承伤形态先往前走，被两名护卫锁定；快速形态在左后方来回绕圈当最远者；远射和基础形态跟在承伤身后，按「生命最低」先拆两具骨喉，再拆核心。",
+    "白纸地图，三具爆裂源，前面站着两名护卫。拆掉骨花和两具悲伤魔女就赢——护卫不必杀。",
+    "承伤形态先往前走，被两名护卫锁定；快速形态在左后方来回绕圈当最远者；远射和基础形态跟在承伤身后，按「生命最低」先拆两具悲伤魔女，再拆骨花。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

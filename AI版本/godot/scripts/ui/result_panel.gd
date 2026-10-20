@@ -47,6 +47,8 @@ var _stamp_note: Label = null
 var _dim: ColorRect = null              ## 全屏压暗底（布局 <k>_panel.data.dim），不拦截点击
 var _show_tween: Tween = null           ## 结算演出（点击跳过时停掉）
 var _typing: Array[Label] = []          ## 本次要打字机显示的文字
+var _stamped: bool = false              ## 本次演出的盖章音已响（点击跳过时补一次）
+var _blip_at: int = 0                   ## 打字机：上次响 text_blip 时已显示的字数
 const SCORE_ROW_H: float = 30.0
 const SCORE_NAME_W: float = 96.0
 const SCORE_VALUE_W: float = 64.0
@@ -103,6 +105,8 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_retry = _button(DataRegistry.get_string("ui.retry"), controller.reset)
 	_next = _button(DataRegistry.get_string("ui.next_level"), _on_next)
 	_back = _button(DataRegistry.get_string("ui.back"), controller.exit)
+	_next.set_meta("sfx_press", "ui_confirm_major")
+	_back.set_meta("sfx_press", "ui_back")
 	# 标题不包 ScrollText、不裁剪：艺术字是标题的子节点，裁剪会把光晕切成硬边（2026-10-18）；标题文字固定且短
 	for l: Label in [_level_name, _survivors]:
 		l.clip_text = true
@@ -473,6 +477,7 @@ func _play_show(won: bool) -> void:
 	if _show_tween != null and _show_tween.is_valid():
 		_show_tween.kill()
 	_typing.clear()
+	_stamped = false
 	var texts: Array[Label] = []
 	texts.assign([_time, _survivors, _reward_head, _rewards] if won else [_time, _survivors, _reason, _last_hit])
 	for l: Label in texts:
@@ -505,7 +510,11 @@ func _play_show(won: bool) -> void:
 			var value: Label = r["value"] as Label
 			var target: float = float(r["target"])
 			t.tween_property(row, "modulate:a", 1.0, 0.12)
-			t.tween_method(func(v: float) -> void: value.text = _score_value(v, target), 0.0, target, float(p.get("count_s", 0.9))).set_trans(trans).set_ease(ease_t)
+			t.tween_method(func(v: float) -> void:
+				var txt: String = _score_value(v, target)
+				if txt != value.text:              # 显示的数字变了 → 计数音（限频 45 ms，越接近目标音越高）
+					AudioManager.play_sfx("result_count", "UI", -4.0, 1.0 + 0.25 * clampf(v / maxf(target, 0.001), 0.0, 1.0), 0.0, 45)
+				value.text = txt, 0.0, target, float(p.get("count_s", 0.9))).set_trans(trans).set_ease(ease_t)
 			t.tween_interval(float(p.get("row_gap_s", 0.15)))
 		t.tween_interval(float(sp.get("delay_s", 0.25)))
 		t.tween_callback(_stamp_down)
@@ -513,7 +522,7 @@ func _play_show(won: bool) -> void:
 	var cps: float = maxf(float(p.get("type_cps", 40.0)), 1.0)
 	for l: Label in _typing:
 		var n: int = maxi(l.get_total_character_count(), 1)
-		t.tween_property(l, "visible_ratio", 1.0, float(n) / cps)
+		t.tween_method(_type_step.bind(l, n), 0.0, 1.0, float(n) / cps)
 		t.tween_callback(_scroll_to_bottom)
 		t.tween_interval(float(p.get("line_gap_s", 0.1)))
 	var bd: float = float(p.get("buttons_in_s", 0.3))
@@ -523,9 +532,29 @@ func _play_show(won: bool) -> void:
 	t.tween_callback(_finish_show)
 
 
+## 打字机一步：显示比例 r；每多显示 2 个字响一声很轻的 text_blip
+func _type_step(r: float, l: Label, n: int) -> void:
+	l.visible_ratio = r
+	var shown: int = int(r * float(n))
+	if shown < _blip_at:
+		_blip_at = 0
+	if shown - _blip_at >= 2 and r < 1.0:
+		_blip_at = shown
+		AudioManager.play_sfx("text_blip", "UI", -8.0, 1.0, 0.08, 30)
+
+
+## 盖章音 result_stamp；本局新纪录时紧跟 result_record（delay 秒后）
+func _stamp_sfx(delay: float) -> void:
+	_stamped = true
+	AudioManager.play_ui("result_stamp")
+	if _stamp_note != null and _stamp_note.visible:
+		get_tree().create_timer(delay).timeout.connect(func() -> void: AudioManager.play_ui("result_record"))
+
+
 ## 盖章：从大、透明落到原大小（back out），随后整块轻震
 func _stamp_down() -> void:
 	var sp: Dictionary = UiKit.motion_params("result").get("stamp", {}) as Dictionary
+	_stamp_sfx(float(sp.get("duration", 0.32)))
 	_stamp.visible = true
 	_stamp.modulate.a = 0.0
 	_stamp.scale = Vector2.ONE * float(sp.get("from_scale", 2.6))
@@ -583,6 +612,9 @@ func _input(event: InputEvent) -> void:
 	var mb: InputEventMouseButton = event as InputEventMouseButton
 	var click: bool = mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT
 	if click or event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
+		AudioManager.play_ui("ui_skip")
+		if _score_block.visible and not _stamped:
+			_stamp_sfx(0.2)
 		_finish_show()
 		get_viewport().set_input_as_handled()
 

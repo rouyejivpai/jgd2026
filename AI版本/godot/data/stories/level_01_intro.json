@@ -2,7 +2,7 @@
   "id": "level_01_intro",
   "scenes": [
     { "speaker": "witch", "illustration": "witch", "text": "去吧。吞食失控的魔女，斩杀畸形的怪物，抵达神战遗址的核心。" },
-    { "speaker": "doll", "illustration": "doll", "text": "指令已接收。分裂体就位。" },
+    { "speaker": "doll", "illustration": "doll", "text": "指令已接收。人偶就位。" },
     { "speaker": "narrator", "illustration": "", "text": "枯骨农田。田埂尽头有两具还在蠕动的残骸。" }
   ]
 }

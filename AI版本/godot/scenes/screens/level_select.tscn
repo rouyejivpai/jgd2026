@@ -102,10 +102,6 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 0
 
-[node name="ReplayPick" type="OptionButton" parent="DetailPanel/DetailColumn"]
-unique_name_in_owner = true
-layout_mode = 0
-
 [node name="ReplayButton" type="Button" parent="DetailPanel/DetailColumn"]
 unique_name_in_owner = true
 layout_mode = 0

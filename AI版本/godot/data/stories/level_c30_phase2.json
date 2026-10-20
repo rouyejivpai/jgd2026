@@ -3,23 +3,23 @@
   "scenes": [
     {
       "speaker": "narrator",
-      "illustration": "",
+      "illustration": "bone_witch",
       "text": "魔女的根须扎进地里。战斗暂停了。"
     },
     {
       "speaker": "doll",
       "illustration": "doll",
-      "text": "第二阶段，信号的意思反过来了：红 = 外圈花粉，离她 4 格以外的人挨炸——该靠近；黄 = 近身钟缚，4 格以内的人被定住——该退开。"
+      "text": "第二阶段，信号的意思反过来了：红 = 外圈花粉，离她 4 格以外的人挨炸——该靠近；黄 = 近身骨缚，4 格以内的人被定住——该退开。"
     },
     {
       "speaker": "doll",
       "illustration": "doll",
-      "text": "蓝 = 她会召出两只残骸行者。左侧亮起的是增援区，还有 10 Cost 可以补人。"
+      "text": "蓝 = 她会召出两名骨花守卫。左侧亮起的是增援区，还有 10 点灵魂可以补人。"
     },
     {
       "speaker": "doll",
       "illustration": "doll",
-      "text": "改好每个人的指令，补好增援，再按「继续」。"
+      "text": "改好每个人的指令，补好增援，再按「继续战斗」。"
     }
   ]
 }

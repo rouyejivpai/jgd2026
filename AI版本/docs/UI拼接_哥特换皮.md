@@ -131,3 +131,16 @@
 | 修复 | 用户反馈：没有解锁新单位 / 新指令的关卡，结算短一截、计分没显示全。原因：正文只剩计分区（固定高）时 `_fit_body` 因「没有可量高的文字」直接返回 0，计分区高度没算进去，框体不加高、计分被滚动区截断。现在计分区始终计入正文高度；可加高的空间按「框体 + 框外按钮」整体计算 |
 
 截图：`docs/screenshots/gothic/result_win_no_unlock.png`（第 5 关无解锁）、`result_win_unlocks.png`（第 2 关多行解锁）、`result_lose.png`、修复前 `result_bug_before.png`。测试 `tests/integration/test_result_panel.gd`。
+
+## 7. 第七批（2026-10-21）：04.zip 设置面板 + 剧情选择
+
+来源 `04.zip`：C01资产 I01 设置面板（1661×882，标题「设置」与底座画在图上）、J01 剧情卡（331×1096）、J02 返回（643×146，「返回」在图上）、J03 剧情选择叠层（半透明压暗 + 左侧纹饰）；C02参考 设置.png、剧情选择.png（另存 `docs/reference/ui_04/`，不放 assets，免得打进导出包）。入库：`python -I tools/import_settings_story_ui.py <04解压目录>` → `gothic/settings_frame.png`、`story_card.png`（J01 裁到不透明行 145–952）、`story_back.png`、`story_overlay.png`（1921×1081 裁成 1920×1080），另按参考图程序生成徽记 / 底座后的暗红光晕 `settings_glow_top/bottom.png`。坐标由参考图模板匹配量出：面板 (130,152)、徽记 = G01 `btn_leave` 原尺寸 (906,25)、剧情卡 (428,130) 起每张 +347、返回 (1235,893)。
+
+| 项 | 做法 |
+|---|---|
+| 设置浮窗 | `settings_overlay/skin_overrides.json`：面板换 I01 整图（不拉伸，`panel_settings.data.fixed_frame` → `settings_overlay.gd` 不再收起「调试」一节的空位），程序标题透明；关闭 = 面板上方的 G01 徽记（与选关返回同款无字图标，悬停提示「关闭」）；节标题 x 573 粗体 #E5E5E5、条目 x 600 #B2B2B2（字号 24，取自参考图）；行距按用户 2026-10-21 由参考图的 49 拉大到 66（「条目太挤、下面太空」）；滑条 / 开关 / 下拉沿用 2026-10-20 的无描边切图，右缘对齐 x 1347（与节标题左距对称） |
+| 剧情选择浮层 | 新 `scripts/ui/story_select.gd`（StorySelect）+ 手写布局 `assets/ui/story_select/manifest.json`：最底是下层画面高斯模糊（`assets/shaders/screen_blur.gdshader`），其上 J03；卡片按布局 `card` 的位置与 `data.step` 横排，标签压在 J01 烘好的灰框里（放不下时缩字，最小 13；图鉴卡「01 落子」要缩到 16 以下时只放关名）；可见区从 `data.clip_left` 到视口右缘，放不下时滚轮 / 拖动 / 左右键横向滚动；锁定卡压暗、标签「未解锁」、不可点；悬停提亮；返回 / Esc 逐页后退，栈空关闭；参考图没有的页标题（关名 /「剧情回顾」）放在左上 (428,64)。z_index 50，压住选关里抬过 z 的选中节点 |
+| 选关「剧情回放」 | 2026-10-20 的「开头剧情 / 结尾剧情」两个按钮合回 D04「剧情回放」（[1272,930]，字在切图上；tscn `ReplayButton`）：该关开头或结尾看过才显示，点开剧情选择两卡（没看过的锁定），点卡浮层暂隐、StoryPlayer 播放，播完回到浮层；不改 stories_seen |
+| 主界面「剧情」 | 新按钮 `btn_story`（新游戏与设置之间，继续 / 新游戏上移一格）；一段都没看过时禁用。点开 = 剧情回顾图鉴：主线章节关卡顺序，只列看过至少一段的关卡 → 点关卡进开头 / 结尾两卡页 → 播放（剧情背景下垫与选关相同的暗品红底光）。图鉴 / 剧情打开时挂机不计时 |
+
+截图：`docs/screenshots/gothic/settings_04.png`、`story_gallery.png`、`story_pair.png`、`level_replay_button.png`、`level_replay_pick.png`；`take_screenshots.gd -- --screen=story_gallery | story_pair`（临时把主线前 9 关记为看过，第 9 关只看过开头，截完恢复）。测试：`tests/integration/test_story_gallery.gd`（新）、`test_level_select_ui.gd` 的回放用例改为浮层口径。

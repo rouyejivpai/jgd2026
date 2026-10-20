@@ -1,0 +1,65 @@
+{
+  "id": "level_c15_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "广场上立着一排石柱，每根都刻着字，大部分被磨平了，只有一根还看得清：「缄默」。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她蹲下来。柱子底下压着一本烧了一半的记录。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "纸是干的。字还认得出。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "「第三圣钟年，反社会魔女『缄默』被处决。临刑前她说：你们的神不是善神。祂在吃你们。你们每一个人，都是祂的饲料。」"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "「审判庭判定：异端邪说。执行火刑。」"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "最后一行是潦草的小字，比上面的字都用力："
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "「她说的是真的。」"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "远处，一个还穿着祭司袍的东西正朝这边举起手。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "审判庭的，专门负责把魔女困住，等圣火来处刑。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "不用担心，只是一段灵魂残响而已"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "神战的余波太强，人和建筑都在一瞬间破灭。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "死得太快的人，动作还没做完。就停在那儿了。"
+    }
+  ]
+}

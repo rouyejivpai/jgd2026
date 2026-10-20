@@ -1,0 +1,75 @@
+{
+  "id": "level_c19_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "前往肉巢沼泽需要搭乘渡船"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "渡口的“船”是一块还在蠕动的肉。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它没有眼睛。但她走过去的时候，它主动靠了岸。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "岸边躺着一具旧代魔女的遗体，手里握着一盏熄掉的魂灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶掏出自己的灯，上了船。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "船慢慢驶进沼泽，地面在船底襦动。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "别管她。她失败了。你不一样。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "我们有什么不一样？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸没有回答。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "魂灯的蓝光照在不停蠕动的沼泽上。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶盯着那道蓝光。它被吞掉，然后又出现。如此反复。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她在想那个问题。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "或许她应该问问路上的所有人。总会有一个人愿意给她答案。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "这个问题像一块石子卡在胸口，连灵魂海的运转都迟滞了几分。"
+    }
+  ]
+}

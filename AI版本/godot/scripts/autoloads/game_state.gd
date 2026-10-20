@@ -12,8 +12,6 @@ var current_level_id: String = ""
 var current_region_id: String = ""
 ## 设置项：master / music / sfx / fullscreen / target_lines / font_scale / sim_log
 var settings: Dictionary = {}
-## 主题中各字号的原始值（type -> { name: size }，"" 键为 default_font_size），字体缩放以此为基准
-var _base_font_sizes: Dictionary = {}
 ## 本次运行中各关失败次数（第二关首败高亮目标连线用，不存档）
 var fail_counts: Dictionary = {}
 ## 第五阶段强制引导：总开关（测试 / 截图可关）；配置器预览 { level_id, steps, test }；拾取模式 { active, level_id } 与结果 { kind, node | cell }
@@ -21,6 +19,9 @@ var tutorials_enabled: bool = true
 var tutorial_preview: Dictionary = {}
 var tutorial_pick: Dictionary = {}
 var tutorial_pick_result: Dictionary = {}
+## 2026-10-20 开场动画挂机重播：主菜单无操作多久后播放（1 分钟；挂机触发的那次播完后为 5 分钟，任何操作复位），本次是否由挂机触发（不存档）
+var opening_idle_wait: float = 60.0
+var opening_from_idle: bool = false
 ## 配置器的未保存编辑（预览 / 拾取往返战斗场景时保留）
 var config_editor_state: Dictionary = {}
 
@@ -87,23 +88,8 @@ func apply_display_settings() -> void:
 	apply_font_scale(setting_float("font_scale", 1.0))
 
 
-## 按倍率缩放项目主题的全部字号（默认字号与各类型变体）；以首次调用时的主题字号为基准
+## 按倍率缩放全部字号：项目主题 + 各界面换皮主题（ui_*.tres，之后才加载的由 UiKit.ui_theme 补缩放）。
+## 2026-10-20：此前只缩放项目主题，而界面文字的字号都在换皮主题的类型变体里，设置「字体大小」看不出变化。
 func apply_font_scale(scale: float) -> void:
-	var theme: Theme = ThemeDB.get_project_theme()
-	if theme == null:
-		return
-	if _base_font_sizes.is_empty():
-		_base_font_sizes[""] = { "": theme.default_font_size }
-		for type_name: String in theme.get_font_size_type_list():
-			var sizes: Dictionary = {}
-			for size_name: String in theme.get_font_size_list(type_name):
-				sizes[size_name] = theme.get_font_size(size_name, type_name)
-			_base_font_sizes[type_name] = sizes
-	for type_name: String in _base_font_sizes.keys():
-		var sizes: Dictionary = _base_font_sizes[type_name] as Dictionary
-		for size_name: String in sizes.keys():
-			var v: int = roundi(float(int(sizes[size_name])) * scale)
-			if type_name == "":
-				theme.default_font_size = v
-			else:
-				theme.set_font_size(size_name, type_name, v)
+	UiKit.scale_theme_fonts(ThemeDB.get_project_theme(), scale)
+	UiKit.scale_loaded_ui_themes(scale)

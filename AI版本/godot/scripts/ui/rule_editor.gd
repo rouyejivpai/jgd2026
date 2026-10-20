@@ -8,6 +8,7 @@ extends VBoxContainer
 ## 第五阶段（2026-10-17 会议）：玩家单位的指令分「攻击策略」「移动策略」两组显示（同一列表按行为分组，组内顺序 = 优先级），
 ## 每组标题带条数（上限 commands.json group_limits）、各自的「＋ 攻击指令 / ＋ 移动指令」；拖拽只在组内排序。
 ## UI 暂用简单分区 + 侧栏滚动，正式版式待拼 UI。敌人（旧单列表口径）仍显示为一个列表。
+## 音效：行为列表里选中行为 = 新增一行 rule_add（失败 ui_error），「取消」ui_back；删除 / 拖拽排序的音效在 RuleRow。
 
 const RULE_ROW_SCENE: PackedScene = preload("res://scenes/ui/rule_row.tscn")
 const HEADER_TEX: Texture2D = preload("res://assets/ui/gothic/cmd_header.png")     ## 列标题切图（行为 / 条件1 / 条件2）
@@ -288,13 +289,15 @@ func delete_rule(i: int) -> void:
 func _on_add_action(id: int) -> void:
 	close_picker()
 	if id < 0 or id >= _menu_actions.size() or not editable():
+		AudioManager.play_sfx("ui_error", "UI")
 		return
 	var key: String = _menu_actions[id]
 	if group_full(SimTypes.action_group(SimTypes.parse_action(key))):
+		AudioManager.play_sfx("ui_error", "UI")
 		return
 	var rules: Array[RuleDef] = RuleDef.clone_array(controller.get_rules(slot_id))
 	rules.append(new_rule(key))
-	controller.set_rules(slot_id, rules)
+	AudioManager.play_sfx("rule_add" if controller.set_rules(slot_id, rules) else "ui_error", "UI")
 
 
 ## 新增一行：选中的行为（参数取默认），条件「始终」（空条件列表），需要目标时目标选择 / 目标类型取首个可用项
@@ -347,6 +350,7 @@ func _fill_add_menu() -> void:
 			b.expand_icon = false
 			b.add_theme_constant_override("icon_max_width", int(28.0 * k))
 		b.pressed.connect(_on_add_action.bind(i) if key != "cancel" else close_picker)
+		b.set_meta(&"sfx_press", "ui_back" if key == "cancel" else "")      # 选中行为：_on_add_action 按结果播
 		if key != "cancel" and group_full(SimTypes.action_group(SimTypes.parse_action(key))):
 			b.disabled = true             # 第五阶段：该组已满
 			b.tooltip_text = DataRegistry.get_string("ui.rule_group_full").format({ "max": DataRegistry.get_commands().group_limit(SimTypes.action_group(SimTypes.parse_action(key))) })
@@ -380,6 +384,14 @@ func close_picker() -> void:
 	_list.visible = true
 	if was:
 		picker_toggled.emit(false)
+
+
+## 屏幕坐标下的指令行（拖拽放到别组被拒时用）；没有为 null
+func row_at(screen_pos: Vector2) -> RuleRow:
+	for r: RuleRow in _rows:
+		if is_instance_valid(r) and r.is_visible_in_tree() and r.get_global_rect().has_point(screen_pos):
+			return r
+	return null
 
 
 func picker_open() -> bool:

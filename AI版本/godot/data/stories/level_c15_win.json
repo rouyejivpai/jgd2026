@@ -1,0 +1,25 @@
+{
+  "id": "level_c15_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她走过去，把那本烧了一半的记录捡起来，塞进胸口。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "蓝色的光把纸边照得发亮。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你带那个做什么？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有回答。"
+    }
+  ]
+}

@@ -73,29 +73,29 @@ func test_edge_pan_grows_to_limit_then_recenters() -> void:
 	await wait_process_frames(2)
 	assert_true(bool(root.call("pan_enabled")), "有选中且侧栏可见")
 	var hud: Control = root.get_node("UI/HUD") as Control
-	assert_false(bool(hud.call("side_on_right")), "刻印界面：侧栏恒停靠左侧")
+	assert_true(bool(hud.call("side_on_right")), "单位在左半屏：侧栏停靠右侧")
 	var w: float = root.get_viewport_rect().size.x
 	for i: int in 10:
-		root.call("edge_pan_step", Vector2(2.0, 500.0), DT)
-	assert_eq(_pan(root), 0.0, "鼠标在侧栏上（左边缘）不平移")
+		root.call("edge_pan_step", Vector2(w - 2.0, 500.0), DT)
+	assert_eq(_pan(root), 0.0, "鼠标在侧栏上（右边缘）不平移")
 	root.call("edge_pan_step", Vector2(w * 0.5, 500.0), DT)
 	assert_eq(_pan(root), 0.0, "不在边缘不平移")
-	root.call("edge_pan_step", Vector2(w - UiKit.PAN_EDGE_PX - 1.0, 500.0), DT)
+	root.call("edge_pan_step", Vector2(UiKit.PAN_EDGE_PX + 1.0, 500.0), DT)
 	assert_eq(_pan(root), 0.0, "距边 ≥ 24 px 不触发")
 	var last: float = 0.0
 	var steps: int = 0
-	while _pan(root) < UiKit.PAN_MAX and steps < 1000:
-		root.call("edge_pan_step", Vector2(w - 2.0, 500.0), DT)
-		assert_gt(_pan(root), last, "单调变化")
+	while _pan(root) > -UiKit.PAN_MAX and steps < 1000:
+		root.call("edge_pan_step", Vector2(2.0, 500.0), DT)
+		assert_lt(_pan(root), last, "单调变化")
 		last = _pan(root)
 		steps += 1
-	assert_eq(_pan(root), UiKit.PAN_MAX, "到上限 PAN_MAX")
+	assert_eq(_pan(root), -UiKit.PAN_MAX, "到上限 PAN_MAX")
 	assert_almost_eq(float(steps), UiKit.PAN_MAX / (UiKit.PAN_SPEED * DT), 1.0, "速度 600 px/s")
-	root.call("edge_pan_step", Vector2(w - 2.0, 500.0), DT)
-	assert_eq(_pan(root), UiKit.PAN_MAX, "不越过上限")
+	root.call("edge_pan_step", Vector2(2.0, 500.0), DT)
+	assert_eq(_pan(root), -UiKit.PAN_MAX, "不越过上限")
 	var map_layer: Node2D = root.get_node("MapLayer") as Node2D
 	var rect: Rect2 = root.get("playfield_rect") as Rect2
-	assert_almost_eq(map_layer.position.x, rect.position.x - UiKit.PAN_MAX, 0.01, "地图层整体平移")
+	assert_almost_eq(map_layer.position.x, rect.position.x + UiKit.PAN_MAX, 0.01, "地图层整体平移")
 	assert_almost_eq(map_layer.position.y, rect.position.y, 0.01, "只有横向")
 	var unit_layer: Node2D = root.get_node("UnitLayer") as Node2D
 	assert_eq(unit_layer.position, map_layer.position, "单位层同步平移")
@@ -105,7 +105,7 @@ func test_edge_pan_grows_to_limit_then_recenters() -> void:
 		var br2: Rect2 = backdrop.call("drawn_rect") as Rect2
 		var vp: Vector2 = root.get_viewport_rect().size
 		assert_almost_eq(br2.size.y, Playfield.DESIGN_SIZE.y, 0.5, "对齐底图按设计高 1:1")
-		assert_almost_eq(br2.get_center().x, vp.x * 0.5 - UiKit.PAN_MAX, 0.5, "对齐底图与地图层同步平移")
+		assert_almost_eq(br2.get_center().x, vp.x * 0.5 + UiKit.PAN_MAX, 0.5, "对齐底图与地图层同步平移")
 	elif backdrop.texture != null:
 		var br: Rect2 = backdrop.call("drawn_rect") as Rect2
 		assert_lte(br.position.x, 0.5, "偏移到上限 backdrop 左侧不露底")
@@ -145,18 +145,17 @@ func test_ctrl_zoom_keeps_point_under_cursor_and_ctrl_drag_pans() -> void:
 	assert_almost_eq(float(root.get("cam_zoom")), UiKit.ZOOM_MIN, 0.0001, "用过 Ctrl 镜头：取消选中不回正")
 
 
-func test_right_edge_and_start_battle_recenters() -> void:
+func test_left_edge_and_start_battle_recenters() -> void:
 	var root: Node2D = _battle("level_03")
 	await wait_process_frames(2)
 	var c: BattleController = root.get_node("BattleController") as BattleController
 	assert_true(c.apply_recommended())
 	EventBus.unit_selected.emit(c.unit_id_of_slot("u2"))
 	await wait_process_frames(2)
-	var w: float = root.get_viewport_rect().size.x
 	for i: int in 20:
-		root.call("edge_pan_step", Vector2(w - 1.0, 500.0), DT)      # 侧栏恒在左侧：左边缘在侧栏上不平移，改用右边缘
-	assert_gt(_pan(root), 0.0, "右边缘向右平移")
-	assert_lte(_pan(root), UiKit.PAN_MAX)
+		root.call("edge_pan_step", Vector2(1.0, 500.0), DT)
+	assert_lt(_pan(root), 0.0, "左边缘向左平移")
+	assert_gte(_pan(root), -UiKit.PAN_MAX)
 	assert_true(c.start())
 	await _until_zero(root)
 	assert_eq(_pan(root), 0.0, "开始战斗回 0")

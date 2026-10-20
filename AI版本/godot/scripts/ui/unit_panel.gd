@@ -34,7 +34,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	controller = p_controller
 	level = p_level
 	size = DetailKit.rel("det_panel").size          # 位置与尺寸由 HUD 摆放（框体内左上对齐）
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	mouse_filter = Control.MOUSE_FILTER_IGNORE   # 尺寸按整张底图（含伸到地图上的纹饰）：自身不拦截，否则侧栏旁一大片地图点不到（2026-10-20 第 3 关放不下信标）；框体 Frame 拦截侧栏内的点击
 	_portrait = DetailKit.portrait(self)
 	_name = DetailKit.label(self, "det_title")
 	_desc = DetailKit.label(self, "det_desc")
@@ -43,6 +43,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	_remove_button.text = DataRegistry.get_string("ui.remove_unit")
 	_remove_button.focus_mode = Control.FOCUS_NONE
 	_remove_button.pressed.connect(_on_remove_pressed)
+	_remove_button.set_meta(&"sfx_press", "")         # 由 _on_remove_pressed 播 deploy_remove
 	_remove_button.tooltip_text = DataRegistry.get_string("ui.remove_hint")      # 侧栏头部没有空位放说明小字：改为悬停提示
 	DetailKit.place(self, _remove_button, DetailKit.rel("det_remove"))
 	ScrollText.wrap(_name, ScrollText.Mode.AUTO)
@@ -122,6 +123,7 @@ func _build_beacon_section(body: VBoxContainer) -> void:
 	_copy_button.clip_text = true
 	_copy_button.focus_mode = Control.FOCUS_NONE
 	_copy_button.pressed.connect(_on_copy_route)
+	_copy_button.set_meta(&"sfx_press", "")
 	_route_row.add_child(_copy_button)
 	_route_row.visible = false
 	_beacon_nodes.append(_beacon_list)
@@ -151,7 +153,9 @@ func _refresh_beacons() -> void:
 		del.focus_mode = Control.FOCUS_NONE
 		del.disabled = not editable
 		var bid: String = str(b["id"])
-		del.pressed.connect(func() -> void: controller.remove_beacon(slot_id, bid))
+		del.set_meta(&"sfx_press", "")
+		del.pressed.connect(func() -> void:
+			AudioManager.play_sfx("beacon_remove" if controller.remove_beacon(slot_id, bid) else "ui_error", "UI"))
 		row.add_child(del)
 	_beacon_hint.visible = editable
 	_beacon_button.visible = editable
@@ -179,9 +183,12 @@ func _refresh_footer() -> void:
 
 func _on_copy_route() -> void:
 	if _route_pick.selected < 0:
+		AudioManager.play_sfx("ui_error", "UI")
 		return
 	var rid: String = UiKit.option_value(_route_pick, _route_pick.selected)
-	if controller.copy_route_to_beacons(slot_id, rid):
+	var ok: bool = controller.copy_route_to_beacons(slot_id, rid)
+	AudioManager.play_sfx("beacon_place" if ok else "ui_error", "UI")
+	if ok:
 		EventBus.toast.emit(DataRegistry.get_string("ui.copy_route_done").format({ "route": (level.routes[rid] as RouteDef).display_name }))
 
 
@@ -220,7 +227,10 @@ func _refresh_remove() -> void:
 
 
 func _on_remove_pressed() -> void:
-	controller.remove_unit(slot_id)     # 音效与收起侧栏由 BattleRoot 的 deployment_changed 处理
+	if controller.remove_unit(slot_id):     # 收起侧栏由 BattleRoot 的 deployment_changed 处理
+		AudioManager.play_sfx("deploy_remove")
+	else:
+		AudioManager.play_sfx("ui_error", "UI")
 
 
 func _process(_delta: float) -> void:

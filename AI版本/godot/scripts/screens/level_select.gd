@@ -7,7 +7,9 @@ extends Control
 ##   2026-10-20（用户）：进入时详情面板收起、默认节点不画选中样式；节点平铺整张区域地图（不再避让面板）；
 ##   点节点时面板滑出，并把该节点滚到可见区横向正中（可出框）；收起面板时立刻弹回可滚范围。
 ## - 右侧上框：第 N 关、关名、区域；下框：关卡特征（summary，空则 subtitle）、任务、状态、锁定时的前置关卡。
-##   「进入」（锁定时禁用）；「开场剧情」下拉列出该关 _intro / _win / _lose 中 stories_seen 已含的条目，「回放剧情」用 StoryPlayer 播放，不改 stories_seen。
+##   「进入」（锁定时禁用）；「剧情回放」（D04，该关 _intro / _win 任一在 stories_seen 里才显示）打开剧情选择浮层（StorySelect）：
+##   「开头剧情」「结尾剧情」两卡（没看过的锁定），点卡用 StoryPlayer 播放（浮层暂隐，播完回到浮层），不改 stories_seen
+##   （2026-10-21 用户 04.zip；之前 2026-10-20 是并排两个按钮）。
 ## - 选中占位节点（未开放）时右侧换成整图 ui_25 的紧凑版式：标题牌 + 说明框「未解锁」+ 禁用的「进入」，不显示区域与回放（布局 ph_*）。
 ## - 节点：深底金环圆盘 + 名牌胶囊（「01 · 田埂」）；锁定环暗并带锁；Boss 圆盘更大、青底；占位节点（9–25）恒锁定。
 ##   区域图标（整图里的耙子 / 网格 / 盾 / 准星 / 花）缺素材，暂显示关卡编号（docs/P6_MISSING_ASSETS.md）。
@@ -25,7 +27,7 @@ signal enter_requested(level_id: String)
 
 const MENU_BGM: String = "menu_main"
 const NODE_ART_DIR: String = "res://assets/ui/chapter/nodes/"
-const STORY_KINDS: Array[String] = ["intro", "win", "lose"]
+const REPLAY_KINDS: Array[String] = ["intro", "win"]      ## 回放按钮：开头剧情 / 结尾剧情
 const STORY_PLAYER_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
 const SKIN: String = "chapter"
 const ELITE_DISC_TINT: Color = Color(1.0, 0.55, 0.6)   ## 精英关节点徽章（首领青底徽章染暗红）
@@ -47,11 +49,12 @@ var scroll_x: float = 0.0
 var navigate: bool = true                ## false：「进入」只发 enter_requested（测试用）
 var _scale: float = 1.0
 var _story: StoryPlayer = null
+var story_select: StorySelect = null     ## 剧情回放浮层（开头 / 结尾两卡）
+var _replaying: bool = false             ## 正在从浮层播回放：播完回到浮层
 var _pressing: bool = false
 var _dragging: bool = false
 var _press_pos: Vector2 = Vector2.ZERO
 var _press_scroll: float = 0.0
-var _replay_ids: Array[String] = []
 
 const SCORE_TAG_OFFSET: float = 1.15       ## 综合分胶囊中心在名牌中心下方的偏移（名牌高的倍数）
 const SCORE_TAG_FONT: int = 22
@@ -70,16 +73,15 @@ const SCORE_TAG_FONT: int = 22
 @onready var _detail_locked: Label = %DetailLockedBy
 @onready var _enter_button: Button = %EnterButton
 @onready var _replay_button: Button = %ReplayButton
-@onready var _replay_pick: OptionButton = %ReplayPick
 var _level_no: Label
 var _objective_head: Label
-var _skin: Dictionary = {}               ## 布局元素 id → 节点（框体、分隔线、滚动指示等）
+var _skin: Dictionary = {}               ## 布局元素 id → 节点（框体、分隔线等）
 var _lower: VBoxContainer = null         ## 下框内容（竖排）
 var _lower_scroll: ScrollText = null
 var _ph_title: Label
 var _ph_text: Label
 var _ph_enter: Button                    ## 占位版式的「进入」（恒禁用）
-const NORMAL_ONLY: Array[String] = ["panel_top", "panel_bottom", "moon_orn", "astro_orn", "gem1_orn", "gem2_orn", "gem3_orn", "gem4_orn", "level_no", "level_title", "sep_top", "region", "btn_enter", "replay_pick", "btn_replay"]
+const NORMAL_ONLY: Array[String] = ["panel_top", "panel_bottom", "moon_orn", "astro_orn", "gem1_orn", "gem2_orn", "gem3_orn", "gem4_orn", "level_no", "level_title", "sep_top", "region", "btn_enter"]
 const PLACEHOLDER_ONLY: Array[String] = ["ph_plaque", "ph_panel", "ph_title", "ph_text", "ph_enter"]
 var _node_clip: Control = null           ## 节点与连线的遮罩层：宽 = 地图可见宽（详情面板左缘），节点不露在面板之间的空隙里
 var _node_layer: Control = null          ## 节点 / 连线所在层，随滚动横移（与 MapContent 同步）
@@ -109,13 +111,18 @@ func _ready() -> void:
 	region_id = pick_region()
 	_back_button.text = DataRegistry.get_string("ui.back")
 	_back_button.pressed.connect(_on_back_pressed)
+	_back_button.set_meta("sfx_press", "ui_back")
 	_settings_button.text = DataRegistry.get_string("ui.menu_settings")
 	_settings_button.pressed.connect(func() -> void: SceneRouter.open_settings())      # 10 §2：章节地图顶栏「设置」
+	_back_button.tooltip_text = _back_button.text      # 2026-10-20：返回 / 设置改为与战斗 HUD 同款无字图标，悬停提示文字
+	_settings_button.tooltip_text = _settings_button.text
 	_enter_button.text = DataRegistry.get_string("ui.node_enter")
 	_enter_button.pressed.connect(_on_enter_pressed)
-	_replay_button.text = DataRegistry.get_string("ui.replay_story")
-	_replay_button.pressed.connect(func() -> void: _on_replay_pressed(_replay_pick.selected))
-	for b: BaseButton in [_back_button, _settings_button, _enter_button, _replay_button, _replay_pick] as Array[BaseButton]:
+	_enter_button.set_meta("sfx_press", "ui_confirm_major")
+	_replay_button.text = DataRegistry.get_string("ui.replay")
+	_replay_button.tooltip_text = _replay_button.text
+	_replay_button.pressed.connect(_on_replay_pressed)
+	for b: BaseButton in [_back_button, _settings_button, _enter_button, _replay_button] as Array[BaseButton]:
 		b.focus_mode = Control.FOCUS_NONE
 	_apply_skin()
 	if chapter == null:
@@ -152,8 +159,14 @@ func _ready() -> void:
 	set_panel_open(false, true)      # 进入时不显示详情面板，点节点才滑出
 	select_node(default_node())
 	center_on(selected_id)
+	story_select = StorySelect.new()
+	story_select.name = "StorySelect"
+	add_child(story_select)
+	story_select.entry_chosen.connect(_on_replay_chosen)
 	_story = STORY_PLAYER_SCENE.instantiate() as StoryPlayer
-	add_child(_story)
+	add_child(_story)                                   # 剧情层在浮层之上
+	_story.set_base_material(_background.material)      # 选关里播剧情：背景用最后方的品红底光，不透出地图
+	_story.finished.connect(_on_story_finished)
 	_play_unlock_stories.call_deferred()
 	_start_reveals.call_deferred()
 
@@ -168,11 +181,11 @@ func _make_petals(n: String, amount: int, depth: float) -> LilyPetals:
 	return p
 
 
-## 换皮：主题；框体 / 分隔线 / 滚动指示等贴图节点；场景里各节点的主题变体；摆放见 _place_skin
+## 换皮：主题；框体 / 分隔线等贴图节点（2026-10-21 用户：底部横向滚动条删掉——地图不够长）；场景里各节点的主题变体；摆放见 _place_skin
 func _apply_skin() -> void:
 	theme = UiKit.ui_theme(SKIN)
 	_background.color = Palette.BG_DEEP
-	for id: String in ["panel_top", "panel_bottom", "ph_plaque", "ph_panel", "moon_orn", "astro_orn", "gem1_orn", "gem2_orn", "gem3_orn", "gem4_orn", "sep_top", "sep_bottom", "title_plaque", "title_moon", "title_line", "scroll_line", "scroll_thumb"]:
+	for id: String in ["panel_top", "panel_bottom", "ph_plaque", "ph_panel", "moon_orn", "astro_orn", "gem1_orn", "gem2_orn", "gem3_orn", "gem4_orn", "sep_top", "sep_bottom", "title_plaque", "title_moon", "title_line"]:
 		var c: Control = UiKit.node_for(UiKit.layout_element(SKIN, id))
 		c.name = "Skin_" + id
 		c.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -203,7 +216,7 @@ func _apply_skin() -> void:
 	var pairs: Dictionary = {
 		"title": _title, "btn_back": _back_button, "btn_settings": _settings_button, "level_title": _detail_title, "region": _detail_region,
 		"summary": _detail_summary, "objective": _detail_objective, "state": _detail_state, "btn_enter": _enter_button,
-		"replay_pick": _replay_pick, "btn_replay": _replay_button,
+		"btn_replay": _replay_button,
 	}
 	for id: String in pairs.keys():
 		var c: Control = pairs[id] as Control
@@ -221,8 +234,6 @@ func _apply_skin() -> void:
 	_detail_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_detail_locked.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "objective").get("theme_type", "")))
 	_detail_locked.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_replay_pick.fit_to_longest_item = false
-	_replay_pick.add_theme_icon_override("arrow", UiKit.transparent_texture(Vector2i.ONE))      # 箭头画在下拉切片上
 	_place_skin()
 	for id: String in ["title", "level_title", "region", "ph_title"]:
 		var l: Label = _skin[id] as Label
@@ -247,15 +258,12 @@ func _place_skin() -> void:
 	var slid: float = _detail.position.x                 # 收起时面板整体右移：按展开位置摆放，再移回去
 	_detail.position.x = 0.0
 	for id: String in _skin.keys():
-		if id in ["scroll_thumb", "sep_bottom", "summary", "objective", "objective_head", "state"] and _lower != null:
-			continue
-		if id == "scroll_thumb":
+		if id in ["sep_bottom", "summary", "objective", "objective_head", "state"] and _lower != null:
 			continue
 		var text: bool = str(UiKit.layout_element(SKIN, id).get("kind", "")) == "text_style"
 		UiKit.place(_skin[id] as Control, UiKit.layout_text_rect(SKIN, id, vp) if text else UiKit.layout_rect(SKIN, id, vp))
 	_flow_detail()
 	_detail.position.x = slid
-	_place_scroll_thumb()
 	_apply_detail_mode()
 
 
@@ -354,6 +362,7 @@ func _build_nodes() -> void:
 			b.expand_icon = true
 			b.text = ""
 		b.pressed.connect(_on_node_pressed.bind(nid))
+		b.set_meta("sfx_press", "")              # 点击音由 _on_node_pressed 按锁定与否自己播
 		_node_layer.add_child(b)
 		var disc := TextureRect.new()           # 节点徽章（按状态换图，画在按钮图标之下；边长 = 金环直径 × art_scale）
 		disc.name = "Disc"
@@ -595,13 +604,37 @@ func default_node() -> String:
 
 
 ## 点击节点 = 选中（不进关）；详情面板收起时滑回；把节点滚到可见区横向正中（可出框，收起面板时弹回）
+## 音效：锁定节点 locked_click + ui_error（锁晃一下，仍可选中看详情），其余 node_select（地图滚动、面板滑出不另配音）
 func _on_node_pressed(node_id: String) -> void:
+	if shown_state(node_id) == 0:
+		AudioManager.play_ui("locked_click")
+		AudioManager.play_ui("ui_error", -6.0)
+		_wiggle_lock(node_id)
+	else:
+		AudioManager.play_ui("node_select")
 	highlighted = true
 	select_node(node_id)
 	if panel_open:
-		_scroll_to(center_scroll(node_id, _open_width()), PANEL_TIME, Tween.TRANS_CUBIC)
+		var x: float = center_scroll(node_id, _open_width())
+		_scroll_to(x, PANEL_TIME, Tween.TRANS_CUBIC)
 	else:
 		set_panel_open(true)
+
+
+## 点锁定节点：名牌上的锁左右晃两下（与一级地图相同；解锁动画中不晃）
+func _wiggle_lock(node_id: String) -> void:
+	var b: Button = node_buttons.get(node_id, null) as Button
+	if b == null or not UiKit.motion_enabled or revealing.has(node_id):
+		return
+	var lock: Control = b.get_node("PlateBg/Lock") as Control
+	if not lock.visible or lock.has_meta(&"wiggling"):
+		return
+	lock.set_meta(&"wiggling", true)
+	var tw: Tween = create_tween()
+	tw.tween_method(func(k: float) -> void: lock.rotation = sin(k * TAU * 2.5) * 0.22 * (1.0 - k), 0.0, 1.0, 0.4)
+	tw.tween_callback(func() -> void:
+		lock.rotation = 0.0
+		lock.remove_meta(&"wiggling"))
 
 
 ## 选中（不进关）
@@ -699,7 +732,6 @@ func _apply_scroll(x: float) -> void:
 	_content.position.x = -scroll_x
 	if _node_layer != null:
 		_node_layer.position.x = -scroll_x
-	_place_scroll_thumb()
 
 
 func _kill_scroll_tween() -> void:
@@ -751,6 +783,8 @@ func set_panel_open(open: bool, instant: bool = false) -> void:
 	var vis: float = lerpf(_open_width(), get_viewport_rect().size.x, target)
 	var r: Vector2 = scroll_range(vis)
 	var want: float = center_scroll(selected_id, vis) if open else clampf(scroll_x, r.x, r.y)
+	if not instant and not open:           # 滑出由点节点的 node_select 出声；收起（点空白处）这次点击本身要有声音
+		AudioManager.play_ui("ui_panel_close")
 	if instant or not UiKit.motion_enabled or not is_inside_tree():
 		_apply_panel(target)
 		_kill_scroll_tween()
@@ -766,7 +800,6 @@ func _apply_panel(t: float) -> void:
 	_detail.position.x = t * _panel_slide()
 	if _node_clip != null:
 		_node_clip.size.x = visible_width()
-	_place_scroll_thumb()
 
 
 ## 面板滑出的距离：面板（含左侧渐隐与纹饰）整个出窗口
@@ -781,25 +814,6 @@ func center_scroll(node_id: String, vis: float) -> float:
 	if n.is_empty():
 		return scroll_x
 	return (n["pos"] as Vector2).x * _scale - vis * 0.5
-
-
-## 底部滚动指示：亮段长度 = 可见比例，位置随滚动
-func _place_scroll_thumb() -> void:
-	if not _skin.has("scroll_thumb") or _content.size.x <= 0.0:
-		return
-	var vp: Vector2 = get_viewport_rect().size
-	var line: Rect2 = UiKit.layout_rect(SKIN, "scroll_line", vp)
-	var th: Rect2 = UiKit.layout_rect(SKIN, "scroll_thumb", vp)
-	var td: Dictionary = UiKit.layout_element(SKIN, "scroll_thumb").get("data", {}) as Dictionary
-	var sr: Vector2 = scroll_range()
-	if bool(td.get("knob", false)):              # 哥特滑轨：定宽旋钮沿滑轨移动 travel，位置 = 滚动比例（拖出框时停在端点）
-		var tk: float = clampf(inverse_lerp(sr.x, sr.y, scroll_x), 0.0, 1.0) if sr.y > sr.x else 0.0
-		UiKit.place(_skin["scroll_thumb"] as Control, Rect2(th.position.x + float(td.get("travel", 0.0)) * tk, th.position.y, th.size.x, th.size.y))
-		return
-	var frac: float = clampf(visible_width() / _content.size.x, 0.05, 1.0)
-	var w: float = line.size.x * frac
-	var t: float = clampf(inverse_lerp(sr.x, sr.y, scroll_x), 0.0, 1.0) if sr.y > sr.x else 0.0
-	UiKit.place(_skin["scroll_thumb"] as Control, Rect2(line.position.x + (line.size.x - w) * t, th.position.y, w, th.size.y))
 
 
 ## 把节点滚到视口中央（受范围限制）
@@ -900,8 +914,8 @@ func _refresh_detail() -> void:
 			_level_no.text = RuleText.level_no(level)
 		_detail_title.text = level.title
 		_detail_summary.text = level.summary if level.summary != "" else level.subtitle
-		if level.elite and not level.reward_relics().is_empty():
-			_detail_summary.text += "\n" + DataRegistry.get_string("ui.detail_elite_note").format({ "name": str(DataRegistry.get_relic(level.reward_relics()[0]).get("name", "")) })
+		if not level.reward_relics().is_empty():          # 2026-10-20 精英关去掉后遗物改由剧情关掉落
+			_detail_summary.text += "\n" + DataRegistry.get_string("ui.detail_elite_note" if level.elite else "ui.detail_relic_note").format({ "name": str(DataRegistry.get_relic(level.reward_relics()[0]).get("name", "")) })
 		_detail_objective.text = level.objective_text
 		if state == 0:                              # 打到之前看不见名字与内容，只留前置关卡
 			_detail_title.text = DataRegistry.get_string("ui.node_unknown")
@@ -944,30 +958,54 @@ func _refresh_detail() -> void:
 	_flow_detail.call_deferred()
 
 
-## 回放剧情：只列 stories_seen 已含的 _intro / _win / _lose；一条都没有则禁用
+## 「剧情回放」：该关 _intro / _win 任一在 stories_seen 里才显示；占位 / 无关卡时不显示
 func _fill_replay(level: LevelDefinition) -> void:
-	_replay_pick.clear()
-	_replay_ids.clear()
-	if level != null:
-		for kind: String in STORY_KINDS:
-			var sid: String = "%s_%s" % [level.id, kind]
-			if SaveManager.is_story_seen(sid):
-				_replay_pick.add_item(DataRegistry.get_string("ui.replay_" + kind), _replay_ids.size())
-				_replay_ids.append(sid)
-	if _replay_ids.is_empty():
-		_replay_pick.add_item(DataRegistry.get_string("ui.replay_intro"), 0)      # 占位显示（禁用）
-	_replay_pick.select(0)
-	_replay_button.disabled = _replay_ids.is_empty()
-	_replay_pick.disabled = _replay_ids.is_empty()
+	var ph: bool = bool(chapter.node_of(selected_id).get("placeholder", false))
+	_replay_button.visible = level != null and not ph and not replay_ids().is_empty()
 
 
+## 当前选中关卡可回放的剧情 id（按显示顺序：开头 / 结尾）
 func replay_ids() -> Array[String]:
-	return _replay_ids.duplicate()
+	var out: Array[String] = []
+	var n: Dictionary = chapter.node_of(selected_id) if chapter != null else {}
+	var level: LevelDefinition = DataRegistry.get_level(str(n.get("level", "")))
+	if level == null or bool(n.get("placeholder", false)):
+		return out
+	for kind: String in REPLAY_KINDS:
+		if SaveManager.is_story_seen("%s_%s" % [level.id, kind]):
+			out.append("%s_%s" % [level.id, kind])
+	return out
 
 
-func _on_replay_pressed(index: int) -> void:
-	if index >= 0 and index < _replay_ids.size():
-		_story.play_story(_replay_ids[index])      # 回放不改 stories_seen
+## 打开剧情选择：开头 / 结尾两卡，没看过的锁定
+func _on_replay_pressed() -> void:
+	var level: LevelDefinition = DataRegistry.get_level(str(chapter.node_of(selected_id).get("level", "")))
+	if level == null:
+		return
+	story_select.open("%s  %s" % [RuleText.level_no(level), level.title], replay_entries(level.id))
+
+
+## 某关的回放卡（主界面图鉴共用）：开头剧情 / 结尾剧情，未看过 = 锁定
+static func replay_entries(level_id: String) -> Array:
+	var out: Array = []
+	for kind: String in REPLAY_KINDS:
+		var sid: String = "%s_%s" % [level_id, kind]
+		out.append({ "title": DataRegistry.get_string("ui.replay_intro" if kind == "intro" else "ui.replay_end"),
+			"story": sid, "locked": not SaveManager.is_story_seen(sid) })
+	return out
+
+
+func _on_replay_chosen(entry: Dictionary) -> void:
+	_replaying = true
+	story_select.suspend()
+	if not _story.play_story(str(entry.get("story", ""))):      # 回放不改 stories_seen
+		_on_story_finished()
+
+
+func _on_story_finished() -> void:
+	if _replaying:
+		_replaying = false
+		story_select.resume()
 
 
 func _on_enter_pressed() -> void:

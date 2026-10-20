@@ -170,20 +170,9 @@
         590
       ],
       "links": [
-        "level_c07",
-        "level_e01"
+        "level_c07"
       ],
       "node_art": "rake"
-    },
-    {
-      "level": "level_e01",
-      "region": "bone_workshop",
-      "pos": [
-        959,
-        380
-      ],
-      "links": [],
-      "elite": true
     },
     {
       "level": "level_c07",
@@ -277,20 +266,9 @@
         590
       ],
       "links": [
-        "level_c15",
-        "level_e02"
+        "level_c15"
       ],
       "node_art": "shield"
-    },
-    {
-      "level": "level_e02",
-      "region": "grey_thorn",
-      "pos": [
-        960,
-        390
-      ],
-      "links": [],
-      "elite": true
     },
     {
       "level": "level_c15",
@@ -384,20 +362,9 @@
         590
       ],
       "links": [
-        "level_c23",
-        "level_e03"
+        "level_c23"
       ],
       "node_art": "wolf_head"
-    },
-    {
-      "level": "level_e03",
-      "region": "flesh_swamp",
-      "pos": [
-        960,
-        390
-      ],
-      "links": [],
-      "elite": true
     },
     {
       "level": "level_c23",
@@ -443,20 +410,9 @@
         590
       ],
       "links": [
-        "level_c27",
-        "level_e04"
+        "level_c27"
       ],
       "node_art": "crosshair"
-    },
-    {
-      "level": "level_e04",
-      "region": "warped_corridor",
-      "pos": [
-        960,
-        390
-      ],
-      "links": [],
-      "elite": true
     },
     {
       "level": "level_c27",
@@ -513,5 +469,5 @@
       1254
     ]
   },
-  "_comment_elite": "2026-10-19 精英关：c06 / c14 / c22 / c26 通关后在本区域地图上开放一个支线节点（elite: true，节点图标 = 奖励遗物），不计入区域进度，不解锁后续关卡；通关奖励遗物（data/relics.json）。"
+  "_comment_elite": "2026-10-20 用户：精英关去掉（e01–e04 节点已从地图移除，关卡文件仅作遗物测试场景保留）；四枚遗物改由剧情对应关掉落：骨刃 c10、徽章 c14、提灯 c17、骨臂 c18。原注释：2026-10-19 精英关：c06 / c14 / c22 / c26 通关后在本区域地图上开放一个支线节点（elite: true，节点图标 = 奖励遗物），不计入区域进度，不解锁后续关卡；通关奖励遗物（data/relics.json）。"
 }

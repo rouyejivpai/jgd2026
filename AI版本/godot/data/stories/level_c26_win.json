@@ -1,0 +1,50 @@
+{
+  "id": "level_c26_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她收手，退开半步。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "我不知道。我已经失控了。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "但你没有。你还能站在这里，说明你还知道你是谁。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "或者……你也不知道。只是还没到时候。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "它缩回石壁里。封层重新合上。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "石壁上那一排人偶，同时转过头来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她这才听见——不是外面，是里面。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "体内，几十个声音在同时说话。她一直以为那是风。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "（很轻）别听。"
+    }
+  ]
+}

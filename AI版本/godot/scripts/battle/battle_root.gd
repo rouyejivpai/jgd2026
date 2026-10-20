@@ -18,6 +18,14 @@ const KNOCK_MARGIN: Vector2 = Vector2(0.45, 0.2)   ## 击飞落点离战场 / �
 const KNOCK_TOP_MARGIN: float = 1.25               ## 击飞落点离上边缘的余量（格，人物约 1.2 格高）
 const UNIT_HIT_RADIUS: float = 0.5        ## 单位点击命中：离身体线段的距离（格）
 const UNIT_HIT_BODY_CELLS: float = 0.9    ## 身体线段高度（格，脚底 → 胸口；精灵约 1.2 格高）
+## 2026-10-20 战斗音效：攻击 / 受击音高随机（防"机枪效应"）、齐射后续每发压低、保护对象受伤警报限频、麻痹空挥间隔
+const SFX_JITTER: float = 0.05
+const VOLLEY_SFX_DB: float = -6.0
+const PROTECT_ALERT_MSEC: int = 1500
+const FIZZLE_MIN_MSEC: int = 400
+## 脚步音色区域（footstep_<区域>_1..3）：30 关战役取章节地图的区域；旧关卡只有 biome，按此表映射
+const FOOTSTEP_REGION_BY_BIOME: Dictionary = { "bone_farm": "withered_farm", "wailing_wall": "holy_bell", "hound_den": "flesh_swamp",
+	"transit_node": "warped_corridor", "bone_greenhouse": "bone_greenhouse" }
 
 var level: LevelDefinition = null
 var selected_id: int = -1
@@ -42,11 +50,8 @@ var _views: Dictionary = {}     ## unit id -> UnitView
 ## 第二关首次失败后目标连线强制高亮（关卡册 3.2；03 §3 "HUD 逻辑：level_02 且 fail_count == 1"）
 const FIRST_FAIL_HIGHLIGHT_LEVEL: String = "level_02"
 const FIRST_FAIL_HIGHLIGHT_SECONDS: float = 2.0
-const AMBIENT_BY_BIOME: Dictionary = { "bone_greenhouse": "amb_greenhouse" }   ## 04 §3.2 两种环境底噪
-const AMBIENT_DEFAULT: String = "amb_wind"
 const DRAG_SOURCE_ALPHA: float = 0.35     ## 第四阶段：部署拖动时原位置单位的透明度
 
-var _placed_count: int = 0
 var _last_phase: int = SimTypes.Phase.DEPLOY
 ## 07 §1.2：玩法矩形（视口像素）与每格像素，每关、每次视口尺寸变化时计算。地图类节点以局部坐标（每格 TILE_SIZE）绘制，
 ## 统一挂上 位置 = 矩形左上、缩放 = cell_px / TILE_SIZE 的变换；镜头不再缩放地图。
@@ -75,6 +80,8 @@ var _blast_from: Dictionary = {}         ## 本 tick 被爆炸波及的单位 id
 var _shake_left: float = 0.0
 var _shake_seed: float = 0.0
 var _last_placements: Dictionary = {}    ## 上一次的部署（槽位 → 格），用于找出新落位的单位
+var _boss_resume_armed: bool = false     ## Boss 换阶段暂停中：下一次 PAUSED → RUNNING 播 battle_resume
+var _fizzle_at: Dictionary = {}          ## unit id -> 下次允许播放麻痹空挥音的 Time.get_ticks_msec()（只读模拟原因码）
 
 
 func _ready() -> void:
@@ -136,11 +143,11 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_playfield)
 	_hud.call("setup", self)
 	controller.setup(level, SaveManager.get_level_config(level.id))
-	_placed_count = controller.placements.size()
 	_last_placements = controller.placements.duplicate()
 	EventBus.deployment_changed.connect(_on_deployment_changed)
 	AudioManager.play_bgm(level.bgm)
-	AudioManager.play_ambient(str(AMBIENT_BY_BIOME.get(level.biome, AMBIENT_DEFAULT)))
+	AudioManager.set_footstep_region(footstep_region(level))
+	AudioManager.stop_ambient()          # 用户 2026-10-20：所有区域关闭环境底噪
 	_hud.call("begin")
 	tutorial = TutorialDirector.new()          # 第五阶段：统一强制引导（本关有引导且未看过 / 配置器预览 / 拾取模式时才建遮罩）
 	tutorial.name = "TutorialDirector"
@@ -163,17 +170,23 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("battle_start"):
 		if controller.phase == SimTypes.Phase.DEPLOY:
 			controller.start()
+		elif controller.boss_pending:          # Boss 换阶段暂停：同「继续战斗」按钮
+			controller.resume()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("battle_reset"):
+		if controller.phase != SimTypes.Phase.DEPLOY:
+			AudioManager.play_ui("battle_reset")
 		controller.reset()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("battle_toggle_speed"):
 		controller.set_speed(1 if controller.speed == 2 else 2)
+		AudioManager.play_ui("ui_toggle")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("battle_pause"):
 		toggle_pause()
 		get_viewport().set_input_as_handled()
-	elif controller.phase == SimTypes.Phase.DEPLOY and _digit(event) > 0:
+	elif (controller.phase == SimTypes.Phase.DEPLOY or controller.boss_pending) and _digit(event) > 0:
+		AudioManager.play_ui("ui_click" if _digit(event) <= controller.deployed_uids().size() else "ui_error")
 		_hud.call("enter_beacon_mode_number", _digit(event))     # 第四阶段：按单位编号数字键进入该单位的信标模式
 		get_viewport().set_input_as_handled()
 
@@ -196,11 +209,25 @@ func _on_settings_opened() -> void:
 	controller.pause()
 
 
+## 玩家的暂停 / 继续（P 键与 HUD 暂停按钮都走这里）：播 game_pause / game_unpause。
+## 设置浮窗自动暂停、引导暂停直接调 controller，不出声；Boss 换阶段暂停中的继续由 _on_phase_changed 播 battle_resume
 func toggle_pause() -> void:
 	if controller.phase == SimTypes.Phase.RUNNING:
+		AudioManager.play_ui("game_pause")
 		controller.pause()
 	elif controller.phase == SimTypes.Phase.PAUSED:
+		if not controller.boss_pending:
+			AudioManager.play_ui("game_unpause")
 		controller.resume()
+
+
+## 脚步音色区域：世界章节地图里的区域 id 优先，否则 biome；旧区域 / biome 名按 FOOTSTEP_REGION_BY_BIOME 映射
+static func footstep_region(lv: LevelDefinition) -> String:
+	var wc: ChapterDef = DataRegistry.world_chapter()
+	var region: String = wc.region_of_level(lv.id) if wc != null and wc.has_level(lv.id) else ""
+	if region == "":
+		region = lv.biome
+	return str(FOOTSTEP_REGION_BY_BIOME.get(region, region))
 
 
 ## 计算玩法矩形并把它应用到全部地图类节点
@@ -448,6 +475,7 @@ func _on_world_rebuilt() -> void:
 	_fx.call("clear")
 	_ground_fx.call("clear")
 	_pending_hits.clear()
+	_fizzle_at.clear()
 	_fx_gen += 1
 	for u: SimUnit in controller.world.units:
 		var v: UnitView = UNIT_VIEW_SCENE.instantiate() as UnitView
@@ -466,10 +494,27 @@ func _on_ticked() -> void:
 		v.push_pos(sim_dt)
 	_pending_hits.clear()      # 同 tick 的受击 / 倒下事件已挂到各自的攻击记录上
 	_blast_from.clear()
+	_fizzle_sfx()
+
+
+## 麻痹空挥（模拟不发事件）：读攻击原因码 PARALYZED（目标在射程内但被麻痹封住出手），按攻速间隔播 attack_fizzle。只读模拟
+func _fizzle_sfx() -> void:
+	if controller.world == null:
+		return
+	var now: int = Time.get_ticks_msec()
+	for u: SimUnit in controller.world.units:
+		var r: int = u.attack_reason if u.dual_rules else u.reason
+		if not u.alive or r != SimTypes.ReasonCode.PARALYZED:
+			_fizzle_at.erase(u.id)
+			continue
+		if now >= int(_fizzle_at.get(u.id, 0)):
+			_fizzle_at[u.id] = now + maxi(FIZZLE_MIN_MSEC, roundi(1000.0 / maxf(u.attack_speed, 0.1)))
+			AudioManager.play_sfx("attack_fizzle", "SFX", -5.0, 1.0, 0.08, 120)
 
 
 func _on_footstep(pos: Vector2, ally: bool, size: float) -> void:
 	_ground_fx.call("add_footprint", pos, ally, size)
+	AudioManager.play_footstep(size, ally)
 
 
 ## 顶栏任务句被点击（07 §6）：特殊目标闪烁
@@ -483,6 +528,10 @@ func _on_phase_changed(phase: int) -> void:
 	if phase == SimTypes.Phase.RUNNING and _last_phase == SimTypes.Phase.DEPLOY:
 		AudioManager.play_sfx("battle_start")
 		recenter_pan()      # 10 §6.4：开始战斗回正
+	elif phase == SimTypes.Phase.RUNNING and _last_phase == SimTypes.Phase.PAUSED and _boss_resume_armed:
+		AudioManager.play_sfx("battle_resume")       # Boss 换阶段后「继续战斗」（按钮 / 空格 / 引导，统一在状态切换处播）
+	if phase != SimTypes.Phase.PAUSED:
+		_boss_resume_armed = false
 	_last_phase = phase
 	_deploy_zone.visible = phase == SimTypes.Phase.DEPLOY
 	_floor.set_phase(phase)
@@ -513,11 +562,15 @@ func _sync_views() -> void:
 		_views[u.id] = v
 		if controller.phase != SimTypes.Phase.DEPLOY:     # 增援 / 召唤出场：阵营色光柱
 			_fx.call("spawn_pillar", v.position, u.faction == SimTypes.Faction.ALLY, v.view_scale(), "spawn")
+			if not controller.boss_pending:               # 战斗中出场（Boss 召唤）；换阶段暂停中放下的增援由部署输入播放落位音
+				AudioManager.play_sfx("unit_summon", "SFX", 0.0, 1.0, 0.04)
 
 
 ## 多阶段 Boss 到达切换阈值：战斗已暂停。播放该阶段说明（data/stories/<level>_phase<N>.json），提示玩家改指令 / 补增援后「继续」
 func _on_boss_phase_paused(next_phase: int) -> void:
 	_sync_views()
+	_boss_resume_armed = true
+	AudioManager.play_sfx("boss_phase")
 	_hud.call("_play_and_mark", "%s_phase%d" % [level.id, next_phase])
 	_hud.call("show_toast", DataRegistry.get_string("ui.boss_phase_pause").format({ "n": next_phase }))
 
@@ -526,9 +579,7 @@ func _on_deployment_changed() -> void:
 	if controller.boss_pending:
 		_sync_views()
 		return
-	var n: int = controller.placements.size()
-	AudioManager.play_sfx("deploy_place" if n >= _placed_count else "deploy_remove")
-	_placed_count = n
+	# 音效由各玩家操作处自己播（放置 / 移除 / 清空 / 推荐阵容 / 遗物 / 信标）；引导开场的自动清空、读档恢复不出声
 	# 部署落位（新放下或挪到新格）：金色小光柱
 	for slot: Variant in controller.placements.keys():
 		var cell: Variant = controller.placements[slot]
@@ -566,8 +617,8 @@ func _on_sim_event(e: Dictionary) -> void:
 			var dst: UnitView = _view(int(e["target"]))
 			if src != null and dst != null:
 				src.play_attack(dst.position)
-				AudioManager.play_sfx(str(src.unit.def.visuals.get("attack_sfx", "")))
-				_spawn_attack_fx(src, dst)
+				AudioManager.play_sfx(str(src.unit.def.visuals.get("attack_sfx", "")), "SFX", 0.0, 1.0, SFX_JITTER)
+				_spawn_attack_fx(src, dst, float(e.get("damage", -1.0)))
 		SimTypes.EventType.DAMAGE_APPLIED:
 			var key: String = "%d>%d" % [int(e.get("source", -1)), int(e["target"])]
 			if _pending_hits.has(key):
@@ -581,13 +632,14 @@ func _on_sim_event(e: Dictionary) -> void:
 			var caster: UnitView = _view(int(e["source"]))
 			if caster != null:
 				caster.play_attack(at)
-				AudioManager.play_sfx(str(caster.unit.def.visuals.get("attack_sfx", "")))
+				AudioManager.play_sfx(str(caster.unit.def.visuals.get("attack_sfx", "")), "SFX", 0.0, 1.0, SFX_JITTER)
+				var land: Callable = func() -> void: AudioManager.play_sfx("blast_land", "SFX", -3.0, 1.0, SFX_JITTER)
 				_fx.call("spawn_projectile", caster.chest_pos(), at, caster.unit.faction == SimTypes.Faction.ALLY,
-					CombatFx.shape_for(caster.unit.def), caster.view_scale())
+					CombatFx.shape_for(caster.unit.def), caster.view_scale(), land, 0.0, _skill_tint(caster.unit))
 			var trait_delay: float = float(e["remaining"])
 			var src_unit: SimUnit = controller.world.get_unit(int(e["source"]))
 			var ally_blast: bool = src_unit != null and src_unit.faction == SimTypes.Faction.ALLY
-			_fx.call("spawn_blast_marker", controller.world, int(e["blast_id"]), at, float(e["radius"]), trait_delay, ally_blast)
+			_fx.call("spawn_blast_marker", controller.world, int(e["blast_id"]), at, float(e["radius"]), trait_delay, ally_blast, _skill_tint(src_unit))
 		SimTypes.EventType.BLAST_DETONATED:
 			_fx.call("detonate_marker", int(e["blast_id"]))
 			AudioManager.play_sfx("blast_detonate")
@@ -615,9 +667,11 @@ func _on_sim_event(e: Dictionary) -> void:
 ## 大小为常规的 VOLLEY_SIZE。每一发命中都播放受击表现（白闪、后挫、碎屑）；最后一发才结算本次伤害（模拟伤害照常一次结算，
 ## 倒下表现也在最后一发播放）。
 ## 特殊攻击（延迟爆炸的炮击，BLAST_PLACED）不走这里，始终是单发常规大小的射弹 + 落点预警。
-func _spawn_attack_fx(src: UnitView, dst: UnitView) -> void:
+## damage = 本次出手面值（ATTACK_FIRED），命中结算的伤害大于它 = 吃到易伤加成 → 叠一声重击。第 2 发起每发补一声压低的出手音
+func _spawn_attack_fx(src: UnitView, dst: UnitView, damage: float = -1.0) -> void:
 	var ally: bool = src.unit.faction == SimTypes.Faction.ALLY
-	var rec: Dictionary = { "src_pos": src.position, "events": [], "done": false, "gen": _fx_gen }
+	var rec: Dictionary = { "src_pos": src.position, "events": [], "done": false, "gen": _fx_gen, "damage": damage }
+	var sfx: String = str(src.unit.def.visuals.get("attack_sfx", ""))
 	_pending_hits["%d>%d" % [src.unit.id, dst.unit.id]] = rec
 	var melee: bool = src.unit.pos.distance_to(dst.unit.pos) <= MELEE_FX_CELLS
 	var shots: int = randi_range(VOLLEY_SHOTS.x, VOLLEY_SHOTS.y)
@@ -627,14 +681,22 @@ func _spawn_attack_fx(src: UnitView, dst: UnitView) -> void:
 	var shape: int = CombatFx.shape_for(src.unit.def)
 	var info: Dictionary = { "from": src.chest_pos(), "to": dst.chest_pos(), "toward": dst.position - src.position,
 		"src_size": src.view_scale(), "dst_size": dst.view_scale(), "ally": ally, "src": src.unit.id, "dst": dst.unit.id,
-		"size": 1.0 if shots == 1 else VOLLEY_SIZE }
+		"size": 1.0 if shots == 1 else VOLLEY_SIZE, "tint": _skill_tint(src.unit) }
 	for i: int in shots:
 		var last: bool = i == shots - 1
 		var shot: Callable = _volley_shot.bind(rec, info, melee, shape, int(kinds[i % 3]), side * (1.0 if i % 2 == 0 else -1.0), last)
 		if i == 0:
 			shot.call()
 		else:
-			get_tree().create_timer(VOLLEY_INTERVAL * float(i)).timeout.connect(shot)
+			get_tree().create_timer(VOLLEY_INTERVAL * float(i)).timeout.connect(_volley_followup.bind(rec, sfx, shot))
+
+
+## 齐射的第 2 发起：补一声压低的出手音，再打出这一发
+func _volley_followup(rec: Dictionary, sfx: String, shot: Callable) -> void:
+	if int(rec["gen"]) != _fx_gen:
+		return
+	AudioManager.play_sfx(sfx, "SFX", VOLLEY_SFX_DB, 1.0, SFX_JITTER * 1.6, 40)
+	shot.call()
 
 
 ## 齐射中的一发。攻击者 / 目标的视图可能已释放（倒下、重置）：取不到时用出手时记下的位置
@@ -655,7 +717,7 @@ func _volley_shot(rec: Dictionary, info: Dictionary, melee: bool, shape: int, ki
 		get_tree().create_timer(CombatFx.SLASH_HIT_AT).timeout.connect(hit)
 	else:
 		var jitter := Vector2(randf_range(-6.0, 6.0), randf_range(-8.0, 8.0)) * float(info["src_size"]) * spread
-		_fx.call("spawn_projectile", from + jitter, to, ally, shape, float(info["src_size"]) * k, hit, side)
+		_fx.call("spawn_projectile", from + jitter, to, ally, shape, float(info["src_size"]) * k, hit, side, info["tint"] as Color)
 
 
 ## 非最后一发命中：只播放受击表现（白闪、后挫、少量碎屑、受击音效），不结算伤害、不播放倒下
@@ -667,7 +729,7 @@ func _volley_hit(rec: Dictionary, info: Dictionary) -> void:
 		return
 	var dir: Vector2 = hit.position - (rec["src_pos"] as Vector2)
 	hit.play_hit(dir)
-	AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")))
+	AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")), "SFX", -2.0, 1.0, SFX_JITTER)
 	_fx.call("spawn_debris", hit.position, -hit.chest_offset().y, dir, 4, 0.8)
 
 
@@ -679,17 +741,24 @@ func _flush_hit(rec: Dictionary) -> void:
 		if int(e["type"]) == SimTypes.EventType.UNIT_DIED:
 			_show_death(e, rec["src_pos"])
 		else:
-			_show_hit(e, rec["src_pos"])
+			_show_hit(e, rec["src_pos"], float(rec.get("damage", -1.0)))
 
 
 ## 攻击者当前位置；没有（遗物、已移除）为 null
+## 2026-10-20 敌人技能色（visuals.skill_color）：延迟爆炸的射弹与落点按施放者的技能色着色；未配置 = 透明（用阵营色）
+func _skill_tint(u: SimUnit) -> Color:
+	if u == null or u.def == null:
+		return Color(0, 0, 0, 0)
+	return Art.color_from_hex(str(u.def.visuals.get("skill_color", "")), Color(0, 0, 0, 0))
+
+
 func _source_pos(unit_id: int) -> Variant:
 	var v: UnitView = _view(unit_id)
 	return v.position if v != null else null
 
 
-## 受击：白闪后挫 + 背离攻击者抛飞灰黑碎屑
-func _show_hit(e: Dictionary, from_pos: Variant) -> void:
+## 受击：白闪后挫 + 背离攻击者抛飞灰黑碎屑。base = 普通攻击的出手面值（其他来源 −1），见 _hit_sfx
+func _show_hit(e: Dictionary, from_pos: Variant, base: float = -1.0) -> void:
 	var hit: UnitView = _view(int(e["target"]))
 	if hit == null or hit.is_dying:
 		return
@@ -697,10 +766,34 @@ func _show_hit(e: Dictionary, from_pos: Variant) -> void:
 	if from_pos != null:
 		dir = hit.position - (from_pos as Vector2)
 	hit.play_hit(dir)
-	AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")))
+	_hit_sfx(hit, e, base)
 	var amount: float = float(e.get("amount", 0.0))
 	var count: int = clampi(5 + int(amount / 12.0), 5, 11)
 	_fx.call("spawn_debris", hit.position, -hit.chest_offset().y, dir, count, 1.0)
+
+
+## 受击音：目标的 hit_sfx；遗物骨刃（source = −1）只播重击。另叠一声重击：普通攻击伤害大于出手面值（易伤加成）、
+## Boss 范围招式（Boss 造成但不是普通攻击）、其他来源（爆炸）命中时目标带易伤。保护对象受伤 = 警报（限频）
+func _hit_sfx(hit: UnitView, e: Dictionary, base: float) -> void:
+	var src: int = int(e.get("source", -1))
+	var amount: float = float(e.get("amount", 0.0))
+	if src < 0:
+		AudioManager.play_sfx("hit_heavy", "SFX", 0.0, 1.0, SFX_JITTER)
+	else:
+		AudioManager.play_sfx(str(hit.unit.def.visuals.get("hit_sfx", "")), "SFX", 0.0, 1.0, SFX_JITTER)
+		var heavy: bool = amount > base * 1.01 + 0.01 if base > 0.0 else (_is_boss(src) or hit.unit.has_status("vulnerable"))
+		if heavy:
+			AudioManager.play_sfx("hit_heavy", "SFX", -2.0, 1.0, SFX_JITTER)
+	if hit.objective_kind == UnitView.OBJ_PROTECT and amount > 0.0:
+		AudioManager.play_sfx("protect_alert", "SFX", 0.0, 1.0, 0.0, PROTECT_ALERT_MSEC)
+
+
+func _is_boss(unit_id: int) -> bool:
+	var w: SimWorld = controller.world
+	if w == null or w.boss.is_empty():
+		return false
+	var b: SimUnit = w.get_spawn(str(w.boss.get("unit", "")))
+	return b != null and b.id == unit_id
 
 
 ## 击败：震屏 → 爆散 → 击飞（不出战场 / 可视区）→ 灰化 → 自上而下化为灰烬
@@ -714,7 +807,7 @@ func _show_death(e: Dictionary, from_pos: Variant) -> void:
 	shake()
 	_fx.call("spawn_death_burst", dead.position, -dead.chest_offset().y, dir, dead.unit.faction == SimTypes.Faction.ALLY, dead.view_scale())
 	dead.play_death(dir, knock_bounds(dead.view_scale()))
-	AudioManager.play_sfx(str(dead.unit.def.visuals.get("death_sfx", "")))
+	AudioManager.play_sfx(str(dead.unit.def.visuals.get("death_sfx", "")), "SFX", 0.0, 1.0, 0.03)
 
 
 ## 击飞落点范围（单位层坐标，脚底）：战场矩形 ∩ 当前可视区（扣掉 HUD 上下带），再留出人物身高 / 半宽的余量
@@ -832,7 +925,7 @@ func _on_relic_used(e: Dictionary) -> void:
 	if not heal:
 		_fx.add_child(CombatFx.Slash.make(feet + Vector2(0.0, UnitView.CHEST_Y * sz), true, sz, Vector2.DOWN, 1))
 	_relic_top.call("spawn_fx", target.pos, RelicLayer.relic_color(rid), ("+%d" if heal else "-%d") % amount)
-	AudioManager.play_sfx("deploy_place" if heal else "hit_bone")
+	AudioManager.play_sfx("heal" if heal else "attack_swift")     # 骨刃的重击由随后的 DAMAGE_APPLIED（source = −1）播放
 	var v: UnitView = _view(target.id)
 	if v != null and heal:
 		v.flash()

@@ -1,0 +1,40 @@
+{
+  "id": "level_c09_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "魂灯挂在木架上，灯罩是骨片拼的，里面没有油，也没有灯芯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "里面是一团很小的蓝光，缩着，一转一转，像有人在里面侧着身子。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "里面有人。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "守火派把他们从战场上捡回来的时候，还剩一口气。装进灯里，就还能等。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "灯灭了，里面那个就不在了。不是死，是不在了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "远处，一只畸变体闻到了光。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "四十秒，或许你会愿意帮她们一个小忙？"
+    }
+  ]
+}

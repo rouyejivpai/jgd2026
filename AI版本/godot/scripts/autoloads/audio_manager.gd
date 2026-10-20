@@ -6,7 +6,10 @@ extends Node
 const BGM_DIR: String = "res://assets/audio/bgm/"
 const SFX_DIR: String = "res://assets/audio/sfx/"
 const SFX_EXTENSIONS: Array[String] = [".ogg", ".wav", ".mp3"]
-const SFX_POOL_SIZE: int = 8
+const SFX_POOL_SIZE: int = 16
+const FOOTSTEP_MIN_MSEC: int = 90
+const FOOTSTEP_VARIANTS: int = 3
+const GENERIC_UI: Array[String] = ["ui_click", "ui_hover", "ui_toggle", "ui_select", "ui_value_tick"]
 const DEDUPE_MSEC: int = 50
 const CROSSFADE_SECONDS: float = 1.0
 const STING_DUCK_DB: float = -14.0
@@ -24,6 +27,9 @@ var _pool_next: int = 0
 var _last_played: Dictionary = {}      ## sfx 名 -> Time.get_ticks_msec()（表现层去重，与模拟无关）
 var _stream_cache: Dictionary = {}     ## 路径 -> AudioStream 或 null
 var _bgm_tween: Tween = null
+var _footstep_region: String = ""
+var _last_footstep: int = 0
+var _last_specific_msec: int = -100000     ## 最近一次播"具体音"（非通用点击/悬停/选中）的时间
 
 
 func _ready() -> void:
@@ -136,22 +142,51 @@ func stop_ambient() -> void:
 	_ambient.stop()
 
 
-## 从 SFX 池播放 assets/audio/sfx/<sfx_name>（可带或不带扩展名）；同名 50 ms 内只播一次
-func play_sfx(sfx_name: String, bus: String = "SFX") -> void:
+## 从 SFX 池播放 assets/audio/sfx/<sfx_name>（可带或不带扩展名）；同名 min_interval_ms（默认 50 ms）内只播一次。
+## jitter：音高随机 ±jitter（同屏重复音防"机枪效应"）。
+func play_sfx(sfx_name: String, bus: String = "SFX", volume_db: float = 0.0, pitch: float = 1.0,
+		jitter: float = 0.0, min_interval_ms: int = DEDUPE_MSEC) -> void:
 	if sfx_name == "":
 		return
 	var now: int = Time.get_ticks_msec()
-	if now - int(_last_played.get(sfx_name, -DEDUPE_MSEC * 2)) < DEDUPE_MSEC:
+	if now - int(_last_played.get(sfx_name, -min_interval_ms * 2)) < min_interval_ms:
 		return
 	var stream: AudioStream = _find_sfx(sfx_name)
 	if stream == null:
 		return
 	_last_played[sfx_name] = now
+	if not sfx_name in GENERIC_UI:
+		_last_specific_msec = now
 	var p: AudioStreamPlayer = _pool[_pool_next]
 	_pool_next = (_pool_next + 1) % _pool.size()
 	p.bus = bus
 	p.stream = stream
+	p.volume_db = volume_db
+	p.pitch_scale = maxf(0.05, pitch * (1.0 + randf_range(-jitter, jitter)))
 	p.play()
+
+
+## UI 总线快捷方式
+func play_ui(sfx_name: String, volume_db: float = 0.0, pitch: float = 1.0) -> void:
+	play_sfx(sfx_name, "UI", volume_db, pitch)
+
+
+## 战斗脚步：按 set_footstep_region 设定的区域随机取 footstep_<区域>_1..3；
+## 全局限频（同屏多单位走路时只留稀疏的几声），size > 1 的大体型降调。
+func set_footstep_region(region: String) -> void:
+	_footstep_region = region
+
+
+func play_footstep(size: float = 1.0, ally: bool = true) -> void:
+	if _footstep_region == "":
+		return
+	var now: int = Time.get_ticks_msec()
+	if now - _last_footstep < FOOTSTEP_MIN_MSEC:
+		return
+	_last_footstep = now
+	var sfx_name: String = "footstep_%s_%d" % [_footstep_region, randi_range(1, FOOTSTEP_VARIANTS)]
+	var pitch: float = clampf(1.0 / sqrt(maxf(size, 0.25)), 0.7, 1.3)
+	play_sfx(sfx_name, "SFX", -2.0 if ally else -4.0, pitch, 0.06, 0)
 
 
 func _find_sfx(sfx_name: String) -> AudioStream:
@@ -196,12 +231,55 @@ func _on_battle_ended(result: int, _reason: int) -> void:
 	play_sting("sting_victory" if result == SimTypes.BattleResult.WIN else "sting_defeat")
 
 
-## 所有按钮：点击（切换类为 ui_toggle）与悬停音效
+## 所有按钮：点击（切换类为 ui_toggle）与悬停音效；点 disabled 按钮播 ui_error。
+## 按钮可设 meta 覆盖：sfx_press（按下音，"" = 静音，由调用方自己播）、sfx_hover（"" = 不响悬停）。
+## 另自动挂接：OptionButton 选中项 → ui_select；Slider / SpinBox 由玩家改值 → ui_value_tick。
 func _on_node_added(node: Node) -> void:
 	var b: BaseButton = node as BaseButton
-	if b == null:
+	if b != null:
+		_hook_button(b)
 		return
-	b.pressed.connect(func() -> void: play_sfx("ui_toggle" if b.toggle_mode else "ui_click", "UI"))
+	var r: Range = node as Range
+	if r != null and (r is Slider or r is SpinBox):
+		r.gui_input.connect(func(e: InputEvent) -> void:     # FOCUS_NONE 的滑条靠最近一次输入判断
+			if e is InputEventMouseButton or e is InputEventMouseMotion or e is InputEventKey:
+				r.set_meta("_sfx_input_msec", Time.get_ticks_msec()))
+		r.value_changed.connect(func(_v: float) -> void:
+			if _user_editing(r):
+				play_sfx("ui_value_tick", "UI", 0.0, 1.0, 0.04, 45))
+
+
+func _hook_button(b: BaseButton) -> void:
+	b.pressed.connect(func() -> void:
+		var s: String = str(b.get_meta("sfx_press", "ui_toggle" if b.toggle_mode else "ui_click"))
+		play_sfx(s, "UI"))
 	b.mouse_entered.connect(func() -> void:
 		if not b.disabled:
-			play_sfx("ui_hover", "UI"))
+			play_sfx(str(b.get_meta("sfx_hover", "ui_hover")), "UI"))
+	b.gui_input.connect(func(e: InputEvent) -> void:
+		var mb: InputEventMouseButton = e as InputEventMouseButton
+		if b.disabled and mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+			play_sfx(str(b.get_meta("sfx_disabled", "ui_error")), "UI"))
+	var ob: OptionButton = b as OptionButton
+	if ob != null:
+		ob.item_selected.connect(func(_i: int) -> void: _play_select.call_deferred())
+
+
+## 延后到帧末：调用方在自己的 item_selected 里已播了更具体的音（如删除条件 rule_remove）就不再叠 ui_select
+func _play_select() -> void:
+	if Time.get_ticks_msec() - _last_specific_msec < 30:
+		return
+	play_sfx("ui_select", "UI")
+
+
+## 值变化是否来自玩家（有焦点或正被鼠标按住），避免代码赋值时也响
+func _user_editing(r: Range) -> bool:
+	if not r.is_visible_in_tree():
+		return false
+	if Time.get_ticks_msec() - int(r.get_meta("_sfx_input_msec", -100000)) < 250:
+		return true
+	var focus: Control = r.get_viewport().gui_get_focus_owner() if r.get_viewport() != null else null
+	if focus == r:
+		return true
+	var sb: SpinBox = r as SpinBox
+	return sb != null and focus == sb.get_line_edit()

@@ -1,0 +1,65 @@
+{
+  "id": "level_c25_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "走廊两侧挖出三间洞室。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "每间里都堆着东西：骨器、断掉的刃、碎成两半的徽章、干掉的灯。堆得很整齐，按大小排。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "这些是旧代魔女的东西。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "她们下来封印祂，一个都没回去。东西就留在这儿。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "有人一直在收——收了很久，收成了三堆。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "三间洞室里各有一个东西还站着。它们手上都拿着东西，姿势像是刚放下。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "墙上有字。用指甲刻的，一排名字，有的划掉了，有的没有。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "名册。划掉的是已经找到的，没划的还在里面。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她蹲在那面墙前，一个一个看。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "看完了。她又从头看了一遍。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "名册最后一行是空的——留着位置，没有刻。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把手指放在那行空白上，停了一会儿。然后收回来。"
+    }
+  ]
+}

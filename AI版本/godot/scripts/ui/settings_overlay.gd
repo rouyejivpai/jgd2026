@@ -1,14 +1,16 @@
 class_name SettingsOverlay
 extends Control
 ## 设置浮窗（10 §2，取代第一阶段的独立设置界面 settings.tscn）：由 SceneRouter 常驻持有（CanvasLayer 层 100，低于黑幕 128），
-## 主界面、章节地图顶栏、局内右上角三处可开；Esc 或「关闭」关闭；遮罩挡住下层点击，点击遮罩不关闭。
-## 内容不变：主音量 / 音乐 / 音效、全屏、目标连线、字体大小、模拟日志；修改即时生效，关闭时写存档。
+## 主界面、章节地图顶栏、局内右上角三处可开；Esc、「关闭」或点击面板外任意位置关闭（用户 2026-10-21；遮罩仍挡住下层点击）。
+## 内容：主音量 / 音乐 / 音效、全屏、目标连线、字体大小（「调试」一节的模拟日志开关 2026-10-20 起隐藏）；修改即时生效，关闭时写存档。
 ## 局内打开时的暂停（决策 ⑦）由 BattleRoot 监听 SceneRouter.settings_opened 处理。
 ## 第三阶段 P5 按 R1 设计换皮（10 §1）：节点、位置、贴图、字体全部来自 data/ui_layout/settings_overlay.json 与
 ## assets/themes/ui_settings_overlay.tres（apply_ui_manifest.py 生成），本脚本只做文字 / 数值绑定与接线：
 ## - 滑条 = 布局里的轨（ninepatch）、填充（ninepatch，宽 = 满宽 × 值）、把手（icon，居中于填充末端）三层，
 ##   上面叠一个透明的 HSlider 接收输入（slider_<key>_track / _fill / _grabber、pct_<key>）
 ## - 开关 toggle_<key> = TextureButton（on / off 切片）；字体大小 dropdown_font_scale = OptionButton（主题变体）+ 切片箭头
+## 2026-10-21 04.zip：面板换成 I01 整图（标题画在图上），关闭 = 面板右上角的无字徽记（悬停提示「关闭」）；
+## 整图不能拉伸，布局 panel_settings.data.fixed_frame 时不再收起「调试」一节的空位。
 
 signal closed()
 
@@ -16,8 +18,10 @@ const SCREEN: String = "settings_overlay"
 const FONT_SCALES: Array[float] = [1.0, 1.15, 1.3]
 const VOLUME_KEYS: Array[String] = ["master", "music", "sfx"]
 const TOGGLE_KEYS: Array[String] = ["fullscreen", "target_lines", "sim_log"]
+const DEBUG_IDS: Array[String] = ["section_debug", "label_sim_log", "toggle_sim_log", "log_hint"]
 const VOLUME_STEP: float = 0.05
 const GRABBER_STATES: Array[String] = ["normal", "hover", "pressed", "disabled"]
+const PANEL_HIT_ALPHA: float = 0.4               ## 面板整图不透明度高于此处算「面板内」，其余点击关闭
 const NODE_NAMES: Dictionary = {
 	"mask": "Mask", "panel_settings": "SettingsPanel", "btn_close": "CloseButton", "dropdown_font_scale": "FontScaleOption",
 	"toggle_fullscreen": "Toggle_fullscreen", "toggle_target_lines": "Toggle_target_lines", "toggle_sim_log": "Toggle_sim_log",
@@ -29,6 +33,7 @@ var _sliders: Dictionary = {}                    ## 音量键 → HSlider（透�
 var _grabber_textures: Dictionary = {}           ## 状态 → Texture2D
 var _font_option: OptionButton
 var _close_button: Button
+var _panel_hit: BitMap                           ## 面板整图的不透明区域（fixed_frame 时）；null = 按面板矩形判断
 
 
 func _ready() -> void:
@@ -36,15 +41,21 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP     # 遮罩吞掉点击，点击遮罩不关闭
 	nodes = UiKit.build_from_layout(self, SCREEN, NODE_NAMES)
 	(nodes["mask"] as Control).mouse_filter = Control.MOUSE_FILTER_STOP
+	(nodes["mask"] as Control).gui_input.connect(_on_mask_input)
+	_build_panel_hit()
 	_close_button = nodes["btn_close"] as Button
 	_close_button.pressed.connect(close)
+	_close_button.set_meta("sfx_press", "ui_panel_close")
 	_close_button.focus_mode = Control.FOCUS_NONE
+	_close_button.tooltip_text = _close_button.text
 	(nodes["title"] as Label).text = DataRegistry.get_string("ui.menu_settings")
 	_build_sliders()
 	for key: String in TOGGLE_KEYS:
 		var tb: TextureButton = nodes["toggle_" + key] as TextureButton
 		tb.toggled.connect(_on_toggled.bind(key))
 	_build_font_option()
+	for id: String in DEBUG_IDS:                 # 2026-10-20 临近发布：隐藏「调试」一节（模拟日志开关照旧按存档生效）
+		(nodes[id] as Control).visible = false
 	resized.connect(_layout)
 	visible = false
 
@@ -76,8 +87,46 @@ func open() -> void:
 ## Esc 关闭（先于场景内其他 Esc 处理，例如局内收起侧栏）
 func _input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("ui_cancel"):
+		UiKit.close_sfx()
 		close()
 		get_viewport().set_input_as_handled()
+
+
+## 点击面板外（遮罩上、面板整图透明处）关闭；面板上的控件自己吞掉点击，不会到这里
+func _on_mask_input(event: InputEvent) -> void:
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	if mb == null or not mb.pressed or mb.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if _inside_panel(mb.global_position):
+		return
+	accept_event()
+	UiKit.close_sfx()
+	close()
+
+
+func _build_panel_hit() -> void:
+	var panel: TextureRect = nodes["panel_settings"] as TextureRect
+	if panel == null or panel.texture == null:
+		return
+	var img: Image = panel.texture.get_image()
+	if img == null:
+		return
+	if img.is_compressed():
+		img.decompress()
+	_panel_hit = BitMap.new()
+	_panel_hit.create_from_image_alpha(img, PANEL_HIT_ALPHA)
+
+
+func _inside_panel(global_pos: Vector2) -> bool:
+	var panel: Control = nodes["panel_settings"] as Control
+	var local: Vector2 = panel.get_global_transform().affine_inverse() * global_pos
+	if not Rect2(Vector2.ZERO, panel.size).has_point(local):
+		return false
+	if _panel_hit == null:
+		return true
+	var bm: Vector2i = _panel_hit.get_size()
+	var px := Vector2i(clampi(int(local.x / panel.size.x * bm.x), 0, bm.x - 1), clampi(int(local.y / panel.size.y * bm.y), 0, bm.y - 1))
+	return _panel_hit.get_bitv(px)
 
 
 ## 关闭：写存档并隐藏（SceneRouter.close_settings 同样走这里）
@@ -98,6 +147,23 @@ func _layout() -> void:
 		s.position = Vector2(track.position.x, grab.position.y)
 		s.size = Vector2(track.size.x, grab.size.y)
 		_update_slider(key)
+	_collapse_debug_section()
+
+
+## 「调试」一节隐藏后收起它的空位：面板底边与底部分隔线上移，整体下移一半保持居中
+func _collapse_debug_section() -> void:
+	if bool((UiKit.layout_element(SCREEN, "panel_settings").get("data", {}) as Dictionary).get("fixed_frame", false)):
+		return
+	var cut: float = UiKit.layout_rect(SCREEN, "separator_footer", size).position.y - UiKit.layout_rect(SCREEN, "section_debug", size).position.y
+	var panel: Control = nodes["panel_settings"] as Control
+	panel.size.y -= cut
+	(nodes["separator_footer"] as Control).position.y -= cut
+	var shift: float = floorf(cut * 0.5)
+	for id: String in nodes.keys():
+		if id != "mask":
+			(nodes[id] as Control).position.y += shift
+	for s: HSlider in _sliders.values():
+		s.position.y += shift
 
 
 # ---- 音量滑条 ----
@@ -121,9 +187,7 @@ func _build_sliders() -> void:
 		for icon: String in ["grabber", "grabber_highlight", "grabber_disabled"]:
 			s.add_theme_icon_override(icon, clear)
 		s.value_changed.connect(_on_volume_changed.bind(key))
-		s.drag_ended.connect(func(_changed: bool) -> void:
-			AudioManager.play_sfx("ui_click", "UI")
-			_update_slider(key))
+		s.drag_ended.connect(func(_changed: bool) -> void: _update_slider(key))
 		s.drag_started.connect(func() -> void: _set_grabber(key, "pressed"))
 		s.mouse_entered.connect(func() -> void: _set_grabber(key, "hover"))
 		s.mouse_exited.connect(func() -> void: _set_grabber(key, "normal"))
@@ -131,9 +195,11 @@ func _build_sliders() -> void:
 		_sliders[key] = s
 
 
+## 只有玩家拖动 / 点轨道会触发（open 用 set_value_no_signal）；滑条无焦点，AudioManager 的自动刻度音不响，这里自己播
 func _on_volume_changed(v: float, key: String) -> void:
 	GameState.settings[key] = v
 	AudioManager.apply_volumes()
+	AudioManager.play_sfx("ui_value_tick", "UI", 0.0, 1.0, 0.04, 45)
 	_update_slider(key)
 
 
@@ -190,6 +256,8 @@ func _build_font_option() -> void:
 func _on_font_selected(index: int) -> void:
 	GameState.settings["font_scale"] = FONT_SCALES[index]
 	_on_display_changed()
+	var value_label: Label = nodes["font_scale_value"] as Label     # 下拉的字号是建时从主题抄的覆盖值，跟着重抄（直接查主题：控件的主题缓存要下一帧才刷新）
+	_font_option.add_theme_font_size_override("font_size", theme.get_font_size("font_size", value_label.theme_type_variation))
 
 
 func _on_display_changed() -> void:

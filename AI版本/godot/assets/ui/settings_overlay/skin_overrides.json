@@ -1,85 +1,151 @@
 {
- "_comment": "2026-10-19 哥特换皮：面板框 / 按钮牌 / 开关 / 滑条把手 / 下拉箭头为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（docs/reference/gothic_gen），滑条轨为程序绘制；只换贴图与字色，位置不变。",
+ "_comment": "2026-10-21 04.zip 设置面板：面板 = I01 整图（../gothic/settings_frame.png，标题「设置」与底座画在图上，程序标题透明），关闭 = 面板上方的 G01 徽记（与选关返回同款无字图标，悬停提示「关闭」），底座后的暗红光晕为程序生成（用户 2026-10-21：关闭徽记移到面板右上角，原徽记后的 glow_top 光晕去掉）；文字按参考图 docs/reference/ui_04/design_settings.png 量取（节标题 x 573 粗体亮灰、条目 x 600 灰、行距 66（用户 2026-10-21：参考图的 49 太挤、下方太空，拉大）），滑条 / 开关 / 下拉沿用 2026-10-20 的无描边切图，右缘对齐 x 1347（与节标题左距对称）。原注释：2026-10-19 哥特换皮：面板框 / 按钮牌 / 开关 / 滑条把手 / 下拉箭头为 GPT 绘图生成（2026-10-20 按真人切图的无描边半透明叠层风格重绘）（docs/reference/gothic_gen），滑条轨为程序绘制；只换贴图与字色，位置不变。",
  "elements": [
   {
-   "id": "panel_settings",
-   "file": "../gothic/detail/panel.png",
-   "ninepatch": [
-    100,
-    167,
-    100,
-    167
+   "id": "glow_bottom",
+   "kind": "image",
+   "file": "../gothic/settings_glow_bottom.png",
+   "rect": [
+    460,
+    850,
+    1000,
+    230
    ],
-   "expand": [
-    29,
-    23,
-    29,
-    21
-   ]
+   "_after": "mask",
+   "data": {
+    "_note": "参考图徽记 / 底座后的暗红光晕（tools/import_settings_story_ui.py 程序生成）"
+   }
+  },
+  {
+   "id": "panel_settings",
+   "file": "../gothic/settings_frame.png",
+   "ninepatch": null,
+   "expand": null,
+   "kind": "image",
+   "rect": [
+    130,
+    152,
+    1661,
+    882
+   ],
+   "data": {
+    "fixed_frame": true,
+    "_note": "04.zip I01 整图，原尺寸不拉伸（settings_overlay.gd 见 data.fixed_frame：不再收起「调试」一节的空位）"
+   }
   },
   {
    "id": "title",
    "font": {
     "family": "NotoSerifSC-Bold",
     "size": 40,
-    "color": "#E6E0E8"
+    "color": "#00000000"
+   },
+   "rect": [
+    880,
+    868,
+    160,
+    76
+   ],
+   "text_rect": [
+    0,
+    0,
+    160,
+    76
+   ],
+   "data": {
+    "_note": "「设置」画在 I01 底部标题牌上：文字透明"
    }
   },
   {
    "id": "btn_close",
    "states": {
-    "normal": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#D8D2DA"
+    "normal": "../gothic/btn_leave.png",
+    "hover": {
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#FFFFFF"
     },
-    "hover": "../gothic/detail/plate.png",
     "pressed": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#B8B0BA"
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/detail/plate.png",
-     "modulate": "#7E7882"
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#6E6870"
     }
    },
-   "ninepatch": [
-    52,
-    0,
-    40,
-    0
-   ],
+   "ninepatch": null,
    "font": {
-    "family": "NotoSerifSC",
-    "size": 24,
-    "color": "#EDE8EE",
-    "disabled_color": "#8A848C"
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
    },
-   "expand": [
-    26,
+   "expand": null,
+   "rect": [
+    1428,
+    178,
+    96,
+    94
+   ],
+   "text_rect": [
     0,
-    6,
-    0
-   ]
+    0,
+    96,
+    94
+   ],
+   "data": {
+    "_note": "G01 徽记（btn_leave，与选关返回同款）；悬停提示「关闭」。用户 2026-10-21：从面板上方居中移到面板主体右上角（主体右缘 y 182 处 x 1535）"
+   }
   },
   {
    "id": "separator_header",
-   "file": "../gothic/blank.png"
+   "file": "../gothic/blank.png",
+   "rect": [
+    573,
+    226,
+    774,
+    1
+   ]
   },
   {
    "id": "section_audio",
    "font": {
-    "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#C9B6D6"
-   }
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#E5E5E5"
+   },
+   "rect": [
+    573,
+    236,
+    480,
+    44
+   ],
+   "text_rect": [
+    0,
+    0,
+    480,
+    44
+   ]
   },
   {
    "id": "label_master",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    300,
+    270,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    270,
+    48
+   ]
   },
   {
    "id": "slider_master_track",
@@ -89,6 +155,12 @@
     0,
     0,
     0
+   ],
+   "rect": [
+    880,
+    321,
+    360,
+    10
    ]
   },
   {
@@ -99,27 +171,64 @@
     0,
     2,
     0
+   ],
+   "rect": [
+    882,
+    323,
+    358,
+    6
    ]
   },
   {
    "id": "slider_master_grabber",
-   "file": "../gothic/slider_grabber_normal.png"
+   "file": "../gothic/slider_grabber_normal.png",
+   "rect": [
+    1228,
+    315,
+    23,
+    23
+   ]
   },
   {
    "id": "pct_master",
    "font": {
     "family": "Cinzel",
-    "size": 24,
-    "color": "#ADA4B4"
-   }
+    "size": 22,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    1257,
+    300,
+    90,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    90,
+    48
+   ],
+   "align": "right"
   },
   {
    "id": "label_music",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    366,
+    270,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    270,
+    48
+   ]
   },
   {
    "id": "slider_music_track",
@@ -129,6 +238,12 @@
     0,
     0,
     0
+   ],
+   "rect": [
+    880,
+    387,
+    360,
+    10
    ]
   },
   {
@@ -139,27 +254,64 @@
     0,
     2,
     0
+   ],
+   "rect": [
+    882,
+    389,
+    286,
+    6
    ]
   },
   {
    "id": "slider_music_grabber",
-   "file": "../gothic/slider_grabber_normal.png"
+   "file": "../gothic/slider_grabber_normal.png",
+   "rect": [
+    1156,
+    381,
+    23,
+    23
+   ]
   },
   {
    "id": "pct_music",
    "font": {
     "family": "Cinzel",
-    "size": 24,
-    "color": "#ADA4B4"
-   }
+    "size": 22,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    1257,
+    366,
+    90,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    90,
+    48
+   ],
+   "align": "right"
   },
   {
    "id": "label_sfx",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    432,
+    270,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    270,
+    48
+   ]
   },
   {
    "id": "slider_sfx_track",
@@ -169,6 +321,12 @@
     0,
     0,
     0
+   ],
+   "rect": [
+    880,
+    453,
+    360,
+    10
    ]
   },
   {
@@ -179,65 +337,150 @@
     0,
     2,
     0
+   ],
+   "rect": [
+    882,
+    455,
+    304,
+    6
    ]
   },
   {
    "id": "slider_sfx_grabber",
-   "file": "../gothic/slider_grabber_normal.png"
+   "file": "../gothic/slider_grabber_normal.png",
+   "rect": [
+    1174,
+    447,
+    23,
+    23
+   ]
   },
   {
    "id": "pct_sfx",
    "font": {
     "family": "Cinzel",
-    "size": 24,
-    "color": "#ADA4B4"
-   }
+    "size": 22,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    1257,
+    432,
+    90,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    90,
+    48
+   ],
+   "align": "right"
   },
   {
    "id": "section_display",
    "font": {
-    "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#C9B6D6"
-   }
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#E5E5E5"
+   },
+   "rect": [
+    573,
+    524,
+    480,
+    44
+   ],
+   "text_rect": [
+    0,
+    0,
+    480,
+    44
+   ]
   },
   {
    "id": "label_fullscreen",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    588,
+    450,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    450,
+    48
+   ]
   },
   {
    "id": "toggle_fullscreen",
    "states": {
     "off": "../gothic/toggle_off.png",
     "on": "../gothic/toggle_on.png"
-   }
+   },
+   "rect": [
+    1266,
+    594,
+    81,
+    37
+   ]
   },
   {
    "id": "label_target_lines",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    654,
+    450,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    450,
+    48
+   ]
   },
   {
    "id": "toggle_target_lines",
    "states": {
     "off": "../gothic/toggle_off.png",
     "on": "../gothic/toggle_on.png"
-   }
+   },
+   "rect": [
+    1266,
+    660,
+    81,
+    37
+   ]
   },
   {
    "id": "label_font_scale",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    720,
+    400,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    400,
+    48
+   ]
   },
   {
    "id": "dropdown_font_scale",
@@ -264,6 +507,12 @@
     4,
     140,
     46
+   ],
+   "rect": [
+    1115,
+    717,
+    232,
+    54
    ]
   },
   {
@@ -272,46 +521,106 @@
     "family": "Cinzel",
     "size": 24,
     "color": "#E6E0E8"
-   }
+   },
+   "rect": [
+    1136,
+    720,
+    154,
+    48
+   ]
   },
   {
    "id": "dropdown_arrow",
-   "file": "../gothic/blank.png"
+   "file": "../gothic/blank.png",
+   "rect": [
+    1306,
+    737,
+    20,
+    20
+   ]
   },
   {
    "id": "section_debug",
    "font": {
-    "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#C9B6D6"
-   }
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#E5E5E5"
+   },
+   "rect": [
+    573,
+    790,
+    480,
+    44
+   ],
+   "text_rect": [
+    0,
+    0,
+    480,
+    44
+   ]
   },
   {
    "id": "label_sim_log",
    "font": {
     "family": "NotoSerifSC",
-    "size": 26,
-    "color": "#E6E0E8"
-   }
+    "size": 24,
+    "color": "#B2B2B2"
+   },
+   "rect": [
+    600,
+    830,
+    450,
+    48
+   ],
+   "text_rect": [
+    0,
+    0,
+    450,
+    48
+   ]
   },
   {
    "id": "toggle_sim_log",
    "states": {
     "off": "../gothic/toggle_off.png",
     "on": "../gothic/toggle_on.png"
-   }
+   },
+   "rect": [
+    1266,
+    836,
+    81,
+    37
+   ]
   },
   {
    "id": "log_hint",
    "font": {
     "family": "NotoSerifSC",
-    "size": 20,
-    "color": "#ADA4B4"
-   }
+    "size": 18,
+    "color": "#8E8E8E"
+   },
+   "rect": [
+    600,
+    880,
+    740,
+    56
+   ],
+   "text_rect": [
+    0,
+    0,
+    740,
+    56
+   ]
   },
   {
    "id": "separator_footer",
-   "file": "../gothic/blank.png"
+   "file": "../gothic/blank.png",
+   "rect": [
+    573,
+    830,
+    774,
+    1
+   ]
   }
  ]
 }

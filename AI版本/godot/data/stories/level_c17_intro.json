@@ -1,0 +1,40 @@
+{
+  "id": "level_c17_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "钟楼本来是七层，现在是四层。断口朝上，像一根断指。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "钟卡在二层和三层之间，半埋进楼里，钟面上密密麻麻刻满了名字。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "名字在渗血，血顺着钟身往下走，走成一道细线，在地面积了一小摊，还没干。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "那口钟以前一天响三次。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "响一次，所有人心里那些开着的口子就会合上一会儿。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "神战那天它响到一半就停了。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "所以现在这地方的人——不管是活的还是死的——都还停在那一半里。"
+    }
+  ]
+}

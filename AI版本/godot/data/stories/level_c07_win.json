@@ -1,0 +1,25 @@
+{
+  "id": "level_c07_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她低头看自己的手。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "血从指缝里往回爬，爬回腕上那道还没合拢的口子。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把手举起来，对着那颗太阳。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "光从她手背的骨头里透过去，是红的。"
+    }
+  ]
+}

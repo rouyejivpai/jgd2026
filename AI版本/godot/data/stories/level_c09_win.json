@@ -1,0 +1,20 @@
+{
+  "id": "level_c09_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "援军来了"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "她们看了她一眼，谁都没说话，抬走了灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "灯还亮着。"
+    }
+  ]
+}

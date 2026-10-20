@@ -1,0 +1,25 @@
+{
+  "id": "level_c22_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "花心合上了。最后一点光从齿缝里漏出来，暗掉。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "三只猎犬倒在花旁边。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她走过去，把它们一只一只翻过来看。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们的眼睛里没有东西。不是空的——是被借走了。"
+    }
+  ]
+}

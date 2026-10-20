@@ -633,6 +633,16 @@ def main():
             if pos in cells and su.get("faction") == "enemy":
                 err(ctx, f"敌方初始单位 {sid} 位于部署区内")
             udef = units[su["unit"]]
+            for vk, vp in su.get("visuals", {}).items():   # 2026-10-20 换皮：贴图路径须存在
+                if vk in ("sprite", "portrait") and isinstance(vp, str) and vp.startswith("res://") \
+                        and not (ROOT.parent / vp[len("res://"):]).exists():
+                    err(ctx, f"initial_units {sid} visuals.{vk} 文件不存在: {vp}")
+            for tid in su.get("traits", []):                # 2026-10-20 按敌人类型拆出的特性须存在，且与单位原特性同类型
+                if tid not in traits:
+                    err(ctx, f"initial_units {sid} trait '{tid}' 不存在 (D02)")
+            base_types = sorted(traits.get(t, {}).get("type", "") for t in udef.get("traits", []))
+            if "traits" in su and sorted(traits.get(t, {}).get("type", "") for t in su["traits"]) != base_types:
+                err(ctx, f"initial_units {sid} traits 的类型须与单位 {su['unit']} 原特性一致（只换名字与说明，不换机制）")
             for i, r in enumerate(su.get("rules", [])):
                 check_rule(r, f"{ctx}:initial_units.{sid}.rules[{i}]", routes=routes, unit_allowed_actions=expand_allowed(udef.get("allowed_actions", [])))
         # 07 §7 modifiers / 07 §9 overrides
@@ -918,13 +928,16 @@ def main():
         if not isinstance(st.get("scenes"), list):
             err(sctx, "scenes 必须是数组（空数组 = 不触发）")
         for i, sc in enumerate(st.get("scenes", [])):
-            if sc.get("speaker") not in SPEAKERS:
+            if sc.get("speaker") not in SPEAKERS | set((strings_doc or {}).get("speakers", {})):   # 2026-10-20：strings.json speakers 里登记的说话人都合法
                 err(sctx, f"scenes[{i}] speaker 非法: {sc.get('speaker')}")
-            if not isinstance(sc.get("text"), str) or not sc.get("text"):
+            if not isinstance(sc.get("text"), str) or (not sc.get("text") and not sc.get("cg")):   # 写了 cg 的句子可无 text（纯 CG 句）
                 err(sctx, f"scenes[{i}] text 缺失")
-            for key in ("illustration", "backdrop"):
+            for key in ("illustration", "backdrop", "cg"):
                 if key in sc and not isinstance(sc[key], str):
                     err(sctx, f"scenes[{i}] {key} 必须是字符串")
+            cg = sc.get("cg")
+            if isinstance(cg, str) and cg and not any((ROOT.parent / "assets" / "cg" / (cg + ext)).exists() for ext in (".png", ".jpg")):
+                err(sctx, f"scenes[{i}] cg 文件不存在：assets/cg/{cg}.png|.jpg")
     check_teaching(teaching, level_docs)
     # 第五阶段：异常状态粒子参数
     if (ROOT / "status_fx.json").exists():

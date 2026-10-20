@@ -1,0 +1,25 @@
+{
+  "id": "level_c20_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "地上有一串脚印。四个爪印，深浅不一。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "中间有一段是拖出来的——它跑过。脚印通向右边，然后又折回来，绕了个圈，往右上角去了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她在旁边站了一会儿。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "然后她沿着那串脚印往前走，走的时候，自己的脚印落在旁边，一样深。"
+    }
+  ]
+}

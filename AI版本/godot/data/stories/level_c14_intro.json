@@ -1,0 +1,35 @@
+{
+  "id": "level_c14_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "空地中央点着三盏灯。不是魂灯——是更大的东西：旧代魔女的指骨堆在一起烧，火是暗红的，没有烟。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_elder",
+      "text": "火前面坐着一个人。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_elder",
+      "text": "老的。左半身已经全变成骨头：左臂、左肩、左边的肋骨，灰白，表面有裂纹，裂纹里渗出暗红的东西。她的右眼浑浊，但很尖。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "又来一个？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_elder",
+      "text": "她没有站起来。她看的是人偶手里那把骨刃。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "你身上有塞拉的味道。"
+    }
+  ]
+}

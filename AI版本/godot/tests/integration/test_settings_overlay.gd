@@ -1,6 +1,6 @@
 extends GutTest
-## 10 §2 设置浮窗：主界面 / 章节地图 / 局内三处打开（SceneRouter 常驻，层 100 < 黑幕 128）；Esc 与「关闭」关闭；
-## 点击遮罩不关闭；局内运行中打开自动暂停、关闭后保持暂停（决策 ⑦）；修改即时生效、关闭时写存档；独立设置界面已删除。
+## 10 §2 设置浮窗：主界面 / 章节地图 / 局内三处打开（SceneRouter 常驻，层 100 < 黑幕 128）；Esc、「关闭」与点击面板外关闭
+## （用户 2026-10-21，点击面板内不关闭）；局内运行中打开自动暂停、关闭后保持暂停（决策 ⑦）；修改即时生效、关闭时写存档；独立设置界面已删除。
 
 const MAIN_MENU_SCENE: PackedScene = preload("res://scenes/screens/main_menu.tscn")
 const LEVEL_SELECT_SCENE: PackedScene = preload("res://scenes/screens/level_select.tscn")
@@ -66,11 +66,20 @@ func test_overlay_is_resident_above_scenes_below_fade() -> void:
 	assert_true(SceneRouter.is_settings_open(), "goto_settings 保留签名，改为打开浮窗")
 	var mask: Control = _overlay.get_node("Mask") as Control
 	assert_eq(mask.mouse_filter, Control.MOUSE_FILTER_STOP, "遮罩挡住下层点击")
+	var panel: Control = _overlay.get_node("SettingsPanel") as Control
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
 	click.pressed = true
+	click.global_position = panel.get_global_rect().get_center()
 	mask.gui_input.emit(click)
-	assert_true(SceneRouter.is_settings_open(), "点击遮罩不关闭")
+	assert_true(SceneRouter.is_settings_open(), "点击面板内不关闭")
+	click.global_position = Vector2(4, 4)
+	mask.gui_input.emit(click)
+	assert_false(SceneRouter.is_settings_open(), "点击面板外关闭")
+	SceneRouter.open_settings()
+	var close_rect: Rect2 = (_overlay.find_child("CloseButton", true, false) as Control).get_global_rect()
+	assert_gt(close_rect.get_center().x, panel.get_global_rect().get_center().x, "关闭在右上角")
+	assert_lt(close_rect.get_center().y, panel.get_global_rect().get_center().y, "关闭在右上角")
 	_esc()
 	assert_false(SceneRouter.is_settings_open(), "Esc 关闭")
 	SceneRouter.open_settings()

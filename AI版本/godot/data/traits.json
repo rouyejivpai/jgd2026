@@ -3,12 +3,12 @@
   "traits": {
     "delayed_blast_basic": {
       "type": "delayed_blast",
-      "public_text": "延迟爆炸：锁定视野内最远分裂体的当时位置，标出半径 1.5 格的范围，2 秒后爆炸造成 30 伤害。落点不追踪，目标死亡也不会取消。冷却 4 秒。",
+      "public_text": "延迟爆炸：锁定视野内最远人偶的当时位置，标出半径 1.5 格的范围，2 秒后爆炸造成 30 伤害。落点不追踪，目标死亡也不会取消。冷却 4 秒。",
       "params": { "damage": 30, "radius": 1.5, "delay": 2.0, "cooldown": 4.0, "selector": "farthest", "filter": "unit", "range": 12, "first_delay": 1.0 }
     },
     "delayed_blast_core": {
       "type": "delayed_blast",
-      "public_text": "花粉爆裂：锁定视野内最远分裂体的当时位置，标出半径 2 格的范围，2.5 秒后爆炸造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
+      "public_text": "花粉爆裂：锁定视野内最远人偶的当时位置，标出半径 2 格的范围，2.5 秒后爆炸造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
       "params": { "damage": 35, "radius": 2.0, "delay": 2.5, "cooldown": 5.0, "selector": "farthest", "filter": "unit", "range": 14, "first_delay": 3.0 }
     },
     "vulnerable": {
@@ -62,9 +62,75 @@
       "params": {"clears": ["vulnerable", "paralysis", "slow"], "affects": "ally_only"},
       "_why": "**反制手段。** 前面两个格子给玩家制造麻烦，净化台给玩家一个解法 —— 而且它只对我方生效，所以「把敌人拖到净化台旁边」是没用的，你必须自己退回去清状态，这就有了代价。"
     },
+    "bloom_spore": {
+      "type": "delayed_blast",
+      "_for": "骨花（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "孢种：花心张开，把一团骨质孢种吐向视野内最远人偶的当时位置，标出半径 1.5 格的范围，2 秒后炸开造成 30 伤害。落点不追踪，目标死亡也不会取消。冷却 4 秒。",
+      "params": {"damage": 30, "radius": 1.5, "delay": 2.0, "cooldown": 4.0, "selector": "farthest", "filter": "unit", "range": 12, "first_delay": 1.0}
+    },
+    "bloom_spore_great": {
+      "type": "delayed_blast",
+      "_for": "骨花（大株）（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "巨花孢裂：这株骨花比别处的都大，孢种也更沉。锁定视野内最远人偶的当时位置，标出半径 2 格的范围，2.5 秒后炸开造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
+      "params": {"damage": 35, "radius": 2.0, "delay": 2.5, "cooldown": 5.0, "selector": "farthest", "filter": "unit", "range": 14, "first_delay": 3.0}
+    },
+    "sorrow_tears": {
+      "type": "delayed_blast",
+      "_for": "悲伤魔女（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "归寂之泪：她无声地哭，眼泪落在哪里，哪里就开始归寂。锁定视野内最远人偶的当时位置，标出半径 1.5 格的范围，2 秒后造成 30 伤害。落点不追踪，目标死亡也不会取消。冷却 4 秒。",
+      "params": {"damage": 30, "radius": 1.5, "delay": 2.0, "cooldown": 4.0, "selector": "farthest", "filter": "unit", "range": 12, "first_delay": 1.0}
+    },
+    "elder_finger_fire": {
+      "type": "delayed_blast",
+      "_for": "骨者（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "指骨灯火：从烧着旧代魔女指骨的灯里引出一团暗红的火，投向视野内最远人偶的当时位置，标出半径 2 格的范围，2.5 秒后燃爆造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
+      "params": {"damage": 35, "radius": 2.0, "delay": 2.5, "cooldown": 5.0, "selector": "farthest", "filter": "unit", "range": 14, "first_delay": 3.0}
+    },
+    "failed_soul_spill": {
+      "type": "delayed_blast",
+      "_for": "“失败品”（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "灵魂外溢：胸口的缺口关不住吞下去的灵魂，它们成团地溢出来，落向视野内最远人偶的当时位置，标出半径 2 格的范围，2.5 秒后炸开造成 35 伤害。落点不追踪。冷却 5 秒，开战 3 秒后首次释放。",
+      "params": {"damage": 35, "radius": 2.0, "delay": 2.5, "cooldown": 5.0, "selector": "farthest", "filter": "unit", "range": 14, "first_delay": 3.0}
+    },
+    "bloom_roots": {
+      "type": "aura_status",
+      "_for": "骨花（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "根网：骨花成片生长，根须在地下连成一张网——半径 3 格内的敌方单位移速 -40%。",
+      "params": {"status": "slow", "radius": 3.0, "affects": "enemy_of_owner"}
+    },
+    "examiner_nail": {
+      "type": "on_hit_status",
+      "_for": "灵魂验尸官（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "封魂钉：命中时施加「麻痹」——他还在照教会的规程，把乱跑的灵魂钉回原处。",
+      "params": {"status": "paralysis", "duration": 3.0}
+    },
+    "echo_binding_rite": {
+      "type": "on_hit_status",
+      "_for": "灵魂残响（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "未竟的缚咒：命中时施加「麻痹」——审判庭困住魔女的咒文念到一半就停了，它们还在一遍遍地念。",
+      "params": {"status": "paralysis", "duration": 3.0}
+    },
+    "fear_masks": {
+      "type": "on_hit_status",
+      "_for": "恐惧魔女（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "面具夺身：命中时施加「麻痹」——她身上的面具轮流抢夺这具身体，被它们盯上的人也会一时动弹不得。",
+      "params": {"status": "paralysis", "duration": 3.0}
+    },
+    "anger_bone_spikes": {
+      "type": "on_hit_status",
+      "_for": "愤怒魔女（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "骨刺穿甲：命中时施加「易伤」——长在体外的骨刺一直在长，扎开的伤口合不拢。",
+      "params": {"status": "vulnerable", "duration": 6.0}
+    },
+    "bell_toll": {
+      "type": "on_hit_status",
+      "_for": "敲钟魔女（2026-10-20 按敌人类型拆出，机制同原特性）",
+      "public_text": "钟鸣余震：命中时施加「易伤」——那条骨臂砸下来的时候，钟声还在骨头里震。",
+      "params": {"status": "vulnerable", "duration": 6.0}
+    },
     "boss_phases": {
       "type": "phased_boss",
-      "public_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝钟缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两只残骸行者）。",
+      "public_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝骨缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两名骨花守卫）。",
       "params": {"phases": [{"phase": 1, "name": "孢裂", "hp_ratio": 0.34, "mechanic": "vulnerable", "applies_status": "vulnerable", "summon": ["spitter", "spitter", "marrow_hulk"]}, {"phase": 2, "name": "钟缚", "hp_ratio": 0.33, "mechanic": "paralysis", "applies_status": "paralysis", "summon": ["hex_priest", "hex_priest", "bone_guard"]}, {"phase": 3, "name": "泥沼", "hp_ratio": 0.33, "mechanic": "slow", "applies_status": "slow", "summon": ["bone_weaver", "marrow_hulk"], "move_speed_override": 1.2}], "on_phase_change": "清自身状态 / 召唤 / 改地形效果"},
       "_why": "三阶段的机制分别对应灰棘林 / 圣钟城废墟 / 肉巢沼泽，所以玩家在前面已经各自学过一遍。最终战考的是**串起来用**，而不是新机制 —— 这是「最终 Boss 应该考什么」的答案。"
     }

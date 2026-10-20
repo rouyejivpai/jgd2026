@@ -109,6 +109,7 @@ func _draw() -> void:
 ## 画全部信标与行动线，返回用掉的地面光圈数
 func _draw_beacons() -> int:
 	var deploy: bool = controller.phase == SimTypes.Phase.DEPLOY
+	var edit: bool = deploy or controller.boss_pending          # Boss 换阶段暂停也在编辑信标：读控制器配置、按部署样式画（单位位置仍取模拟）
 	var selected_slot: String = controller.slot_of_unit(int(root.get("selected_id")))
 	var t: float = float(SimTypes.TILE_SIZE)
 	var k: float = maxf(get_global_transform().get_scale().x, 0.01)
@@ -119,28 +120,28 @@ func _draw_beacons() -> int:
 	var pillars: Array = []                                    # [位置, 编号（"" = 宝石）, 是否选中单位]，按 y 排序后画
 	var labels: Array = []                                     # 运行中选中单位的路径点编号：[位置, 编号, 是否激活]
 	for uid: String in controller.uids():
-		var beacons: Array[Dictionary] = _beacons_of(uid, deploy)
+		var beacons: Array[Dictionary] = _beacons_of(uid, edit)
 		if beacons.is_empty():
 			continue
 		var target_index: int = -1
 		var u: SimUnit = controller.world.get_unit(controller.unit_id_of_slot(uid)) if controller.world != null else null
-		if not deploy and u != null and u.alive and u.current_action == SimTypes.ActionType.FOLLOW_BEACONS:
+		if not edit and u != null and u.alive and u.current_action == SimTypes.ActionType.FOLLOW_BEACONS:
 			target_index = u.beacon_index
 		var is_sel: bool = uid == selected_slot
 		var pts: Array[Vector2] = []
 		for b: Dictionary in beacons:
 			pts.append(_px(b["cell"] as Vector2i))
-		var ring_sel: float = (RING_SELECTED if deploy else RING_PATH) * t
+		var ring_sel: float = (RING_SELECTED if edit else RING_PATH) * t
 		# 行动线：部署阶段选中单位整条（单位 → 各信标）发光闪烁；运行中选中单位的连线半透明，单位 → 目标点发光闪烁
 		if is_sel:
 			var start: Vector2 = _unit_pos(uid, u, deploy)
 			var chain: Array[Vector2] = pts.duplicate()
-			var from_unit: bool = deploy and start.x > -INF
+			var from_unit: bool = edit and start.x > -INF
 			if from_unit:
 				chain.push_front(start)
 			for i: int in range(1, chain.size()):
 				var unit_end: bool = from_unit and i == 1
-				if deploy:
+				if edit:
 					_glow_line(chain[i - 1], chain[i], -1.0 if unit_end else ring_sel, ring_sel, line_w, flash, float(i) * 0.31)
 				else:
 					_plain_line(chain[i - 1], chain[i], ring_sel, ring_sel, line_w)
@@ -153,7 +154,7 @@ func _draw_beacons() -> int:
 			var active: bool = i == target_index
 			var ring_r: float = RING_PATH * t
 			var state: Array = MARK_LIT if active else MARK_INACTIVE
-			if deploy:
+			if edit:
 				ring_r = (RING_SELECTED if is_sel else RING_OTHER) * t
 				state = MARK_LIT if is_sel else MARK_DEPLOY_OTHER
 				pillars.append([pts[i], str(beacons[i]["id"]) if is_sel else "", is_sel])
@@ -368,15 +369,22 @@ func _draw_unit_numbers(line_w: float) -> void:
 		draw_string(NAME_FONT, c + Vector2(-sz.x * 0.5, (NAME_FONT.get_ascent(fs) - NAME_FONT.get_descent(fs)) * 0.5), txt, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs, Palette.BG_DEEP if on else Palette.ALCHEMY_GOLD)
 
 
-## 部署阶段读控制器配置；运行中读模拟单位（已阵亡的不画）
-func _beacons_of(slot_id: String, deploy: bool) -> Array[Dictionary]:
-	if deploy:
+## 部署阶段 / Boss 换阶段暂停读控制器配置（暂停中改的信标「继续」时才写进模拟）；运行中读模拟单位（已阵亡的不画）
+func _beacons_of(slot_id: String, edit: bool) -> Array[Dictionary]:
+	if edit and (controller.phase == SimTypes.Phase.DEPLOY or _alive(slot_id)):
 		return controller.get_beacons(slot_id)
+	if edit:
+		return [] as Array[Dictionary]
 	var u: SimUnit = controller.world.get_unit(controller.unit_id_of_slot(slot_id)) if controller.world != null else null
 	var out: Array[Dictionary] = []
 	if u != null and u.alive:
 		out.assign(u.beacons)
 	return out
+
+
+func _alive(slot_id: String) -> bool:
+	var u: SimUnit = controller.world.get_unit(controller.unit_id_of_slot(slot_id)) if controller.world != null else null
+	return u != null and u.alive
 
 
 func _px(cell: Vector2i) -> Vector2:

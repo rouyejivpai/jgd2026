@@ -74,7 +74,7 @@
         { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "攻击射程内最近的分裂体；否则追击视野内最近的分裂体。",
+      "public_rule_text": "攻击射程内最近的人偶；否则追击视野内最近的人偶。",
       "description": "枯骨农田里游荡的畸形残骸，神性碎片让它们持续蠕动。",
       "visuals": { "sprite": "res://assets/sprites/units/raider.png", "portrait": "res://assets/sprites/portraits/raider.png", "projectile": "none", "scale": 1.0, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -90,7 +90,7 @@
         { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "攻击射程内最近的分裂体；否则追击视野内最近的分裂体。",
+      "public_rule_text": "攻击射程内最近的人偶；否则追击视野内最近的人偶。",
       "description": "多具残骸融合而成的厚重畸形体，缓慢但难以击倒。",
       "visuals": { "sprite": "res://assets/sprites/units/brute.png", "portrait": "res://assets/sprites/portraits/brute.png", "projectile": "none", "scale": 1.2, "light_color": "#ff4b3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -106,7 +106,7 @@
         { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "锁定首个进入视野的分裂体并追击，直到它死亡或离开视野；视野较短。",
+      "public_rule_text": "锁定首个进入视野的人偶并追击，直到它死亡或离开视野；视野较短。",
       "description": "贴着哭墙等待神启的石化魔女残躯，只认得第一个看见的东西。",
       "visuals": { "sprite": "res://assets/sprites/units/warden.png", "portrait": "res://assets/sprites/portraits/warden.png", "projectile": "none", "scale": 1.15, "light_color": "#c05070", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -122,7 +122,7 @@
         { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "4 格内有分裂体且存在退路时，朝远离所有威胁的方向撤离；无路可退时攻击射程内最近者。",
+      "public_rule_text": "4 格内有人偶且存在退路时，朝远离所有威胁的方向撤离；无路可退时攻击射程内最近者。",
       "description": "猎犬巢穴的高速畸形体。它会同时躲开周围所有的威胁，只有被堵住才会反咬。",
       "visuals": { "sprite": "res://assets/sprites/units/hound.png", "portrait": "res://assets/sprites/portraits/hound.png", "projectile": "none", "scale": 0.95, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -136,7 +136,7 @@
       "default_rules": [
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "每 4 秒向视野内最远的分裂体当时所在的位置喷出骨浆，2 秒后爆炸（半径 1.5 格，30 伤害）。不会移动，不做普通攻击。",
+      "public_rule_text": "每 4 秒向视野内最远的人偶当时所在的位置喷出骨浆，2 秒后爆炸（半径 1.5 格，30 伤害）。不会移动，不做普通攻击。",
       "description": "扎根在坡地上的喉管状增生体，远远地吐出会延迟炸开的骨浆。",
       "visuals": { "sprite": "res://assets/sprites/units/spitter.png", "portrait": "res://assets/sprites/portraits/spitter.png", "projectile": "res://assets/sprites/projectiles/bone_spit.png", "scale": 1.2, "light_color": "#ff7a3e", "attack_sfx": "spitter_charge.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -152,7 +152,7 @@
         { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
         { "conditions": [], "action": { "type": "follow_route", "route_id": "husk_lane" } }
       ],
-      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击；没有锁定目标时沿行列路线前进。",
+      "public_rule_text": "锁定首个进入视野的人偶并追击攻击；没有锁定目标时沿行列路线前进。",
       "description": "护送祭司的行列残骸，一旦咬住谁就不再松口。",
       "visuals": { "sprite": "res://assets/sprites/units/husk.png", "portrait": "res://assets/sprites/portraits/husk.png", "projectile": "none", "scale": 1.0, "light_color": "#ff4b3e", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -167,7 +167,7 @@
         { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
         { "conditions": [], "action": { "type": "follow_route", "route_id": "priest_lane" } }
       ],
-      "public_rule_text": "沿低语路线前往哭墙深处；途中若有分裂体进入 5 格射程，停下攻击最近者。抵达终点即逃离。",
+      "public_rule_text": "沿低语路线前往哭墙深处；途中若有人偶进入 5 格射程，停下攻击最近者。抵达终点即逃离。",
       "description": "携带着失去神启的记忆碎片，低声复述早已无人回应的祷文。",
       "visuals": { "sprite": "res://assets/sprites/units/priest.png", "portrait": "res://assets/sprites/portraits/priest.png", "projectile": "res://assets/sprites/projectiles/whisper_bolt.png", "scale": 1.0, "light_color": "#b06cff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_priest.ogg" }
     },
@@ -183,7 +183,7 @@
         { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "first_seen", "filter": "unit" }, "action": { "type": "chase_attack" } },
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "锁定首个进入 7 格视野的分裂体并追击攻击；失去目标后停在原地。",
+      "public_rule_text": "锁定首个进入 7 格视野的人偶并追击攻击；失去目标后停在原地。",
       "description": "骨花母体外层剥落的花瓣护卫，厚重迟缓，只盯住第一个闯入者。",
       "visuals": { "sprite": "res://assets/sprites/units/bone_guard.png", "portrait": "res://assets/sprites/portraits/bone_guard.png", "projectile": "none", "scale": 1.3, "light_color": "#ff4b3e", "attack_sfx": "enemy_brute.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_enemy.ogg" }
     },
@@ -197,7 +197,7 @@
       "default_rules": [
         { "conditions": [], "action": { "type": "idle" } }
       ],
-      "public_rule_text": "开战 3 秒后，每 5 秒向视野内最远的分裂体当时所在的位置投下花粉团，2.5 秒后爆炸（半径 2 格，35 伤害）。核心本身不会移动。",
+      "public_rule_text": "开战 3 秒后，每 5 秒向视野内最远的人偶当时所在的位置投下花粉团，2.5 秒后爆炸（半径 2 格，35 伤害）。核心本身不会移动。",
       "description": "骨花温室的母体核心，脆弱而贪食。被摧毁后，低语会说：继续走。",
       "visuals": { "sprite": "res://assets/sprites/units/bone_core.png", "portrait": "res://assets/sprites/portraits/bone_core.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.5, "light_color": "#ff9a6a", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg" }
     },
@@ -254,7 +254,7 @@
       "public_rule_text": "攻击会施加「麻痹」（无法攻击 3 秒）。自身攻击力很低，但能让敌人打不出伤害。",
       "description": "把骨链甩出去缠住对手手脚的狱卒。他杀不死任何东西，但能让任何东西杀不死你。",
       "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
-      "visuals": {"sprite": "res://assets/sprites/units/binder.png", "portrait": "res://assets/sprites/portraits/binder.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_bulwark.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/binder.png", "portrait": "res://assets/sprites/portraits/binder.png", "projectile": "none", "scale": 1.0, "light_color": "#8ab4ff", "attack_sfx": "attack_binder.ogg", "hit_sfx": "hit_bone.ogg", "death_sfx": "death_ally.ogg"}
     },
     "bone_weaver": {
       "display_name": "织骨者",
@@ -270,7 +270,7 @@
       "public_rule_text": "光环：半径 3 格内的我方单位移速 -40%。",
       "description": "一边爬一边吐丝的东西。它自己不追人，但凡是靠近它的东西都会变得迈不开腿。",
       "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
-      "visuals": {"sprite": "res://assets/sprites/units/bone_weaver.png", "portrait": "res://assets/sprites/portraits/bone_weaver.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "enemy_bite.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/bone_weaver.png", "portrait": "res://assets/sprites/portraits/bone_weaver.png", "projectile": "none", "scale": 1.1, "light_color": "#78aaff", "attack_sfx": "priest_whisper.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_enemy.ogg"}
     },
     "hex_priest": {
       "display_name": "咒缚祭司",
@@ -315,10 +315,10 @@
         {"conditions": [{"type": "enemy_in_range"}], "target": {"selector": "farthest", "filter": "unit"}, "action": {"type": "attack"}},
         {"conditions": [], "action": {"type": "idle"}}
       ],
-      "public_rule_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝钟缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两只残骸行者）。",
+      "public_rule_text": "两阶段 Boss，本体不会移动。出手前先亮信号预警：红＝花粉伤害，黄＝骨缚麻痹。血量过半时战斗暂停，可以改指令、在增援区补人；第二阶段红黄的作用范围内外对调，并多出蓝色信号（召出两名骨花守卫）。",
       "description": "骨花温室最深处的东西。她不是植物，也不完全是骨头——她把整片温室的根都连在自己身上。",
       "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
-      "visuals": {"sprite": "res://assets/sprites/units/bone_witch.png", "portrait": "res://assets/sprites/portraits/bone_witch.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "core_pulse.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "death_core.ogg"}
+      "visuals": {"sprite": "res://assets/sprites/units/bone_witch.png", "portrait": "res://assets/sprites/portraits/bone_witch.png", "projectile": "res://assets/sprites/projectiles/pollen_orb.png", "scale": 1.8, "light_color": "#ff5ca8", "attack_sfx": "witch_attack.ogg", "hit_sfx": "hit_flesh.ogg", "death_sfx": "boss_death.ogg"}
     },
     "dummy": {
       "display_name": "试作人偶",
@@ -329,8 +329,8 @@
       "allowed_actions": [],
       "default_rules": [
       ],
-      "description": "织骸工坊里用来校准的空壳人偶。不会动，也不会反击。",
-      "_visuals_note": "2026-10-19 已换 Q 版美术（tools/import_qq_art.py）",
+      "description": "人偶工坊里用来校准的空壳人偶。不会动，也不会反击。",
+      "_visuals_note": "2026-10-20 用户指定：改用完好发饰人偶 Q 版原图（与 striker 同图，tools/import_qq_art.py）",
       "visuals": {"sprite": "res://assets/sprites/units/dummy.png", "portrait": "res://assets/sprites/portraits/dummy.png", "projectile": "none", "scale": 1.1, "light_color": "#d8d0c0", "attack_sfx": "", "hit_sfx": "structure_hit.ogg", "death_sfx": "structure_destroyed.ogg"}
     },
     "supply_crate": {

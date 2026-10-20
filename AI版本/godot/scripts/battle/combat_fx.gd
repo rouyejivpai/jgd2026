@@ -32,7 +32,10 @@ static var _mat_mix: CanvasItemMaterial = null
 
 
 ## 阵营色：core = 白热芯，main = 主色，glow = 外晕（HDR，透过场景压暗并触发辉光）
-static func colors(ally: bool) -> Dictionary:
+## tint：2026-10-20 敌人技能色（visuals.skill_color，如骨花粉红、骨者暗火）；alpha = 0 时用阵营色
+static func colors(ally: bool, tint: Color = Color(0, 0, 0, 0)) -> Dictionary:
+	if tint.a > 0.0:
+		return { "core": Color(tint.r * 1.4 + 0.7, tint.g * 1.4 + 0.7, tint.b * 1.4 + 0.7), "main": Color(tint.r * 1.05, tint.g * 1.05, tint.b * 1.05), "glow": Color(tint.r * 0.45, tint.g * 0.45, tint.b * 0.45) }
 	if ally:
 		return { "core": Color(2.3, 2.0, 1.4), "main": Color(1.85, 1.25, 0.42), "glow": Color(1.05, 0.6, 0.15) }
 	return { "core": Color(2.1, 0.55, 0.45), "main": Color(1.05, 0.07, 0.1), "glow": Color(0.45, 0.0, 0.04) }
@@ -73,8 +76,8 @@ static func _ramp(stops: Array) -> Gradient:
 
 
 ## 一次性 / 持续的火花发射器（世界坐标，粒子不随发射器移动）
-static func sparks(ally: bool, amount: int, lifetime: float, dir: Vector2, spread: float, vel: Vector2, size_px: Vector2, one_shot: bool) -> CPUParticles2D:
-	var col: Dictionary = colors(ally)
+static func sparks(ally: bool, amount: int, lifetime: float, dir: Vector2, spread: float, vel: Vector2, size_px: Vector2, one_shot: bool, tint: Color = Color(0, 0, 0, 0)) -> CPUParticles2D:
+	var col: Dictionary = colors(ally, tint)
 	var p := CPUParticles2D.new()
 	p.local_coords = false
 	p.texture = StatusParticles.dot_texture()
@@ -115,6 +118,7 @@ class Projectile extends Node2D:
 	var shape: int = CombatFx.Shape.DIAMOND
 	var size: float = 1.0
 	var bend_side: float = 0.0
+	var tint: Color = Color(0, 0, 0, 0)        ## 技能色（敌人技能射弹），alpha = 0 = 阵营色
 	var on_impact: Callable = Callable()
 	var _t: float = 0.0
 	var _dur: float = 0.2
@@ -129,7 +133,7 @@ class Projectile extends Node2D:
 	const TRAIL_SAMPLES: int = 14
 
 	func _ready() -> void:
-		_col = CombatFx.colors(ally)
+		_col = CombatFx.colors(ally, tint)
 		material = CombatFx.material(ally)
 		position = from
 		var d: Vector2 = to - from
@@ -151,7 +155,7 @@ class Projectile extends Node2D:
 			prev = p
 		_dur = clampf(_len / CombatFx.PROJECTILE_SPEED, CombatFx.PROJECTILE_MIN_TIME, CombatFx.PROJECTILE_MAX_TIME)
 		_dir = tangent(0.0)
-		_trail_sparks = CombatFx.sparks(ally, 44, 0.38, -_dir, 32.0, Vector2(30.0, 140.0), Vector2(3.0, 7.0) * sqrt(size), false)
+		_trail_sparks = CombatFx.sparks(ally, 44, 0.38, -_dir, 32.0, Vector2(30.0, 140.0), Vector2(3.0, 7.0) * sqrt(size), false, tint)
 		_trail_sparks.gravity = Vector2(0.0, 60.0)
 		add_child(_trail_sparks)
 		get_parent().add_child.call_deferred(MuzzleFlash.make(from, _dir, ally, size))

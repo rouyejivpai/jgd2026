@@ -14,6 +14,8 @@ extends PanelContainer
 ## 2026-10-20 刻印界面（02.zip F02–F04，参考图 刻印.png）：一条指令 = 一条底纹（F02），上排 [行为][参数一][参数二]｜[条件一][条件二] 五个框
 ## （F03 / F04：有内容的是亮框、用不到的参数格是暗框带星芒），下排（底纹下半的纹饰里）= 运行原因、「且 / 或」；删除是行为框左边的小图标，不显示「优先级 N」；
 ## 「行为 / 条件1 / 条件2」列标题画在面板底图上（每行不再带标签），没有拖拽柄（整行可拖）。条件带参数时参数叠在条件框右端（无框）。
+## 音效：删除 / 条件二选「无」rule_remove，与 / 或切换 ui_toggle（与 0.9、或 1.1 音高），拖起 ui_drag_pick、放下 ui_drag_drop，
+## 拖到别组的行上被拒 ui_error、拖出后没被接收 drag_cancel。运行中生效行高亮切换太频繁，不配音。
 
 const HANDLE_GLYPH: String = "≡"
 const NONE_KEY: String = ""              ## 条件二「无」
@@ -55,6 +57,7 @@ var _body: Control                       ## 行内容（绝对定位）
 var _highlight: Panel                    ## 运行中生效行的金边
 var _content_h: float = 0.0              ## 条件区底（不含运行原因行）
 var _low_dy: float = 0.0                 ## 条件多于两条时下排（优先级 / 逻辑 / 删除）下移的距离
+var _dragging: bool = false              ## 从本行拖起的拖拽进行中
 
 
 ## 布局元素相对行框（det_row1；row2 版式取自 det_row2）的矩形，设计像素
@@ -169,6 +172,7 @@ func _build_action_line() -> void:
 	ovl.gui_input.connect(func(e: InputEvent) -> void:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
 		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and not _override.disabled:
+			AudioManager.play_sfx("ui_toggle", "UI")        # 代码改 button_pressed 不触发按钮的自动点击音
 			_override.button_pressed = not _override.button_pressed)
 	var act_key: String = SimTypes.action_to_string(rule.action.type)
 	_action = _option(editor.action_items(act_key), act_key, _on_action, "det_action")
@@ -222,7 +226,10 @@ func _build_action_line() -> void:
 	_delete.add_theme_color_override("icon_hover_color", Color(1.25, 1.1, 1.1))
 	_delete.add_theme_color_override("icon_pressed_color", Color(1.0, 0.8, 0.8))
 	_delete.focus_mode = Control.FOCUS_NONE
-	_delete.pressed.connect(func() -> void: editor.delete_rule(index))
+	_delete.set_meta(&"sfx_press", "")
+	_delete.pressed.connect(func() -> void:
+		AudioManager.play_sfx("rule_remove", "UI")
+		editor.delete_rule(index))
 	_delete.visible = not editor.read_only and editor.editable()     # 战斗中不可编辑：不显示删除（批准整图 ui_13）
 	_place(_delete, rel("det_delete"))
 	_controls.append(_delete)
@@ -267,6 +274,7 @@ func _build_condition_line(k: int, c: ConditionDef) -> void:
 		_logic.focus_mode = Control.FOCUS_NONE
 		_logic.visible = true                                 # 条件一 / 条件二之间的与 / 或标志；只有一个条件时变暗、不可切换
 		_logic.set_meta(&"single", rule.conditions.size() < 2)
+		_logic.set_meta(&"sfx_press", "")                    # 由 _on_logic 按切换后的与 / 或播
 		_logic.pressed.connect(_on_logic)
 		_place(_logic, rel("det_logic"))
 		_controls.append(_logic)
@@ -455,6 +463,7 @@ func _on_cond(i: int, k: int) -> void:
 	elif key == NONE_KEY:
 		if r.conditions.size() > k:
 			r.conditions.remove_at(k)
+			AudioManager.play_sfx("rule_remove", "UI")       # AudioManager 见到同帧的具体音就不再叠自动 ui_select
 		if r.conditions.size() == 1 and r.conditions[0].type == SimTypes.ConditionType.ALWAYS:
 			r.conditions.clear()
 	else:
@@ -477,6 +486,7 @@ func _on_override(on: bool) -> void:
 func _on_logic() -> void:
 	var r: RuleDef = rule.clone()
 	r.condition_mode = SimTypes.ConditionMode.ALL if r.condition_mode == SimTypes.ConditionMode.ANY else SimTypes.ConditionMode.ANY
+	AudioManager.play_sfx("ui_toggle", "UI", 0.0, 1.1 if r.condition_mode == SimTypes.ConditionMode.ANY else 0.9)
 	if _logic != null and not editor.read_only:       # 切换提示：从标志上冒出一行字，向上飘并淡出（行随后重建，提示挂在编辑器上）
 		editor.show_logic_hint(_logic.get_global_rect().get_center(), DataRegistry.get_string("ui.logic_or_hint" if r.condition_mode == SimTypes.ConditionMode.ANY else "ui.logic_and_hint"))
 	_commit(r)
@@ -554,7 +564,21 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	var preview: Label = UiKit.label(_sentence.text)
 	preview.modulate = Color(1.0, 1.0, 1.0, 0.7)
 	set_drag_preview(preview)
+	AudioManager.play_sfx("ui_drag_pick", "UI")
+	_dragging = true
 	return _drag_payload()
+
+
+## 从本行拖起、没被接收：落在同编辑器别组的行上 = 被拒（ui_error），否则 = 取消（drag_cancel）
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_DRAG_END or not _dragging:
+		return
+	_dragging = false
+	if get_viewport().gui_is_drag_successful() or editor == null:
+		return
+	var over: RuleRow = editor.row_at(get_global_mouse_position())
+	var rejected: bool = over != null and over != self and SimTypes.action_group(over.rule.action.type) != SimTypes.action_group(rule.action.type)
+	AudioManager.play_sfx("ui_error" if rejected else "drag_cancel", "UI")
 
 
 func _drag_payload() -> Dictionary:
@@ -571,4 +595,5 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	AudioManager.play_sfx("ui_drag_drop", "UI")
 	editor.move_rule(int((data as Dictionary)["rule_from"]), index)

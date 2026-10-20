@@ -18,82 +18,81 @@
       "file": "res://assets/ui/settings_overlay/slices/mask.png"
     },
     {
-      "id": "panel_settings",
-      "kind": "ninepatch",
+      "id": "glow_bottom",
+      "kind": "image",
       "rect": [
         460,
-        104,
+        850,
         1000,
-        872
+        230
       ],
-      "ninepatch": [
-        100,
-        167,
-        100,
-        167
+      "data": {
+        "_note": "参考图徽记 / 底座后的暗红光晕（tools/import_settings_story_ui.py 程序生成）"
+      },
+      "file": "res://assets/ui/gothic/settings_glow_bottom.png"
+    },
+    {
+      "id": "panel_settings",
+      "kind": "image",
+      "rect": [
+        130,
+        152,
+        1661,
+        882
       ],
-      "expand": [
-        29,
-        23,
-        29,
-        21
-      ],
-      "file": "res://assets/ui/gothic/detail/panel.png",
-      "theme_type": "settings_overlay__panel_settings"
+      "data": {
+        "fixed_frame": true,
+        "_note": "04.zip I01 整图，原尺寸不拉伸（settings_overlay.gd 见 data.fixed_frame：不再收起「调试」一节的空位）"
+      },
+      "file": "res://assets/ui/gothic/settings_frame.png"
     },
     {
       "id": "title",
       "kind": "text_style",
       "rect": [
-        516,
-        140,
-        640,
-        68
+        880,
+        868,
+        160,
+        76
       ],
       "text_rect": [
         0,
         0,
-        640,
-        68
+        160,
+        76
       ],
       "align": "left",
       "key": "ui.menu_settings",
+      "data": {
+        "_note": "「设置」画在 I01 底部标题牌上：文字透明"
+      },
       "theme_type": "settings_overlay__title"
     },
     {
       "id": "btn_close",
       "kind": "button",
       "rect": [
-        1279,
-        143,
-        122,
-        58
+        1428,
+        178,
+        96,
+        94
       ],
       "text_rect": [
-        17,
-        9,
-        88,
-        40
+        0,
+        0,
+        96,
+        94
       ],
       "align": "center",
       "key": "ui.settings_close",
-      "ninepatch": [
-        52,
-        0,
-        40,
-        0
-      ],
-      "expand": [
-        26,
-        0,
-        6,
-        0
-      ],
+      "data": {
+        "_note": "G01 徽记（btn_leave，与选关返回同款）；悬停提示「关闭」。用户 2026-10-21：从面板上方居中移到面板主体右上角（主体右缘 y 182 处 x 1535）"
+      },
       "states": {
-        "normal": "res://assets/ui/gothic/detail/plate.png",
-        "hover": "res://assets/ui/gothic/detail/plate.png",
-        "pressed": "res://assets/ui/gothic/detail/plate.png",
-        "disabled": "res://assets/ui/gothic/detail/plate.png"
+        "normal": "res://assets/ui/gothic/btn_leave.png",
+        "hover": "res://assets/ui/gothic/btn_leave.png",
+        "pressed": "res://assets/ui/gothic/btn_leave.png",
+        "disabled": "res://assets/ui/gothic/btn_leave.png"
       },
       "theme_type": "settings_overlay__btn_close"
     },
@@ -101,9 +100,9 @@
       "id": "separator_header",
       "kind": "image",
       "rect": [
-        516,
+        573,
         226,
-        889,
+        774,
         1
       ],
       "file": "res://assets/ui/gothic/blank.png"
@@ -112,8 +111,8 @@
       "id": "section_audio",
       "kind": "text_style",
       "rect": [
-        516,
-        242,
+        573,
+        236,
         480,
         44
       ],
@@ -131,15 +130,15 @@
       "id": "label_master",
       "kind": "text_style",
       "rect": [
-        532,
-        296,
-        320,
+        600,
+        300,
+        270,
         48
       ],
       "text_rect": [
         0,
         0,
-        320,
+        270,
         48
       ],
       "align": "left",
@@ -150,9 +149,9 @@
       "id": "slider_master_track",
       "kind": "ninepatch",
       "rect": [
-        886,
-        317,
-        383,
+        880,
+        321,
+        360,
         10
       ],
       "ninepatch": [
@@ -168,9 +167,9 @@
       "id": "slider_master_fill",
       "kind": "ninepatch",
       "rect": [
-        888,
-        319,
-        381,
+        882,
+        323,
+        358,
         6
       ],
       "ninepatch": [
@@ -186,8 +185,8 @@
       "id": "slider_master_grabber",
       "kind": "icon",
       "rect": [
-        1257,
-        311,
+        1228,
+        315,
         23,
         23
       ],
@@ -197,33 +196,33 @@
       "id": "pct_master",
       "kind": "text_style",
       "rect": [
-        1300,
-        296,
-        112,
+        1257,
+        300,
+        90,
         48
       ],
       "text_rect": [
         0,
         0,
-        112,
+        90,
         48
       ],
-      "align": "left",
+      "align": "right",
       "theme_type": "settings_overlay__pct_master"
     },
     {
       "id": "label_music",
       "kind": "text_style",
       "rect": [
-        532,
-        350,
-        320,
+        600,
+        366,
+        270,
         48
       ],
       "text_rect": [
         0,
         0,
-        320,
+        270,
         48
       ],
       "align": "left",
@@ -234,9 +233,9 @@
       "id": "slider_music_track",
       "kind": "ninepatch",
       "rect": [
-        886,
-        371,
-        383,
+        880,
+        387,
+        360,
         10
       ],
       "ninepatch": [
@@ -252,9 +251,9 @@
       "id": "slider_music_fill",
       "kind": "ninepatch",
       "rect": [
-        888,
-        373,
-        304,
+        882,
+        389,
+        286,
         6
       ],
       "ninepatch": [
@@ -270,8 +269,8 @@
       "id": "slider_music_grabber",
       "kind": "icon",
       "rect": [
-        1180,
-        365,
+        1156,
+        381,
         23,
         23
       ],
@@ -281,33 +280,33 @@
       "id": "pct_music",
       "kind": "text_style",
       "rect": [
-        1300,
-        350,
-        112,
+        1257,
+        366,
+        90,
         48
       ],
       "text_rect": [
         0,
         0,
-        112,
+        90,
         48
       ],
-      "align": "left",
+      "align": "right",
       "theme_type": "settings_overlay__pct_music"
     },
     {
       "id": "label_sfx",
       "kind": "text_style",
       "rect": [
-        532,
-        404,
-        320,
+        600,
+        432,
+        270,
         48
       ],
       "text_rect": [
         0,
         0,
-        320,
+        270,
         48
       ],
       "align": "left",
@@ -318,9 +317,9 @@
       "id": "slider_sfx_track",
       "kind": "ninepatch",
       "rect": [
-        886,
-        425,
-        383,
+        880,
+        453,
+        360,
         10
       ],
       "ninepatch": [
@@ -336,9 +335,9 @@
       "id": "slider_sfx_fill",
       "kind": "ninepatch",
       "rect": [
-        888,
-        427,
-        323,
+        882,
+        455,
+        304,
         6
       ],
       "ninepatch": [
@@ -354,8 +353,8 @@
       "id": "slider_sfx_grabber",
       "kind": "icon",
       "rect": [
-        1199,
-        419,
+        1174,
+        447,
         23,
         23
       ],
@@ -365,26 +364,26 @@
       "id": "pct_sfx",
       "kind": "text_style",
       "rect": [
-        1300,
-        404,
-        112,
+        1257,
+        432,
+        90,
         48
       ],
       "text_rect": [
         0,
         0,
-        112,
+        90,
         48
       ],
-      "align": "left",
+      "align": "right",
       "theme_type": "settings_overlay__pct_sfx"
     },
     {
       "id": "section_display",
       "kind": "text_style",
       "rect": [
-        516,
-        474,
+        573,
+        524,
         480,
         44
       ],
@@ -402,8 +401,8 @@
       "id": "label_fullscreen",
       "kind": "text_style",
       "rect": [
-        532,
-        522,
+        600,
+        588,
         450,
         48
       ],
@@ -421,8 +420,8 @@
       "id": "toggle_fullscreen",
       "kind": "toggle",
       "rect": [
-        1320,
-        528,
+        1266,
+        594,
         81,
         37
       ],
@@ -435,8 +434,8 @@
       "id": "label_target_lines",
       "kind": "text_style",
       "rect": [
-        532,
-        578,
+        600,
+        654,
         450,
         48
       ],
@@ -454,8 +453,8 @@
       "id": "toggle_target_lines",
       "kind": "toggle",
       "rect": [
-        1320,
-        584,
+        1266,
+        660,
         81,
         37
       ],
@@ -468,15 +467,15 @@
       "id": "label_font_scale",
       "kind": "text_style",
       "rect": [
-        532,
-        634,
-        450,
+        600,
+        720,
+        400,
         48
       ],
       "text_rect": [
         0,
         0,
-        450,
+        400,
         48
       ],
       "align": "left",
@@ -487,8 +486,8 @@
       "id": "dropdown_font_scale",
       "kind": "button",
       "rect": [
-        1169,
-        631,
+        1115,
+        717,
         232,
         54
       ],
@@ -518,8 +517,8 @@
       "id": "font_scale_value",
       "kind": "text_style",
       "rect": [
-        1190,
-        634,
+        1136,
+        720,
         154,
         48
       ],
@@ -537,8 +536,8 @@
       "id": "dropdown_arrow",
       "kind": "icon",
       "rect": [
-        1360,
-        651,
+        1306,
+        737,
         20,
         20
       ],
@@ -548,8 +547,8 @@
       "id": "section_debug",
       "kind": "text_style",
       "rect": [
-        516,
-        708,
+        573,
+        790,
         480,
         44
       ],
@@ -567,8 +566,8 @@
       "id": "label_sim_log",
       "kind": "text_style",
       "rect": [
-        532,
-        756,
+        600,
+        830,
         450,
         48
       ],
@@ -586,8 +585,8 @@
       "id": "toggle_sim_log",
       "kind": "toggle",
       "rect": [
-        1320,
-        762,
+        1266,
+        836,
         81,
         37
       ],
@@ -600,15 +599,15 @@
       "id": "log_hint",
       "kind": "text_style",
       "rect": [
-        532,
-        820,
-        850,
+        600,
+        880,
+        740,
         56
       ],
       "text_rect": [
         0,
         0,
-        850,
+        740,
         56
       ],
       "align": "left",
@@ -619,9 +618,9 @@
       "id": "separator_footer",
       "kind": "image",
       "rect": [
-        516,
-        902,
-        889,
+        573,
+        830,
+        774,
         1
       ],
       "file": "res://assets/ui/gothic/blank.png"

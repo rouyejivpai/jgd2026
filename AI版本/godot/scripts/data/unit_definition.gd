@@ -60,6 +60,32 @@ static func from_dict(unit_id: String, d: Dictionary, ctx: String) -> UnitDefini
 	return u
 
 
+## 换皮副本（关卡 initial_units / Boss 召唤的覆盖）：数值与行为不变，只换外观、介绍、规则说明与特性
+## over：visuals（合并进 visuals）/ description / public_rule_text / traits（整表替换：同类型的特性换成该敌人自己的名字与说明）
+func reskinned(over: Dictionary) -> UnitDefinition:
+	var u := UnitDefinition.new()
+	u.id = id
+	u.display_name = display_name
+	u.kind = kind
+	u.faction_default = faction_default
+	u.max_hp = max_hp
+	u.attack = attack
+	u.attack_speed = attack_speed
+	u.move_speed = move_speed
+	u.vision = vision
+	u.attack_range = attack_range
+	u.traits = traits
+	if over.has("traits"):
+		u.traits = over["traits"] as Array[String]
+	u.allowed_actions = allowed_actions
+	u.default_rules = default_rules
+	u.visuals = visuals.merged(over.get("visuals", {}) as Dictionary, true)
+	u.description = str(over.get("description", "")) if str(over.get("description", "")) != "" else description
+	u.public_rule_text = str(over.get("public_rule_text", "")) if str(over.get("public_rule_text", "")) != "" else public_rule_text
+	u.cost = cost
+	return u
+
+
 func is_structure() -> bool:
 	return kind == SimTypes.UnitKind.STRUCTURE
 

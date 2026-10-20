@@ -3,6 +3,7 @@ extends Control
 ## 遗物栏里的一枚遗物（HUD 左下，见 RelicBar）：金环深底圆盘 + 遗物图标 + 剩余次数小点；
 ## 未获得 = 剪影 + 锁；本场不可用（其他遗物已启用 / 阶段不对 / 次数用完）= 压暗；冷却 = 扇形遮罩 + 秒数；
 ## 已启用 = 遗物色呼吸外环；正在点选目标 = 金色亮环。点按 / 拖拽交给 RelicBar（地块遗物可直接拖到地图上，同放置人偶）。
+## 音效：不是 BaseButton，悬停 ui_hover 自己播（未获得不响）；拖起 relic_pick，拖出后没被接收 drag_cancel；冷却结束重新可用 relic_ready。
 
 signal pressed_slot(relic_id: String)
 
@@ -13,6 +14,8 @@ var controller: BattleController = null
 var armed: bool = false
 var _hover: bool = false
 var _t: float = 0.0
+var _dragging: bool = false              ## 从这枚拖起的 GUI 拖拽进行中
+var _was_cooldown: bool = false          ## 上一帧是否在冷却（冷却 → 可用时响 relic_ready）
 
 
 func setup(id: String, p_controller: BattleController) -> void:
@@ -20,7 +23,11 @@ func setup(id: String, p_controller: BattleController) -> void:
 	controller = p_controller
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	mouse_entered.connect(func() -> void: _hover = true; queue_redraw())
+	mouse_entered.connect(func() -> void:
+		_hover = true
+		if owned():
+			AudioManager.play_sfx("ui_hover", "UI")
+		queue_redraw())
 	mouse_exited.connect(func() -> void: _hover = false; queue_redraw())
 	refresh()
 
@@ -60,6 +67,11 @@ func state_text() -> String:
 
 func _process(delta: float) -> void:
 	_t += delta
+	if controller != null:
+		var problem: String = controller.relic_problem(relic_id)
+		if _was_cooldown and problem == "":
+			AudioManager.play_ui("relic_ready")
+		_was_cooldown = problem == "cooldown"
 	if controller != null and (controller.relic_active == relic_id or armed):
 		queue_redraw()
 
@@ -76,8 +88,16 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	if controller == null or str(DataRegistry.get_relic(relic_id).get("kind", "")) != "tile" or controller.relic_problem(relic_id) != "":
 		return null
 	set_drag_preview(make_preview(relic_id, _cell_px()))
-	AudioManager.play_sfx("ui_drag_pick", "UI")
+	AudioManager.play_sfx("relic_pick", "UI")
+	_dragging = true
 	return { "relic": relic_id }
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and _dragging:
+		_dragging = false
+		if not get_viewport().gui_is_drag_successful():
+			AudioManager.play_sfx("drag_cancel", "UI")
 
 
 func _cell_px() -> float:

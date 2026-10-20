@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "_comment": "片尾开发者名单（2026-10-20）：trigger_level 胜利剧情播完后接名单（scripts/screens/credits_roll.gd）。members 按出场顺序（从左到右）；role 职位、role_en 英文职位（名牌上方小字）、name 名字、message 想对玩家说的话（对话框正文，长句自动加宽换行）、avatar 圆形头像贴图（assets/credits/avatars/，正方形；留空 = 深紫底 + 名字首字占位）、sprite 该成员站在路边用的 Q 版形象（缺省 = hero_form 的人偶图）、head 头像在形象贴图（256 画布）上的 [圆心 x, 圆心 y, 半径]——只盖脸，露出头饰（缺省 = 人偶图的脸）；faces_left 为 true 表示该形象原画朝左，翻转时据此取反（2026-10-21 用户：骨花魔女、骨花幼苗两个形象原画朝左）。hero_form 主角人偶图（units.json 的单位 id）。qr 结束卡上的群二维码（tools/credits/make_qr.py 生成并校验可扫）。2026-10-20 用户给定留言与形象：骨花幼苗暂用 raider（骨花状小怪），待确认。",
+  "trigger_level": "level_c30",
+  "hero_form": "striker",
+  "bgm": "menu_theme",
+  "qr": "res://assets/credits/qq_group_qr.png",
+  "members": [
+    {
+      "role": "策划",
+      "role_en": "Game Design",
+      "name": "原木",
+      "avatar": "res://assets/credits/avatars/yuanmu.png",
+      "sprite": "res://assets/sprites/units/bone_guard.png",
+      "head": [
+        138,
+        117,
+        38
+      ],
+      "message": "这个真的很美味。"
+    },
+    {
+      "role": "策划",
+      "role_en": "Game Design",
+      "name": "断维",
+      "avatar": "res://assets/credits/avatars/duanwei.png",
+      "sprite": "res://assets/sprites/units/failed_doll.png",
+      "head": [
+        144,
+        108,
+        38
+      ],
+      "message": "在战斗结束前的41秒内，场上再次响起了人偶的吟唱，「追击」「开火」「最远」「始终」……"
+    },
+    {
+      "role": "策划",
+      "role_en": "Game Design",
+      "name": "猹",
+      "avatar": "res://assets/credits/avatars/cha.png",
+      "sprite": "res://assets/sprites/units/husk.png",
+      "head": [
+        158,
+        126,
+        40
+      ],
+      "message": "累死了喵，关注人偶补完计划谢谢喵"
+    },
+    {
+      "role": "程序",
+      "role_en": "Programming",
+      "name": "汉堡",
+      "avatar": "res://assets/credits/avatars/hanbao.png",
+      "sprite": "res://assets/sprites/units/bone_core.png",
+      "head": [
+        128,
+        80,
+        38
+      ],
+      "message": "请输入文本",
+      "faces_left": true
+    },
+    {
+      "role": "美术",
+      "role_en": "Art",
+      "name": "年佑",
+      "avatar": "res://assets/credits/avatars/nianyou.png",
+      "sprite": "res://assets/sprites/units/striker.png",
+      "head": [
+        144,
+        108,
+        38
+      ],
+      "message": "你好，不管你是谁请支持我们人偶补完计划"
+    },
+    {
+      "role": "美术",
+      "role_en": "Art",
+      "name": "白面鸮番外20001号",
+      "avatar": "res://assets/credits/avatars/baimianxiao.png",
+      "sprite": "res://assets/sprites/units/bell_witch.png",
+      "head": [
+        150,
+        95,
+        40
+      ],
+      "message": "老吴派遣。"
+    },
+    {
+      "role": "美术",
+      "role_en": "Art",
+      "name": "血晶崽",
+      "avatar": "res://assets/credits/avatars/xuejingzai.png",
+      "sprite": "res://assets/sprites/units/priest.png",
+      "head": [
+        122,
+        100,
+        34
+      ],
+      "message": "人偶补完计划是一款由多人制作完成的rpg战旗游戏，你将扮演人偶在这个世界上跟厌世覆面系，强壮兽人，冷淡白毛小队，骨科异头萝莉等进行交流最终见到厌世妈妈的一款游戏。"
+    },
+    {
+      "role": "美术",
+      "role_en": "Art",
+      "name": "拖稿被优了",
+      "avatar": "res://assets/credits/avatars/tuogao.png",
+      "sprite": "res://assets/sprites/units/raider.png",
+      "head": [
+        125,
+        58,
+        32
+      ],
+      "message": "太好了我们的人偶顺利出生了！快来点击链接试玩15秒领取奖励吧",
+      "faces_left": true
+    },
+    {
+      "role": "美术",
+      "role_en": "Art",
+      "name": "长夜",
+      "avatar": "res://assets/credits/avatars/mwjian.png",
+      "sprite": "res://assets/sprites/units/hound_alpha.png",
+      "head": [
+        160,
+        94,
+        36
+      ],
+      "message": "封面上我们的大狗其实非常的帅气呀但是我们在这里只是个野怪呀，希望有朝一日可以逆袭成为主角，越吃越大，越大越强，玩我们的游戏呢也越吃越大，越大越强。"
+    }
+  ]
+}

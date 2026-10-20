@@ -1,0 +1,40 @@
+{
+  "id": "level_c24_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "走廊两头，各有一个东西在往前走。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们像人，但半透明，边缘一直在散。斗篷是破的，脚下没有影子。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们抬着一盏灯。灯是亮着的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们走得非常慢，每一步都和上一步一模一样——像被谁卡住了，反复播同一段。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它们不知道自己在走，也不知道自己已经死了。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "但它们手里那盏灯是真的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "两个残响同时停下，同时转向她"
+    }
+  ]
+}

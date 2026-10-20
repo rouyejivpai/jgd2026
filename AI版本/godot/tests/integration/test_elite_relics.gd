@@ -1,6 +1,6 @@
 extends GutTest
 ## 精英关（level_e01…e04）与遗物（data/relics.json）：
-## - 精英关挂在 chapter_02 对应区域最后一关之后（elite 节点），不计入区域进度；推荐解在「刚通关前驱关」的解锁下胜利；通关奖励遗物写入存档；
+## - 2026-10-20 精英关已从章节地图去掉、不再发遗物（文件保留作遗物测试场景，推荐解仍在「刚通关前驱关」的解锁下胜利）；遗物由剧情关掉落并写入存档；
 ## - 遗物：同一场只能启用一枚；地块遗物只能开战前放、骨刃 / 徽章只能战斗中用；地块对站在上面的敌人施加状态；伤害 / 治疗、次数与冷却；重开恢复次数、保留地块。
 ## 数值对照（推荐解 / 反例 / 遗物场景）见 tools/elite_scenarios.json（tools/elite_probe.gd）。
 
@@ -10,6 +10,10 @@ const ELITES: Dictionary = {   ## 精英关 -> [前驱关, 奖励遗物, 解锁�
 	"level_e02": ["level_c14", "badge", "level_c15"],
 	"level_e03": ["level_c22", "lantern", "level_c23"],
 	"level_e04": ["level_c26", "bone_arm", "level_c27"],
+}
+
+const RELIC_SOURCES: Dictionary = {   ## 2026-10-20：遗物 -> 掉落的剧情关（骨刃 塞拉 / 徽章 骨者 / 提灯 地窖魂灯 / 骨臂 敲钟魔女）
+	"bone_blade": "level_c10", "badge": "level_c14", "lantern": "level_c17", "bone_arm": "level_c18",
 }
 
 var _saved_unlocks: Dictionary = {}
@@ -63,27 +67,15 @@ func _advance_seconds(c: BattleController, seconds: float) -> void:
 
 
 # ---- 精英关 ----
-func test_elite_nodes_in_chapter() -> void:
+## 2026-10-20 用户：精英关去掉——不在章节地图上、不再发遗物；遗物改由剧情对应关掉落（RELIC_SOURCES）
+func test_elites_retired_from_chapter() -> void:
 	var ch: ChapterDef = DataRegistry.get_chapter("chapter_02")
 	for lid: String in ELITES.keys():
-		var L: LevelDefinition = DataRegistry.get_level(lid)
-		assert_not_null(L, "%s 已加载" % lid)
-		assert_true(L.elite, "%s 标记为精英关" % lid)
-		assert_eq(L.reward_relics(), [str((ELITES[lid] as Array)[1])] as Array[String], "%s 奖励遗物" % lid)
-		var n: Dictionary = ch.node_of_level(lid)
-		assert_true(bool(n.get("elite", false)), "%s 是 elite 节点" % lid)
+		assert_not_null(DataRegistry.get_level(lid), "%s 仍可加载（遗物测试场景）" % lid)
+		assert_true(ch.node_of_level(lid).is_empty(), "%s 不在章节地图上" % lid)
+		assert_true(DataRegistry.get_level(lid).reward_relics().is_empty(), "%s 不再发遗物" % lid)
 		var pre: String = str((ELITES[lid] as Array)[0])
-		assert_eq(ch.predecessors(lid), [pre] as Array[String], "%s 的前驱是 %s" % [lid, pre])
-		assert_eq(str(n["region"]), ch.region_of_level(pre), "%s 与前驱同区域" % lid)
-		assert_false(ch.is_unlocked(lid, [], DataRegistry.get_initial_levels()), "%s 初始锁定" % lid)
-		assert_true(ch.is_unlocked(lid, [pre], DataRegistry.get_initial_levels()), "%s 在 %s 通关后解锁" % [lid, pre])
-		assert_true(L.rewards.get("unlock_level", "") == "", "%s 不解锁后续关卡" % lid)
-
-
-func test_region_progress_skips_elite() -> void:
-	var ch: ChapterDef = DataRegistry.get_chapter("chapter_02")
-	var p: Vector2i = ch.region_progress("bone_workshop", ["level_c01", "level_e01"])
-	assert_eq(p, Vector2i(1, 6), "精英关不计入区域进度（人偶工坊 6 关）")
+		assert_eq(ch.region_progress(ch.region_of_level(pre), [pre]).x, 1, "%s 所在区域照常计数" % pre)
 
 
 func test_elite_recommended_win() -> void:
@@ -98,14 +90,14 @@ func test_elite_recommended_win() -> void:
 		c.free()
 
 
-func test_elite_reward_grants_relic() -> void:
+func test_story_level_reward_grants_relic() -> void:
 	var data: Dictionary = SaveManager.new_save(DataRegistry.get_initial_unlocks(), DataRegistry.get_initial_levels())
 	assert_eq((data["unlocks"] as Dictionary).get("relics", null), [], "新存档有空的遗物列表")
-	SaveManager.apply_rewards(data, "level_e01", DataRegistry.get_level("level_e01").rewards)
-	assert_eq((data["unlocks"] as Dictionary)["relics"], ["bone_blade"], "通关剔骨坊获得骨刃")
-	SaveManager.apply_rewards(data, "level_e01", DataRegistry.get_level("level_e01").rewards)
+	SaveManager.apply_rewards(data, "level_c10", DataRegistry.get_level("level_c10").rewards)
+	assert_eq((data["unlocks"] as Dictionary)["relics"], ["bone_blade"], "通关猎犬头目获得骨刃")
+	SaveManager.apply_rewards(data, "level_c10", DataRegistry.get_level("level_c10").rewards)
 	assert_eq((data["unlocks"] as Dictionary)["relics"], ["bone_blade"], "重复通关不重复发放")
-	assert_true(((data["progress"] as Dictionary)["completed"] as Array).has("level_e01"), "记为已通关")
+	assert_true(((data["progress"] as Dictionary)["completed"] as Array).has("level_c10"), "记为已通关")
 
 
 func test_relic_data() -> void:
@@ -113,14 +105,7 @@ func test_relic_data() -> void:
 	for id: String in DataRegistry.get_relic_ids():
 		var d: Dictionary = DataRegistry.get_relic(id)
 		assert_true(ResourceLoader.exists(str(d["icon"])), "%s 图标存在" % id)
-		assert_eq(DataRegistry.relic_source_level(id).id, _source_of(id), "%s 由对应精英关掉落" % id)
-
-
-func _source_of(relic: String) -> String:
-	for lid: String in ELITES.keys():
-		if str((ELITES[lid] as Array)[1]) == relic:
-			return lid
-	return ""
+		assert_eq(DataRegistry.relic_source_level(id).id, str(RELIC_SOURCES[id]), "%s 由剧情对应关掉落" % id)
 
 
 # ---- 遗物规则 ----

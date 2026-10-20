@@ -31,6 +31,7 @@ func _ready() -> void:
 	close.text = DataRegistry.get_string("ui.close")
 	close.focus_mode = Control.FOCUS_NONE
 	close.pressed.connect(func() -> void: visible = false)
+	close.set_meta("sfx_press", "ui_panel_close")
 	_add(close, rel.call("mech_close"))
 	var sep: Control = UiKit.node_for(UiKit.layout_element(SKIN, "mech_sep"))
 	_add(sep, rel.call("mech_sep"))

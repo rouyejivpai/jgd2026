@@ -1,0 +1,65 @@
+{
+  "id": "level_c26_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "通道两侧的石壁里嵌着东西。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "一开始她以为是骨头，走近才看出来——是人偶。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "一排一排嵌在石壁里，只露出正面。有的在挣扎，手还伸在外面。有的低着头，有的脸已经扭得看不出是脸。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "它们的脸和她一样。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "走到尽头，石壁里嵌着一具完整的。编号「一」。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "它睁着眼看过来。眼睛是红的，和她一样。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "你来了。第九十九个。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "第一个。也是第一个失控的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll_worn",
+      "text": "它从石壁里伸出手，手指穿过封层，碰了一下她的脸。是凉的。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "你知道我们为什么失控吗？"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "因为我们吞了太多。情绪太多，灵魂太多，最后不知道自己是谁了。"
+    },
+    {
+      "speaker": "yi",
+      "illustration": "doll_worn",
+      "text": "那你现在是谁？"
+    }
+  ]
+}

@@ -91,46 +91,38 @@
   {
    "id": "btn_back",
    "rect": [
-    48,
+    36,
+    104,
     108,
-    189,
-    39
+    106
    ],
    "text_rect": [
-    20,
-    4,
-    149,
-    31
-   ],
-   "ninepatch": [
-    16,
     0,
-    16,
-    0
+    0,
+    108,
+    106
    ],
+   "ninepatch": null,
    "states": {
-    "normal": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#D6D0D8"
-    },
+    "normal": "../gothic/btn_leave.png",
     "hover": {
-     "file": "../gothic/hex_light.png",
+     "file": "../gothic/btn_leave.png",
      "modulate": "#FFFFFF"
     },
     "pressed": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#A8A0AA"
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#77707A"
+     "file": "../gothic/btn_leave.png",
+     "modulate": "#6E6870"
     }
    },
    "font": {
     "family": "NotoSerifSC-Bold",
-    "size": 20,
-    "color": "#FFFFFF",
-    "disabled_color": "#4A444C"
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
    },
    "data": {
     "ref_ink": [
@@ -140,52 +132,45 @@
      20.7
     ],
     "ref_text": "返回",
-    "dock": "left top"
+    "dock": "left top",
+    "_note": "2026-10-20：与战斗 HUD 同款无字图标（G01 离开 / G02 设置），悬停提示文字"
    }
   },
   {
    "id": "btn_settings",
    "rect": [
-    48,
-    156,
-    189,
-    39
+    136,
+    104,
+    107,
+    106
    ],
    "text_rect": [
-    20,
-    4,
-    149,
-    31
-   ],
-   "ninepatch": [
-    16,
     0,
-    16,
-    0
+    0,
+    107,
+    106
    ],
+   "ninepatch": null,
    "states": {
-    "normal": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#D6D0D8"
-    },
+    "normal": "../gothic/btn_gear.png",
     "hover": {
-     "file": "../gothic/hex_light.png",
+     "file": "../gothic/btn_gear.png",
      "modulate": "#FFFFFF"
     },
     "pressed": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#A8A0AA"
+     "file": "../gothic/btn_gear.png",
+     "modulate": "#C8C0C8"
     },
     "disabled": {
-     "file": "../gothic/hex_light.png",
-     "modulate": "#77707A"
+     "file": "../gothic/btn_gear.png",
+     "modulate": "#6E6870"
     }
    },
    "font": {
     "family": "NotoSerifSC-Bold",
-    "size": 20,
-    "color": "#FFFFFF",
-    "disabled_color": "#4A444C"
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
    },
    "data": {
     "ref_ink": [
@@ -195,7 +180,8 @@
      20.7
     ],
     "ref_text": "设置",
-    "dock": "left top"
+    "dock": "left top",
+    "_note": "2026-10-20：与战斗 HUD 同款无字图标（G01 离开 / G02 设置），悬停提示文字"
    }
   },
   {
@@ -549,48 +535,8 @@
   },
   {
    "id": "replay_pick",
-   "rect": [
-    1300,
-    872,
-    232,
-    40
-   ],
-   "text_rect": [
-    24,
-    4,
-    184,
-    32
-   ],
-   "ninepatch": [
-    16,
-    0,
-    16,
-    0
-   ],
-   "states": {
-    "normal": "../gothic/hex_gray.png",
-    "hover": {
-     "file": "../gothic/hex_dark.png",
-     "modulate": "#FFFFFF"
-    },
-    "pressed": {
-     "file": "../gothic/hex_dark.png",
-     "modulate": "#B8B0BA"
-    },
-    "disabled": {
-     "file": "../gothic/hex_gray.png",
-     "modulate": "#6E6870"
-    }
-   },
-   "font": {
-    "family": "NotoSerifSC",
-    "size": 18,
-    "color": "#E6E0E8",
-    "disabled_color": "#8A848C"
-   },
-   "data": {
-    "dock": "right"
-   }
+   "_remove": true,
+   "_note": "2026-10-20（用户）：回放下拉换成「开头剧情」「结尾剧情」两个按钮（story_intro / story_end）"
   },
   {
    "id": "btn_replay",
@@ -629,7 +575,8 @@
     "disabled_color": "#00000000"
    },
    "data": {
-    "dock": "right"
+    "dock": "right",
+    "_note": "2026-10-21（用户 04.zip）：「开头剧情 / 结尾剧情」两个按钮合回 D04「剧情回放」（字在切图上），点开剧情选择浮层（StorySelect）两卡；该关开头或结尾看过才显示"
    }
   },
   {

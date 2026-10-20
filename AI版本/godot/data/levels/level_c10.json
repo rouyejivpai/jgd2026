@@ -146,7 +146,7 @@
         9,
         6
       ],
-      "display_name": "逃亡祭司",
+      "display_name": "猎犬首领",
       "overrides": {
         "move_speed": 0.8,
         "attack": 6,
@@ -175,7 +175,13 @@
           }
         }
       ],
-      "public_rule_text": "沿中廊往左上出口逃。有分裂体进入 5 格射程会停下来攻击它（伤害很低）。"
+      "public_rule_text": "沿中廊往左上出口逃。有人偶进入 5 格射程会停下来攻击它（伤害很低）。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/brute.png",
+        "portrait": "res://assets/sprites/portraits/brute.png",
+        "scale": 1.2
+      },
+      "description": "长期困在肉体撕裂与修复的痛苦里，早已没了神志，只想把这份痛苦宣泄到任何能宣泄的东西身上。"
     },
     {
       "id": "G2",
@@ -189,12 +195,12 @@
       "overrides": {
         "vision": 4
       },
-      "public_rule_text": "守在出口旁，只看得见 4 格内。锁定首个看见的分裂体并追击。"
+      "public_rule_text": "守在出口旁，只看得见 4 格内。锁定首个看见的人偶并追击。"
     }
   ],
   "routes": {
     "priest_lane": {
-      "name": "祭司逃离线",
+      "name": "猎犬首领逃离线",
       "points": [
         [
           9,
@@ -283,7 +289,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "祭司正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
+    "objective_text": "猎犬首领正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
     "win": [
       {
         "id": "win_destroy",
@@ -349,8 +355,8 @@
   "region_cn": "枯骨农田",
   "id": "level_c10",
   "index": 110,
-  "title": "别让它跑",
-  "subtitle": "阻截：它到出口就输",
+  "title": "猎犬头目",
+  "subtitle": "它只想让疼痛结束，帮它停下来。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_forms": [],
@@ -358,13 +364,16 @@
     "unlock_conditions": [],
     "unlock_selectors": [],
     "unlock_actions": [],
-    "unlock_level": "level_c11"
+    "unlock_level": "level_c11",
+    "unlock_relics": [
+      "bone_blade"
+    ]
   },
   "_review_20261012": [
     "补上祭司逃离路线（原 priest_lane 不存在，祭司不动）；出口改到左上（与评审描述一致）；去掉挡路的后卫，守门护卫视野 9→4；信标计费。"
   ],
   "display_index": 10,
-  "summary": "阻截：它到出口就输",
+  "summary": "它只想让疼痛结束，帮它停下来。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -398,7 +407,7 @@
   ],
   "hints": [
     "时间要花在赶路上：先到一个能盯住整条逃跑路线的位置，再开火。别凑到出口护卫眼前（它只看得见 4 格）。",
-    "祭司正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
+    "猎犬首领正往左上角出口跑。它到出口就失败，杀掉它才赢。出口旁有护卫守着。",
     "远射先沿上廊走到中段，到位后才开火（「到达信标 1 + 射程内敌人 → 攻击·生命最低」）：从那里隔墙能盯住整条中廊和出口。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],

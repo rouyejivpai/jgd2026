@@ -1,0 +1,55 @@
+{
+  "id": "level_c23_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "通道深处传来低沉的低语，像石头在摩擦。"
+    },
+    {
+      "speaker": "whisper",
+      "illustration": "",
+      "text": "你吞了那么多魔女，有没有想过——你吞的其实是我？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答。"
+    },
+    {
+      "speaker": "whisper",
+      "illustration": "",
+      "text": "每一个魔女的力量都来自我。你吞了她们，就是吞了我。"
+    },
+    {
+      "speaker": "whisper",
+      "illustration": "",
+      "text": "你已经是我的一部分了。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "我不是。"
+    },
+    {
+      "speaker": "whisper",
+      "illustration": "",
+      "text": "有趣……"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "通道往前拐了一个弯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有再说话。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "但她走得比刚才快了。"
+    }
+  ]
+}

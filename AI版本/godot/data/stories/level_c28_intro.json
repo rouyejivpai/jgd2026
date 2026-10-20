@@ -1,0 +1,35 @@
+{
+  "id": "level_c28_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "这里没有墙。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "一片空地，白得像纸。地上什么都没有——没有柱，没有拱，没有可以借的东西。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "空地中央立着三株骨花，比之前见过的都大。花心张着，里面一圈一圈往内收的齿。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "前面站着两个守卫，很厚，肩上一层一层叠着骨板。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "没有墙。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "所以这次，你只能拿人垫。"
+    }
+  ]
+}

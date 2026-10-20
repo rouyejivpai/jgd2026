@@ -65,9 +65,17 @@ func test_detail_modal_follows_reference() -> void:
 	var vp: Vector2 = hud.get_viewport_rect().size
 	var frame: Control = side.get_node("Frame") as Control
 	var design: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "det_panel", UiKit.design_size(DetailKit.SKIN))
+	var unit_x: float = (root.call("unit_screen_pos", ally) as Vector2).x
 	var fr: Rect2 = frame.get_global_rect()
-	assert_false(bool(hud.call("side_on_right")), "刻印界面：侧栏恒停靠左侧")
-	assert_eq(fr.position.x, design.position.x, "贴左缘 = 布局")
+	var right: bool = bool(hud.call("side_on_right"))
+	assert_eq(right, unit_x < vp.x * 0.5, "侧栏在单位的对侧")
+	if right:
+		assert_lt(unit_x, fr.position.x, "侧栏不遮挡该单位")
+		assert_almost_eq(vp.x - fr.end.x, design.position.x, 0.5, "贴右缘 = 布局的镜像")
+	else:
+		assert_gt(unit_x, fr.end.x, "侧栏不遮挡该单位")
+		assert_eq(fr.position.x, design.position.x, "贴左缘 = 布局")
+	_check_mirror(side, right)
 	assert_eq(fr.position.y, design.position.y, "上沿 = 布局")
 	assert_eq(fr.size.y, design.size.y, "高 = 布局（不随视口拉伸）")
 	assert_gt(fr.size.x, 700.0, "可点击区宽度覆盖指令框")
@@ -90,6 +98,8 @@ func test_detail_modal_follows_reference() -> void:
 	await _settle()
 	var enemy_panel: Control = root.find_child("EnemyPanel", true, false) as Control
 	assert_true(enemy_panel.visible)
+	assert_eq(bool(hud.call("side_on_right")), (root.call("unit_screen_pos", enemy) as Vector2).x < vp.x * 0.5, "敌人：侧栏同样在对侧")
+	_check_mirror(side, bool(hud.call("side_on_right")))
 	var editor: RuleEditor = enemy_panel.find_children("*", "RuleEditor", true, false)[0] as RuleEditor
 	assert_true(editor.read_only, "敌人面板为只读 RuleEditor")
 	await wait_process_frames(1)
@@ -106,6 +116,37 @@ func test_detail_modal_follows_reference() -> void:
 	hud.call("_unhandled_input", esc)
 	assert_false(side.visible, "Esc 隐藏")
 	UiKit.motion_enabled = saved_motion
+
+
+## 侧栏在右 = 左侧版的镜像：底图翻转、关闭键与头像换到另一侧、标题右对齐；指令区只整体移位、内部不翻（行为框仍在条件框左边）
+func _check_mirror(side: Control, right: bool) -> void:
+	var frame: Control = side.get_node("Frame") as Control
+	var art: TextureRect = frame.get_node("Skin_det_panel") as TextureRect
+	var panel: Control = side.find_child("UnitPanel", true, false) as Control
+	if not panel.visible:
+		panel = side.find_child("EnemyPanel", true, false) as Control
+	var full: Rect2 = art.get_global_rect()
+	assert_eq(art.flip_h, right, "底图随停靠侧翻转")
+	var close_x: float = (frame.get_node("DetailClose") as Control).get_global_rect().get_center().x - full.position.x
+	var close_l: float = DetailKit.rel("det_close").get_center().x
+	assert_almost_eq(close_x, full.size.x - close_l if right else close_l, 0.5, "关闭键按底图镜像")
+	var scroll: Control = panel.find_child("DetailScroll", false, false) as Control
+	var row: Rect2 = DetailKit.rel("det_row1")
+	assert_almost_eq(scroll.position.x, full.size.x - row.end.x if right else row.position.x, 0.5, "指令区整体随镜像移位")
+	assert_eq(scroll.scale, Vector2.ONE, "指令区内部不翻")
+	var icon_x: float = INF
+	var text_x: float = INF
+	for ch: Node in panel.get_children():
+		if bool(ch.get_meta(&"mirror_block", false)):
+			if ch is TextureRect:
+				icon_x = minf(icon_x, (ch as Control).position.x)
+			else:
+				text_x = minf(text_x, (ch as Control).position.x)
+	assert_lt(icon_x, text_x, "属性块整块平移：仍是「图标 名称 数值」的顺序")
+	var rows: Array[Node] = panel.find_children("*", "RuleRow", true, false)
+	assert_false(rows.is_empty(), "有指令行")
+	for r: Node in rows:
+		assert_eq((r as Control).get_global_transform().get_scale().x, 1.0, "指令行没有被翻转")
 
 
 func test_running_is_viewable_but_read_only() -> void:

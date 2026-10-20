@@ -32,7 +32,7 @@
       "id": "P1",
       "unit": "raider",
       "faction": "enemy",
-      "display_name": "夜巡·下",
+      "display_name": "“失败品”·下",
       "pos": [
         8,
         0
@@ -83,13 +83,19 @@
           }
         }
       ],
-      "public_rule_text": "沿中间竖道 x=8 上下来回走（开局从下往上）。夜巡只带一盏暗灯，视野只有 3 格——等它走远了，再从它前面穿过去。"
+      "public_rule_text": "沿中间竖道 x=8 上下来回走（开局从下往上）。“失败品”只带一盏暗灯，视野只有 3 格——等它走远了，再从它前面穿过去。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/failed_doll.png",
+        "portrait": "res://assets/sprites/portraits/failed_doll.png",
+        "scale": 1.0
+      },
+      "description": "早先造出的人偶，失控了。和她一样的脸、一样的白头发，胸口的缺口却是暗的——吞下的灵魂太多，已经不知道自己是谁。"
     },
     {
       "id": "P2",
       "unit": "raider",
       "faction": "enemy",
-      "display_name": "夜巡·上",
+      "display_name": "“失败品”·上",
       "pos": [
         8,
         10
@@ -140,7 +146,13 @@
           }
         }
       ],
-      "public_rule_text": "和甲走同一条竖道、方向相反（开局从上往下），两人在中间交错。视野 3 格，规则同甲。"
+      "public_rule_text": "和甲走同一条竖道、方向相反（开局从上往下），两人在中间交错。视野 3 格，规则同甲。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/failed_doll.png",
+        "portrait": "res://assets/sprites/portraits/failed_doll.png",
+        "scale": 1.0
+      },
+      "description": "早先造出的人偶，失控了。和她一样的脸、一样的白头发，胸口的缺口却是暗的——吞下的灵魂太多，已经不知道自己是谁。"
     },
     {
       "id": "G1",
@@ -150,7 +162,14 @@
         14,
         5
       ],
-      "counts_for_annihilate": true
+      "counts_for_annihilate": true,
+      "visuals": {
+        "sprite": "res://assets/sprites/props/warped_core_a.png",
+        "portrait": "res://assets/sprites/portraits/warped_core.png",
+        "scale": 1.3
+      },
+      "description": "一块还在搏动的血肉。畸变从这里长出来。",
+      "display_name": "畸变母核"
     }
   ],
   "routes": {
@@ -260,7 +279,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "摧毁林间的回响骸柱。两名夜巡在中间的竖道上一上一下来回走，把中路截断了——等它们走到两头再穿过去。",
+    "objective_text": "摧毁畸变母核。两名“失败品”在中间的竖道上一上一下来回走，把中路截断了——等它们走到两头再穿过去。",
     "win": [
       {
         "id": "win_destroy_pillar",
@@ -303,11 +322,11 @@
     "mechanic_hint": "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。"
   },
   "region": "bone_workshop",
-  "region_cn": "织骸工坊",
+  "region_cn": "人偶工坊",
   "id": "level_c04",
   "index": 104,
-  "title": "间歇轨",
-  "subtitle": "视野不等于射程",
+  "title": "避光",
+  "subtitle": "看见你，它们才打得到你，学会不被看见。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_forms": [],
@@ -326,7 +345,7 @@
     "恢复巡道 (5..13,1)/(5..13,9) 与部署区 [0,4,1,6]（被平移脚本改乱）；推荐信标去重；夜巡攻击 8→12、移速 1.2→2.0（原数值被发现也只掉 16 血，「被看见会追过来」没有代价）。"
   ],
   "display_index": 4,
-  "summary": "视野不等于射程",
+  "summary": "看见你，它们才打得到你，学会不被看见。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -367,8 +386,8 @@
   ],
   "hints": [
     "敌人有视野圈和射程圈。被看见不等于被打到，但被看见它会追过来。",
-    "摧毁林间的回响骸柱。两名夜巡在中间的竖道上一上一下来回走，把中路截断了——等它们走到两头再穿过去。",
-    "在竖道左边 (3,5) 放第 1 个信标，加一条「到达信标 1 → 等待 3 秒」放在「沿信标移动」上面：等两名夜巡走到上下两头，再一口气穿过竖道，走到骸柱前 (12,5) 打它。",
+    "摧毁畸变母核。两名“失败品”在中间的竖道上一上一下来回走，把中路截断了——等它们走到两头再穿过去。",
+    "在竖道左边 (3,5) 放第 1 个信标，加一条「到达信标 1 → 等待 3 秒」放在「沿信标移动」上面：等两名“失败品”走到上下两头，再一口气穿过竖道，走到畸变母核前 (12,5) 打它。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

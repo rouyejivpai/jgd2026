@@ -1,0 +1,90 @@
+{
+  "id": "level_c23_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "地缝边缘长满骨刺，像一张半张的嘴。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "入口处立着一块石碑，旧代魔女刻的，字很深："
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "「不要下去。祂还活着。」"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "碑脚下堆着东西：断掉的骨器、碎掉的徽章、几盏灭了的灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她站在入口。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "体内的回响里，一道声音浮上来。"
+    },
+    {
+      "speaker": "echo",
+      "illustration": "",
+      "text": "不要下去……导师说，下面有血肉神的残骸……"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有停下。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她沿着裂缝往下走。墙壁开始变化——石头逐渐变成肉膜，血管在壁中搏动。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你到了。下面是祂的残骸。很小的一块，但还活着。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "祂是谁？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你吞的每一口，都是祂的一部分。你早就认识祂了。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "血肉神？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "（笑）啊……你更愿意直呼其名吗。好吧。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "是血肉神导致了这一切？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "我当然有兴趣给你补习一下历史课。不过不是现在。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "继续走吧。你就快到了。"
+    }
+  ]
+}

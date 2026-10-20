@@ -11,7 +11,8 @@
   warden 哭墙守卫 ← 拄杖蒙面的白发老妪；bone_guard 骨花护卫 ← 持矛白甲骑士
   bone_core 骨花核心 ← 彼岸花魔女；bone_witch 骨花魔女 ← 骨花魔女.webp（白色彼岸花头、黑斗篷）
   marrow_hulk 髓块 ← 多爪畸形体的黑白版（与袭击者同一设定，去色区分）
-  建筑 / 目标物 transit_node 转运点、echo_pillar 回响骸柱、dummy 试作人偶、supply_crate 物资箱 ← 生成_建筑/（tools/make_structures.py）
+  建筑 / 目标物 transit_node 转运点、echo_pillar 回响骸柱、supply_crate 物资箱 ← 生成_建筑/（tools/make_structures.py）
+  dummy 试作人偶 ← QQ人2 完好发饰人偶（2026-10-20 用户指定，与 striker 同图）
   己方六形态头像：人物背后叠金色发光的形态图标（assets/sprites/form_icons/，tools/make_form_icons.py），区分共用人偶图的形态
   剧情立绘 doll ← 人偶立绘完好发饰版（另存破损版 doll_worn、魔女帽版 doll_witch_hat）；keeper 守火 ← 守火立绘
   地形效果格物件（tile_objects/）：hazard 危险区 ← 裂甲菌簇；mire 缓滞带 ← 僵骨地刺；shrine 净化台 ← 静息祭坛（蓝）
@@ -64,7 +65,7 @@ FIGURES = {
     "knight": ("QQ人2/mmexport1792131393427.jpg", True, [0.15, 0.0, 0.85, 0.55]),
     "lily": ("QQ人2/mmexport1792131389731.jpg", False, [0.15, 0.0, 0.85, 0.6]),
     "bell_girl": ("QQ人2/mmexport1792131306396.jpg", True, [0.25, 0.08, 0.95, 0.65]),
-    "flower_witch": ("骨花魔女.webp", False, [0.12, 0.0, 0.88, 0.5]),
+    "flower_witch": ("QQ人2/mmexport1792131389731.jpg", False, [0.15, 0.0, 0.85, 0.6]),   # 2026-10-20 用户：Boss 骨花魔女用这张 Q 版原图（原 骨花魔女.webp；与 lily 同源）
     "transit_node": ("生成_建筑/transit_node.png", False, [0.0, 0.0, 1.0, 1.0]),
     "echo_pillar": ("生成_建筑/echo_pillar.png", False, [0.0, 0.0, 1.0, 1.0]),
     "dummy": ("生成_建筑/dummy.png", False, [0.1, 0.0, 0.9, 0.8]),
@@ -83,7 +84,8 @@ UNITS = {
     "husk": "ghost_girl", "priest": "top_hat", "hex_priest": "masked", "spitter": "jar_robe",
     "warden": "old_witch", "bone_guard": "knight", "bone_core": "lily",
     "bone_witch": "flower_witch", "marrow_hulk": "anger_gray",
-    "transit_node": "transit_node", "echo_pillar": "echo_pillar", "dummy": "dummy", "supply_crate": "supply_crate",
+    "transit_node": "transit_node", "echo_pillar": "echo_pillar", "supply_crate": "supply_crate",
+    "dummy": "doll_intact",            # 用户 2026-10-20：第 3 关试作人偶改用完好发饰人偶原图（原 生成_建筑/dummy.png）
     # 精英关备用（units.json 尚无这些单位）
     "hound_alpha": "werewolf", "bell_witch": "bell_girl",
 }

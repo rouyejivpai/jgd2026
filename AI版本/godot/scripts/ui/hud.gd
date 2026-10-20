@@ -15,6 +15,9 @@ extends Control
 ## - 遗物栏（2026-10-19）：预算铭牌上方一排四枚遗物（RelicSlot）。同一场只能启用一枚；地块遗物（提灯 / 骨臂）开战前拖到地图上
 ##   （或点一下再点落点），骨刃 / 徽章战斗中点一下再点选目标；右键 / Esc 取消点选。
 ## 以及校验问题列表、悬浮原因、Toast、F3 调试信息、结算与对话等浮层。
+## 音效（2026-10-20）：按钮默认点击音由 AudioManager 自动挂接，这里只用 meta sfx_press 换音（重试 battle_reset、离开 ui_back、关闭类 ui_panel_close）
+## 或静音后自己按结果播（倍速、清空、遗物启用 / 取消；暂停 / 继续与「继续战斗」只静音，声音在 BattleRoot）；预算已用量变化 soul_spend / soul_refund，刚超预算 budget_over，
+## 生存最后 5 秒 timer_tick（最后一秒低沉加重），「威胁已清除」变金 objective_clear。
 
 const SKIN: String = "battle_hud"
 const CARD_SLOTS: int = 5
@@ -37,7 +40,7 @@ var _root: Node2D = null
 var _controller: BattleController = null
 var _level: LevelDefinition = null
 var _cards: Array[RosterCard] = []
-var _side_on_right: bool = false      ## 2026-10-20 刻印界面（02.zip）只做了左侧停靠版：侧栏恒在左侧，不再按单位位置换边
+var _side_on_right: bool = false      ## 侧栏停靠哪侧：单位在屏幕左半 → 右侧，反之左侧（用户 2026-10-20 恢复换边；右侧版为左侧版的镜像，指令区不翻）
 var _toast_tween: Tween = null
 var _last_tick_second: int = -1
 var _last_phase: int = SimTypes.Phase.DEPLOY
@@ -49,6 +52,10 @@ var _beacon_slot: String = ""              ## 第四阶段：信标模式中的�
 var _beacon_bar: Control = null
 var _beacon_nodes: Dictionary = {}         ## 信标边栏布局元素 id → 节点
 const BEACON_BAR_IDS: Array[String] = ["beacon_bar", "beacon_bar_title", "beacon_bar_hint", "beacon_mode_once", "beacon_mode_loop", "beacon_mode_pingpong", "beacon_mode_auto", "beacon_done"]
+const RESUME_FRAME: String = "res://assets/ui/gothic/btn_start_blank.png"   ## btn_start.png 去掉「开始战斗」字样的空框
+const RESUME_GOLD_HI: Color = Color("#FFE7A0")      ## 「继续战斗」呼吸光的亮端
+const RESUME_GLOW_PERIOD: float = 1.4               ## 呼吸一周（秒）
+const BEACON_BAR_MIN_SCALE: float = 0.6             ## 信标栏为让出右下角按钮组最多缩到的比例
 const BEACON_MODE_BUTTONS: Dictionary = { "beacon_mode_once": SimTypes.BeaconMode.ONCE, "beacon_mode_loop": SimTypes.BeaconMode.LOOP, "beacon_mode_pingpong": SimTypes.BeaconMode.PINGPONG }
 ## 遗物栏设计矩形（1920×1080 设计坐标；预算铭牌之上、第一张角色卡之左）与单枚直径 / 间距
 const RELIC_BAR_RECT: Rect2 = Rect2(44.0, 826.0, 356.0, 84.0)
@@ -64,6 +71,16 @@ var _soul_armed: bool = false              ## 灵魂储量消耗演出（SoulBur
 var _soul_mode: String = ""                ## 上次显示的是哪种储量（"roster" 出场预算 / "reinforce" 增援预算）
 var _soul_used: int = -1                   ## 上次显示的已用量
 var _soul_burst: SoulBurst = null
+var _resume_label: Label = null            ## Boss 换阶段暂停：「开始战斗」按钮换成空框 + 金色呼吸光的「继续战斗」
+var _resume_tween: Tween = null
+var _retry_hint: Label = null              ## 战斗中「重试」右侧的白字「点击以重置」（贴字形边缘的辉光闪烁）
+var _retry_hint_tween: Tween = null
+const RETRY_HINT_GAP: float = 10.0         ## 与「重试」按钮的间距（设计像素）
+var _retry_count: int = 0                  ## 本关累计「重试」次数（达到 ui_motion.json hint_beckon.retries 时提示按钮开始发光，并归零）
+var _hint_beckon: HintBeckon = null        ## 提示按钮的白色光晕 + 光点（点任意按钮后淡出）
+const RETRY_HINT_BLINK_PERIOD: float = 1.2 ## 辉光一明一暗（秒）
+var _over_budget: bool = false             ## 上次刷新时是否超出预算（只在刚超出时响 budget_over）
+var _threat_cleared: bool = false          ## 上一帧「威胁已清除」是否已点亮（只在点亮那一刻响 objective_clear）
 
 @onready var _title: Label = %TitleLabel
 @onready var _objective: Label = %ObjectiveLabel
@@ -138,6 +155,7 @@ func setup(root: Node2D) -> void:
 	_debug_label.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD)
 
 	_apply_skin()
+	_build_retry_hint()
 	# 预算铭牌：free 关 = 「预算」+ 已用 / 预算；fixed 关 = 「固定出场」（批准整图 ui_04）
 	_budget_title.visible = _level.is_free()
 	_budget_label.visible = _level.is_free()
@@ -150,6 +168,10 @@ func setup(root: Node2D) -> void:
 	_unit_panel.connect("beacon_mode_requested", enter_beacon_mode)
 
 	_exit_button.pressed.connect(_controller.exit)
+	_exit_button.set_meta(&"sfx_press", "ui_back")
+	_retry_button.set_meta(&"sfx_press", "battle_reset")
+	for b: BaseButton in [_clear_button, _pause_button, _speed1_button, _speed2_button] as Array[BaseButton]:
+		b.set_meta(&"sfx_press", "")             # 按结果自己播（见各自的处理函数；暂停 / 继续由 BattleRoot 播）
 	_mechanics_button.pressed.connect(_on_mechanics_pressed)
 	_objectives_button.pressed.connect(_on_objectives_pressed)
 	_settings_button.pressed.connect(func() -> void: SceneRouter.open_settings())
@@ -160,12 +182,17 @@ func setup(root: Node2D) -> void:
 	_start_button.pressed.connect(_on_start_pressed)
 	_retry_button.pressed.connect(_controller.reset)
 	_clear_button.pressed.connect(_on_clear_pressed)
-	_speed1_button.pressed.connect(_controller.set_speed.bind(1))
-	_speed2_button.pressed.connect(_controller.set_speed.bind(2))
-	_pause_button.pressed.connect(func() -> void: _root.call("toggle_pause"))
+	_speed1_button.pressed.connect(func() -> void:
+		AudioManager.play_sfx("ui_toggle", "UI")
+		_controller.set_speed(1))
+	_speed2_button.pressed.connect(func() -> void:
+		AudioManager.play_sfx("ui_toggle", "UI", 0.0, 1.15)
+		_controller.set_speed(2))
+	_pause_button.pressed.connect(func() -> void: _root.call("toggle_pause"))      # game_pause / game_unpause 由 BattleRoot.toggle_pause 播
 	_hint_button.pressed.connect(_on_hint_pressed)
 	_hint_panel.state_changed.connect(_update_hint_button)
 	_hint_panel.recommended_applied.connect(_on_recommended_applied)
+	_controller.retried.connect(_on_retried)
 	# A02：顶栏/底栏按钮不取键盘焦点，否则空格（开始战斗快捷键，也是 ui_accept）会再次按下刚点过的按钮
 	for b: BaseButton in [_mechanics_button, _objectives_button, _settings_button, _exit_button, _start_button, _retry_button, _speed1_button, _speed2_button, _pause_button, _hint_button, _clear_button] as Array[BaseButton]:
 		b.focus_mode = Control.FOCUS_NONE
@@ -193,10 +220,9 @@ func begin() -> void:
 	_update_budget()
 	_soul_armed = true
 	_refresh_relics()
-	# 07 §10.2：开始剧情 <level_id>_intro，其后接本关机制提示卡；剧情不存在则不弹出（提示仍可在"机制说明"中查看）
-	var hint: String = str(_level.briefing.get("mechanic_hint", ""))
-	_mechanics_popup.call("set_level_hint", hint)
-	_play_and_mark(story_id("intro"), hint)
+	# 07 §10.2：开始剧情 <level_id>_intro；剧情不存在则不弹出。本关机制提示只在"机制说明"中查看（2026-10-20 起剧情后不再接提示卡）
+	_mechanics_popup.call("set_level_hint", str(_level.briefing.get("mechanic_hint", "")))
+	_play_and_mark(story_id("intro"))
 	if not _controller.load_problems.is_empty():
 		_show_problems(DataRegistry.get_string("ui.invalid_config"), _controller.load_problems)
 	for uid: String in _controller.uids():
@@ -267,6 +293,61 @@ func _apply_skin() -> void:
 	_relayout_skin()
 
 
+## 重试提示：白字 + 贴着字形边缘的白色辉光，开战后一直显示（部署阶段「重试」不可点，不显示）（不接收鼠标，点的仍是「重试」按钮）。
+## 辉光 = 两圈描边：字体描边（内圈，较亮）+ 零偏移阴影的描边（外圈，较淡）。NotoSerifSC-Bold 按 MSDF 导入，
+## 描边最多约 pixel_range/2（小字号下只剩 1px 多），所以这里用关掉 MSDF 的副本，描边按实际像素光栅化
+func _build_retry_hint() -> void:
+	_retry_hint = Label.new()
+	_retry_hint.name = "RetryHintLabel"
+	_retry_hint.text = DataRegistry.get_string("ui.retry_hint")
+	_retry_hint.visible = false
+	_retry_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_retry_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_retry_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var font: FontFile = (load("res://assets/fonts/NotoSerifSC-Bold.otf") as FontFile).duplicate() as FontFile
+	font.multichannel_signed_distance_field = false
+	_retry_hint.add_theme_font_override("font", font)
+	_retry_hint.add_theme_color_override("font_color", Color.WHITE)
+	_retry_hint.add_theme_constant_override("shadow_offset_x", 0)
+	_retry_hint.add_theme_constant_override("shadow_offset_y", 0)
+	_retry_hint_glow(1.0)
+	_retry_button.get_parent().add_child(_retry_hint)
+	_place_retry_hint()
+
+
+## 显示时辉光循环闪烁（关闭动效时常亮），隐藏时停掉
+func _set_retry_hint(on: bool) -> void:
+	_retry_hint.visible = on
+	if _retry_hint_tween != null:
+		_retry_hint_tween.kill()
+		_retry_hint_tween = null
+	_retry_hint_glow(1.0)
+	if on and UiKit.motion_enabled:
+		_retry_hint_tween = create_tween().set_loops()
+		_retry_hint_tween.tween_method(_retry_hint_glow, 1.0, 0.0, RETRY_HINT_BLINK_PERIOD * 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_retry_hint_tween.tween_method(_retry_hint_glow, 0.0, 1.0, RETRY_HINT_BLINK_PERIOD * 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+## w = 0..1：两圈描边由几乎熄灭到最亮
+func _retry_hint_glow(w: float) -> void:
+	_retry_hint.add_theme_color_override("font_outline_color", Color(1.0, 1.0, 1.0, lerpf(0.05, 0.45, w)))
+	_retry_hint.add_theme_color_override("font_shadow_color", Color(1.0, 1.0, 1.0, lerpf(0.0, 0.18, w)))
+
+
+## 紧贴「重试」按钮右侧、同一行垂直居中；字高约为按钮高的 0.6
+func _place_retry_hint() -> void:
+	if _retry_hint == null:
+		return
+	var vp: Vector2 = get_viewport_rect().size
+	var r: Rect2 = UiKit.layout_rect(SKIN, "btn_retry", vp)
+	var k: float = r.size.y / 26.0                 # 按钮设计高 26 → 当前缩放
+	_retry_hint.add_theme_font_size_override("font_size", maxi(int(round(r.size.y * 0.6)), 10))
+	var w: float = _retry_hint.get_combined_minimum_size().x + 12.0 * k
+	UiKit.place(_retry_hint, Rect2(r.end.x + RETRY_HINT_GAP * k, r.position.y, w, r.size.y))
+	_retry_hint.add_theme_constant_override("outline_size", maxi(int(round(3.0 * k)), 1))          # 内圈
+	_retry_hint.add_theme_constant_override("shadow_outline_size", maxi(int(round(7.0 * k)), 2))   # 外圈
+
+
 func _budget_fixed_label() -> Label:
 	return _budget_box.find_child("BudgetFixedLabel", true, false) as Label
 
@@ -293,6 +374,7 @@ func _relayout_skin() -> void:
 	_layout_problems()
 	_place_objective_rows()
 	_place_toast_stack()
+	_place_retry_hint()
 	if not UiKit.layout_element(SKIN, "toast").is_empty():        # 哥特换皮：Toast 移到倍速一排之下（不压计时器）
 		_toast.set_anchors_preset(Control.PRESET_TOP_LEFT)
 		_toast.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, "toast").get("theme_type", "")))
@@ -379,6 +461,7 @@ func _skin_objective_popup() -> void:
 	close.name = "PopupClose"
 	close.text = DataRegistry.get_string("ui.close")
 	close.focus_mode = Control.FOCUS_NONE
+	close.set_meta(&"sfx_press", "ui_panel_close")
 	close.pressed.connect(func() -> void: _objective_popup.visible = false)
 	_objective_popup.add_child(close)
 	var sep: Control = UiKit.node_for(UiKit.layout_element(SKIN, "obj_sep"))
@@ -487,7 +570,11 @@ func _update_budget() -> void:
 		_budget_title.text = DataRegistry.get_string("ui.budget")
 		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": used, "budget": _level.roster_budget })
 		_budget_label.tooltip_text = _budget_breakdown()
-		if used > _level.roster_budget:          # 超出预算：批准整图 ui_05 的红色
+		var over: bool = used > _level.roster_budget
+		if over and not _over_budget and _soul_armed:
+			AudioManager.play_sfx("budget_over", "UI")
+		_over_budget = over
+		if over:                                 # 超出预算：批准整图 ui_05 的红色
 			_budget_label.add_theme_color_override("font_color", Color(str((UiKit.layout_element(SKIN, "budget_value").get("data", {}) as Dictionary).get("over_color", "#FF0000"))))
 		else:
 			_budget_label.remove_theme_color_override("font_color")
@@ -499,7 +586,10 @@ func _update_budget() -> void:
 
 ## 灵魂储量被消耗（同一种储量的已用量变大）：旧数字炸成白色粒子、新数字从下面浮现，铭牌闪一下（SoulBurst）。
 ## 退回 / 收回（已用量变小）不播；连续消耗时上一场只把粒子放完，Label 交给新的一场。
+## 音效：同一种储量的已用量变大 soul_spend、变小 soul_refund（读档恢复 / 切换储量不响）。
 func _soul_burst_check(mode: String, used: int, old_text: String) -> void:
+	if _soul_armed and mode != "" and mode == _soul_mode and used != _soul_used:
+		AudioManager.play_sfx("soul_spend" if used > _soul_used else "soul_refund", "UI")
 	var consumed: bool = _soul_armed and mode != "" and mode == _soul_mode and used > _soul_used and old_text != _budget_label.text
 	_soul_mode = mode
 	var prev: int = _soul_used
@@ -535,27 +625,34 @@ func _skin_detail() -> void:
 	close.name = "DetailClose"
 	close.text = DataRegistry.get_string("ui.close")
 	close.focus_mode = Control.FOCUS_NONE
+	close.set_meta(&"sfx_press", "ui_panel_close")
 	close.pressed.connect(hide_side)
 	frame.add_child(close)
 	_place_side(false)
 
 
-## 侧栏恒停靠左侧（刻印界面的底图是左侧版，右上角留给设置 / 离开）
-func _show_side(_unit_id: int) -> void:
+## 单位在屏幕左半 → 侧栏停靠右侧，反之停靠左侧（不遮挡该单位）
+func _show_side(unit_id: int) -> void:
 	var was_open: bool = _side_panel.visible
+	var was_right: bool = _side_on_right
+	var view_pos: Variant = _root.call("unit_screen_pos", unit_id)
+	if view_pos is Vector2:
+		_side_on_right = (view_pos as Vector2).x < get_viewport_rect().size.x * 0.5
 	_side_panel.visible = true
 	_place_side(false)
 	_layout_beacon_bar()
-	if not was_open:                          # 2026-10-19：先摆好，再从左侧屏幕边滑入
+	if not was_open or was_right != _side_on_right:      # 2026-10-19：先摆好，再从所停靠的屏幕边滑入（换边时重新滑入）
 		UiKit.slide_in([_side_panel.get_node("Frame")], side_rect())
 
 
-## 侧栏可点击区域（Frame）在视口中的矩形：贴左上；底图（det_panel）比它宽——右缘的纹饰伸到地图上、不拦截点击，
+## 侧栏可点击区域（Frame）在视口中的矩形：贴左上（停靠右侧时贴右上）；底图（det_panel）比它宽——朝地图一侧的纹饰伸到地图上、不拦截点击，
 ## 视口比设计高时侧栏不拉伸（贴上缘）
 func side_rect() -> Rect2:
 	var d: Vector2 = UiKit.design_size(DetailKit.SKIN)
 	var r: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "det_panel", d)
-	return Rect2(r.position, Vector2(DetailKit.rel("det_scroll").end.x + 12.0, r.size.y))
+	var w: float = DetailKit.rel("det_scroll").end.x + 12.0
+	var x: float = get_viewport_rect().size.x - r.position.x - w if _side_on_right else r.position.x
+	return Rect2(x, r.position.y, w, r.size.y)
 
 
 ## 鼠标是否在侧栏上（侧栏与屏幕边之间的几像素缝也算，免得贴边时误触边平移）
@@ -563,28 +660,35 @@ func mouse_over_side(screen_pos: Vector2) -> bool:
 	if not _side_panel.visible:
 		return false
 	var r: Rect2 = side_rect()
-	return Rect2(0.0, 0.0, r.end.x, get_viewport_rect().size.y).has_point(screen_pos)
+	var vp: Vector2 = get_viewport_rect().size
+	var hit := Rect2(r.position.x, 0.0, vp.x - r.position.x, vp.y) if _side_on_right else Rect2(0.0, 0.0, r.end.x, vp.y)
+	return hit.has_point(screen_pos)
 
 
-## 框体与内容按 side_rect 摆放；关闭键与内容相对框体
+## 框体与内容按 side_rect 摆放；关闭键与内容相对框体。停靠右侧时底图翻转、比可点区宽出的部分伸向左边（地图上），
+## 关闭键与内容按底图宽度镜像（DetailKit.mirror，指令区不翻）
 func _place_side(_slide: bool) -> void:
 	var frame: Control = _side_panel.get_node_or_null("Frame") as Control
 	if frame == null or not frame.has_node("Skin_det_panel"):
 		return
 	var r: Rect2 = side_rect()
 	var full: Vector2 = DetailKit.rel("det_panel").size
+	var ox: float = r.size.x - full.x if _side_on_right else 0.0
 	frame.position = r.position
 	frame.size = r.size
-	(frame.get_node("Skin_det_panel") as Control).position = Vector2.ZERO
-	(frame.get_node("Skin_det_panel") as Control).size = full
+	var art: TextureRect = frame.get_node("Skin_det_panel") as TextureRect
+	art.position = Vector2(ox, 0.0)
+	art.size = full
+	art.flip_h = _side_on_right
 	var close: Control = frame.get_node("DetailClose") as Control
 	var cr: Rect2 = DetailKit.rel("det_close")
-	close.position = cr.position
+	close.position = Vector2(ox + (full.x - cr.end.x if _side_on_right else cr.position.x), cr.position.y)
 	close.size = cr.size
 	for c: Control in [_unit_panel, _enemy_panel]:
-		c.position = Vector2.ZERO
+		c.position = Vector2(ox, 0.0)
 		c.size = full
 		c.call("stretch", 0.0)
+		DetailKit.mirror(c, _side_on_right)
 
 
 func hide_side() -> void:
@@ -602,12 +706,15 @@ func side_visible() -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and _relic_armed != "":
 		disarm_relic()
+		AudioManager.play_sfx("relic_disarm", "UI")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel") and _beacon_slot != "":
 		exit_beacon_mode()
+		AudioManager.play_sfx("ui_panel_close", "UI")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel") and _side_panel.visible:
 		hide_side()
+		AudioManager.play_sfx("ui_panel_close", "UI")
 		get_viewport().set_input_as_handled()
 
 
@@ -621,7 +728,10 @@ func _process(_delta: float) -> void:
 		_show_time(left)
 		var whole: int = int(ceil(left))
 		if left <= COUNTDOWN_WARN_SECONDS and whole != _last_tick_second and _controller.phase == SimTypes.Phase.RUNNING:
-			AudioManager.play_sfx("timer_tick")
+			if whole <= 1:                       # 最后一秒：低沉加重
+				AudioManager.play_sfx("timer_tick", "SFX", 3.0, 0.75)
+			else:
+				AudioManager.play_sfx("timer_tick")
 		_last_tick_second = whole
 		for t: Label in ([_timer, _timer_frac] if _timer_frac != null else [_timer]):
 			if left <= COUNTDOWN_WARN_SECONDS:
@@ -634,6 +744,9 @@ func _process(_delta: float) -> void:
 	_progress.visible = _progress.text != ""
 	var cleared: bool = left >= 0.0 and w.clock.steps > 0 and ObjectiveSystem.enemies_cleared(w)
 	_progress.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD if cleared else Palette.BONE_DIM)
+	if cleared and not _threat_cleared:
+		AudioManager.play_sfx("objective_clear", "UI")
+	_threat_cleared = cleared
 	if _debug_label.visible:
 		_debug_label.text = "t=%.3f  step=%d  hash=%d" % [w.clock.time, w.clock.steps, w.state_hash()]
 	_relic_tick += 1
@@ -655,22 +768,30 @@ func _show_time(t: float) -> void:
 func _on_clear_pressed() -> void:
 	var n: int = _controller.clear_units()
 	if n <= 0:
+		AudioManager.play_sfx("ui_error", "UI")
 		return
+	AudioManager.play_sfx("deploy_clear")          # Cost 返还由预算刷新播 soul_refund
 	EventBus.unit_selected.emit(-1)
 	show_toast(DataRegistry.get_string("ui.cleared_toast").format({ "n": n }))
 
 
 func _on_start_pressed() -> void:
+	if _controller.boss_pending:          # Boss 换阶段暂停：「继续战斗」= 写入新指令 / 增援并进入下一阶段（按钮自动点击音此时静音，battle_resume 由 BattleRoot 在状态切换处播）
+		_controller.resume()
+		return
 	if _controller.start():
 		_problems_panel.visible = false
 
 
 func _on_phase_changed(phase: int) -> void:
 	var deploy: bool = phase == SimTypes.Phase.DEPLOY
-	_start_button.disabled = not deploy
+	_start_button.disabled = not deploy and not _controller.boss_pending
+	_set_resume_cta(_controller.boss_pending)
 	_pause_button.disabled = phase != SimTypes.Phase.RUNNING and phase != SimTypes.Phase.PAUSED
 	_pause_button.text = DataRegistry.get_string("ui.resume" if phase == SimTypes.Phase.PAUSED else "ui.pause")
 	_retry_button.disabled = deploy
+	if _retry_hint.visible == deploy:              # 进入战斗起（与「重试」可点同步）一直显示
+		_set_retry_hint(not deploy)
 	_update_budget()
 	match phase:
 		SimTypes.Phase.DEPLOY:
@@ -691,6 +812,67 @@ func _on_phase_changed(phase: int) -> void:
 		_toast_warnings(_controller.last_problems)
 		show_battle_start()
 	_last_phase = phase
+
+
+## Boss 换阶段暂停时把「开始战斗」按钮换成「继续战斗」：字在图上，故四态贴图换成去字的空框（btn_start_blank.png），
+## 上面叠一层金色文字并呼吸发光提示玩家；暂停结束换回原图。挂了按钮动效（ButtonMotion）时它会在下一帧接管新样式。
+func _set_resume_cta(on: bool) -> void:
+	if on == (_resume_label != null and _resume_label.visible):
+		return
+	if on:
+		_start_button.set_meta(&"sfx_press", "")      # 「继续战斗」：battle_resume 由 BattleRoot 播，按钮不再响点击
+	elif _start_button.has_meta(&"sfx_press"):
+		_start_button.remove_meta(&"sfx_press")
+	for st: String in ButtonMotion.STYLE_STATES:
+		_start_button.remove_theme_stylebox_override(st)       # 取回主题原样式（也去掉动效层的空样式，由它重新接管）
+	if on:
+		var blank: Texture2D = load(RESUME_FRAME) as Texture2D
+		for st: String in ButtonMotion.STYLE_STATES:
+			var sb: StyleBoxTexture = _start_button.get_theme_stylebox(st) as StyleBoxTexture
+			if sb != null and blank != null:
+				var dup: StyleBoxTexture = sb.duplicate() as StyleBoxTexture
+				dup.texture = blank
+				_start_button.add_theme_stylebox_override(st, dup)
+	if _resume_label == null:
+		_resume_label = Label.new()
+		_resume_label.name = "ResumeLabel"
+		_resume_label.text = DataRegistry.get_string("ui.resume_battle")
+		_resume_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_resume_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_resume_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		_resume_label.add_theme_font_override("font", load("res://assets/fonts/NotoSerifSC-Bold.otf") as Font)
+		_resume_label.add_theme_constant_override("outline_size", 4)
+		_resume_label.add_theme_constant_override("shadow_outline_size", 14)
+		_resume_label.add_theme_constant_override("shadow_offset_x", 0)
+		_resume_label.add_theme_constant_override("shadow_offset_y", 0)
+		_start_button.add_child(_resume_label)
+		_resume_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_start_button.resized.connect(_size_resume_label)
+	_resume_label.visible = on
+	_size_resume_label()
+	if _resume_tween != null:
+		_resume_tween.kill()
+		_resume_tween = null
+	_resume_glow(0.0)
+	if on and UiKit.motion_enabled:
+		_resume_tween = create_tween().set_loops()
+		_resume_tween.tween_method(_resume_glow, 0.0, 1.0, RESUME_GLOW_PERIOD * 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_resume_tween.tween_method(_resume_glow, 1.0, 0.0, RESUME_GLOW_PERIOD * 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+## 字高约为按钮高的 0.44（同原图「开始战斗」的字形占比）
+func _size_resume_label() -> void:
+	if _resume_label != null:
+		_resume_label.add_theme_font_size_override("font_size", maxi(int(round(_start_button.size.y * 0.44)), 10))
+
+
+## w = 0..1：金色字体由暗金到亮金，描边与外发光同步增强
+func _resume_glow(w: float) -> void:
+	if _resume_label == null:
+		return
+	_resume_label.add_theme_color_override("font_color", Palette.ALCHEMY_GOLD.lerp(RESUME_GOLD_HI, w))
+	_resume_label.add_theme_color_override("font_outline_color", Color(Palette.ALCHEMY_GOLD.darkened(0.35), 0.9))
+	_resume_label.add_theme_color_override("font_shadow_color", Color(RESUME_GOLD_HI, lerpf(0.25, 0.8, w)))
 
 
 ## 开始时的非阻塞提醒（如 EMPTY_RULES：空指令允许开始，但单位将一直待机）
@@ -777,9 +959,13 @@ func _on_unit_selected(unit_id: int) -> void:
 	if unit_id < 0:
 		hide_side()
 		return
-	if _beacon_slot != "" and _controller.slot_of_unit(unit_id) != _beacon_slot and _controller.slot_of_unit(unit_id) != "":
-		enter_beacon_mode(_controller.slot_of_unit(unit_id))      # 信标模式中点了另一个己方单位：切过去
 	var slot_id: String = _controller.slot_of_unit(unit_id)
+	if _beacon_slot != "" and slot_id != "":
+		if slot_id != _beacon_slot:
+			enter_beacon_mode(slot_id)      # 信标模式中点了另一个己方单位：切过去
+		if _beacon_slot == slot_id:
+			hide_side()                     # 2026-10-21：信标模式中指令界面保持收起（切换单位也不打开）
+			return
 	_unit_panel.visible = slot_id != ""
 	_enemy_panel.visible = slot_id == ""
 	if slot_id != "":
@@ -822,6 +1008,7 @@ func _build_beacon_bar() -> void:
 	var done: Button = _beacon_nodes["beacon_done"] as Button
 	done.text = DataRegistry.get_string("ui.beacon_mode_done")
 	done.focus_mode = Control.FOCUS_NONE
+	done.set_meta(&"sfx_press", "ui_panel_close")
 	done.pressed.connect(exit_beacon_mode)
 	_beacon_nodes["beacon_bar_title"] = ScrollText.wrap(_beacon_nodes["beacon_bar_title"] as Label, ScrollText.Mode.AUTO)
 	_beacon_nodes["beacon_bar_hint"] = ScrollText.wrap(_beacon_nodes["beacon_bar_hint"] as Label, ScrollText.Mode.AUTO)
@@ -837,15 +1024,33 @@ func _layout_beacon_bar() -> void:
 	var bar: Rect2 = UiKit.layout_rect(DetailKit.SKIN, "beacon_bar", design)
 	var dy: float = vp.y - design.y
 	var center_x: float = vp.x * 0.5
-	var bar_shift: float = 0.0
-	if _side_panel.visible:
-		bar_shift = maxf(0.0, side_rect().end.x + 12.0 - (center_x - design.x * 0.5 + bar.position.x))
+	var bar_x: float = center_x - design.x * 0.5 + bar.position.x
+	if _side_panel.visible and not _side_on_right:
+		bar_x = maxf(bar_x, side_rect().end.x + 12.0)     # 2026-10-20：侧栏在左，信标栏整体右移到侧栏右边（内部元素随底板平移）
+	# 用户 2026-10-20：右移后会压住右下角的清空 / 提示 / 开始（继续）战斗按钮——右缘止于按钮组左侧，放不下时整体等比缩小（贴底）
+	var k: float = 1.0
+	var right_limit: float = _bottom_buttons_left() - 12.0
+	if _side_panel.visible and _side_on_right:
+		right_limit = minf(right_limit, side_rect().position.x - 12.0)     # 侧栏在右：右缘止于侧栏左侧
+	if bar_x + bar.size.x > right_limit:
+		k = clampf((right_limit - bar_x) / bar.size.x, BEACON_BAR_MIN_SCALE, 1.0)
+	var bar_bottom: float = bar.end.y + dy
 	for id: String in _beacon_nodes.keys():
 		var e: Dictionary = UiKit.layout_element(DetailKit.SKIN, id)
 		var r: Rect2 = UiKit.layout_text_rect(DetailKit.SKIN, id, design) if str(e.get("kind", "")) == "text_style" else UiKit.layout_rect(DetailKit.SKIN, id, design)
-		# 侧栏在左时底板按设计画布镜像，内部元素随底板整体平移（不反排）；横向相对视口中线、纵向贴底
-		var xd: float = r.position.x + bar_shift          # 侧栏在左：信标栏整体右移到侧栏右边（内部元素随底板平移）
-		UiKit.place(_beacon_nodes[id] as Control, Rect2(center_x - design.x * 0.5 + xd, r.position.y + dy, r.size.x, r.size.y))
+		var c: Control = _beacon_nodes[id] as Control
+		var p := Vector2(bar_x + (r.position.x - bar.position.x) * k, bar_bottom - (bar.end.y - r.position.y) * k)
+		UiKit.place(c, Rect2(p, r.size))
+		c.scale = Vector2(k, k)
+
+
+## 右下角按钮组（清空 / 提示 / 开始战斗）最左缘的屏幕 x；信标栏的右缘不越过它
+func _bottom_buttons_left() -> float:
+	var x: float = get_viewport_rect().size.x
+	for b: Control in [_clear_button, _hint_button, _start_button] as Array[Control]:
+		if b.is_visible_in_tree():
+			x = minf(x, b.get_global_rect().position.x)
+	return x
 
 
 ## 数字键 n：第 n 个已部署单位进入信标模式（没有该编号时忽略）
@@ -860,14 +1065,15 @@ func enter_beacon_mode(slot_id: String) -> void:
 		return
 	_beacon_slot = slot_id
 	_card_list.visible = false
-	if not _beacon_bar.visible:
-		_beacon_bar.visible = true
-		UiKit.slide_in.call_deferred(_beacon_bar.get_children(), (_beacon_nodes["beacon_bar"] as Control).get_global_rect())     # 贴底：从下方滑入
 	var uid: int = _controller.unit_id_of_slot(slot_id)
 	if _root.get("selected_id") != uid:
 		EventBus.unit_selected.emit(uid)
+	hide_side()                     # 2026-10-21：点「信标」后收起指令界面，放信标时不挡地图（退出信标模式后点人偶再打开）
 	_layout_beacon_bar()
 	_refresh_beacon_bar()
+	if not _beacon_bar.visible:
+		_beacon_bar.visible = true
+		UiKit.slide_in.call_deferred(_beacon_bar.get_children(), (_beacon_nodes["beacon_bar"] as Control).get_global_rect())     # 贴底：从下方滑入
 	EventBus.beacons_changed.emit(uid)        # 地图重画（信标模式下地板高亮）
 
 
@@ -968,6 +1174,7 @@ func relic_armed() -> String:
 func _on_relic_pressed(id: String) -> void:
 	if _relic_armed == id:
 		disarm_relic()
+		AudioManager.play_sfx("relic_disarm", "UI")
 		return
 	var problem: String = _controller.relic_problem(id)
 	if problem == "":
@@ -995,7 +1202,7 @@ func arm_relic(id: String) -> void:
 		"heal":
 			key = "ui.relic_arm_ally"
 	show_toast(DataRegistry.get_string(key).format({ "name": str(d.get("name", "")) }))
-	AudioManager.play_sfx("ui_toggle", "UI")
+	AudioManager.play_sfx("relic_arm", "UI")
 	_root.call("set_relic_armed", id)
 	_refresh_relics()
 	EventBus.relic_armed.emit(id)
@@ -1017,6 +1224,17 @@ func _on_hint_pressed() -> void:
 	_objective_popup.visible = false
 	_hint_panel.press()
 	_update_hint_button()
+
+
+## 累计重试达到次数：提示按钮散发白色光晕并飘出光点，计数归零（已在发光时只归零）
+func _on_retried() -> void:
+	_retry_count += 1
+	if _retry_count < int(UiKit.motion_params("hint_beckon").get("retries", 3)):
+		return
+	_retry_count = 0
+	if _hint_beckon == null and _hint_button.is_visible_in_tree() and not _hint_button.disabled:
+		_hint_beckon = HintBeckon.play(_hint_button)
+		_hint_beckon.dismissed.connect(func() -> void: _hint_beckon = null)
 
 
 func _update_hint_button() -> void:
@@ -1185,23 +1403,35 @@ func _place_toast_stack() -> void:
 		UiKit.place(_toast_stack, UiKit.layout_rect(SKIN, "toast_area", get_viewport_rect().size))
 
 
-## 结算：结算面板 + 结束剧情（胜利 <level_id>_win / 失败 <level_id>_lose，不存在则不触发，07 §10.2）
+## 结算：先播结束剧情（胜利 <level_id>_win / 失败 <level_id>_lose，不存在则不触发，07 §10.2），播完再弹结算面板。
+## delay > 0（第二关首败先看目标连线）：延后的是剧情 + 结算整体。
 func show_result(result: int, delay: float) -> void:
 	_hint_panel.close_panel()
 	var banner: Node = get_node_or_null("BattleStartBanner")     # 「战斗开始」还没播完就结算：立即移除，免得压在结算窗口上
 	if banner != null:
 		banner.queue_free()
-	_result_panel.call("show_result", result, delay)
-	if result == SimTypes.BattleResult.WIN:
-		_play_and_mark(story_id("win"))
-	elif result == SimTypes.BattleResult.LOSE:
-		_play_and_mark(story_id("lose"))
+	if delay > 0.0:
+		await get_tree().create_timer(delay).timeout
+		if _controller.phase != SimTypes.Phase.ENDED:
+			return
+	var kind: String = "win" if result == SimTypes.BattleResult.WIN else "lose" if result == SimTypes.BattleResult.LOSE else ""
+	if kind != "" and _play_and_mark(story_id(kind)):
+		await _dialogue.finished
+		# 2026-10-20 片尾名单：最终关（credits.json trigger_level）胜利剧情播完后淡黑进入名单（正式战斗才接，测试 / 预览不接）
+		if kind == "win" and _controller.persist and CreditsRoll.plays_after(_level.id):
+			SceneRouter.goto_credits()
+			return
+		if _controller.phase != SimTypes.Phase.ENDED:      # 剧情期间已重开
+			return
+	_result_panel.call("show_result", result, 0.0)
 
 
 ## 播放剧情；真的播放了就记入 stories_seen（10 §3.2：章节地图「回放剧情」只列已看过的条目；随下次存档写盘）
-func _play_and_mark(sid: String, hint: String = "") -> void:
-	if _dialogue.play_story(sid, hint):
+func _play_and_mark(sid: String) -> bool:
+	if _dialogue.play_story(sid):
 		SaveManager.mark_story_seen(sid)
+		return true
+	return false
 
 
 ## 剧情固定命名（07 §10.2）：<level_id>_intro / _win / _lose

@@ -168,7 +168,7 @@
           }
         }
       ],
-      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的分裂体。"
+      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的人偶。"
     },
     {
       "id": "H1",
@@ -220,7 +220,7 @@
           }
         }
       ],
-      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击。"
+      "public_rule_text": "锁定首个进入视野的人偶并追击攻击。"
     },
     {
       "id": "H2",
@@ -272,7 +272,7 @@
           }
         }
       ],
-      "public_rule_text": "锁定首个进入视野的分裂体并追击攻击。"
+      "public_rule_text": "锁定首个进入视野的人偶并追击攻击。"
     }
   ],
   "routes": {},
@@ -502,10 +502,8 @@
     "unlock_conditions": [],
     "unlock_selectors": [],
     "unlock_actions": [],
-    "unlock_level": "",
-    "unlock_relics": [
-      "badge"
-    ]
+    "unlock_level": ""
   },
-  "_design_comment": "精英关 2：c12「回流」的升级版，多了侍从与咒术师，考易伤的「互相施加」。"
+  "_design_comment": "精英关 2：c12「回流」的升级版，多了侍从与咒术师，考易伤的「互相施加」。",
+  "_retired_20261020": "用户 2026-10-20：精英关去掉，本关已从章节地图移除、不再发遗物；文件保留作遗物 / 战斗测试场景（tests/integration/test_elite_relics.gd）。"
 }

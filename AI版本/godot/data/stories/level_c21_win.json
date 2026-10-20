@@ -1,0 +1,30 @@
+{
+  "id": "level_c21_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她堵住了出口。两只猎犬退到墙角，挤在一起。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "其中一只把肚子翻过来，四条腿朝上。这是一个认输的姿势。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她站着，看了一会儿，没有动。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "杀掉。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她动了。"
+    }
+  ]
+}

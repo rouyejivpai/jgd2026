@@ -192,6 +192,8 @@ func _gui_input(event: InputEvent) -> void:
 			elif _pressing:
 				_pressing = false
 				if not _dragged:
+					if not clicked.get_connections().is_empty():     # 作为点击目标（有人接 clicked）时才响点击音
+						AudioManager.play_ui("ui_click")
 					clicked.emit()
 			accept_event()
 		return
@@ -224,6 +226,7 @@ func attach_arrows(up: Control, down: Control) -> void:
 		bar_arrows[i].gui_input.connect(func(e: InputEvent) -> void:
 			var mb: InputEventMouseButton = e as InputEventMouseButton
 			if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+				AudioManager.play_ui("ui_click")
 				scroll_by(float(params.get("wheel_step_px", 40.0)) * dir))
 	_layout_bar(overflow())
 

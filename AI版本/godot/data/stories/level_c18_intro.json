@@ -1,0 +1,176 @@
+{
+  "id": "level_c18_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她走进钟楼的时候，铜钟第一次为她而鸣。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "嗡——"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "嗡鸣声里，体内的那些东西被短暂地激活了。"
+    },
+    {
+      "speaker": "echo",
+      "illustration": "",
+      "text": "我不想变成怪物……"
+    },
+    {
+      "speaker": "echo",
+      "illustration": "",
+      "text": "导师……对不起……"
+    },
+    {
+      "speaker": "echo",
+      "illustration": "",
+      "text": "神在吃我们……"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她捂住头蹲下。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "这些莫名的低语搅动着她体内驳杂的情绪。那些一直给她力量的东西，现在正在冲击她的全身。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "愤怒，悲伤，愧悔。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她拼尽全力把它们塞回灵魂海。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "塞回去的过程很慢，像把一整个人的重量按进一个太小的箱子。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "做完这一切，她才发现自己不受控制地坐在地上。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她一点也不想站起来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "但是现在，她该继续前进了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "cg": "doll_tears",
+      "text": ""
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "圣钟的顶部从地板里伸出来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "一个魔女坐在钟旁边。左臂整条都是骨头，黑色布条缠着眼睛，脸朝着南边。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "她没有动，但人偶刚踏上这一层，她的头就转了过来。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "你身上有几十个魔女的灵魂。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "你不是人。你是一具行走的坟墓。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "但你身上有塞拉的骨刃，有骨者的徽章。你去了灰棘林。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶点头。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "我在这上面坐了三十年。每天听她们在下面烧骨头，听她们念名字。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "神启早就没了。可她们还在等。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "她忽然停住，偏了偏头。看不见的眼睛朝着人偶的方向。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "我能感受到……是灵魂术法拼凑了你。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "你能感受到吗？那个正在生长的弱小灵？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "或许，这正是失控前兆吧。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶双手合十，做好了餐前祷告。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "（笑）吃我之前，还要祷告。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "织骸教你的？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答，她把手放下来。"
+    }
+  ]
+}

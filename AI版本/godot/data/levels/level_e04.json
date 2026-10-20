@@ -147,7 +147,7 @@
           }
         }
       ],
-      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的分裂体。血极厚。"
+      "public_rule_text": "近战命中施加易伤。追击并攻击视野内血量最低的人偶。血极厚。"
     },
     {
       "id": "C1",
@@ -455,10 +455,8 @@
     "unlock_conditions": [],
     "unlock_selectors": [],
     "unlock_actions": [],
-    "unlock_level": "",
-    "unlock_relics": [
-      "bone_arm"
-    ]
+    "unlock_level": ""
   },
-  "_design_comment": "精英关 4：高血量巨像 + 两颗朝「最远者」投弹的骨花核心，考站位分散；骨臂（易伤地块）在这里效果最明显。"
+  "_design_comment": "精英关 4：高血量巨像 + 两颗朝「最远者」投弹的骨花核心，考站位分散；骨臂（易伤地块）在这里效果最明显。",
+  "_retired_20261020": "用户 2026-10-20：精英关去掉，本关已从章节地图移除、不再发遗物；文件保留作遗物 / 战斗测试场景（tests/integration/test_elite_relics.gd）。"
 }

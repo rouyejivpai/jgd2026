@@ -37,7 +37,7 @@ func run(tree: SceneTree) -> void:
 		GameState.unlocks = saved_unlocks
 		tree.quit(0)
 		return
-	if str(args.get("screen", "battle")) in ["main_menu", "main_menu_error", "main_menu_confirm", "settings_overlay"]:
+	if str(args.get("screen", "battle")) in ["main_menu", "main_menu_error", "main_menu_confirm", "settings_overlay", "story_gallery", "story_pair"]:
 		await _ui_shot(tree, out_dir, str(args["screen"]))
 		GameState.unlocks = saved_unlocks
 		SaveManager.data = saved
@@ -52,11 +52,13 @@ func run(tree: SceneTree) -> void:
 		tree.current_scene.add_child(sp)
 		sp.play_story(str(args.get("story", "level_01_intro")))
 		for i: int in int(args.get("line", "1")) - 1:
-			sp.advance()
+			if sp.is_box_visible():
+				sp.advance()
 			sp.advance()
 		for i: int in SETTLE_FRAMES:
 			await tree.process_frame
-		sp.advance()                          # 逐字显示 → 整句
+		if sp.is_box_visible() and (sp.get("_text") as Label).visible_ratio < 1.0:   # 短句等待中已显示完、纯 CG 句没有逐字：再点就到下一句了
+			sp.advance()                      # 逐字显示 → 整句
 		for i: int in SETTLE_FRAMES:
 			await tree.process_frame
 		_save_shot(tree, out_dir.path_join("dialogue_%s_%s.png" % [str(args.get("story", "level_01_intro")), str(args.get("line", "1"))]))
@@ -172,7 +174,7 @@ func run(tree: SceneTree) -> void:
 			(root.find_child("HintPanel", true, false) as HintPanel).open_recommend()
 		if str(args.get("demo", "")) in ["win", "lose"]:     # P6 ui_10 / ui_11：推荐阵型跑完（胜利）；或清空后用空指令开局并跑完（失败）
 			var lose: bool = str(args["demo"]) == "lose"
-			if lose:                          # 空指令：分裂体原地待机，跑 24.8 秒后按失败展示（与整图样例时间相同）
+			if lose:                          # 空指令：人偶原地待机，跑 24.8 秒后按失败展示（与整图样例时间相同）
 				for uid: String in c.uids():
 					c.set_rules(uid, [] as Array[RuleDef])
 			c.start()
@@ -183,7 +185,7 @@ func run(tree: SceneTree) -> void:
 			root.find_child("HUD", true, false).call("show_result", SimTypes.BattleResult.LOSE if lose else c.world.result, 0.0)
 			var dlg: Node = root.find_child("DialogueOverlay", true, false)
 			if dlg != null:
-				(dlg as CanvasItem).visible = false
+				(dlg as StoryPlayer).close()      # 结束剧情播完才弹结算
 		if str(args.get("demo", "")) == "validation":         # P6 ui_05：超出预算 + 空指令，按开始弹出问题面板
 			_demo_validation(c)
 		if str(args.get("demo", "")) == "overflow":           # P6 堆叠内容检验：HUD 全部文字槽填入超长内容，看遮罩、滚动与页边距
@@ -416,7 +418,7 @@ func _demo_rule(c: BattleController, uid: String, kind: String) -> void:
 	c.set_rules(uid, rules)
 
 
-## --screen=chapter：章节地图两端与详情面板（P3 验收）。--completed=N 表示前 N 关已通关（默认 3）；
+## --screen=chapter：章节地图两端与详情面板（P3 验收）。--completed=N 表示前 N 关已通关（默认 3）；--seen=<剧情 id,…> 额外标记已看；
 ## 输出 chapter_start.png（默认选中、滚到中央）、chapter_end.png（滚到最右、选中第 25 节点）
 func _chapter_shots(tree: SceneTree, out_dir: String, args: Dictionary) -> void:
 	var completed: Array = []
@@ -429,6 +431,8 @@ func _chapter_shots(tree: SceneTree, out_dir: String, args: Dictionary) -> void:
 		SaveManager.mark_story_seen("%s_intro" % str(levels[i]))
 		if i < completed.size():
 			SaveManager.mark_story_seen("%s_win" % str(levels[i]))
+	for sid: String in str(args.get("seen", "")).split(",", false):      # --seen=level_c01_intro,level_c01_win：额外标记已看剧情（看回放按钮）
+		SaveManager.mark_story_seen(sid)
 	GameState.sync_from_save()
 	SceneRouter.goto_level_select()
 	for i: int in LOAD_FRAMES:
@@ -448,6 +452,7 @@ func _chapter_shots(tree: SceneTree, out_dir: String, args: Dictionary) -> void:
 	if args.has("node"):                     # P6：--node=<节点 id> 再拍一张选中该节点（居中）的，chapter_node.png
 		var nid: String = str(args["node"])
 		sel.call("select_node", nid)
+		sel.call("set_panel_open", true, true)      # 2026-10-20 起进入时详情面板收起，点节点才滑出
 		sel.call("center_on", nid)
 		for i: int in SETTLE_FRAMES:
 			await tree.process_frame
@@ -627,6 +632,8 @@ func _push_mouse(tree: SceneTree, act: String, pos: Vector2) -> void:
 
 ## P5 换皮比对（--screen=main_menu|main_menu_error|settings_overlay）：输出 <screen>_actual.png，与 assets/ui/<screen>/design.png 用 tools/ui_diff.py 比对。
 ## --screen=main_menu_confirm：主菜单打开「新游戏」清档确认框（只打开，不清档）。
+## --screen=story_gallery / story_pair（2026-10-21 04.zip）：主菜单「剧情」图鉴第一页 / 第一关的开头 / 结尾两卡页；
+## 临时把主线前 9 关记为看过（第 9 关只看过开头，用来看锁定卡），截完随存档一起恢复。
 ## 设置浮窗的数值按设计图样例临时设定（主音量 100%、音乐 80%、音效 85%、全屏关、目标连线开、字体 100%、模拟日志关），不写存档、不应用显示设置；
 ## 错误态临时置 DataRegistry.has_errors。
 func _ui_shot(tree: SceneTree, out_dir: String, screen: String) -> void:
@@ -635,11 +642,23 @@ func _ui_shot(tree: SceneTree, out_dir: String, screen: String) -> void:
 	if screen == "settings_overlay":
 		for kv: Array in [["master", 1.0], ["music", 0.8], ["sfx", 0.85], ["fullscreen", false], ["target_lines", true], ["font_scale", 1.0], ["sim_log", false]]:
 			GameState.settings[str(kv[0])] = kv[1]
+	if screen.begins_with("story_"):
+		var ch: ChapterDef = DataRegistry.world_chapter()
+		var ids: Array[String] = ch.level_ids() if ch != null else DataRegistry.get_level_list()
+		for i: int in mini(9, ids.size()):
+			SaveManager.mark_story_seen(ids[i] + "_intro")
+			if i < 8:
+				SaveManager.mark_story_seen(ids[i] + "_win")
 	SceneRouter.goto_main_menu()
 	for i: int in LOAD_FRAMES:
 		await tree.process_frame
 	if screen == "settings_overlay":
 		SceneRouter.open_settings()
+	if screen.begins_with("story_"):
+		tree.current_scene.call("open_gallery")
+		var pick: StorySelect = tree.current_scene.get("story_select") as StorySelect
+		if screen == "story_pair":
+			pick.entry_chosen.emit(pick.current_entries()[8] as Dictionary)
 	if screen == "main_menu_confirm":
 		(tree.current_scene.find_child("NewGameConfirm", true, false) as ConfirmDialog).open(
 			"ui.new_game_confirm_title", "ui.new_game_confirm_body", "ui.new_game_confirm_ok", "ui.new_game_confirm_cancel")

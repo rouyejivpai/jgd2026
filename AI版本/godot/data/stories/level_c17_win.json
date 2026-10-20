@@ -1,0 +1,80 @@
+{
+  "id": "level_c17_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "钟楼底下是地窖。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "地窖里排着上千个灯笼状的容器。大部分碎了，碎成一地的骨片和熄掉的蓝。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "完整的只剩最里面一盏。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她走到最深处，把它拿起来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "灯里的蓝光晃了一下。有声音。"
+    },
+    {
+      "speaker": "silent_believer",
+      "illustration": "",
+      "text": "你……是来终结一切的吗？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答。"
+    },
+    {
+      "speaker": "silent_believer",
+      "illustration": "",
+      "text": "不是？那你的体内……为什么有这么多？"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "指令。"
+    },
+    {
+      "speaker": "silent_believer",
+      "illustration": "",
+      "text": "（笑）原来是容器。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶皱起眉头。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她重重摇了摇这个脆弱不堪的魂灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "灯里的蓝光被摇得东倒西歪，重新稳住的时候，小了一圈。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她不喜欢这个说法。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把灯收进胸口，转身往上走。"
+    }
+  ]
+}

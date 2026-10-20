@@ -16,16 +16,77 @@ const SIGNAL_COLOR: Dictionary = { "red": Color(1.0, 0.35, 0.3), "yellow": Color
 const PIP_RADIUS: float = 20.0
 
 const REINFORCE_COLOR: Color = Color(0.5, 1.2, 0.9, 1.0)   ## 增援区青绿（略提亮抵消 CanvasModulate）
+## 2026-10-20 战斗音效（只读模拟）：状态出现 → status_<id>，提前结束 → status_expire（站在净化台上 = shrine_cleanse）；
+## Boss 信号亮起 → boss_warn（音高按颜色）、放招 → core_pulse
+const STATUS_SFX_MSEC: int = 150          ## 同一状态音全局限频（光环同时罩住多名单位时只响一声）
+const STATUS_REAPPLY_MSEC: int = 800      ## 同一单位同一状态结束后这么久内再出现不响（光环边缘进进出出）
+const SIGNAL_PITCH: Dictionary = { "red": 0.9, "yellow": 1.0, "blue": 1.15 }
 var controller: BattleController = null
 var grid_height: int = 0
 var _t: float = 0.0
 var _emitters: Dictionary = {}           ## "单位 id:状态" -> CPUParticles2D
+var _sfx_world: SimWorld = null          ## 音效跟踪所属的世界（重建后静默重置）
+var _sfx_live: Dictionary = {}           ## "单位 id:状态" -> true（上一帧存在）
+var _sfx_gone: Dictionary = {}           ## "单位 id:状态" -> 结束时刻 msec
+var _last_signal: String = ""
+var _signal_armed: bool = false          ## 信号亮起后尚未放招（boss_state.fire_at ≥ 0）
 
 
 func _process(delta: float) -> void:
 	_t += delta
 	sync_particles()
+	_sync_sfx()
 	queue_redraw()
+
+
+func _sync_sfx() -> void:
+	var w: SimWorld = controller.world if controller != null else null
+	var quiet: bool = controller == null or controller.phase == SimTypes.Phase.DEPLOY     # 部署 / 刚重建：只记录现状，不出声
+	if w != _sfx_world:
+		quiet = true
+		_sfx_world = w
+		_sfx_live.clear()
+		_sfx_gone.clear()
+		_last_signal = w.boss_signal if w != null else ""
+		_signal_armed = false
+	if w == null:
+		return
+	var now: int = Time.get_ticks_msec()
+	var live: Dictionary = {}
+	for u: SimUnit in w.units:
+		if not u.alive:
+			continue
+		for s: Variant in u.statuses.keys():
+			var sid: String = str(s)
+			if not u.has_status(sid) or not STATUS_STYLE.has(sid):
+				continue
+			var key: String = "%d:%s" % [u.id, sid]
+			live[key] = true
+			if not quiet and not _sfx_live.has(key) and now - int(_sfx_gone.get(key, -STATUS_REAPPLY_MSEC)) >= STATUS_REAPPLY_MSEC:
+				AudioManager.play_sfx("status_" + sid, "SFX", -2.0, 1.0, 0.04, STATUS_SFX_MSEC)
+	for key: String in _sfx_live.keys():
+		if live.has(key):
+			continue
+		_sfx_gone[key] = now
+		var u: SimUnit = w.get_unit(int(key.get_slice(":", 0)))
+		if quiet or u == null or not u.alive:
+			continue
+		if u.faction == SimTypes.Faction.ALLY and w.tile_at(u.cell()) == "shrine":
+			AudioManager.play_sfx("shrine_cleanse", "SFX", 0.0, 1.0, 0.0, 300)
+		else:
+			AudioManager.play_sfx("status_expire", "SFX", -9.0, 1.0, 0.05, 200)
+	_sfx_live = live
+	var sig: String = w.boss_signal
+	var firing: bool = float(w.boss_state.get("fire_at", -1.0)) >= 0.0
+	if sig != _last_signal and sig != "" and not quiet:
+		AudioManager.play_sfx("boss_warn", "SFX", 0.0, float(SIGNAL_PITCH.get(sig, 1.0)))
+		_signal_armed = firing
+	elif sig != "" and _signal_armed and not firing:
+		AudioManager.play_sfx("core_pulse", "SFX", -3.0, float(SIGNAL_PITCH.get(sig, 1.0)))   # 放招（伤害 / 状态 / 召唤另有各自的音）
+		_signal_armed = false
+	if sig == "":
+		_signal_armed = false
+	_last_signal = sig
 
 
 ## 让发射器与当前异常状态一致：新状态建发射器并跟随单位；已结束的停止发射并在粒子放完后释放
@@ -83,7 +144,7 @@ func _draw() -> void:
 				GlowLines.draw_mark(self, mark, c, grid_height, REINFORCE_COLOR)
 		var first: Vector2i = controller.reinforce_zone.position
 		var at: Vector2 = SimTypes.sim_to_screen(Vector2(first.x, controller.reinforce_zone.end.y), grid_height)
-		var zl: String = "增援区 · 剩余 %d Cost" % (controller.reinforce_budget - controller.reinforce_cost())
+		var zl: String = "增援区 · 剩余 %d 点灵魂" % (controller.reinforce_budget - controller.reinforce_cost())
 		var zf: int = int(tile * 0.5)
 		var zs: Vector2 = font.get_string_size(zl, HORIZONTAL_ALIGNMENT_LEFT, -1.0, zf)
 		var zp: Vector2 = at + Vector2(0.0, -14.0)

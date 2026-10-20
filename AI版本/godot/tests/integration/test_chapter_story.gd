@@ -163,14 +163,72 @@ func test_story_player_plays_and_finishes() -> void:
 	var sp: StoryPlayer = STORY_SCENE.instantiate() as StoryPlayer
 	add_child_autofree(sp)
 	watch_signals(sp)
-	assert_true(sp.play_story("level_01_intro", "提示卡"))
+	assert_true(sp.play_story("level_01_intro"))
 	assert_true(sp.visible)
 	assert_eq(sp.current_story, "level_01_intro")
-	for i: int in 10:
+	for i: int in 3:
 		sp.advance()
 		sp.advance()
-	assert_false(sp.visible, "三句剧情 + 机制提示卡后结束")
+	assert_false(sp.visible, "三句剧情后直接结束（不再接机制提示卡）")
 	assert_signal_emitted(sp, "finished")
+
+
+func test_story_player_dims_described_portrait() -> void:
+	var sp: StoryPlayer = STORY_SCENE.instantiate() as StoryPlayer
+	add_child_autofree(sp)
+	var f: FileAccess = FileAccess.open(TMP_DIR.path_join("dim_story.json"), FileAccess.WRITE)
+	f.store_string('{ "id": "dim_story", "scenes": [' +
+		'{ "speaker": "doll", "illustration": "doll", "text": "一" },' +
+		'{ "speaker": "narrator", "illustration": "doll", "text": "二" },' +
+		'{ "speaker": "narrator", "illustration": "doll", "dim": false, "text": "三" },' +
+		'{ "speaker": "witch", "illustration": "witch", "dim": true, "text": "四" } ] }')
+	f.close()
+	sp.story_dir = TMP_DIR
+	assert_true(sp.play_story("dim_story"))
+	assert_false(sp.is_portrait_dimmed(), "说话人立绘正常亮度")
+	sp.advance()
+	sp.advance()
+	assert_true(sp.is_portrait_dimmed(), "旁白描写对象：立绘压暗")
+	assert_not_null(sp.get("_portrait_tex").texture)
+	sp.advance()
+	sp.advance()
+	assert_false(sp.is_portrait_dimmed(), "dim: false 覆盖")
+	sp.advance()
+	sp.advance()
+	assert_true(sp.is_portrait_dimmed(), "dim: true 覆盖")
+
+
+func test_story_player_shows_cg_and_hides_portrait() -> void:
+	var sp: StoryPlayer = STORY_SCENE.instantiate() as StoryPlayer
+	add_child_autofree(sp)
+	var f: FileAccess = FileAccess.open(TMP_DIR.path_join("cg_story.json"), FileAccess.WRITE)
+	f.store_string('{ "id": "cg_story", "scenes": [' +
+		'{ "speaker": "doll", "illustration": "doll", "text": "一" },' +
+		'{ "speaker": "narrator", "illustration": "doll", "cg": "doll_tears", "text": "二" },' +
+		'{ "speaker": "narrator", "cg": "doll_tears", "text": "" },' +
+		'{ "speaker": "narrator", "text": "四" } ] }')
+	f.close()
+	sp.story_dir = TMP_DIR
+	assert_true(sp.play_story("cg_story"))
+	assert_eq(sp.current_cg(), "")
+	sp.advance()
+	sp.advance()
+	assert_eq(sp.current_cg(), "doll_tears", "第二句显示 CG")
+	var cg: TextureRect = sp.find_child("Cg", true, false) as TextureRect
+	assert_true(cg.visible and cg.texture != null)
+	assert_null(sp.get("_portrait_tex").texture, "CG 期间不显示立绘")
+	assert_true(sp.is_box_visible(), "有台词的 CG 句照常显示对话框")
+	sp.advance()
+	sp.advance()
+	assert_eq(sp.current_cg(), "doll_tears", "连续同名 CG 保持")
+	assert_false(sp.is_box_visible(), "纯 CG 句隐藏对话框")
+	sp.advance()
+	assert_eq(sp.current_cg(), "", "纯 CG 句点一次即继续；不写 cg 的句子撤下 CG")
+	assert_true(sp.is_box_visible())
+	sp.advance()
+	sp.advance()
+	assert_false(sp.visible)
+	assert_false(cg.visible, "剧情结束 CG 立即隐藏")
 
 
 func test_missing_or_empty_story_is_silent() -> void:
@@ -246,6 +304,11 @@ func test_intro_and_win_stories_play() -> void:
 	assert_eq(c.world.result, SimTypes.BattleResult.WIN)
 	assert_true(sp.visible)
 	assert_eq(sp.current_story, "level_01_win", "胜利播放 _win")
+	var panel: Control = root.find_child("ResultPanel", true, false) as Control
+	assert_false(panel.visible, "结束剧情播放中不弹结算")
+	sp.close()
+	await wait_process_frames(2)
+	assert_true(panel.visible, "剧情播完再弹结算")
 
 
 func test_lose_story_plays() -> void:

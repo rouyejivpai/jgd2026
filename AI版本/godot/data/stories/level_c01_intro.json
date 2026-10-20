@@ -1,0 +1,45 @@
+{
+  "id": "level_c01_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "醒了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "没有“睁眼”这回事，她的眼睛在那之前就已经是睁着的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "头顶是一整面墙，墙上钉着铁钩，一排一排。每个钩子上挂一块骨牌，刻着编号。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "一、二、三……一直数到她的位置前面，空了一截。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "九十八块。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她所在的位置是第九十九个钩子，牌已经挂好了，牌面朝里，她看不见。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "蓝色的光从胸口那块缺口里漫出来，照亮最近的一截铁链。铁链松了。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "站着。"
+    }
+  ]
+}

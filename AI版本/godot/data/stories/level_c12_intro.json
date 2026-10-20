@@ -1,0 +1,45 @@
+{
+  "id": "level_c12_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "雾里有一点蓝色的光。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "一块石台，骨白色，四个角立着断掉的骨柱。台面中央一盏灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "灯不是暗红的。是蓝的。冷，稳，不晃。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "那是静息祭坛。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "缄默者的东西。祂的权柄是安静。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "站上去，身上所有不该有的东西都会被洗掉——疼、疯、别人的情绪。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她低头看自己的手。手背上有一道黑痕，不知道什么时候爬上去的。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "灯只有一个。想清楚再上去。"
+    }
+  ]
+}

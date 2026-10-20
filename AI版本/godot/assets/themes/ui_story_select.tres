@@ -1,0 +1,71 @@
+[gd_resource type="Theme" load_steps=9 format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSerifSC-Bold.otf" id="1_fontfile"]
+[ext_resource type="Texture2D" path="res://assets/ui/gothic/story_back.png" id="2_texture2d"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(0.847059, 0.823529, 0.854902, 1)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(1, 1, 1, 1)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(0.431373, 0.407843, 0.439216, 1)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6"]
+
+[resource]
+story_select__heading/base_type = &"Label"
+story_select__heading/fonts/font = ExtResource("1_fontfile")
+story_select__heading/font_sizes/font_size = 30
+story_select__heading/colors/font_color = Color(0.847059, 0.847059, 0.847059, 1)
+story_select__card_label/base_type = &"Label"
+story_select__card_label/fonts/font = ExtResource("1_fontfile")
+story_select__card_label/font_sizes/font_size = 20
+story_select__card_label/colors/font_color = Color(0.227451, 0.227451, 0.227451, 1)
+story_select__btn_back/base_type = &"Button"
+story_select__btn_back/styles/normal = SubResource("StyleBoxTexture_1")
+story_select__btn_back/styles/hover = SubResource("StyleBoxTexture_2")
+story_select__btn_back/styles/pressed = SubResource("StyleBoxTexture_3")
+story_select__btn_back/styles/disabled = SubResource("StyleBoxTexture_4")
+story_select__btn_back/styles/hover_pressed = SubResource("StyleBoxTexture_5")
+story_select__btn_back/styles/focus = SubResource("StyleBoxEmpty_6")
+story_select__btn_back/fonts/font = ExtResource("1_fontfile")
+story_select__btn_back/font_sizes/font_size = 12
+story_select__btn_back/colors/font_color = Color(0, 0, 0, 0)
+story_select__btn_back/colors/font_hover_color = Color(0, 0, 0, 0)
+story_select__btn_back/colors/font_pressed_color = Color(0, 0, 0, 0)
+story_select__btn_back/colors/font_focus_color = Color(0, 0, 0, 0)
+story_select__btn_back/colors/font_hover_pressed_color = Color(0, 0, 0, 0)
+story_select__btn_back/colors/font_disabled_color = Color(0, 0, 0, 0)

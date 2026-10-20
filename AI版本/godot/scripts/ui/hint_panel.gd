@@ -9,6 +9,7 @@ extends Control
 ## 提示逐条换行、段距取自整图；提示态下方为已看层数圆点（金 = 已看、紫 = 未看）；确认态为分隔线 + 金色确认句 + 「摆放」「取消」。
 ## 宽与左右取自整图，高度随内容，竖直居中于 HUD 让出的战场带；超出可用高度时提示列表上下滚动。
 ## 位置全部取自 data/ui_layout/battle_hud.json 的 hint_* / rec_* 元素。
+## 音效：揭示新层 hint_open（AudioManager 听 hint_requested）；「摆放」成功 formation_apply、失败 ui_error；「关闭」ui_panel_close、「取消」ui_back。
 
 signal state_changed()                    ## 已看层数 / 推荐阵型可用性变化 → HUD 刷新按钮文字
 signal recommended_applied(problems: Array)
@@ -42,6 +43,7 @@ func setup(p_level: LevelDefinition, p_controller: BattleController) -> void:
 	var close: Button = UiKit.node_for(UiKit.layout_element(SKIN, "hint_close")) as Button
 	close.text = DataRegistry.get_string("ui.close")
 	close.focus_mode = Control.FOCUS_NONE
+	close.set_meta(&"sfx_press", "ui_panel_close")
 	close.pressed.connect(close_panel)
 	_add("hint_close", close)
 	_add("hint_sep", UiKit.node_for(UiKit.layout_element(SKIN, "hint_sep")))
@@ -66,11 +68,14 @@ func setup(p_level: LevelDefinition, p_controller: BattleController) -> void:
 	_apply_button = UiKit.node_for(UiKit.layout_element(SKIN, "rec_apply")) as Button
 	_apply_button.text = DataRegistry.get_string("ui.recommend_apply")
 	_apply_button.focus_mode = Control.FOCUS_NONE
-	_apply_button.pressed.connect(confirm_recommended)
+	_apply_button.set_meta(&"sfx_press", "")
+	_apply_button.pressed.connect(func() -> void:
+		AudioManager.play_sfx("formation_apply" if confirm_recommended() else "ui_error", "UI"))
 	_add("rec_apply", _apply_button)
 	var cancel: Button = UiKit.node_for(UiKit.layout_element(SKIN, "rec_cancel")) as Button
 	cancel.text = DataRegistry.get_string("ui.cancel")
 	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.set_meta(&"sfx_press", "ui_back")
 	cancel.pressed.connect(close_panel)
 	_add("rec_cancel", cancel)
 	ScrollText.wrap(title, ScrollText.Mode.AUTO, Rect2(Vector2.ZERO, Vector2.ONE))

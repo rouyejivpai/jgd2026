@@ -37,7 +37,7 @@
         1,
         4
       ],
-      "display_name": "信使",
+      "display_name": "守火魔女",
       "tags": [
         "protect"
       ],
@@ -57,7 +57,13 @@
           }
         }
       ],
-      "public_rule_text": "不可指挥。沿走廊匀速走向右侧出口，不还手。"
+      "public_rule_text": "不可指挥。沿走廊匀速走向右侧出口，不还手。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/keeper_witch.png",
+        "portrait": "res://assets/sprites/portraits/keeper_witch.png",
+        "scale": 1.0
+      },
+      "description": "曾属新代魔女组织守火派，受过神性更稳定的旧代魔女教导。深入灰棘林时吸入了太多情绪孢子，正处在失控的边缘。"
     },
     {
       "id": "R1",
@@ -67,7 +73,7 @@
         9,
         1
       ],
-      "display_name": "伏击者·下"
+      "display_name": "畸变体·下"
     },
     {
       "id": "R2",
@@ -77,7 +83,7 @@
         9,
         7
       ],
-      "display_name": "伏击者·上"
+      "display_name": "畸变体·上"
     },
     {
       "id": "H1",
@@ -87,7 +93,7 @@
         14,
         4
       ],
-      "display_name": "拦路行者",
+      "display_name": "悲伤魔女",
       "rules": [
         {
           "conditions": [
@@ -123,12 +129,18 @@
             "type": "idle"
           }
         }
-      ]
+      ],
+      "visuals": {
+        "sprite": "res://assets/sprites/units/spitter.png",
+        "portrait": "res://assets/sprites/portraits/spitter.png",
+        "scale": 1.2
+      },
+      "description": "觉醒魔女力量时感情为「悲伤」的魔女。失控后归寂术法作用在自己身上，生命力一点点归寂；石化完成之前，她只能无声地哭。"
     }
   ],
   "routes": {
     "msg_lane": {
-      "name": "信使路线",
+      "name": "守火魔女路线",
       "points": [
         [
           1,
@@ -250,7 +262,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "信使（不能被指挥）会自己沿走廊走向右侧出口。伏击者会扑向离它们最近的人——别让那个人是信使。",
+    "objective_text": "守火魔女（不能被指挥）会自己沿走廊走向右侧出口。畸变体会扑向离它们最近的人——别让那个人是守火魔女。",
     "win": [
       {
         "id": "win_escort",
@@ -304,14 +316,14 @@
   "_design_comment": "第一个护送任务。U 形地图让「走在前面」变成真实的几何问题。",
   "_teach_role": "任务类型：护送",
   "briefing": {
-    "mechanic_hint": "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。"
+    "mechanic_hint": "被护送的单位不能被指挥。畸变体打最近的目标——走在守火魔女前面，把它们的注意力抢过来。"
   },
   "region": "withered_farm",
   "region_cn": "枯骨农田",
   "id": "level_c08",
   "index": 108,
   "title": "送它出去",
-  "subtitle": "护送：保住信使",
+  "subtitle": "她不会听你的。你只能替她挡。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_forms": [],
@@ -329,7 +341,7 @@
     "护送关重做：信使改为沿路线移动的不可指挥单位，胜利条件 survive→escort（原型已支持）；原信使是不能移动的物资箱，「护送」不成立。"
   ],
   "display_index": 8,
-  "summary": "护送：保住信使",
+  "summary": "她不会听你的。你只能替她挡。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -369,15 +381,15 @@
     }
   ],
   "hints": [
-    "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。",
-    "信使（不能被指挥）会自己沿走廊走向右侧出口。伏击者会扑向离它们最近的人——别让那个人是信使。",
-    "承伤形态先走到信使前方吸引伏击者，远射形态跟在信使身后点射；信使会自己走到出口。",
+    "被护送的单位不能被指挥。畸变体打最近的目标——走在守火魔女前面，把它们的注意力抢过来。",
+    "守火魔女（不能被指挥）会自己沿走廊走向右侧出口。畸变体会扑向离它们最近的人——别让那个人是守火魔女。",
+    "承伤形态先走到守火魔女前方吸引畸变体，远射形态跟在守火魔女身后点射；守火魔女会自己走到出口。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {
     "lose_msg_dead": "要保护的单位倒下了。别让敌人先找上它。",
-    "lose_all_dead": "全员倒下了。被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。",
-    "default": "被护送的单位不能被指挥。伏击者打最近的目标——走在信使前面，把它们的注意力抢过来。"
+    "lose_all_dead": "全员倒下了。被护送的单位不能被指挥。畸变体打最近的目标——走在守火魔女前面，把它们的注意力抢过来。",
+    "default": "被护送的单位不能被指挥。畸变体打最近的目标——走在守火魔女前面，把它们的注意力抢过来。"
   },
   "bgm": "region_withered_farm"
 }

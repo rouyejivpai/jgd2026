@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "screen": "story_select",
+  "design_size": [
+    1920,
+    1080
+  ],
+  "elements": [
+    {
+      "id": "overlay",
+      "kind": "image",
+      "rect": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "data": {
+        "_note": "J03：半透明压暗 + 左侧纹饰，铺满视口；其下是程序的下层画面模糊"
+      },
+      "file": "res://assets/ui/gothic/story_overlay.png"
+    },
+    {
+      "id": "heading",
+      "kind": "text_style",
+      "rect": [
+        428,
+        64,
+        1000,
+        56
+      ],
+      "text_rect": [
+        0,
+        0,
+        1000,
+        56
+      ],
+      "align": "left",
+      "data": {
+        "_note": "参考图没有：页标题（关名 /「剧情回顾」），交代当前是哪一关的剧情"
+      },
+      "theme_type": "story_select__heading"
+    },
+    {
+      "id": "card",
+      "kind": "image",
+      "rect": [
+        428,
+        130,
+        331,
+        807
+      ],
+      "data": {
+        "step": 347,
+        "clip_left": 400,
+        "_note": "第一张卡；之后每张右移 step；可见区从 clip_left 到视口右缘，超出时横向滚动"
+      },
+      "file": "res://assets/ui/gothic/story_card.png"
+    },
+    {
+      "id": "card_label",
+      "kind": "text_style",
+      "rect": [
+        601,
+        591,
+        124,
+        26
+      ],
+      "text_rect": [
+        6,
+        0,
+        118,
+        26
+      ],
+      "align": "left",
+      "data": {
+        "min_size": 13,
+        "_note": "压在 J01 烘好的灰色标签框里；放不下时缩字（最小 min_size）"
+      },
+      "theme_type": "story_select__card_label"
+    },
+    {
+      "id": "btn_back",
+      "kind": "button",
+      "rect": [
+        1235,
+        893,
+        643,
+        146
+      ],
+      "text_rect": [
+        0,
+        0,
+        643,
+        146
+      ],
+      "align": "left",
+      "key": "ui.back",
+      "data": {
+        "dock": "right bottom",
+        "_note": "「返回」画在 J02 上：文字透明"
+      },
+      "states": {
+        "normal": "res://assets/ui/gothic/story_back.png",
+        "hover": "res://assets/ui/gothic/story_back.png",
+        "pressed": "res://assets/ui/gothic/story_back.png",
+        "disabled": "res://assets/ui/gothic/story_back.png"
+      },
+      "theme_type": "story_select__btn_back"
+    }
+  ],
+  "_comment": "由 tools/apply_ui_manifest.py 从 assets/ui/story_select/manifest.json 生成，程序不手改（10 §1.3）。rect 为设计坐标，经 UiKit.layout_rect 换算。"
+}

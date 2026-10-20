@@ -1,0 +1,55 @@
+{
+  "id": "level_c02_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸从架子上取下一盏灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "灯是骨片拼的，很小，能一手握住。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "里面没有油，也没有灯芯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "她拧开灯座，伸手进去，捏出一小块东西。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "那东西是蓝的，凉的，在她掌心跳了一下——像一只还没死透的虫。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "这是灵魂，不是比喻，它就是。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "把它掰开，就是五枚信标。铺一条路，少一块。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "花完了，你就只剩一副骨头架子。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶低头看掌心，那东西还在跳。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "掰。"
+    }
+  ]
+}

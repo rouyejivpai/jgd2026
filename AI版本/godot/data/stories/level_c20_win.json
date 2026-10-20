@@ -3,13 +3,13 @@
   "scenes": [
     {
       "speaker": "narrator",
-      "illustration": "",
-      "text": "泥里留着一串足迹，绕开了你走过的每一步。"
+      "illustration": "doll",
+      "text": "她到的时候，那东西已经不在了。"
     },
     {
-      "speaker": "doll",
-      "illustration": "doll",
-      "text": "它不是在逃离某一个人，而是在逃离所有人——离谁越近，被推得越狠。记住这一点。"
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "地上多了一串新的脚印，从另一边走了。"
     }
   ]
 }

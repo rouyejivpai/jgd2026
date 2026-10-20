@@ -1,0 +1,45 @@
+{
+  "id": "level_c22_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "巢是拼出来的。骨头、肉、还有花。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "一株骨花长在巢的正中央，花心张开，里面有一圈很小的齿，一圈一圈往里收。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "三只猎犬趴在花旁边。它们不是在守着花——它们是被花养着。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "花心每收一次，其中一只猎犬的呼吸就跟着起伏一次。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它们共用一个东西。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "花替它们记着疼。它们替花走路。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "拆花，它们就不会动了。拆它们，花会把它们重新长出来。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "先拆哪个，你自己定。"
+    }
+  ]
+}

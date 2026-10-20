@@ -1,0 +1,45 @@
+{
+  "id": "level_c03_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "廊下立着两具人偶。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "和她一样高，一样的脸，一样的白头发。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "不一样的是它们没有光。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "胸口那块缺口是暗的，像一间没点灯的屋子。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们站在那里，脸朝着墙。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "空壳。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "灵魂用完了的东西，就长这样。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "拆掉，路就通了。"
+    }
+  ]
+}

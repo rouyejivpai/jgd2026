@@ -1,0 +1,55 @@
+{
+  "id": "level_c10_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它终于不动了。那些新长出来的骨头，一根一根软了下去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把它翻过来看。眼睛的位置只剩两个坑。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "地上落着一把骨刃。刃口崩过两次，柄上缠着黑绳。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她捡起来。刃身内侧刻着一个名字。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她看了很久。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "这是她第一次主动说话，声音清脆而空灵"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "……她叫什么？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸沉默了一会儿。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "塞拉。灰棘修会的创始人，我的第一个导师。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有再问。"
+    }
+  ]
+}

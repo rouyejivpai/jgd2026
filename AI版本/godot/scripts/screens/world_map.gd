@@ -145,6 +145,7 @@ func _build_chrome() -> void:
 		_panels.append(c)
 	_title = _label("title")
 	_back = _button("btn_back", DataRegistry.get_string("ui.back"), func() -> void: SceneRouter.goto_main_menu())
+	_back.set_meta("sfx_press", "ui_back")
 	_settings = _button("btn_settings", DataRegistry.get_string("ui.menu_settings"), func() -> void: SceneRouter.open_settings())
 
 
@@ -166,6 +167,7 @@ func _button(id: String, text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.name = "Skin_" + id
 	b.text = text
+	b.tooltip_text = text      # 返回 / 设置是无字图标（2026-10-20），悬停提示文字
 	b.theme_type_variation = StringName(str(UiKit.layout_element(SKIN, id).get("theme_type", "")))
 	b.focus_mode = Control.FOCUS_NONE
 	b.clip_text = true
@@ -223,9 +225,11 @@ func _build_hotspot(rid: String) -> void:
 	for st: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
 		b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	b.pressed.connect(_on_hotspot.bind(rid))
+	b.set_meta("sfx_press", "")              # 点击音由 _on_hotspot 按解锁与否自己播
+	b.set_meta("sfx_hover", "")              # 未解锁区域不响悬停
 	b.mouse_entered.connect(func() -> void:
 		if shown_unlocked(rid):
-			AudioManager.play_sfx("ui_hover"))
+			AudioManager.play_ui("ui_hover"))
 	add_child(b)
 	hotspots[rid] = b
 
@@ -351,14 +355,15 @@ func _on_hotspot(rid: String) -> void:
 	if shown_unlocked(rid):
 		enter_region(rid)
 	elif not revealing.has(rid):
-		AudioManager.play_sfx("ui_error")
+		AudioManager.play_ui("locked_click")
+		AudioManager.play_ui("ui_error", -6.0)
 		_wiggle_lock(rid)
 
 
 func enter_region(rid: String) -> void:
 	if not hotspots.has(rid) or not shown_unlocked(rid):
 		return
-	AudioManager.play_sfx("ui_click")
+	AudioManager.play_ui("ui_confirm_major")
 	GameState.current_region_id = rid
 	region_entered.emit(rid)
 	if navigate:

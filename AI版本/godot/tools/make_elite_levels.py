@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """生成四个精英关 data/levels/level_e01..e04.json（2026-10-19）。改数值改这里再重跑；推荐解 / 反例用 tools/elite_probe.gd 验证。
 精英关 = 章节地图上的支线节点（chapter_02），在某区域最后一关通关后开放，难度高于同区域，通关奖励一枚遗物（data/relics.json）：
-  e01 剔骨坊（织骸工坊之后）→ 骨刃     e02 灰棘祭坛（灰棘林之后）→ 徽章
+  e01 剔骨坊（人偶工坊之后）→ 骨刃     e02 灰棘祭坛（灰棘林之后）→ 徽章
   e03 冷焰沼（肉巢沼泽之后）→ 提灯     e04 断臂回廊（畸变回廊之后）→ 骨臂
 用法（在 godot/ 目录）：python tools/make_elite_levels.py
 """
@@ -138,10 +138,10 @@ def level(**k):
 LEVELS = []
 
 # ---------------------------------------------------------------- e01 剔骨坊 → 骨刃
-# 织骸工坊之后（c06 通关开放）。考的是第一区的两课合起来：「谁当最远的那个」（骨喉）+「远射隔着守卫点后排」（远射形态 / 最远选敌）。
-# 中墙只在中段留缺口；两名剔骨匠守缺口、视野短；骨喉在最后方朝最远的分裂体吐骨浆。
+# 人偶工坊之后（c06 通关开放）。考的是第一区的两课合起来：「谁当最远的那个」（骨喉）+「远射隔着守卫点后排」（远射形态 / 最远选敌）。
+# 中墙只在中段留缺口；两名剔骨匠守缺口、视野短；骨喉在最后方朝最远的人偶吐骨浆。
 LEVELS.append(level(
-    id="level_e01", index=201, display_index=1, title="剔骨坊", subtitle="守卫在前，骨喉在后", region="bone_workshop", region_cn="织骸工坊",
+    id="level_e01", index=201, display_index=1, title="剔骨坊", subtitle="守卫在前，骨喉在后", region="bone_workshop", region_cn="人偶工坊",
     biome="bone_farm", bgm="region_bone_workshop", seed=20101, relic="bone_blade",
     w=16, h=9,
     blocked=col(8, [0, 1, 2]) + col(8, [6, 7, 8]),
@@ -155,7 +155,7 @@ LEVELS.append(level(
     allowed={"conditions": ["always", "enemy_in_range", "enemy_visible", "at_beacon"], "selectors": ["nearest", "farthest", "lowest_hp", "highest_max_hp"],
              "actions": ["attack", "chase_attack", "follow_beacons", "wait", "idle"]},
     win=[{"id": "win_annihilate", "type": "annihilate"}],
-    objective_text="清掉剔骨坊里的全部敌人。两名剔骨匠守着中墙缺口，骨喉在最后方朝视野内最远的分裂体吐骨浆（落点射程 12 格）。",
+    objective_text="清掉剔骨坊里的全部敌人。两名剔骨匠守着中墙缺口，骨喉在最后方朝视野内最远的人偶吐骨浆（落点射程 12 格）。",
     mechanic_hint="承伤形态顶在缺口前拖住剔骨匠；远射形态站在快速形态前面打；快速形态在后场 12 格以内来回绕圈，当那个「最远的人」替大家挨骨浆。",
     expected_win="",
     expected_fail=["三人一起冲缺口：没人当最远的那个，骨浆砸在人堆里，打不完骨喉。"],
@@ -177,11 +177,11 @@ LEVELS.append(level(
     budget=13, max_units=3, forms=["bulwark", "striker", "lancer", "hexer", "swift"],
     enemies=[
         enemy("M1", "marrow_hulk", (12, 5), "祭坛髓块", {"max_hp": 300, "attack": 18, "vision": 9, "move_speed": 0.9},
-              rules=[attack("lowest_hp"), chase("lowest_hp")], text="近战命中施加易伤。追击并攻击视野内血量最低的分裂体。"),
+              rules=[attack("lowest_hp"), chase("lowest_hp")], text="近战命中施加易伤。追击并攻击视野内血量最低的人偶。"),
         enemy("H1", "husk", (13, 7), "残骸侍从·上", {"max_hp": 70, "attack": 8, "vision": 9}, rules=[attack("first_seen"), chase("first_seen"), idle()],
-              text="锁定首个进入视野的分裂体并追击攻击。"),
+              text="锁定首个进入视野的人偶并追击攻击。"),
         enemy("H2", "husk", (13, 3), "残骸侍从·下", {"max_hp": 70, "attack": 8, "vision": 9}, rules=[attack("first_seen"), chase("first_seen"), idle()],
-              text="锁定首个进入视野的分裂体并追击攻击。"),
+              text="锁定首个进入视野的人偶并追击攻击。"),
     ],
     enemy_vision_forms=(),
     allowed={"conditions": ["always", "enemy_in_range", "at_beacon"], "selectors": ["nearest", "farthest", "lowest_hp", "highest_max_hp"],
@@ -210,9 +210,9 @@ LEVELS.append(level(
     routes={"rush_top": {"name": "上路", "points": [[8, 8], [3, 6]]}, "rush_bot": {"name": "下路", "points": [[8, 2], [3, 4]]},
             "rush_mid": {"name": "中路", "points": [[3, 5]]}},
     enemies=[
-        enemy("D1", "hound", (9, 8), "冷焰猎犬·一", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_top"}}], text="沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
-        enemy("D2", "hound", (9, 2), "冷焰猎犬·二", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_bot"}}], text="沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
-        enemy("D3", "hound", (11, 5), "冷焰猎犬·三", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_mid"}}], text="沿路线直扑部署区，咬住射程内最近的分裂体；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
+        enemy("D1", "hound", (9, 8), "冷焰猎犬·一", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_top"}}], text="沿路线直扑部署区，咬住射程内最近的人偶；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
+        enemy("D2", "hound", (9, 2), "冷焰猎犬·二", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_bot"}}], text="沿路线直扑部署区，咬住射程内最近的人偶；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
+        enemy("D3", "hound", (11, 5), "冷焰猎犬·三", {"max_hp": 150, "attack": 12}, rules=[{"conditions": [c_hp_below(0.4)], "action": {"type": "retreat", "search_depth": 3}}, attack("nearest"), {"conditions": [], "action": {"type": "follow_route", "route_id": "rush_mid"}}], text="沿路线直扑部署区，咬住射程内最近的人偶；血量低于 40% 时朝远离威胁的方向逃跑（多半逃进泥沼）。"),
         enemy("W1", "bone_weaver", (15, 5), "织骨者", {"max_hp": 120}),
     ],
     allowed={"conditions": ["always", "enemy_in_range", "enemy_visible", "at_beacon"], "selectors": ["nearest", "farthest", "lowest_hp"],
@@ -239,7 +239,7 @@ LEVELS.append(level(
     budget=17, max_units=4, forms=["striker", "swift", "bulwark", "lancer", "hexer"],
     enemies=[
         enemy("B1", "marrow_hulk", (14, 5), "断臂巨像", {"max_hp": 540, "attack": 14, "vision": 10, "move_speed": 0.6},
-              rules=[attack("lowest_hp"), chase("lowest_hp")], text="近战命中施加易伤。追击并攻击视野内血量最低的分裂体。血极厚。"),
+              rules=[attack("lowest_hp"), chase("lowest_hp")], text="近战命中施加易伤。追击并攻击视野内血量最低的人偶。血极厚。"),
         enemy("C1", "bone_core", (17, 9), "骨花核心·上", {"max_hp": 90, "vision": 10}),
         enemy("C2", "bone_core", (17, 1), "骨花核心·下", {"max_hp": 90, "vision": 10}),
     ],

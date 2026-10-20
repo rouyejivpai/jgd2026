@@ -14,6 +14,7 @@ var target: String = ""                 ## survive / unit_dead / reach_zone
 var seconds: float = 0.0                ## survive
 var cells: Array[Vector2i] = []         ## reach_zone / escort
 var count: int = 1                      ## reach_zone 作为胜利且 target = any_ally 时：需要到达的己方单位数
+var hidden: bool = false                ## reach_zone / escort 胜利：不画紫色目标格（第一关部署区即目标区，再标一遍反而误导）
 var is_win: bool = false
 
 
@@ -48,9 +49,11 @@ static func from_dict(d: Dictionary, p_is_win: bool, ctx: String) -> ObjectiveDe
 				DataReader.report(octx, "reach_zone.count 必须 ≥ 1")
 			if o.target == ANY_ALLY and not p_is_win:
 				DataReader.report(octx, "any_ally 只能用于胜利条件")
+			o.hidden = DataReader.opt_bool(d, "hidden", false, octx)
 		SimTypes.ObjectiveType.ESCORT:
 			o.target = DataReader.req_str(d, "target", octx)
 			o.cells = DataReader.cells(DataReader.req_array(d, "cells", octx), octx + ".cells")
+			o.hidden = DataReader.opt_bool(d, "hidden", false, octx)
 	if (o.type == SimTypes.ObjectiveType.REACH_ZONE or o.type == SimTypes.ObjectiveType.ESCORT) and d.has("cells") and o.cells.is_empty():
 		DataReader.report(octx, "cells 不能为空")
 	return o

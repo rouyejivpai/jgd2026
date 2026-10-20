@@ -1,0 +1,80 @@
+{
+  "id": "level_c12_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "战斗结束的时候，祭坛边还躺着一个东西。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "不是畸变体。是一个魔女。灰斗篷，身上的骨刺只长到一半，正在慢慢缩回去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "她还有一口气。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶蹲下去，把手按在她胸口。蓝色的蛛丝从掌心溢出来，很轻地裹住那个人。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "一具身体倒下去。另一具身体里，多了一点东西。"
+    },
+    {
+      "speaker": "echo",
+      "illustration": "",
+      "text": "老师……对不起……"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "感觉到了吗？那是她的情绪。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "她到最后都在愧疚。愧疚是很好的燃料。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "但对你来说，没有意义。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "她为什么愧疚？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸沉默。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "很久。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你为什么不回答？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸没有回答。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "祭坛的蓝光在她脸上晃了一下。她第一次没有立刻站起来。"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "level_c21_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "两只猎犬在环廊里。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它们看见她，就开始跑。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "跑得不快——其中一只的腿是断的，跑起来往外歪。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她追了两步，它们跑得更急，撞在墙上，又爬起来接着跑。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它们现在什么都不想，只想离你远一点。"
+    }
+  ]
+}

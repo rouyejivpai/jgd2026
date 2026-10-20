@@ -143,6 +143,8 @@ static func spawn_name(level: LevelDefinition, spawn_id: String) -> String:
 
 
 static func objective_sentence(o: ObjectiveDef, level: LevelDefinition) -> String:
+	if o.hidden and level.objective_text != "":     # 目标格不画出来：「抵达目标区域」无处可指，改用关卡自己的目标描述
+		return level.objective_text
 	var names: PackedStringArray = PackedStringArray()
 	for t: String in o.targets:
 		names.append(spawn_name(level, t))

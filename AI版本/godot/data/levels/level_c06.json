@@ -69,10 +69,22 @@
         13,
         2
       ],
-      "display_name": "骨喉·下",
+      "display_name": "骨花·下",
       "overrides": {
         "max_hp": 120
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/bone_weaver.png",
+        "portrait": "res://assets/sprites/portraits/bone_weaver.png",
+        "scale": 1.1,
+        "projectile": "res://assets/sprites/projectiles/pollen_orb.png",
+        "skill_color": "#f0a6bc"
+      },
+      "description": "由魔女们死后散落的神性碎片长成，固定不动，成片生长。长在活物身上时，会一点一点把宿主变成自己的骨头。",
+      "traits": [
+        "bloom_spore"
+      ],
+      "public_rule_text": "扎根不动。每 4 秒朝视野内最远的人偶当时所在的位置吐出孢种，2 秒后炸开（半径 1.5 格，30 伤害）。不做普通攻击。"
     },
     {
       "id": "S2",
@@ -82,10 +94,22 @@
         13,
         6
       ],
-      "display_name": "骨喉·上",
+      "display_name": "骨花·上",
       "overrides": {
         "max_hp": 120
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/bone_weaver.png",
+        "portrait": "res://assets/sprites/portraits/bone_weaver.png",
+        "scale": 1.1,
+        "projectile": "res://assets/sprites/projectiles/pollen_orb.png",
+        "skill_color": "#f0a6bc"
+      },
+      "description": "由魔女们死后散落的神性碎片长成，固定不动，成片生长。长在活物身上时，会一点一点把宿主变成自己的骨头。",
+      "traits": [
+        "bloom_spore"
+      ],
+      "public_rule_text": "扎根不动。每 4 秒朝视野内最远的人偶当时所在的位置吐出孢种，2 秒后炸开（半径 1.5 格，30 伤害）。不做普通攻击。"
     }
   ],
   "routes": {},
@@ -196,7 +220,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "拆掉两具骨喉。骨浆专砸视野内最远的分裂体——派一个人在远处绕圈，替站桩输出的人挨砸。",
+    "objective_text": "拆掉两具骨花。骨浆专砸视野内最远的人偶——派一个人在远处绕圈，替站桩输出的人挨砸。",
     "win": [
       {
         "id": "win_spitters",
@@ -233,17 +257,17 @@
   },
   "seed": 6,
   "schema_version": 1,
-  "_design_comment": "织骸工坊收束关（评审后重做）：恢复「专人拉技能、其他单位输出」。诱导者必须**一直**是最远目标（停在视野外会把骨浆让给输出者），并且要绕圈躲开落点。",
+  "_design_comment": "人偶工坊收束关（评审后重做）：恢复「专人拉技能、其他单位输出」。诱导者必须**一直**是最远目标（停在视野外会把骨浆让给输出者），并且要绕圈躲开落点。",
   "_teach_role": "收束：综合",
   "briefing": {
-    "mechanic_hint": "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
+    "mechanic_hint": "骨花每 4 秒朝视野内最远的人偶当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
   },
   "region": "bone_workshop",
-  "region_cn": "织骸工坊",
+  "region_cn": "人偶工坊",
   "id": "level_c06",
   "index": 106,
-  "title": "祭司行列",
-  "subtitle": "一人引雷，一人输出",
+  "title": "等效疼痛",
+  "subtitle": "让一个人站在最远的地方，替你挨砸。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_forms": [
@@ -265,7 +289,7 @@
     "重做：胜利条件 reach_zone→destroy[S1,S2]；骨喉血 120；预算 10→7（信标计费）；推荐解改为诱导+输出分工。"
   ],
   "display_index": 6,
-  "summary": "一人引雷，一人输出",
+  "summary": "让一个人站在最远的地方，替你挨砸。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -284,14 +308,14 @@
     }
   ],
   "hints": [
-    "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
-    "拆掉两具骨喉。骨浆专砸视野内最远的分裂体——派一个人在远处绕圈，替站桩输出的人挨砸。",
-    "基础形态走到两具骨喉正前方、两具都在射程内的位置站定输出；快速形态在部署区前方来回绕圈，一直是最远的那个而且一直在动，骨浆全部落空。",
+    "骨花每 4 秒朝视野内最远的人偶当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
+    "拆掉两具骨花。骨浆专砸视野内最远的人偶——派一个人在远处绕圈，替站桩输出的人挨砸。",
+    "基础形态走到两具骨花正前方、两具都在射程内的位置站定输出；快速形态在部署区前方来回绕圈，一直是最远的那个而且一直在动，骨浆全部落空。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {
-    "lose_all_dead": "全员倒下了。骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
-    "default": "骨喉每 4 秒朝视野内最远的分裂体当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
+    "lose_all_dead": "全员倒下了。骨花每 4 秒朝视野内最远的人偶当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。",
+    "default": "骨花每 4 秒朝视野内最远的人偶当时的位置吐骨浆，2 秒后炸开。让一个人一直当「最远的那个」并且不停走动，输出的人就安全了。"
   },
   "bgm": "region_bone_workshop"
 }

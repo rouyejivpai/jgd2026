@@ -1,0 +1,50 @@
+{
+  "id": "level_c10_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它很疼。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "疼得一直在动，四条腿没有一条是站直的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它身上没有皮。肌肉外翻着，有的地方已经烂到只剩肋骨。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "但那些骨头是新的——白得发亮，一边走一边从肉里挤出来，把烂掉的地方重新撑住。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它本来是一条狗。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "魔女死在这儿的时候，身上的神性碎了一地。它踩上去，就变成了这样。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "碎掉的东西在替它活着。所以它死不了，也就没法不疼。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它撞过来的时候闭着眼。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它不会跑。它现在只想把疼分给别人一点。"
+    }
+  ]
+}

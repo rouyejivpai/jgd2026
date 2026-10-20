@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=30 format=3]
+[gd_resource type="Theme" load_steps=36 format=3]
 
 [ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Regular.ttf" id="1_fontfile"]
 [ext_resource type="Texture2D" path="res://assets/ui/gothic/hex_dark.png" id="2_texture2d"]
@@ -210,6 +210,57 @@ content_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_24"]
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_25"]
+texture = ExtResource("2_texture2d")
+texture_margin_left = 16.0
+texture_margin_right = 16.0
+content_margin_left = 24.0
+content_margin_top = 4.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_26"]
+texture = ExtResource("3_texture2d")
+modulate_color = Color(1, 1, 1, 1)
+texture_margin_left = 16.0
+texture_margin_right = 16.0
+content_margin_left = 24.0
+content_margin_top = 4.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_27"]
+texture = ExtResource("3_texture2d")
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 16.0
+texture_margin_right = 16.0
+content_margin_left = 24.0
+content_margin_top = 4.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_28"]
+texture = ExtResource("2_texture2d")
+modulate_color = Color(0.466667, 0.439216, 0.478431, 1)
+texture_margin_left = 16.0
+texture_margin_right = 16.0
+content_margin_left = 24.0
+content_margin_top = 4.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_29"]
+texture = ExtResource("3_texture2d")
+modulate_color = Color(0.721569, 0.690196, 0.729412, 1)
+texture_margin_left = 16.0
+texture_margin_right = 16.0
+content_margin_left = 24.0
+content_margin_top = 4.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_30"]
+
 [resource]
 main_menu__subtitle/base_type = &"Label"
 main_menu__subtitle/fonts/font = ExtResource("1_fontfile")
@@ -248,13 +299,28 @@ main_menu__btn_start/colors/font_pressed_color = Color(0.933333, 0.909804, 0.941
 main_menu__btn_start/colors/font_focus_color = Color(0.933333, 0.909804, 0.941176, 1)
 main_menu__btn_start/colors/font_hover_pressed_color = Color(0.933333, 0.909804, 0.941176, 1)
 main_menu__btn_start/colors/font_disabled_color = Color(0.552941, 0.494118, 0.560784, 1)
+main_menu__btn_story/base_type = &"Button"
+main_menu__btn_story/styles/normal = SubResource("StyleBoxTexture_13")
+main_menu__btn_story/styles/hover = SubResource("StyleBoxTexture_14")
+main_menu__btn_story/styles/pressed = SubResource("StyleBoxTexture_15")
+main_menu__btn_story/styles/disabled = SubResource("StyleBoxTexture_16")
+main_menu__btn_story/styles/hover_pressed = SubResource("StyleBoxTexture_17")
+main_menu__btn_story/styles/focus = SubResource("StyleBoxEmpty_18")
+main_menu__btn_story/fonts/font = ExtResource("4_fontfile")
+main_menu__btn_story/font_sizes/font_size = 24
+main_menu__btn_story/colors/font_color = Color(0.933333, 0.909804, 0.941176, 1)
+main_menu__btn_story/colors/font_hover_color = Color(0.933333, 0.909804, 0.941176, 1)
+main_menu__btn_story/colors/font_pressed_color = Color(0.933333, 0.909804, 0.941176, 1)
+main_menu__btn_story/colors/font_focus_color = Color(0.933333, 0.909804, 0.941176, 1)
+main_menu__btn_story/colors/font_hover_pressed_color = Color(0.933333, 0.909804, 0.941176, 1)
+main_menu__btn_story/colors/font_disabled_color = Color(0.494118, 0.470588, 0.509804, 1)
 main_menu__btn_settings/base_type = &"Button"
-main_menu__btn_settings/styles/normal = SubResource("StyleBoxTexture_13")
-main_menu__btn_settings/styles/hover = SubResource("StyleBoxTexture_14")
-main_menu__btn_settings/styles/pressed = SubResource("StyleBoxTexture_15")
-main_menu__btn_settings/styles/disabled = SubResource("StyleBoxTexture_16")
-main_menu__btn_settings/styles/hover_pressed = SubResource("StyleBoxTexture_17")
-main_menu__btn_settings/styles/focus = SubResource("StyleBoxEmpty_18")
+main_menu__btn_settings/styles/normal = SubResource("StyleBoxTexture_19")
+main_menu__btn_settings/styles/hover = SubResource("StyleBoxTexture_20")
+main_menu__btn_settings/styles/pressed = SubResource("StyleBoxTexture_21")
+main_menu__btn_settings/styles/disabled = SubResource("StyleBoxTexture_22")
+main_menu__btn_settings/styles/hover_pressed = SubResource("StyleBoxTexture_23")
+main_menu__btn_settings/styles/focus = SubResource("StyleBoxEmpty_24")
 main_menu__btn_settings/fonts/font = ExtResource("4_fontfile")
 main_menu__btn_settings/font_sizes/font_size = 24
 main_menu__btn_settings/colors/font_color = Color(0.933333, 0.909804, 0.941176, 1)
@@ -264,12 +330,12 @@ main_menu__btn_settings/colors/font_focus_color = Color(0.933333, 0.909804, 0.94
 main_menu__btn_settings/colors/font_hover_pressed_color = Color(0.933333, 0.909804, 0.941176, 1)
 main_menu__btn_settings/colors/font_disabled_color = Color(0.909804, 0.862745, 0.768627, 1)
 main_menu__btn_quit/base_type = &"Button"
-main_menu__btn_quit/styles/normal = SubResource("StyleBoxTexture_19")
-main_menu__btn_quit/styles/hover = SubResource("StyleBoxTexture_20")
-main_menu__btn_quit/styles/pressed = SubResource("StyleBoxTexture_21")
-main_menu__btn_quit/styles/disabled = SubResource("StyleBoxTexture_22")
-main_menu__btn_quit/styles/hover_pressed = SubResource("StyleBoxTexture_23")
-main_menu__btn_quit/styles/focus = SubResource("StyleBoxEmpty_24")
+main_menu__btn_quit/styles/normal = SubResource("StyleBoxTexture_25")
+main_menu__btn_quit/styles/hover = SubResource("StyleBoxTexture_26")
+main_menu__btn_quit/styles/pressed = SubResource("StyleBoxTexture_27")
+main_menu__btn_quit/styles/disabled = SubResource("StyleBoxTexture_28")
+main_menu__btn_quit/styles/hover_pressed = SubResource("StyleBoxTexture_29")
+main_menu__btn_quit/styles/focus = SubResource("StyleBoxEmpty_30")
 main_menu__btn_quit/fonts/font = ExtResource("4_fontfile")
 main_menu__btn_quit/font_sizes/font_size = 24
 main_menu__btn_quit/colors/font_color = Color(0.933333, 0.909804, 0.941176, 1)

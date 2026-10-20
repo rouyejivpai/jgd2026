@@ -1,0 +1,70 @@
+{
+  "id": "level_c14_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "三盏灯都灭了。最后一盏灭的时候，火星往上飘，飘到一半散了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_elder",
+      "text": "骨者坐在原地，看了她很久。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "熄灭三盏，是看你会不会犹豫。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "你灭得很干净。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "每一个名字，都是我们亲手终结的亲人。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "塞拉的名字在最高处。她是第一个。也是最后一个。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你的名字也会刻上去吗？"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "（笑）我已经刻好了。就在塞拉旁边。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_elder",
+      "text": "她从怀里取出一枚灰棘徽章，递给人偶。"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "拿着。到了神战遗址，替我们看看，神到底长什么样。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "……为什么是我们？"
+    },
+    {
+      "speaker": "bone_elder",
+      "illustration": "bone_elder",
+      "text": "因为我们到不了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶把徽章收进胸口。蓝色的光在指缝间亮了一下。"
+    }
+  ]
+}

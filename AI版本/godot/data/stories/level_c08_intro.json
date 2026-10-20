@@ -1,0 +1,40 @@
+{
+  "id": "level_c08_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "一个守火魔女驮着东西从她面前走过，没有看她。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "斗篷下摆拖在地上，拖出一道湿痕。斗篷边上缝着一圈灰白色的刺。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "她走得很慢，一步一步，像在数自己的脚印。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "守火派的。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "她们不吞人，也不打了。现在只做一件事——把还活着的人从战场上背回来。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "她会自己走。你不用管她怎么走。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你只管别让人拦住她。"
+    }
+  ]
+}

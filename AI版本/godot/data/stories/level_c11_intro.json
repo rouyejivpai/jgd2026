@@ -1,0 +1,55 @@
+{
+  "id": "level_c11_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "雾贴着地面，看不见根。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "新长出的枝是灰白的，长满勾。她刚踏进林子，一根枝就抽过来，勾在肩上。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "雾里有人。三个人，一样的灰斗篷，斗篷边上缝着一圈灰白色的刺。"
+    },
+    {
+      "speaker": "keeper_a",
+      "illustration": "keeper",
+      "text": "你身上……有几十个魔女的灵魂。你不是人。"
+    },
+    {
+      "speaker": "keeper_b",
+      "illustration": "keeper",
+      "text": "但她没有失控。她的灵魂海很稳定。"
+    },
+    {
+      "speaker": "keeper_c",
+      "illustration": "keeper",
+      "text": "（笑了一下，嘴角有一小段东西在动）稳定？那是太多了。她吞得太多，已经没感觉了。"
+    },
+    {
+      "speaker": "keeper_a",
+      "illustration": "keeper",
+      "text": "你……要去哪？"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "神战遗址。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "斗篷底下一阵翻涌。几道术法正在往她身上锁。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "过去。别理她们。"
+    }
+  ]
+}

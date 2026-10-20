@@ -51,7 +51,7 @@ HOUND_RULES = [
 
 # 地区 → 章节区域、节点图标、局内地图底图（2026-10-18 区域底图，tools/region_map_post.py 产出）
 REGIONS = [
-    ("bone_workshop", "织骸工坊", "rake", "res://assets/backdrops/regions/bone_workshop.png"),
+    ("bone_workshop", "人偶工坊", "rake", "res://assets/backdrops/regions/bone_workshop.png"),
     ("withered_farm", "枯骨农田", "rake", "res://assets/backdrops/regions/withered_farm.png"),
     ("grey_thorn", "灰棘林", "shield", "res://assets/backdrops/regions/grey_thorn.png"),
     ("holy_bell", "圣钟城废墟", "grid", "res://assets/backdrops/regions/holy_bell.png"),

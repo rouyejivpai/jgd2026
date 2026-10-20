@@ -128,10 +128,22 @@
         8,
         5
       ],
-      "display_name": "骨花核心",
+      "display_name": "骨者",
       "overrides": {
         "max_hp": 200
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/warden.png",
+        "portrait": "res://assets/sprites/portraits/warden.png",
+        "scale": 1.15,
+        "projectile_shape": "triangle",
+        "skill_color": "#ff5a24"
+      },
+      "description": "守火小队的领袖，守火派的核心领袖之一，神战的亲历者。身上大多数伤痕来自缄默神的术法，永远无法复原。",
+      "traits": [
+        "elder_finger_fire"
+      ],
+      "public_rule_text": "坐在三盏灯前不动。开战 3 秒后，每 5 秒朝视野内最远的人偶当时所在的位置投出灯火，2.5 秒后燃爆（半径 2 格，35 伤害）。"
     },
     {
       "id": "G1",
@@ -141,11 +153,17 @@
         7,
         5
       ],
-      "display_name": "左门护卫",
+      "display_name": "左门守火魔女",
       "overrides": {
         "vision": 4
       },
-      "public_rule_text": "守在左门内侧，只看得见 4 格。锁定首个看见的分裂体并追击。"
+      "public_rule_text": "守在左门内侧，只看得见 4 格。锁定首个看见的人偶并追击。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/keeper_witch.png",
+        "portrait": "res://assets/sprites/portraits/keeper_witch.png",
+        "scale": 1.0
+      },
+      "description": "曾属新代魔女组织守火派，受过神性更稳定的旧代魔女教导。深入灰棘林时吸入了太多情绪孢子，正处在失控的边缘。"
     },
     {
       "id": "G2",
@@ -155,11 +173,17 @@
         9,
         5
       ],
-      "display_name": "右门护卫",
+      "display_name": "右门守火魔女",
       "overrides": {
         "vision": 4
       },
-      "public_rule_text": "守在右门内侧，只看得见 4 格。锁定首个看见的分裂体并追击。"
+      "public_rule_text": "守在右门内侧，只看得见 4 格。锁定首个看见的人偶并追击。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/keeper_witch.png",
+        "portrait": "res://assets/sprites/portraits/keeper_witch.png",
+        "scale": 1.0
+      },
+      "description": "曾属新代魔女组织守火派，受过神性更稳定的旧代魔女教导。深入灰棘林时吸入了太多情绪孢子，正处在失控的边缘。"
     }
   ],
   "routes": {},
@@ -263,7 +287,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "回字形要塞里是骨花核心（200 血），拆掉它就赢。两扇门内各有一名护卫，只看得见 4 格。",
+    "objective_text": "回字形要塞里是骨者（200 血），拆掉它就赢。两扇门内各有一名守火魔女，只看得见 4 格。",
     "win": [
       {
         "id": "win_destroy",
@@ -303,14 +327,14 @@
   "_design_comment": "灰棘林的收束关。把易伤、危险区、多入口要塞叠在一起，是本作第一次「较复杂战斗」。",
   "_teach_role": "收束：较复杂战斗",
   "briefing": {
-    "mechanic_hint": "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
+    "mechanic_hint": "骨者的爆裂只砸最远的人偶。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
   },
   "region": "grey_thorn",
   "region_cn": "灰棘林",
   "id": "level_c14",
   "index": 114,
-  "title": "斩根",
-  "subtitle": "较复杂战斗：要塞里的核心",
+  "title": "骨者",
+  "subtitle": "站进火里，她就认你。",
   "biome": "bone_greenhouse",
   "rewards": {
     "unlock_forms": [
@@ -320,13 +344,16 @@
     "unlock_conditions": [],
     "unlock_selectors": [],
     "unlock_actions": [],
-    "unlock_level": "level_c15"
+    "unlock_level": "level_c15",
+    "unlock_relics": [
+      "badge"
+    ]
   },
   "_review_20261012": [
     "重做：回字要塞 + 两名守门护卫（门内，视野 4）+ 200 血核心，去掉骨喉；验证「分兵引爆裂」和「三远射速攻」两种打法都能赢，单远射站桩会输；信标计费。"
   ],
   "display_index": 14,
-  "summary": "较复杂战斗：要塞里的核心",
+  "summary": "站进火里，她就认你。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -373,14 +400,14 @@
     }
   ],
   "hints": [
-    "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
-    "回字形要塞里是骨花核心（200 血），拆掉它就赢。两扇门内各有一名护卫，只看得见 4 格。",
-    "分兵：远射站在部署区中间那格，按「生命上限最高」点核心（两名护卫都看不到那里）；快速形态在地图最左边两列来回绕大圈，一直是最远者，爆裂全部落空。",
+    "骨者的爆裂只砸最远的人偶。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
+    "回字形要塞里是骨者（200 血），拆掉它就赢。两扇门内各有一名守火魔女，只看得见 4 格。",
+    "分兵：远射站在部署区中间那格，按「生命上限最高」点骨者（两名守火魔女都看不到那里）；快速形态在地图最左边两列来回绕大圈，一直是最远者，爆裂全部落空。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {
-    "lose_all_dead": "全员倒下了。核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
-    "default": "核心的爆裂只砸最远的分裂体。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
+    "lose_all_dead": "全员倒下了。骨者的爆裂只砸最远的人偶。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。",
+    "default": "骨者的爆裂只砸最远的人偶。两条路：派人在远处绕圈替你挨砸，或者人多火力足，在第二轮爆裂前速攻拆掉。"
   },
   "bgm": "region_grey_thorn"
 }

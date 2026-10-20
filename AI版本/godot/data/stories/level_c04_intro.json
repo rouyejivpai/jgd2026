@@ -1,0 +1,35 @@
+{
+  "id": "level_c04_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "走廊尽头有一盏灯在来回走。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "灯不烧油，灯罩里是一截指骨，烧得发白。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "灯架底座上刻着一行字，被人用凿子刮过，只剩半个“祷”字。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "教会留下的，他们还在的时候，一天点三次。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "现在没人点了，灯自己还在走。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "被看见，才打得着。"
+    }
+  ]
+}

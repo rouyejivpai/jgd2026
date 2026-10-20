@@ -5,6 +5,7 @@ extends Node
 
 signal world_rebuilt()   ## world 被丢弃并重建（部署变化 / 开始 / 重置）→ 表现层重建视图
 signal ticked()          ## 一个物理 tick 推进完毕（1× 一步、2× 两步）→ 表现层更新插值端点
+signal retried()          ## 战斗开始后的「重试」（重试按钮 / R 键 / 结算页重试；部署阶段的空重置不算）→ HUD 累计次数提示「提示」按钮
 signal boss_phase_paused(next_phase: int)   ## 多阶段 Boss 到达切换阈值：战斗已暂停，等玩家重新编程 / 增援后「继续」
 
 var level: LevelDefinition = null
@@ -666,6 +667,7 @@ func set_speed(multiplier: int) -> void:
 func reset() -> void:
 	if level == null:
 		return
+	var retry: bool = phase != SimTypes.Phase.DEPLOY
 	DebugLog.end("reset")
 	_clear_boss_state()
 	relic_uses = 0
@@ -673,6 +675,8 @@ func reset() -> void:
 	relic_active = str(relic_tile.get("relic", ""))
 	_rebuild_world()
 	_set_phase(SimTypes.Phase.DEPLOY)
+	if retry:
+		retried.emit()
 
 
 ## 保存配置到存档 → 返回选关

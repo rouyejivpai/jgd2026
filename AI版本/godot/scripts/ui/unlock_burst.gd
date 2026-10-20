@@ -3,6 +3,7 @@ extends Control
 ## 2026-10-20 解锁动画（一级地图的区域名牌、选关地图的关卡名牌共用）：
 ## 锁颤抖（越抖越急、越来越白）→ 炸成白色粒子（碎片四散 + 慢慢上飘的余烬 + 一团柔光）→ 名牌与文字闪白、微微鼓起 →
 ## 白里换上名字（on_name）→ 渐变回原样 → on_done。
+## 音效（UI 总线，此处统一播，调用方不再播）：颤抖开始 unlock_shake → 炸开 unlock_open → 换名 unlock_reveal。
 ## 本节点是粒子的画布：放在名牌之上、与名牌同一坐标系里随地图移动；不接收鼠标。名牌 / 文字 / 锁需挂 flash_material()。
 
 const FLASH_SHADER: Shader = preload("res://assets/shaders/hit_flash.gdshader")
@@ -65,7 +66,7 @@ func append_reveal(tw: Tween, lock: Control, plate: Control, text: Control, on_n
 	tw.tween_callback(func() -> void:
 		lock.set_meta(&"shake_base", lock.position)
 		lock.visible = true
-		AudioManager.play_sfx("blast_warn_tick"))
+		AudioManager.play_ui("unlock_shake"))
 	tw.tween_method(_shake.bind(lock), 0.0, 1.0, SHAKE_TIME)
 	if glow != null:
 		tw.parallel().tween_property(glow, "self_modulate:a", 0.55, SHAKE_TIME)
@@ -77,6 +78,7 @@ func append_reveal(tw: Tween, lock: Control, plate: Control, text: Control, on_n
 	tw.parallel().tween_method(_flash_to.bind(text), 0.0, 1.0, 0.1)
 	tw.parallel().tween_method(_pop.bind(plate), 0.0, 1.0, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_method(_pop.bind(text), 0.0, 1.0, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(func() -> void: AudioManager.play_ui("unlock_reveal"))
 	tw.tween_callback(on_name)
 	tw.tween_interval(0.14)
 	tw.tween_method(_flash_to.bind(plate), 1.0, 0.0, 1.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
@@ -113,7 +115,7 @@ func _burst_from(lock: Control, plate: Control) -> void:
 	lock.scale = Vector2.ONE
 	lock.position = lock.get_meta(&"shake_base", lock.position) as Vector2
 	set_flash(lock, 0.0)
-	AudioManager.play_sfx("core_pulse")
+	AudioManager.play_ui("unlock_open")
 	burst(c, pw)
 
 

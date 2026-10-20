@@ -47,8 +47,9 @@
     "hold_fire": "停火"
   },
   "ui": {
-    "start": "开始", "pause": "暂停", "resume": "继续", "speed_1x": "×1", "speed_2x": "×2",
-    "hint": "提示", "mechanics": "机制说明", "exit": "退出", "leave": "离开", "retry": "重试", "next_level": "下一关", "back": "返回",
+    "credits_thanks": "非常感谢您的游玩！", "credits_letter": "《人偶补完计划》仍在完善中，这是一次不完全成熟的尝试。若您在游玩过程中遇到 bug、对游戏内容有任何建议，或想对我们提出严厉的批评，欢迎通过论坛、QQ 等方式联系我们。", "credits_farewell": "世界很大，感谢相遇，期待我们的下一次见面！", "credits_thanks_en": "Thank you for playing", "credits_join": "加群以查看最新消息", "credits_skip": "Esc 跳过", "credits_return": "点击任意按键以继续", "opening_skip": "长按 Esc 跳过",
+    "start": "开始", "pause": "暂停", "resume": "继续", "resume_battle": "继续战斗", "speed_1x": "×1", "speed_2x": "×2",
+    "hint": "提示", "mechanics": "机制说明", "exit": "退出", "leave": "离开", "retry": "重试", "retry_hint": "点击以重置", "next_level": "下一关", "back": "返回",
     "threat_cleared": "威胁已清除", "deploy_phase": "部署阶段", "running": "战斗中", "paused": "已暂停",
     "tab_unit": "单位", "tab_enemy": "敌人", "tab_objective": "任务",
     "add_action": "添加指令", "rule_priority_note": "越靠上，优先级越高", "current_rule": "当前执行", "why_not": "为何不成立",
@@ -97,13 +98,13 @@
     "recommend_formation": "推荐阵型", "recommend_confirm": "将覆盖当前部署与指令，确定摆放推荐阵型？",
     "recommend_apply": "摆放", "cancel": "取消", "recommend_deploy_only": "推荐阵型只能在部署阶段摆放",
     "recommend_applied": "已摆放推荐阵型", "recommend_problems": "推荐阵型已摆放，但有以下问题：",
-    "chapter_switch": "切换章节 ▸ {title}", "boss_phase_pause": "第 {n} 阶段：信号含义已变。改指令、在增援区补人，再按「继续」", "reinforce_budget": "增援预算", "beacons": "信标", "beacon_hint": "部署阶段：点「信标」或按单位编号数字键进入信标模式，左键点地块依次放置（1、2、3…），右键撤销最后一个；也可在地图上右键放置 / 删除、拖动移动", "rule_override": "覆盖", "rule_override_tip": "勾选后：条件成立时无视上方指令的优先级，直接接管（例：始终沿信标走 + 覆盖的「有敌人时撤离」）", "rule_action_label": "行为", "add_action_button": "＋ 添加指令", "distance_unit": "格", "rule_priority_note_side": "攻击与移动分两组同时执行；组内越靠上优先级越高", "beacon_mode_button": "信标", "beacon_mode_button_tip": "进入信标模式：在地图上点击地块放置本单位的信标（也可按单位编号数字键）", "beacon_mode_title": "信标模式 · {n} 号  {name}", "beacon_mode_hint": "左键点击地块放置信标，右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_mode_auto": "自动寻路", "beacon_mode_auto_tip": "自动寻路：待定（尚未开放）", "beacon_mode_done": "完成", "beacon_mode_title_priced": "信标模式 · {n} 号  {name}　　信标 {used}/{stock}", "beacon_mode_hint_priced": "左键放置信标（{bundle} 个一包、{cost} Cost/包，用完自动再买一包），右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_pack_bought": "已购买一包信标：−{cost} Cost（信标 {used}/{stock}）", "beacon_pack_refunded": "空出一整包信标，已退回 {cost} Cost（信标 {used}/{stock}）", "beacon_pack_unaffordable": "预算不足：再买一包信标（{bundle} 个）需要 {cost} Cost", "budget_breakdown": "单位与指令 {units} + 信标 {packs} 包 × {cost} = {total}（信标 {used}/{stock}，全场共用）", "beacon_mode_applied": "已设为「{mode}」：{name} 沿信标移动", "beacon_footer_mode": "信标：{n} 个 · {mode}",
+    "chapter_switch": "切换章节 ▸ {title}", "boss_phase_pause": "第 {n} 阶段：信号含义已变。改指令、在增援区补人，再按「继续战斗」", "reinforce_budget": "增援灵魂", "beacons": "信标", "beacon_hint": "部署阶段：点「信标」或按单位编号数字键进入信标模式，左键点地块依次放置（1、2、3…），右键撤销最后一个；也可在地图上右键放置 / 删除、拖动移动", "rule_override": "覆盖", "rule_override_tip": "勾选后：条件成立时无视上方指令的优先级，直接接管（例：始终沿信标走 + 覆盖的「有敌人时撤离」）", "rule_action_label": "行为", "add_action_button": "＋ 添加指令", "distance_unit": "格", "rule_priority_note_side": "攻击与移动分两组同时执行；组内越靠上优先级越高", "beacon_mode_button": "信标", "beacon_mode_button_tip": "进入信标模式：在地图上点击地块放置本单位的信标（也可按单位编号数字键）", "beacon_mode_title": "信标模式 · {n} 号  {name}", "beacon_mode_hint": "左键点击地块放置信标，右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_mode_auto": "自动寻路", "beacon_mode_auto_tip": "自动寻路：待定（尚未开放）", "beacon_mode_done": "完成", "beacon_mode_title_priced": "信标模式 · {n} 号  {name}　　信标 {used}/{stock}", "beacon_mode_hint_priced": "左键放置信标（{bundle} 个一包、{cost} 点灵魂/包，用完自动再买一包），右键撤销最后一个；按 1–{max} 切换单位，Esc 或「完成」退出", "beacon_pack_bought": "已购买一包信标：−{cost} 灵魂（信标 {used}/{stock}）", "beacon_pack_refunded": "空出一整包信标，已退回 {cost} 点灵魂（信标 {used}/{stock}）", "beacon_pack_unaffordable": "灵魂不足：再买一包信标（{bundle} 个）需要 {cost} 点灵魂", "budget_breakdown": "单位与指令 {units} + 信标 {packs} 包 × {cost} = {total}（信标 {used}/{stock}，全场共用）", "beacon_mode_applied": "已设为「{mode}」：{name} 沿信标移动", "beacon_footer_mode": "信标：{n} 个 · {mode}",
     "beacon_none": "尚无信标", "beacon_footer_none": "信标：尚无信标", "beacon_footer_n": "信标：{n} 个", "enemy_rules_footer": "敌方指令 · 只读", "beacon_soft_cap": "信标数量过多（最多 {n} 个）", "beacon_blocked": "信标不能放在障碍格上",
     "beacon_cell": "{id}  ({x}, {y})", "copy_route": "复制为我的信标", "copy_route_label": "预设路线",
     "copy_route_done": "已把「{route}」复制为信标", "wait_remaining": "等待中 {seconds} 秒",
-    "enemy_rules_readonly": "敌方指令（只读，从上到下第一条成立即执行）", "budget": "预算", "budget_value": "{used} / {budget}",
-    "card_cost": "{name}\nCost {cost}", "card_cost_label": "COST", "card_locked_value": "—", "hud_level_title": "{label} · {title}", "battle_start_banner": "战斗开始", "roster_fixed": "固定出场", "roster_full": "出场人数已满（最多 {n} 名）",
-    "budget_short": "预算不足", "objective_expand": "点击查看任务详情",
+    "enemy_rules_readonly": "敌方指令（只读，从上到下第一条成立即执行）", "budget": "灵魂", "budget_value": "{used} / {budget}",
+    "card_cost": "{name}\n灵魂 {cost}", "card_cost_label": "COST", "card_locked_value": "—", "hud_level_title": "{label} · {title}", "battle_start_banner": "战斗开始", "roster_fixed": "固定出场", "roster_full": "出场人数已满（最多 {n} 名）",
+    "budget_short": "灵魂不足", "objective_expand": "点击查看任务详情",
     "stat_modified": "{value}（{delta}）", "stat_modified_tip": "{value}（{delta} 关卡加成）", "any_ally": "任意己方单位", "any_ally_count": "{count} 名己方单位",
     "level_mechanic": "本关要点：{text}", "boss": "首领",
     "remove_unit": "移除", "remove_hint": "也可把角色拖出战场移除",
@@ -113,11 +114,11 @@
     "cost_breakdown": "形态 {form} ＋ 指令 {commands}",
     "settings_close": "关闭", "objectives_popup": "任务",
     "node_placeholder": "未开放", "node_enter": "进入", "node_locked_by": "需先通关：{levels}", "detail_region": "区域", "detail_state": "状态",
-    "replay_story": "回放剧情", "replay_intro": "开场剧情", "replay_win": "胜利剧情", "replay_lose": "失败剧情",
+    "replay_intro": "开头剧情", "replay_end": "结尾剧情", "replay": "剧情回放", "menu_story": "剧情", "story_gallery_title": "剧情回顾",
     "relic_bar_title": "遗物",
     "relic_tip": "{name}\n{desc}",
     "relic_tip_state": "{name}\n{desc}\n—— {state}",
-    "relic_locked_tip": "未获得的遗物\n通关精英关「{level}」获得「{name}」",
+    "relic_locked_tip": "未获得的遗物\n通关「{level}」获得「{name}」",
     "relic_locked_unknown": "未获得的遗物",
     "relic_charges": "剩余 {n} 次",
     "relic_state_ready_tile": "拖到地图上放置（或点一下再点地块）",
@@ -145,7 +146,7 @@
     "elite_plate": "精英 · {title}",
     "reward_relics": "遗物",
     "detail_reward_relic": "奖励遗物",
-    "detail_elite_note": "精英关 · 通关获得遗物「{name}」",
+    "detail_elite_note": "精英关 · 通关获得遗物「{name}」", "detail_relic_note": "通关获得遗物「{name}」",
     "rule_group_title": "{group}（{n}/{max}）", "rule_group_note_attack": "攻击：在射程内选目标开火；越靠上优先级越高", "rule_group_note_move": "移动：与攻击同时执行；越靠上优先级越高",
     "add_rule_attack": "＋ 攻击指令", "add_rule_move": "＋ 移动指令", "rule_group_full": "本组最多 {max} 条指令", "rule_group_empty": "（无指令）", "add_action_group": "添加{group}指令",
     "tutorial_next": "下一步", "tutorial_skip": "跳过引导", "tutorial_step": "{n}/{total}", "tutorial_tap": "　点击任意处继续", "tutorial_test_tag": "【测试】", "tutorial_back": "返回配置器", "region_levels": "本区关卡", "region_enter": "进入区域", "region_no": "第 {n} 区", "region_progress": "进度 {done} / {total}", "region_plate": "{title}  {done}/{total}", "region_level_line": "{no} · {title}　{state}", "region_state_done": "已通关", "region_state_open": "可挑战", "region_state_locked": "未解锁", "region_locked_by": "通关「{level}」后解锁", "region_all_done": "本区已全部通关", "region_next": "下一关：{level}", "tutorial_pick_title": "拾取目标", "tutorial_pick_hint": "点击要高亮的界面元素或地块；Esc 取消并返回配置器。", "tutorial_close_panel_title": "收起指令界面", "tutorial_close_panel_text": "指令界面挡住了要看的地方：点「关闭」把它收起来。之后想再看，点一下人偶就能打开。", "tutorial_open_panel_title": "打开指令界面", "tutorial_open_panel_text": "点击你的人偶，打开它的指令界面。"
@@ -164,7 +165,7 @@
     "BEACON_MISSING": "「{slot}」第 {index} 条指令引用的信标「{what}」不存在",
     "BEACON_ON_BLOCKED": "「{slot}」的信标「{what}」位于障碍格或地图外",
     "BEACONS_EMPTY": "「{slot}」第 {index} 条指令要沿信标前进，但还没有放置信标",
-    "BUDGET_EXCEEDED": "出场 Cost {what}，超出预算",
+    "BUDGET_EXCEEDED": "出场灵魂 {what}，超出灵魂容量",
     "TOO_FEW_UNITS": "至少需要出场 {what} 名单位",
     "FORM_NOT_AVAILABLE": "「{slot}」的形态「{what}」在本关不可用",
     "SAVE_MIGRATION_FAILED": "旧存档中本关的部分配置无法转换（原数据已保留）",
@@ -174,13 +175,13 @@
       "OUT_OF_ZONE": "不在部署区内",
       "CELL_BLOCKED": "障碍格不能放置",
       "CELL_OCCUPIED": "该格已有单位",
-      "BUDGET_EXCEEDED": "预算不足",
+      "BUDGET_EXCEEDED": "灵魂不足",
       "ROSTER_FULL": "出场人数已满",
       "FORM_NOT_AVAILABLE": "该形态在本关不可用"
     }
   },
   "names": { "signals": {"red": "红", "yellow": "黄", "blue": "蓝"},"conditions": {"always": "始终", "self_hp_below": "自身生命", "enemy_visible": "可见敌人", "enemy_in_range": "射程内敌人", "target_distance": "目标距离", "retreat_possible": "存在退路", "at_beacon": "到达信标", "signal_is": "Boss 信号" }, "selectors": {"nearest": "最近", "farthest": "最远", "lowest_hp": "生命最低", "first_seen": "首个入视野", "highest_max_hp": "生命上限最高", "highest_hp": "HP最高", "most_damage": "造成伤害最高", "first_in_range": "第一个进入射程" }, "traits": {"delayed_blast": "延迟爆炸", "status": "异常状态", "on_hit_status": "命中附加", "aura_status": "光环", "tile_effect": "地形效果", "phased_boss": "多阶段首领" }, "groups": {"attack": "攻击策略", "move": "移动策略"}, "actions": {"idle": "停止", "hold_fire": "停火", "attack": "攻击", "chase_attack": "追击并攻击", "chase": "追击", "retreat": "撤离", "follow_route": "沿路线", "follow_beacons": "沿信标移动", "wait": "等待"}, "beacon_modes": {"once": "沿路径", "loop": "循环", "pingpong": "往返"}, "filters": {"any": "任意目标", "unit": "单位", "structure": "建筑"}},
-  "objective": {"annihilate": "消灭全部敌方单位", "destroy": "摧毁：{targets}", "survive": "保护{target}存活 {seconds} 秒", "unit_dead": "{target}被摧毁", "all_allies_dead": "分裂体全部倒下", "reach_zone": "{target}抵达逃离区", "reach_zone_win": "{target}抵达目标区域", "escort": "护送{target}抵达目标区域"},
+  "objective": {"annihilate": "消灭全部敌方单位", "destroy": "摧毁：{targets}", "survive": "保护{target}存活 {seconds} 秒", "unit_dead": "{target}被摧毁", "all_allies_dead": "人偶全部倒下", "reach_zone": "{target}抵达逃离区", "reach_zone_win": "{target}抵达目标区域", "escort": "护送{target}抵达目标区域"},
   "mechanics": [
     "单位从上到下检查指令，执行第一条条件成立的；之后的指令本次不再看。每次决策都从顶部重新检查。",
     "视野决定能看见谁，射程决定能打到谁。虚线环是视野，实心环是射程。",
@@ -192,5 +193,5 @@
     "目标死亡后，单位会按同一套指令重新选择目标，不需要你做任何事。",
     "1× 和 2× 只改变播放速度，不改变任何战斗结果。"
   ],
-  "speakers": { "doll": "人偶", "witch": "织骸魔女", "keeper": "守火", "narrator": "", "system": "" }
+  "speakers": { "doll": "人偶", "witch": "织骸魔女", "keeper": "守火", "doll_copy": "复制人偶", "yi": "“一”", "bell_witch": "敲钟魔女", "bone_witch": "骨花魔女", "bone_elder": "骨者", "keeper_a": "守火派魔女 A", "keeper_b": "守火派魔女 B", "keeper_c": "守火派魔女 C", "echo": "回响", "silent_believer": "缄默者信徒", "soul": "灵魂", "whisper": "低语", "bone_blade": "骨刃", "narrator": "", "system": "" }
 }

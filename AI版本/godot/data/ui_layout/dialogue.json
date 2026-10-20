@@ -24,10 +24,10 @@
       "id": "portrait",
       "kind": "flatbox",
       "rect": [
-        176,
-        40,
+        116,
+        160,
         768,
-        1040
+        920
       ],
       "data": {
         "art_size": [

@@ -1,0 +1,45 @@
+{
+  "id": "level_c13_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "卡口前站着两个。很厚，肩上一层一层叠着骨板，走得慢，但每一步都陷进地里。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "这两个硬。绕不过去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "她身后的坡上，有什么东西被放了下来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "一具人偶。和她一样高，一样的脸。但它没有斗篷，骨架是裸露的，能看到里面一根一根的支撑。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "它走得很轻，轻到不像有重量。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "破甲人偶"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "它不杀人，只负责在敌人身上画个记号。被画过的地方会变得很好打。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "破甲人偶走到她旁边，停下，头转向她。没有眼睛的地方朝着她。"
+    }
+  ]
+}

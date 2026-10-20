@@ -57,7 +57,7 @@ static func portrait(parent: Control) -> TextureRect:
 ## 属性行：底板 + 六组（图标、名称、数值）；返回数值 Label
 static func stats(parent: Control) -> Array[Label]:
 	if not UiKit.layout_element(SKIN, "det_stats").is_empty():      # 2026-10-20 刻印界面：属性行没有底板（直接写在面板上）
-		place(parent, UiKit.node_for(UiKit.layout_element(SKIN, "det_stats")), rel("det_stats"))
+		place(parent, UiKit.node_for(UiKit.layout_element(SKIN, "det_stats")), rel("det_stats")).set_meta(&"mirror_block", true)
 	var values: Array[Label] = []
 	for i: int in STAT_KEYS.size():
 		var icon := TextureRect.new()
@@ -65,11 +65,11 @@ static func stats(parent: Control) -> Array[Label]:
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		place(parent, icon, rel("det_stat_icon_%d" % i))
-		label(parent, "det_stat_name_%d" % i, DataRegistry.get_string("ui." + STAT_KEYS[i]))
+		place(parent, icon, rel("det_stat_icon_%d" % i)).set_meta(&"mirror_block", true)
+		label(parent, "det_stat_name_%d" % i, DataRegistry.get_string("ui." + STAT_KEYS[i])).set_meta(&"mirror_block", true)
 		var v: Label = label(parent, "det_stat_value_%d" % i)
 		values.append(v)
-		ScrollText.wrap(v, ScrollText.Mode.AUTO)            # 2026-10-19：数值偏长（如生命 160/160（+40））时在格内往返滚动，不出框
+		ScrollText.wrap(v, ScrollText.Mode.AUTO).set_meta(&"mirror_block", true)     # 2026-10-19：数值偏长（如生命 160/160（+40））时在格内往返滚动，不出框
 	return values
 
 
@@ -128,6 +128,53 @@ static func stretch(parent: Control, extra: float) -> void:
 			ctl.size.y += d
 		elif ctl.position.y >= scroll_end - 1.0:
 			ctl.position.y += d
+
+
+## 侧栏停靠右侧时（用户 2026-10-20：单位在屏幕左半 → 侧栏在右，反之在左）：除指令区外，详情各件按底图宽度水平镜像——
+## 位置左右对调、文字对齐左右对调、纹饰切片（Skin_*）翻转；图标、头像、按钮底图与文字本身不翻。
+## 指令区（DetailScroll：分组标题、列标题、指令行、「＋」）只随镜像整体移位，内部排列不翻。
+## 属性块（meta mirror_block：六组图标 / 名称 / 数值）同样整块平移，保持「图标 名称 数值」的阅读顺序（用户 2026-10-20）。按 meta 记录状态，可反复切换。
+static func mirror(parent: Control, on: bool) -> void:
+	if bool(parent.get_meta(&"mirrored", false)) == on:
+		return
+	parent.set_meta(&"mirrored", on)
+	var w: float = rel("det_panel").size.x
+	var block: Array[Control] = []
+	var x0: float = INF
+	var x1: float = -INF
+	for c: Node in parent.get_children():
+		var ctl: Control = c as Control
+		if ctl == null:
+			continue
+		if bool(ctl.get_meta(&"mirror_block", false)):
+			block.append(ctl)
+			x0 = minf(x0, ctl.position.x)
+			x1 = maxf(x1, ctl.position.x + ctl.size.x)
+			continue
+		ctl.position.x = w - ctl.position.x - ctl.size.x
+		if ctl.name != "DetailScroll":
+			flip_node(ctl)
+	for ctl: Control in block:                   # 块的外框按底图镜像，块内相对位置不变
+		ctl.position.x += w - x0 - x1
+
+
+## 单个部件的左右翻转（mirror 用；HUD 侧栏底图同用）：文字换对齐，纹饰切片翻转
+static func flip_node(c: Control) -> void:
+	var l: Label = c as Label
+	if c is ScrollText:
+		l = (c as ScrollText).label
+	if l != null:
+		match l.horizontal_alignment:
+			HORIZONTAL_ALIGNMENT_LEFT: l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			HORIZONTAL_ALIGNMENT_RIGHT: l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		return
+	if not c.name.begins_with("Skin_"):
+		return
+	if c is TextureRect:
+		(c as TextureRect).flip_h = not (c as TextureRect).flip_h
+	else:                                        # 九宫格（PanelContainer）没有 flip：绕自身竖中线缩放 -1
+		c.pivot_offset.x = c.size.x * 0.5
+		c.scale.x = -c.scale.x
 
 
 ## 底部说明下方的凸出标签（P6 补充素材 #10，整图里框体下沿向下凸出一块，文字在其中）；须在说明文字之前加入（文字画在上面）

@@ -112,10 +112,12 @@ func _draw() -> void:
 	draw_goal_zones(self, level, _marks.get("goal") as Texture2D)
 
 
-## 胜利条件 reach_zone / escort 的目标格
+## 胜利条件 reach_zone / escort 要画出来的目标格（hidden 的条目不画）
 static func goal_cells(p_level: LevelDefinition) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for o: ObjectiveDef in p_level.win:
+		if o.hidden:
+			continue
 		if o.type == SimTypes.ObjectiveType.REACH_ZONE or o.type == SimTypes.ObjectiveType.ESCORT:
 			for c: Vector2i in o.cells:
 				if not out.has(c):

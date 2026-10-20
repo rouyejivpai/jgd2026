@@ -1,0 +1,95 @@
+{
+  "id": "level_c27_win",
+  "scenes": [
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "为什么是考场？你为什么会在这里？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "总要有个检测才知道是否合格嘛。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "至于我？当然是来给你加油打气的了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "魔女仿佛伤心了一般瘪起嘴。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "我要失控了吗？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "这个突如其来的问题，似乎打了她一个措手不及。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "嗯……这当然取决于你了。你觉得呢？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶有很多话想说。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "想说那些无穷无尽的猎犬，想说那些诡异莫测的灵魂残响，想说那个巨大无比的钟。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "想说那些小心翼翼保护自己破碎灵魂的魔女。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "想说她因为放掉了那些灵魂，所以现在有点饿。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她又好像什么都说不出口。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她好累。好像刚从什么狭隘的地方拼命钻出来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "好像刚刚学会呼吸。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "我……"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "来不及喽。这个分身的维持时间就只有这么长。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶刚刚抬起头，正好与魔女那红宝石般的眸子对上。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "下次见，该出发了。"
+    }
+  ]
+}

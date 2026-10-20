@@ -20,6 +20,7 @@ var world: SimWorld = null
 var radius_px: float = 0.0
 var delay: float = 1.0
 var ally: bool = false
+var tint: Color = Color(0, 0, 0, 0)        ## 2026-10-20 敌人技能色（visuals.skill_color），alpha = 0 = 阵营色
 var _remaining: float = 0.0
 var _boom_t: float = -1.0                  ## 爆炸后经过的时间（< 0 = 预警中）
 var _quad: ColorRect
@@ -30,11 +31,12 @@ var _next_tick: float = 0.0       ## 下一次预警滴答的剩余时间阈值
 var _col: Dictionary = {}
 
 
-func setup(p_world: SimWorld, p_blast_id: int, screen_pos: Vector2, radius_cells: float, p_delay: float, p_ally: bool = false) -> void:
+func setup(p_world: SimWorld, p_blast_id: int, screen_pos: Vector2, radius_cells: float, p_delay: float, p_ally: bool = false, p_tint: Color = Color(0, 0, 0, 0)) -> void:
 	world = p_world
 	blast_id = p_blast_id
 	ally = p_ally
-	_col = CombatFx.colors(ally)
+	tint = p_tint
+	_col = CombatFx.colors(ally, tint)
 	material = CombatFx.material(ally)
 	position = screen_pos
 	radius_px = radius_cells * float(SimTypes.TILE_SIZE)
@@ -49,14 +51,14 @@ func setup(p_world: SimWorld, p_blast_id: int, screen_pos: Vector2, radius_cells
 	_mat = Art.material("blast_marker")
 	_mat.set_shader_parameter("radius_px", radius_px)
 	_mat.set_shader_parameter("quad_px", half)
-	_mat.set_shader_parameter("color", ALLY_COLOR if ally else ENEMY_COLOR)
+	_mat.set_shader_parameter("color", _base_color())
 	_mat.set_shader_parameter("energy", 1.7 if ally else 1.5)
 	_mat.set_shader_parameter("spin_dir", 1.0 if ally else -1.0)
 	_quad.material = _mat
 	_quad.show_behind_parent = true
 	add_child(_quad)
 	# 汇聚光点：从外环发射、径向向内加速
-	_charge = CombatFx.sparks(ally, 28, 0.9, Vector2.RIGHT, 180.0, Vector2(0.0, 6.0), Vector2(2.5, 5.5), false)
+	_charge = CombatFx.sparks(ally, 28, 0.9, Vector2.RIGHT, 180.0, Vector2(0.0, 6.0), Vector2(2.5, 5.5), false, tint)
 	_charge.local_coords = true
 	_charge.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE_SURFACE
 	_charge.emission_sphere_radius = radius_px
@@ -68,22 +70,29 @@ func setup(p_world: SimWorld, p_blast_id: int, screen_pos: Vector2, radius_cells
 	_light = PointLight2D.new()
 	_light.texture = Art.light_texture()
 	_light.texture_scale = radius_px * 2.6 / float(Art.LIGHT_TEXTURE_SIZE)
-	_light.color = ALLY_COLOR if ally else ENEMY_COLOR
+	_light.color = _base_color()
 	_light.energy = 0.25
 	add_child(_light)
 
 
 ## 到期：爆炸、留下焦痕后释放
+## 落点主色：有技能色用技能色，否则按阵营
+func _base_color() -> Color:
+	if tint.a > 0.0:
+		return Color(tint.r, tint.g, tint.b)
+	return ALLY_COLOR if ally else ENEMY_COLOR
+
+
 func detonate() -> void:
 	if _boom_t >= 0.0:
 		return
 	_boom_t = 0.0
 	_quad.visible = false
 	_charge.emitting = false
-	var burst: CPUParticles2D = CombatFx.sparks(ally, 90, 0.75, Vector2.UP, 180.0, Vector2(radius_px * 1.6, radius_px * 4.2), Vector2(3.0, 8.0), true)
+	var burst: CPUParticles2D = CombatFx.sparks(ally, 90, 0.75, Vector2.UP, 180.0, Vector2(radius_px * 1.6, radius_px * 4.2), Vector2(3.0, 8.0), true, tint)
 	burst.gravity = Vector2(0.0, 320.0)
 	add_child(burst)
-	var embers: CPUParticles2D = CombatFx.sparks(ally, 40, 1.4, Vector2.UP, 60.0, Vector2(30.0, 110.0), Vector2(2.5, 6.0), true)
+	var embers: CPUParticles2D = CombatFx.sparks(ally, 40, 1.4, Vector2.UP, 60.0, Vector2(30.0, 110.0), Vector2(2.5, 6.0), true, tint)
 	embers.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
 	embers.emission_sphere_radius = radius_px * 0.6
 	embers.gravity = Vector2(0.0, -70.0)

@@ -1,0 +1,45 @@
+{
+  "id": "level_c16_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "侧街两头各站着一个人形。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "近的那个是石头做的，真的是一整块石头——从脚到头，表面还能看出衣服的褶子。她的脸上有一道湿痕，从眼睛下面一直流到下巴，凝在那儿不动。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "石像的心口起伏了一下。很轻，但确实动了。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "悲伤。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "哭到最后的魔女会变成这样。她的术法把自己归寂了，她自己不知道。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "（另一头，第二个石像也慢慢转过来——转的时候有石头磨石头的声音。）"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "她们只认第一个看见的东西。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "所以，你打算先让谁看见你？"
+    }
+  ]
+}

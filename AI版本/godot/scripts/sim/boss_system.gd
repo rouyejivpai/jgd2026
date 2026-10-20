@@ -81,6 +81,12 @@ static func _fire(world: SimWorld, b: SimUnit, e: Dictionary) -> void:
 			var udef: UnitDefinition = DataRegistry.get_unit(str(e.get("unit", "husk")))
 			if udef == null:
 				return
+			var skin: Dictionary = {}                    # 2026-10-20：召唤物可换皮（visuals / description / public_rule_text），数值不变
+			for k: String in ["visuals", "description", "public_rule_text"]:
+				if e.has(k):
+					skin[k] = e[k]
+			if not skin.is_empty():
+				udef = udef.reskinned(skin)
 			var rules: Array[RuleDef] = []
 			for rd: Variant in e.get("rules", []) as Array:
 				rules.append(RuleDef.from_dict(rd as Dictionary, "boss.summon"))
@@ -93,6 +99,8 @@ static func _fire(world: SimWorld, b: SimUnit, e: Dictionary) -> void:
 				u.spawn_id = "ADD_%d" % world.next_blast_id
 				world.next_blast_id += 1
 				u.counts_for_annihilate = false
+				if str(e.get("display_name", "")) != "":
+					u.display_name = str(e["display_name"])
 				world.add_unit(u)
 
 

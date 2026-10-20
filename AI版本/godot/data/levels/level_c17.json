@@ -4,8 +4,8 @@
   "region": "holy_bell",
   "id": "level_c17",
   "index": 117,
-  "title": "钟下",
-  "subtitle": "较复杂战斗：钟声范围内的定身",
+  "title": "落差",
+  "subtitle": "站到它打不到、你打得着的地方。",
   "biome": "wailing_wall",
   "scene": {
     "backdrop": "res://assets/backdrops/regions/holy_bell.png",
@@ -122,7 +122,7 @@
         12,
         7
       ],
-      "display_name": "咒缚祭司·上",
+      "display_name": "灵魂残响·上",
       "rules": [
         {
           "conditions": [
@@ -145,10 +145,20 @@
           }
         }
       ],
-      "public_rule_text": "站着不动，攻击 6 格内最远的分裂体，命中麻痹 3 秒。",
+      "public_rule_text": "站着不动，攻击 6 格内最远的人偶，命中麻痹 3 秒。",
       "overrides": {
         "max_hp": 80
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/husk.png",
+        "portrait": "res://assets/sprites/portraits/husk.png",
+        "scale": 1.0,
+        "skill_color": "#9fe0f0"
+      },
+      "description": "缄默神在圣钟广场降临时，被神压一瞬间碾碎的人。如今是游荡在残破废墟里的亡灵，还在重复生前最后的那个动作。",
+      "traits": [
+        "echo_binding_rite"
+      ]
     },
     {
       "id": "P2",
@@ -158,7 +168,7 @@
         12,
         3
       ],
-      "display_name": "咒缚祭司·下",
+      "display_name": "灵魂残响·下",
       "rules": [
         {
           "conditions": [
@@ -184,7 +194,17 @@
       "public_rule_text": "同上。",
       "overrides": {
         "max_hp": 80
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/husk.png",
+        "portrait": "res://assets/sprites/portraits/husk.png",
+        "scale": 1.0,
+        "skill_color": "#9fe0f0"
+      },
+      "description": "缄默神在圣钟广场降临时，被神压一瞬间碾碎的人。如今是游荡在残破废墟里的亡灵，还在重复生前最后的那个动作。",
+      "traits": [
+        "echo_binding_rite"
+      ]
     },
     {
       "id": "W1",
@@ -194,12 +214,18 @@
         10,
         5
       ],
-      "display_name": "钟下守卫",
+      "display_name": "钟下灵魂验尸官",
       "overrides": {
         "vision": 7,
         "max_hp": 130
       },
-      "public_rule_text": "锁定首个进入 7 格视野的分裂体并追击。"
+      "public_rule_text": "锁定首个进入 7 格视野的人偶并追击。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/priest.png",
+        "portrait": "res://assets/sprites/portraits/priest.png",
+        "scale": 1.0
+      },
+      "description": "负责检查、保养教会地下储存的所有灵魂。缄默降临时他试图护住那些脆弱的魂灯，失败了——如今只是守着满地破碎灵魂的失职者。"
     }
   ],
   "routes": {},
@@ -227,7 +253,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "两个咒缚祭司专打你最远的人，被打中就麻痹。它们射程 6——远射射程 8。拆掉两个祭司就赢。",
+    "objective_text": "两个灵魂残响专打你最远的人，被打中就麻痹。它们射程 6——远射射程 8。拆掉两个灵魂残响就赢。",
     "win": [
       {
         "id": "win_destroy",
@@ -246,25 +272,25 @@
     ]
   },
   "briefing": {
-    "mechanic_hint": "先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+    "mechanic_hint": "先解决专打最远的灵魂残响：远射站在 7 格外，灵魂残响够不着它。灵魂验尸官会追过腐地来——让它带着易伤撞上你的前排。"
   },
   "hint_tiers": [
     {
       "tier": 0,
-      "text": "咒缚祭司射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。"
+      "text": "灵魂残响射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。"
     },
     {
       "tier": 1,
-      "text": "守卫视野 7，看见谁就追谁；它要穿过腐地才能碰到你。"
+      "text": "灵魂验尸官视野 7，看见谁就追谁；它要穿过腐地才能碰到你。"
     },
     {
       "tier": 2,
-      "text": "远射按「血量最低」先打祭司（80 血）而不是守卫（130 血）。"
+      "text": "远射按「血量最低」先打灵魂残响（80 血）而不是灵魂验尸官（130 血）。"
     }
   ],
   "fail_feedback": {
-    "default": "推荐：缚锁者先定住一个祭司，趁那 3 秒让远射打掉另一个。",
-    "lose_all_dead": "全员倒下了。先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+    "default": "推荐：缚锁者先定住一个灵魂残响，趁那 3 秒让远射打掉另一个。",
+    "lose_all_dead": "全员倒下了。先解决专打最远的灵魂残响：远射站在 7 格外，灵魂残响够不着它。灵魂验尸官会追过腐地来——让它带着易伤撞上你的前排。"
   },
   "recommended": {
     "units": [
@@ -378,7 +404,10 @@
     "unlock_conditions": [],
     "unlock_selectors": [],
     "unlock_actions": [],
-    "unlock_level": "level_c18"
+    "unlock_level": "level_c18",
+    "unlock_relics": [
+      "lantern"
+    ]
   },
   "_rewards_note": "",
   "verification": {
@@ -396,7 +425,7 @@
     "重做：腐地整列 x=7；两名咒缚祭司（80 血）+ 一名守卫（130 血、视野 7）；胜利条件改为拆掉两个祭司；推荐解「远射射程差 + 守卫过腐地」；信标计费。"
   ],
   "display_index": 17,
-  "summary": "较复杂战斗：钟声范围内的定身",
+  "summary": "站到它打不到、你打得着的地方。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -429,9 +458,9 @@
     }
   ],
   "hints": [
-    "咒缚祭司射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。",
-    "守卫视野 7，看见谁就追谁；它要穿过腐地才能碰到你。",
-    "远射按「生命最低」先打祭司（80 血）而不是守卫（130 血）。",
-    "先解决专打最远的祭司：远射站在 7 格外，祭司够不着它。守卫会追过腐地来——让它带着易伤撞上你的前排。"
+    "灵魂残响射程 6、专打最远；远射射程 8。差的这 2 格就是你的安全区。",
+    "灵魂验尸官视野 7，看见谁就追谁；它要穿过腐地才能碰到你。",
+    "远射按「生命最低」先打灵魂残响（80 血）而不是灵魂验尸官（130 血）。",
+    "先解决专打最远的灵魂残响：远射站在 7 格外，灵魂残响够不着它。灵魂验尸官会追过腐地来——让它带着易伤撞上你的前排。"
   ]
 }

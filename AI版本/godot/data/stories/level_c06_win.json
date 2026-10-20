@@ -1,0 +1,70 @@
+{
+  "id": "level_c06_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "两株骨花的花心同时张开。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把右手扔了出去。手臂在空中冒出一节骨刺，扎进最远的那块地面。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "花心跟着转过去。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "两秒后，那一块被炸成了雾。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶低头看自己断掉的肩。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "不疼，对吗。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有回答。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "因为你身上一点能感知到它的东西都没有，你身上那些，全是别人的。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "你刚才那一下，烧的是一个死人灵魂中的愤怒。他在你的灵魂海里存了三年，还没烧完。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "所以你每用一次术法，都是别人在替你疼，别人在替你生气。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "及格。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸站起来，往头顶那道塌口走。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "跟上来。"
+    }
+  ]
+}

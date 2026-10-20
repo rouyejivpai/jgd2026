@@ -1,0 +1,137 @@
+{
+ "schema_version": 1,
+ "screen": "story_select",
+ "design_size": [
+  1920,
+  1080
+ ],
+ "_comment": "2026-10-21 04.zip 剧情选择（J01 剧情卡 / J02 返回 / J03 叠层，参考整图 docs/reference/ui_04/design_story_select.png）。坐标即切图在参考图中的位置（模板匹配）。手写，无拟合产物。卡片由 story_select.gd 按 card 的位置与 data.step 横排复制，标签按 card_label 相对卡的偏移放。",
+ "elements": [
+  {
+   "id": "overlay",
+   "kind": "image",
+   "file": "../gothic/story_overlay.png",
+   "rect": [
+    0,
+    0,
+    1920,
+    1080
+   ],
+   "data": {
+    "_note": "J03：半透明压暗 + 左侧纹饰，铺满视口；其下是程序的下层画面模糊"
+   }
+  },
+  {
+   "id": "heading",
+   "kind": "text_style",
+   "rect": [
+    428,
+    64,
+    1000,
+    56
+   ],
+   "text_rect": [
+    0,
+    0,
+    1000,
+    56
+   ],
+   "align": "left",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 30,
+    "color": "#D8D8D8"
+   },
+   "data": {
+    "_note": "参考图没有：页标题（关名 /「剧情回顾」），交代当前是哪一关的剧情"
+   }
+  },
+  {
+   "id": "card",
+   "kind": "image",
+   "file": "../gothic/story_card.png",
+   "rect": [
+    428,
+    130,
+    331,
+    807
+   ],
+   "data": {
+    "step": 347,
+    "clip_left": 400,
+    "_note": "第一张卡；之后每张右移 step；可见区从 clip_left 到视口右缘，超出时横向滚动"
+   }
+  },
+  {
+   "id": "card_label",
+   "kind": "text_style",
+   "rect": [
+    601,
+    591,
+    124,
+    26
+   ],
+   "text_rect": [
+    6,
+    0,
+    118,
+    26
+   ],
+   "align": "left",
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 20,
+    "color": "#3A3A3A"
+   },
+   "data": {
+    "min_size": 13,
+    "_note": "压在 J01 烘好的灰色标签框里；放不下时缩字（最小 min_size）"
+   }
+  },
+  {
+   "id": "btn_back",
+   "kind": "button",
+   "rect": [
+    1235,
+    893,
+    643,
+    146
+   ],
+   "text_rect": [
+    0,
+    0,
+    643,
+    146
+   ],
+   "key": "ui.back",
+   "states": {
+    "normal": {
+     "file": "../gothic/story_back.png",
+     "modulate": "#D8D2DA"
+    },
+    "hover": {
+     "file": "../gothic/story_back.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/story_back.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/story_back.png",
+     "modulate": "#6E6870"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 12,
+    "color": "#00000000",
+    "disabled_color": "#00000000"
+   },
+   "data": {
+    "dock": "right bottom",
+    "_note": "「返回」画在 J02 上：文字透明"
+   }
+  }
+ ]
+}

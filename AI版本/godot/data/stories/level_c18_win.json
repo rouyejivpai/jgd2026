@@ -1,0 +1,55 @@
+{
+  "id": "level_c18_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "对方自己开始拆左臂。动作很慢，像卸一件用了太久的家具。骨节一节一节松，最后一节脱开的时候有一点很轻的响声。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "她没有流血。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "拿着。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "钟响之前我是清醒的。钟一响，我就不知道会变成什么了。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "所以别等我清醒。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶接过骨臂。很沉。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "祷告做完了。她没有吃。"
+    },
+    {
+      "speaker": "bell_witch",
+      "illustration": "bell_witch",
+      "text": "到了那里，替我看看，神到底长什么样。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "这是第二个人对她说这句话。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bell_witch",
+      "text": "也是第二个人，说完就把眼睛闭上了。"
+    }
+  ]
+}

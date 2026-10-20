@@ -13,6 +13,8 @@ extends Control
 ## 遗物（2026-10-19）：遗物栏点按后进入点选（HUD.relic_armed）——地块遗物左键点落点放下，骨刃 / 徽章左键点目标生效，右键取消；
 ## 地块遗物也可从遗物栏直接拖到地图上（同放置人偶：吸附预览、非法格红闪 + 原因气泡）；部署阶段按住已放下的地块可拖动挪位，
 ## 拖出战场 / 拖回底栏 = 撤回，未选中单位时右键地块也可撤回。
+## 音效（2026-10-20）：在各操作点直接播——拿起 ui_drag_pick / relic_pick，预览吸附新格 drag_snap（非法格降调），放下合法 deploy_place /
+## relic_place / beacon_place，非法 ui_error，拖出战场 deploy_remove，从这里拖起却没被接收 drag_cancel；选中单位 unit_select_*，点空地收起侧栏 ui_panel_close。
 
 var _root: Node2D = null
 var _controller: BattleController = null
@@ -20,6 +22,9 @@ var _drag_beacon: String = ""            ## 正在拖动的信标编号
 var _drag_slot: String = ""
 var _press_unit: int = -1                ## 部署阶段按下的己方单位（松开未拖动 = 选中）
 var _cam_drag: bool = false              ## Ctrl + 左键拖动镜头中
+var _snap_cell: Vector2i = Vector2i(-1, -1)   ## 上次吸附预览的格（换格才响 drag_snap）
+var _hover_target: int = -1              ## 骨刃 / 徽章点选中悬停的合法目标
+var _drag_source: bool = false           ## 当前 GUI 拖拽从这里拖起（结束时未被接收 = drag_cancel）
 
 
 func setup(root: Node2D, controller: BattleController) -> void:
@@ -40,6 +45,7 @@ func _gui_input(event: InputEvent) -> void:
 			var cell: Vector2i = _root.call("screen_to_cell", mm.global_position) as Vector2i
 			var ok: bool = bool(_root.call("in_playfield", mm.global_position)) and _controller.can_place_beacon(_drag_slot, cell, _drag_beacon)
 			_root.call("set_beacon_drag", _drag_beacon, cell, ok)
+			_snap(cell, ok)
 			accept_event()
 			return
 		if relic_armed() != "":
@@ -63,6 +69,7 @@ func _gui_input(event: InputEvent) -> void:
 			_relic_click(mb.global_position)
 		else:
 			_hud().call("disarm_relic")
+			AudioManager.play_sfx("relic_disarm", "UI")
 		accept_event()
 		return
 	if mb != null and mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed and _try_remove_relic(mb.global_position):
@@ -91,10 +98,12 @@ func _gui_input(event: InputEvent) -> void:
 		if _controller != null and _controller.phase == SimTypes.Phase.DEPLOY and _controller.slot_of_unit(id) != "":
 			_press_unit = id               # 部署阶段的己方单位：松开时（未拖动）才选中
 		else:
+			_select_sound(id)
 			EventBus.unit_selected.emit(id)
 		accept_event()
 		return
 	if mb != null and not mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _press_unit >= 0:
+		_select_sound(_press_unit)
 		EventBus.unit_selected.emit(_press_unit)
 		_press_unit = -1
 		accept_event()
@@ -112,7 +121,8 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		if rid != "":                          # 按住已放下的遗物地块拖动 = 挪位 / 拖出战场撤回
 			_press_unit = -1
 			set_drag_preview(RelicSlot.make_preview(rid, float(_root.call("cell_screen_px"))))
-			AudioManager.play_sfx("ui_drag_pick", "UI")
+			AudioManager.play_sfx("relic_pick", "UI")
+			_drag_source = true
 			return { "relic": rid, "from_map": true }
 	if sid == "" or _cam_drag or beacon_mode_slot() != "" or relic_armed() != "":
 		return null
@@ -120,6 +130,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	set_drag_preview(RosterCard.make_preview(_controller.form_of(sid), float(_root.call("cell_screen_px"))))
 	_root.call("set_drag_source", _controller.unit_id_of_slot(sid))
 	AudioManager.play_sfx("ui_drag_pick", "UI")
+	_drag_source = true
 	return { "slot_id": sid, "from_map": true }
 
 
@@ -134,6 +145,7 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 		return false
 	if not bool(_root.call("in_playfield", get_global_transform() * at_position)):
 		_root.call("clear_drag_hover")
+		_snap_cell = Vector2i(-1, -1)
 		RosterCard.tint_preview(0)
 		RosterCard.show_preview(true)
 		return bool(d.get("from_map", false))
@@ -141,6 +153,7 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	var legal: bool = drop_problem(d, cell) == ""
 	var form: String = str(d["form"]) if d.has("form") else _controller.form_of(str(d["slot_id"]))
 	_root.call("set_drag_hover", cell, legal, form)          # 第四阶段：虚影吸附到最近的地块显示预览
+	_snap(cell, legal)
 	RosterCard.tint_preview(1 if legal else -1)
 	RosterCard.show_preview(false)                           # 战场内只显示吸附后的虚影，不再跟手
 	return true      # 非法格也接收放下：红闪 + 原因 toast（10 §4）
@@ -156,29 +169,33 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	var screen: Vector2 = get_global_transform() * at_position
 	var cell: Vector2i = _root.call("screen_to_cell", screen) as Vector2i
 	var inside: bool = bool(_root.call("in_playfield", screen))
-	AudioManager.play_sfx("ui_drag_drop", "UI")
 	_root.call("clear_drag_hover")
+	_snap_cell = Vector2i(-1, -1)
 	if d.has("relic"):
 		_drop_relic(d, cell, inside)
 		return
 	if not inside:
-		if bool(d.get("from_map", false)):
-			_controller.remove_unit(str(d["slot_id"]))      # 拖出战场 = 移除（侧栏随之收起，见 BattleRoot）
+		if bool(d.get("from_map", false)) and _controller.remove_unit(str(d["slot_id"])):      # 拖出战场 = 移除（侧栏随之收起，见 BattleRoot）
+			AudioManager.play_sfx("deploy_remove")
 		return
 	var problem: String = drop_problem(d, cell)
-	if problem != "":
+	if problem != "":                                  # 含增援超预算（BUDGET_EXCEEDED）等
+		AudioManager.play_sfx("ui_error", "UI")
 		_root.call("flash_illegal", cell)
 		EventBus.toast.emit(cannot_place_text(problem))
 		if bool(_root.call("in_playfield", screen)) and _root.has_method("cell_top_screen"):
 			EventBus.toast_at.emit(cannot_place_text(problem), _root.call("cell_top_screen", cell) as Vector2)
 		return
 	if d.has("form"):
-		var uid: String = _controller.add_unit(str(d["form"]), cell)
+		var uid: String = _controller.add_unit(str(d["form"]), cell)      # 含 Boss 换阶段暂停的增援
+		_place_sound(uid != "")
 		if uid != "":
 			EventBus.unit_selected.emit(_controller.unit_id_of_slot(uid))
 		return
 	var sid: String = str(d["slot_id"])
-	if _controller.place_unit(sid, cell) and not bool(d.get("from_map", false)):
+	var placed: bool = _controller.place_unit(sid, cell)
+	_place_sound(placed)
+	if placed and not bool(d.get("from_map", false)):
 		EventBus.unit_selected.emit(_controller.unit_id_of_slot(sid))   # 槽位卡首次放下才打开详情；地图上移动不弹出（第四阶段）
 
 
@@ -187,12 +204,39 @@ static func cannot_place_text(problem: String) -> String:
 	return DataRegistry.get_string("validation.cannot_place.format").format({ "reason": DataRegistry.get_string("validation.cannot_place." + problem) })
 
 
+## 预览吸附到新格：轻响 drag_snap，非法格降调（同格不重复）
+func _snap(cell: Vector2i, legal: bool) -> void:
+	if cell == _snap_cell:
+		return
+	_snap_cell = cell
+	AudioManager.play_sfx("drag_snap", "UI", -6.0, 1.0 if legal else 0.7, 0.04, 30)
+
+
+static func _place_sound(ok: bool) -> void:
+	if ok:
+		AudioManager.play_sfx("deploy_place")
+	else:
+		AudioManager.play_sfx("ui_error", "UI")
+
+
+## 左键选中：己方 / 敌方各一声；点空地且侧栏开着 = 收起
+func _select_sound(id: int) -> void:
+	if id >= 0:
+		AudioManager.play_sfx("unit_select_ally" if _controller != null and _controller.slot_of_unit(id) != "" else "unit_select_enemy", "UI")
+	elif _hud() != null and _hud().has_method("side_visible") and bool(_hud().call("side_visible")):
+		AudioManager.play_sfx("ui_panel_close", "UI")
+
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END and _root != null:
 		_root.call("clear_drag_hover")
 		_root.call("clear_relic_hover")
 		_root.call("set_drag_source", -1)
 		RosterCard.tint_preview(0)
+		_snap_cell = Vector2i(-1, -1)
+		if _drag_source and not get_viewport().gui_is_drag_successful():
+			AudioManager.play_sfx("drag_cancel", "UI")
+		_drag_source = false
 	elif what == NOTIFICATION_MOUSE_EXIT and get_parent() != null:
 		get_parent().call("hide_tooltip")
 
@@ -206,14 +250,18 @@ func beacon_mode_slot() -> String:
 func _place_beacon_at(screen_pos: Vector2) -> void:
 	var sid: String = beacon_mode_slot()
 	if not bool(_root.call("in_playfield", screen_pos)) or not _controller.can_edit_beacons(sid):
+		AudioManager.play_sfx("ui_error", "UI")
 		return
 	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
 	if _controller.next_beacon_id(sid) == "":
+		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_soft_cap").format({ "n": SimTypes.BEACON_SOFT_CAP }))
 	elif not _controller.can_place_beacon(sid, cell):
 		if str(_root.call("beacon_at_screen", sid, screen_pos)) == "":
+			AudioManager.play_sfx("ui_error", "UI")
 			EventBus.toast_at.emit(DataRegistry.get_string("ui.beacon_blocked"), _root.call("cell_top_screen", cell) as Vector2)
 	elif not _controller.can_afford_beacon():
+		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
 	else:
 		_add_beacon(sid, cell)
@@ -223,6 +271,7 @@ func _undo_beacon() -> void:
 	var sid: String = beacon_mode_slot()
 	var bs: Array[Dictionary] = _controller.get_beacons(sid)
 	if bs.is_empty() or not _controller.can_edit_beacons(sid):
+		AudioManager.play_sfx("ui_error", "UI")
 		return
 	_remove_beacon(sid, str(bs[bs.size() - 1]["id"]))
 
@@ -238,32 +287,39 @@ func _on_right_click(screen_pos: Vector2) -> void:
 		return
 	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
 	if _controller.next_beacon_id(sid) == "":
+		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_soft_cap").format({ "n": SimTypes.BEACON_SOFT_CAP }))
 	elif not _controller.can_place_beacon(sid, cell):
+		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_blocked"))
 	elif not _controller.can_afford_beacon():
+		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
 	else:
 		_add_beacon(sid, cell)
 
 
-## 放一个信标；用完库存时自动买了一包 → 提示扣费
+## 放一个信标；用完库存时自动买了一包 → 提示扣费（soul_spend；HUD 预算刷新时同名 50 ms 内去重）
 func _add_beacon(sid: String, cell: Vector2i) -> void:
 	var stock: int = _controller.beacon_stock()
 	if _controller.add_beacon(sid, cell) == "":
+		AudioManager.play_sfx("ui_error", "UI")
 		return
-	AudioManager.play_sfx("deploy_place")
+	AudioManager.play_sfx("beacon_place")
 	if _controller.beacon_stock() > stock:
+		AudioManager.play_sfx("soul_spend", "UI")
 		EventBus.toast.emit(beacon_pack_text(_controller, "ui.beacon_pack_bought"))
 
 
-## 删一个信标；整包用不着时自动退回 → 提示返还
+## 删一个信标；整包用不着时自动退回 → 提示返还（soul_refund）
 func _remove_beacon(sid: String, beacon_id: String) -> void:
 	var stock: int = _controller.beacon_stock()
 	if not _controller.remove_beacon(sid, beacon_id):
+		AudioManager.play_sfx("ui_error", "UI")
 		return
-	AudioManager.play_sfx("deploy_remove")
+	AudioManager.play_sfx("beacon_remove")
 	if _controller.beacon_stock() < stock:
+		AudioManager.play_sfx("soul_refund", "UI")
 		EventBus.toast.emit(beacon_pack_text(_controller, "ui.beacon_pack_refunded"))
 
 
@@ -295,14 +351,20 @@ func _try_begin_beacon_drag(screen_pos: Vector2) -> bool:
 		return false
 	_drag_beacon = id
 	_drag_slot = sid
-	_root.call("set_beacon_drag", id, _root.call("screen_to_cell", screen_pos), true)
+	_snap_cell = _root.call("screen_to_cell", screen_pos) as Vector2i
+	_root.call("set_beacon_drag", id, _snap_cell, true)
+	AudioManager.play_sfx("ui_drag_pick", "UI")
 	return true
 
 
 func _end_beacon_drag(screen_pos: Vector2) -> void:
 	var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
-	if bool(_root.call("in_playfield", screen_pos)):
-		_controller.move_beacon(_drag_slot, _drag_beacon, cell)
+	var moved: bool = bool(_root.call("in_playfield", screen_pos)) and _controller.move_beacon(_drag_slot, _drag_beacon, cell)
+	if moved:
+		AudioManager.play_sfx("beacon_place")
+	else:
+		AudioManager.play_sfx("ui_error", "UI")
+	_snap_cell = Vector2i(-1, -1)
 	_drag_beacon = ""
 	_drag_slot = ""
 	_root.call("clear_beacon_drag")
@@ -345,27 +407,38 @@ func _relic_hover(screen_pos: Vector2) -> void:
 	if _is_tile_relic(rid):
 		if not bool(_root.call("in_playfield", screen_pos)):
 			_root.call("clear_relic_hover")
+			_snap_cell = Vector2i(-1, -1)
 			return
 		var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
-		_root.call("set_relic_hover", rid, cell, _controller.can_place_relic_tile(rid, cell))
+		var ok: bool = _controller.can_place_relic_tile(rid, cell)
+		_root.call("set_relic_hover", rid, cell, ok)
+		_snap(cell, ok)
 	else:
 		var id: int = int(_root.call("unit_at_screen", screen_pos))
-		_root.call("set_relic_target_hover", rid, id if _controller.relic_target_ok(rid, id) else -1)
+		var target: int = id if _controller.relic_target_ok(rid, id) else -1
+		_root.call("set_relic_target_hover", rid, target)
+		if target >= 0 and target != _hover_target:      # 悬停到新的合法目标：轻响
+			AudioManager.play_sfx("drag_snap", "UI", -6.0, 1.1, 0.04, 30)
+		_hover_target = target
 
 
 ## 点选中左键：放下地块 / 对目标生效；点到矩形外 = 取消
 func _relic_click(screen_pos: Vector2) -> void:
 	var rid: String = relic_armed()
+	_snap_cell = Vector2i(-1, -1)
+	_hover_target = -1
 	if not bool(_root.call("in_playfield", screen_pos)):
 		_hud().call("disarm_relic")
+		AudioManager.play_sfx("relic_disarm", "UI")
 		return
 	if _is_tile_relic(rid):
 		var cell: Vector2i = _root.call("screen_to_cell", screen_pos) as Vector2i
 		if _controller.place_relic_tile(rid, cell):
-			AudioManager.play_sfx("deploy_place")
+			AudioManager.play_sfx("relic_place")
 			EventBus.toast.emit(DataRegistry.get_string("ui.relic_placed_toast").format({ "name": _relic_name(rid) }))
 			_hud().call("disarm_relic")
 		else:
+			AudioManager.play_sfx("ui_error", "UI")
 			_root.call("flash_illegal", cell)
 			EventBus.toast_at.emit(DataRegistry.get_string("ui.relic_bad_cell"), _root.call("cell_top_screen", cell) as Vector2)
 		return
@@ -396,12 +469,14 @@ func _can_drop_relic(at_position: Vector2, d: Dictionary) -> bool:
 	var screen: Vector2 = get_global_transform() * at_position
 	if not bool(_root.call("in_playfield", screen)):
 		_root.call("clear_relic_hover")
+		_snap_cell = Vector2i(-1, -1)
 		RosterCard.tint_preview(0)
 		RosterCard.show_preview(true)
 		return from_map
 	var cell: Vector2i = _root.call("screen_to_cell", screen) as Vector2i
 	var legal: bool = _controller.can_place_relic_tile(rid, cell, from_map)
 	_root.call("set_relic_hover", rid, cell, legal)
+	_snap(cell, legal)
 	RosterCard.tint_preview(1 if legal else -1)
 	RosterCard.show_preview(false)
 	return true
@@ -416,10 +491,11 @@ func _drop_relic(d: Dictionary, cell: Vector2i, inside: bool) -> void:
 			EventBus.toast.emit(DataRegistry.get_string("ui.relic_removed_toast").format({ "name": _relic_name(rid) }))
 		return
 	if _controller.place_relic_tile(rid, cell):
-		AudioManager.play_sfx("deploy_place")
+		AudioManager.play_sfx("relic_place")
 		if not bool(d.get("from_map", false)):
 			EventBus.toast.emit(DataRegistry.get_string("ui.relic_placed_toast").format({ "name": _relic_name(rid) }))
 		_hud().call("disarm_relic")
 	else:
+		AudioManager.play_sfx("ui_error", "UI")
 		_root.call("flash_illegal", cell)
 		EventBus.toast_at.emit(DataRegistry.get_string("ui.relic_bad_cell"), _root.call("cell_top_screen", cell) as Vector2)

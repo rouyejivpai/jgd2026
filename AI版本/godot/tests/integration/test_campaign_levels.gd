@@ -100,6 +100,21 @@ func test_boss_pause_rules() -> void:
 	assert_ne(alive, "", "有存活单位")
 	assert_true(c.can_edit_rules(alive), "暂停中可改存活单位的指令")
 	assert_false(c.place_unit(alive, Vector2i(2, 6)), "暂停中不能挪动已有单位")
+	# 2026-10-20 用户反馈：暂停中放的信标只存在控制器里（「继续」时才写进模拟），信标层须读控制器，否则放了看不见
+	var bcell := Vector2i(-1, -1)
+	for y: int in level.height:
+		for x: int in level.width:
+			if bcell.x < 0 and c.can_place_beacon(alive, Vector2i(x, y)):
+				bcell = Vector2i(x, y)
+	assert_true(c.can_edit_beacons(alive), "暂停中可改存活单位的信标")
+	var bn: int = c.get_beacons(alive).size()
+	var layer: Node2D = (load("res://scripts/battle/beacon_layer.gd") as GDScript).new() as Node2D
+	layer.set("controller", c)
+	if c.can_afford_beacon():
+		assert_ne(c.add_beacon(alive, bcell), "", "暂停中可以给存活单位放信标")
+		assert_eq((layer.call("_beacons_of", alive, true) as Array).size(), bn + 1, "暂停中信标层显示新放的信标")
+		c.remove_beacon(alive, str(c.get_beacons(alive)[bn]["id"]))
+	layer.free()
 	assert_ne(c.place_problem("lancer", Vector2i(10, 6)), "", "增援区外不能放增援")
 	assert_eq(c.place_problem("striker", Vector2i(2, 6)), "", "增援区内可以放增援")
 	var u1: String = c.add_unit("bulwark", Vector2i(2, 5))

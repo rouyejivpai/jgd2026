@@ -202,5 +202,22 @@
     ],
     "handoff_s": 0.62,
     "_note": "灵魂储量（预算铭牌）被消耗时的数字演出（SoulBurst）：铭牌亮起并闪一下（flash_keys = [秒, 强度] 关键帧，glow_* 为辉光色与相对 Label 的大小）；旧数字白热 hold_s 秒、胀到 old_scale 后按字形化作白色粒子炸开（particle_step_px = 字形采样网格步长，越小越密；速度 / 阻尼 / 上飘加速度 / 寿命 / 大小）；新数字在 new_delay_s 后用 new_in_s 由 new_scale_from 放大浮现、new_hot_s 内由白热回到原字色；handoff_s 时交还原 Label"
+  },
+  "hint_beckon": {
+    "retries": 3,
+    "fade_in_s": 0.45,
+    "fade_out_s": 0.3,
+    "pulse_s": 1.6,
+    "halo_outer_px": 22.0,
+    "halo_outer_alpha": [0.25, 0.5],
+    "halo_inner_px": 9.0,
+    "halo_inner_alpha": [0.3, 0.6],
+    "spawn_per_s": 18.0,
+    "particle_life_s": [0.9, 1.7],
+    "particle_size_px": [1.6, 3.2],
+    "rise_px_s": [22.0, 52.0],
+    "drift_px_s": 10.0,
+    "color": "#FFFFFF",
+    "_note": "累计重试 retries 次后「提示」按钮的召唤演出（HintBeckon）：按钮背后白色光晕（halo_outer / halo_inner = 外层宽淡、内层窄亮两层柔光：_px 为向外扩出的设计像素（按钮高 32 时），_alpha 为呼吸的低端 / 高端，pulse_s = 呼吸一周）+ 从按钮边缘升起的白色光点（每秒生成数、寿命、大小、上飘 / 左右漂移速度）。开始发光时计数归零；之后点任意按钮淡出（fade_out_s）。"
   }
 }

@@ -1,0 +1,90 @@
+{
+  "id": "level_c27_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "拱门是骨头搭的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "门楣上刻满了名字。密密麻麻，从左边刻到右边，从上边刻到下边，刻不下了就刻在侧面。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她在门外停下。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她在找。找到了几个——塞拉。骨者。缄默。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "全是她这一路走来遇到的人。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "门里传来脚步声。很轻，很随意。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "一个女人从拱门下走出来。黑色长裙，白头发，帽檐压得很低。左臂的袖口没有遮住——裂缝从小臂一直裂到手背，缝里开着花。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "她笑着轻轻拍手，仿佛在和两侧的雕像一同欢迎这位小小的冒险家。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "欢迎欢迎。你终于到啦。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "那声音和她体内那个，一模一样。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "这里是哪里？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "骨花温室。你的考场。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你是织骸？"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "我是织骸魔女。也是你的创造者。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你为什么创造我？"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch",
+      "text": "织骸沉默了一下。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "因为我想看看，一个没有情绪的东西，能不能走到这里。"
+    }
+  ]
+}

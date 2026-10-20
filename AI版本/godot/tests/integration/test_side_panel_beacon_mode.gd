@@ -133,7 +133,18 @@ func test_beacon_mode_by_number_key_places_and_undoes() -> void:
 	root.call("_input", key)
 	var second: String = c.deployed_uids()[1]
 	assert_eq(str(hud.call("beacon_mode_slot")), second, "数字键 2 = 第 2 个已部署单位进入信标模式")
-	assert_eq(int(root.get("selected_id")), c.unit_id_of_slot(second), "并选中该单位（侧栏打开）")
+	assert_eq(int(root.get("selected_id")), c.unit_id_of_slot(second), "并选中该单位")
+	assert_false(bool(hud.call("side_visible")), "2026-10-21：进入信标模式收起指令界面")
+	# 信标模式中切换到另一个单位（数字键 / 选中己方）：指令界面保持收起
+	var first: String = c.deployed_uids()[0]
+	key.physical_keycode = KEY_1
+	key.keycode = KEY_1
+	root.call("_input", key)
+	assert_eq(str(hud.call("beacon_mode_slot")), first, "数字键 1 切到第 1 个单位")
+	assert_false(bool(hud.call("side_visible")), "切换单位：指令界面不打开")
+	EventBus.unit_selected.emit(c.unit_id_of_slot(second))
+	assert_eq(str(hud.call("beacon_mode_slot")), second, "选中另一个己方单位：信标模式切过去")
+	assert_false(bool(hud.call("side_visible")), "选中己方切换：指令界面仍收起")
 	var bar: Control = hud.get_node("BeaconBar") as Control
 	assert_true(bar.visible, "底部信标边栏")
 	assert_false((hud.find_child("CardList", true, false) as Control).visible, "边栏替换出场卡")

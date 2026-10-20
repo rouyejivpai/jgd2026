@@ -122,6 +122,17 @@ func _process(_delta: float) -> void:
 	if not overlay.visible and str(step["advance"]) == "event" and str(step["event"]) == "ally_selected" and _ally_panel_open():
 		_advance()                              # 放下单位会自动打开指令界面：「选中己方」已成立，这一步不再出现（否则永远等不到事件）
 		return
+	if str(step["advance"]) == "event":
+		# 信标模式 / 侧栏按状态推进：已在信标模式（或已退出）、侧栏已收起时直接成立。
+		# 须先于 panel_fix：点「信标」会收起指令界面（2026-10-21），否则「购买信标」（高亮界面里的按钮）会被误插「打开指令界面」，
+		# 而信标模式下点人偶是放信标、等不到选中，引导卡死
+		var on: bool = str(hud.call("beacon_mode_slot")) != ""
+		if str(step["event"]) == "beacon_mode" and on:
+			_fire("beacon_mode")
+		elif str(step["event"]) == "beacon_mode_exit" and not on:
+			_fire("beacon_mode_exit")
+		elif str(step["event"]) == "panel_closed" and not bool(hud.call("side_visible")):
+			_fire("panel_closed")
 	var fix: Dictionary = panel_fix(step)
 	if not fix.is_empty():
 		steps.insert(index, fix)                # 先插一步「收起 / 打开指令界面」，完成后回到原步骤
@@ -131,15 +142,6 @@ func _process(_delta: float) -> void:
 	if not overlay.visible:
 		_show(step)
 	overlay.set_targets(target_rects(step))
-	if str(step["advance"]) == "event":
-		# 信标模式 / 侧栏按状态推进：已在信标模式（或已退出）、侧栏已收起时直接成立
-		var on: bool = str(hud.call("beacon_mode_slot")) != ""
-		if str(step["event"]) == "beacon_mode" and on:
-			_fire("beacon_mode")
-		elif str(step["event"]) == "beacon_mode_exit" and not on:
-			_fire("beacon_mode_exit")
-		elif str(step["event"]) == "panel_closed" and not bool(hud.call("side_visible")):
-			_fire("panel_closed")
 
 
 func _show(step: Dictionary) -> void:
@@ -439,6 +441,7 @@ func _advance() -> void:
 		if controller.phase == SimTypes.Phase.PAUSED:
 			controller.resume()
 	if index >= steps.size():
+		AudioManager.play_ui("tutorial_done")      # 走完最后一步（跳过 / 战斗结束不响）
 		finish(false)
 
 
@@ -473,6 +476,7 @@ func _add_back_button() -> void:
 	back_button.position = Vector2(root.get_viewport_rect().size.x * 0.5 - 90.0, 140.0)
 	back_button.custom_minimum_size = Vector2(180.0, 44.0)
 	back_button.pressed.connect(_back_to_editor)
+	back_button.set_meta("sfx_press", "ui_back")
 	layer.add_child(back_button)
 
 
@@ -533,6 +537,7 @@ func _input(event: InputEvent) -> void:
 			_queue_advance()
 		elif adv == "tap" and not overlay.panel_rect().has_point(click.position):
 			get_viewport().set_input_as_handled()     # 点任意处继续：这一下只用来推进，不传给下面的界面
+			AudioManager.play_ui("ui_click")
 			_queue_advance()
 		return
 	var key: InputEventKey = event as InputEventKey

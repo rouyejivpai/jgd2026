@@ -350,7 +350,7 @@
   "id": "level_c07",
   "index": 107,
   "title": "猎首",
-  "subtitle": "刺杀：盯住那只最大的",
+  "subtitle": "不必杀完，杀掉那个带头的。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_selectors": [],
@@ -364,7 +364,7 @@
     "选敌改为「血量上限最高」（新增 selector）；加撤离与出口失败条件，使选敌差异可被测出。"
   ],
   "display_index": 7,
-  "summary": "刺杀：盯住那只最大的",
+  "summary": "不必杀完，杀掉那个带头的。",
   "chapter": "chapter_02",
   "modifiers": [
     {

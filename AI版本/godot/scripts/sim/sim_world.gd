@@ -91,6 +91,8 @@ static func from_level(level: LevelDefinition, unit_defs: Dictionary, trait_defs
 		var sdef: UnitDefinition = unit_defs.get(s.unit_id, null) as UnitDefinition
 		if sdef == null:
 			continue
+		if not s.skin().is_empty():
+			sdef = sdef.reskinned(s.skin())
 		var srules: Array[RuleDef] = RuleDef.clone_array(s.rules if s.has_rules else sdef.default_rules)
 		var su: SimUnit = SimUnit.create(sdef, s.faction, SimTypes.cell_center(s.pos), srules)
 		su.spawn_id = s.id

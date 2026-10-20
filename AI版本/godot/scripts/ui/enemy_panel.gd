@@ -26,7 +26,7 @@ func setup(p_controller: BattleController, p_level: LevelDefinition) -> void:
 	controller = p_controller
 	level = p_level
 	size = DetailKit.rel("det_panel").size          # 位置与尺寸由 HUD 摆放（框体内左上对齐）
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	mouse_filter = Control.MOUSE_FILTER_IGNORE   # 尺寸按整张底图（含伸到地图上的纹饰）：自身不拦截，否则侧栏旁一大片地图点不到（2026-10-20 第 3 关放不下信标）；框体 Frame 拦截侧栏内的点击
 	_portrait = DetailKit.portrait(self)
 	_name = DetailKit.label(self, "det_title")
 	_desc = DetailKit.label(self, "det_desc")

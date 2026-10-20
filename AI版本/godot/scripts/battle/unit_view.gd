@@ -45,6 +45,7 @@ const AFTERIMAGE_ALPHA: float = 0.45
 const AFTERIMAGE_TINT: Color = Color(1.0, 0.86, 0.55)          ## 己方金色残影
 const AFTERIMAGE_TINT_ENEMY: Color = Color(1.0, 0.42, 0.42)    ## 敌方红色残影
 const AFTERIMAGE_MIN_PX: float = 0.6      ## 每帧显示位移不足该像素不留残影（原地不动时）
+const RETREAT_SWISH_MSEC: int = 250       ## 撤离起步音全局限频（多名单位同时撤离只响一声）
 const RING_PULSE_HZ: float = 0.45         ## 阵营光圈呼吸
 const SELECT_COLOR: Color = Color(1.5, 1.45, 1.3, 1.0)   ## 选中环：亮白（金色已用作己方光圈）
 const MOVE_OMEGA: float = 22.0            ## 显示位置弹簧角频率：越大越跟手；加减速过渡约 4.7 / ω 秒
@@ -93,6 +94,7 @@ var _flip_tween: Tween = null
 var _lean_tween: Tween = null
 var _leaning: bool = false
 var _ghost_clock: float = 0.0
+var _retreat_swished: bool = false       ## 本段撤离已播过 retreat_swish
 var _gait: Node2D = null                 ## 精灵的父节点（Body 之内）：跳动 / 倾斜 / 压扁只作用于人物
 var _vel: Vector2 = Vector2.ZERO         ## 显示位置速度（本层像素 / 秒）
 var _gait_phase: float = 0.0             ## 每 π 一步
@@ -303,7 +305,12 @@ func _process(delta: float) -> void:
 		_ghost_clock += delta
 		if _ghost_clock >= AFTERIMAGE_INTERVAL and before.distance_to(position) >= AFTERIMAGE_MIN_PX:
 			_ghost_clock = 0.0
+			if not _retreat_swished:      # 每段撤离起步一声（不随残影逐个响；与动效总闸无关）
+				_retreat_swished = true
+				AudioManager.play_sfx("retreat_swish", "SFX", -8.0, 1.0, 0.08, RETREAT_SWISH_MSEC)
 			_spawn_afterimage()
+	elif not is_retreating():
+		_retreat_swished = false
 	_update_gait(delta)
 	_overlay.queue_redraw()
 	if objective_kind != OBJ_NONE or not unit.is_structure():

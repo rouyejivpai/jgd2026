@@ -70,8 +70,10 @@ func _ready() -> void:
 	_step.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	foot.add_child(_step)
 	_back = _button("BackButton", "ui.tutorial_back", back_pressed)
+	_back.set_meta("sfx_press", "ui_back")
 	foot.add_child(_back)
 	_skip = _button("SkipButton", "ui.tutorial_skip", skip_pressed)
+	_skip.set_meta("sfx_press", "ui_back")
 	foot.add_child(_skip)
 	_next = _button("NextButton", "ui.tutorial_next", next_pressed)
 	foot.add_child(_next)
@@ -136,7 +138,7 @@ func show_step(title: String, text: String, step_n: int, total: int, show_next: 
 	panel_side = p_panel
 	visible = true
 	_layout_panel()
-	UiKit.slide_in.call_deferred([_panel])     # 2026-10-19：每一步的说明框缓动滑入（等本帧高亮 / 摆放定好再取位置）
+	UiKit.slide_in.call_deferred([_panel], Rect2(), [], "slide_in", "tip_card")     # 2026-10-19：每一步的说明框缓动滑入（等本帧高亮 / 摆放定好再取位置）；出现音 tip_card
 
 
 func set_back_visible(on: bool) -> void:
@@ -174,6 +176,13 @@ func _has_point(point: Vector2) -> bool:
 		if r.has_point(point):
 			return false
 	return true
+
+
+## 被吞掉的点击（高亮外，_has_point 为 true 才会到这里）：轻声 ui_error
+func _gui_input(event: InputEvent) -> void:
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+		AudioManager.play_ui("ui_error", -8.0)
 
 
 func in_hole(point: Vector2) -> bool:

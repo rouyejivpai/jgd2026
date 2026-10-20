@@ -1,0 +1,20 @@
+{
+  "id": "level_c08_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "东西送到了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她回头找那个魔女，那头只剩一道拖痕，拖到一半就断了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "keeper",
+      "text": "拖痕尽头落着那件灰斗篷，斗篷里面是空的。"
+    }
+  ]
+}

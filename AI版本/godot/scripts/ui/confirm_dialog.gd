@@ -27,6 +27,8 @@ func _ready() -> void:
 	var cancel: Button = nodes["btn_cancel"] as Button
 	ok.pressed.connect(_on_ok)
 	cancel.pressed.connect(_on_cancel)
+	ok.set_meta("sfx_press", "ui_confirm_major")
+	cancel.set_meta("sfx_press", "ui_back")
 	_trap_focus(ok, cancel)
 	_trap_focus(cancel, ok)
 	resized.connect(_layout)
@@ -67,6 +69,7 @@ func is_open() -> bool:
 func _input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
+		AudioManager.play_ui("ui_back")
 		_on_cancel()
 
 

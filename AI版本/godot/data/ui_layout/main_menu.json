@@ -62,7 +62,7 @@
       "kind": "button",
       "rect": [
         1640,
-        548,
+        482,
         250,
         52
       ],
@@ -93,7 +93,7 @@
       "kind": "button",
       "rect": [
         1640,
-        614,
+        548,
         250,
         52
       ],
@@ -118,6 +118,40 @@
         "disabled": "res://assets/ui/gothic/hex_dark.png"
       },
       "theme_type": "main_menu__btn_start"
+    },
+    {
+      "id": "btn_story",
+      "kind": "button",
+      "rect": [
+        1640,
+        614,
+        250,
+        52
+      ],
+      "text_rect": [
+        24,
+        4,
+        202,
+        44
+      ],
+      "align": "center",
+      "key": "ui.menu_story",
+      "data": {
+        "_note": "2026-10-21（用户 04.zip）：剧情回顾图鉴入口；继续 / 新游戏随之上移一格，设置 / 退出不动"
+      },
+      "ninepatch": [
+        16,
+        0,
+        16,
+        0
+      ],
+      "states": {
+        "normal": "res://assets/ui/gothic/hex_dark.png",
+        "hover": "res://assets/ui/gothic/hex_gray.png",
+        "pressed": "res://assets/ui/gothic/hex_gray.png",
+        "disabled": "res://assets/ui/gothic/hex_dark.png"
+      },
+      "theme_type": "main_menu__btn_story"
     },
     {
       "id": "btn_settings",

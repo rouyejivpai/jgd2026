@@ -9,8 +9,9 @@ var _debris: CombatFx.DebrisFlight = null
 
 
 ## 射弹：from → to（本层坐标），沿随机弧线飞行。on_impact 在弹头到达时调用（受击表现）；bend_side 见 CombatFx.Projectile
-func spawn_projectile(from: Vector2, to: Vector2, ally: bool, shape: int, size: float = 1.0, on_impact: Callable = Callable(), bend_side: float = 0.0) -> void:
+func spawn_projectile(from: Vector2, to: Vector2, ally: bool, shape: int, size: float = 1.0, on_impact: Callable = Callable(), bend_side: float = 0.0, tint: Color = Color(0, 0, 0, 0)) -> void:
 	var p := CombatFx.Projectile.new()
+	p.tint = tint
 	p.bend_side = bend_side
 	p.from = from
 	p.to = to
@@ -50,10 +51,10 @@ func spawn_pillar(feet: Vector2, ally: bool, size: float, kind: String) -> void:
 
 
 ## 延迟爆炸落点预警（ally = 施放者为己方：金色，否则红色）
-func spawn_blast_marker(world: SimWorld, blast_id: int, screen_pos: Vector2, radius_cells: float, delay: float, ally: bool = false) -> void:
+func spawn_blast_marker(world: SimWorld, blast_id: int, screen_pos: Vector2, radius_cells: float, delay: float, ally: bool = false, tint: Color = Color(0, 0, 0, 0)) -> void:
 	var m := BlastMarker.new()
 	add_child(m)
-	m.setup(world, blast_id, screen_pos, radius_cells, delay, ally)
+	m.setup(world, blast_id, screen_pos, radius_cells, delay, ally, tint)
 	_markers[blast_id] = m
 
 

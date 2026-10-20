@@ -1,6 +1,6 @@
 extends GutTest
 ## 10 §3.2 章节地图交互：左侧地图视口横向拖动（左键拖 / 滚轮，范围 clamp，6 px 点击阈值）；点击节点只选中、不进关；
-## 「进入」按钮触发进关、锁定时禁用并说明前置关卡；「回放剧情」只列 stories_seen 已含的 _intro / _win / _lose，播放不改 seen；
+## 「进入」按钮触发进关、锁定时禁用并说明前置关卡；「开头剧情」「结尾剧情」按钮只在 stories_seen 含 _intro / _win 时显示，播放不改 seen；
 ## 默认选中最新可挑战节点并滚到视口中央；地图宽于视口时能滚到第 25 节点。
 ## 2026-10-20：拖出框（橡皮筋，最多视口宽 1/8）松手弹回；点空白处收起详情面板、点节点展开；未解锁名牌空白压锁、新解锁播解锁动画。
 ## 2026-10-20：进入时详情面板收起、默认节点不高亮；点节点展开并把节点滚到可见区横向正中（可出框），收起时弹回范围。
@@ -255,23 +255,38 @@ func test_locked_node_disables_enter_and_names_prerequisite() -> void:
 func test_replay_lists_only_seen_stories_and_does_not_mark() -> void:
 	SaveManager.mark_story_seen("level_01_intro")
 	SaveManager.mark_story_seen("level_01_lose")
-	var sel: Control = await _open(["level_01"])
+	SaveManager.mark_story_seen("level_02_intro")
+	SaveManager.mark_story_seen("level_02_win")
+	var sel: Control = await _open(["level_01", "level_02"])
 	var buttons: Dictionary = sel.get("node_buttons") as Dictionary
-	(buttons["level_01"] as Button).pressed.emit()
 	var replay: Button = sel.find_child("ReplayButton", true, false) as Button
-	var pick: OptionButton = sel.find_child("ReplayPick", true, false) as OptionButton
-	assert_eq(sel.call("replay_ids"), ["level_01_intro", "level_01_lose"] as Array[String], "只列已看过的条目，顺序 开场 / 胜利 / 失败")
-	assert_false(replay.disabled)
-	assert_eq(pick.get_item_text(1), DataRegistry.get_string("ui.replay_lose"), "「开场剧情」下拉列出已看条目（批准整图 ui_22）")
-	var seen_before: Dictionary = (SaveManager.data.get("stories_seen", {}) as Dictionary).duplicate()
-	pick.select(0)
+	var picker: StorySelect = sel.get("story_select") as StorySelect
+	(buttons["level_01"] as Button).pressed.emit()
+	assert_eq(sel.call("replay_ids"), ["level_01_intro"] as Array[String], "只看过开头（失败剧情不回放）")
+	assert_true(replay.visible, "看过任一段就显示「剧情回放」")
 	replay.pressed.emit()
+	assert_true(picker.visible, "点「剧情回放」打开剧情选择")
+	assert_eq(picker.cards().size(), 2, "开头 / 结尾两卡")
+	assert_false(picker.cards()[0].disabled, "看过的开头可选")
+	assert_true(picker.cards()[1].disabled, "没看过的结尾锁定")
+	picker.close()
+	(buttons["level_02"] as Button).pressed.emit()
+	assert_eq(sel.call("replay_ids"), ["level_02_intro", "level_02_win"] as Array[String])
+	var seen_before: Dictionary = (SaveManager.data.get("stories_seen", {}) as Dictionary).duplicate()
+	replay.pressed.emit()
+	picker.cards()[1].pressed.emit()
 	var player: StoryPlayer = sel.find_children("*", "StoryPlayer", true, false)[0] as StoryPlayer
 	assert_true(player.visible, "用 StoryPlayer 播放")
-	assert_eq(player.current_story, "level_01_intro")
+	assert_false(picker.visible, "播放时剧情选择暂隐")
+	assert_eq(player.current_story, "level_02_win")
+	assert_eq(player.size, sel.size, "剧情层铺满界面（尺寸为 0 时收不到点击，会卡在第一句）")
 	assert_eq_deep(SaveManager.data.get("stories_seen", {}), seen_before)
-	(buttons["level_02"] as Button).pressed.emit()
-	assert_true(replay.disabled, "一条都没看过则禁用")
+	player.close()
+	assert_true(picker.visible, "播完回到剧情选择")
+	picker.back_page()
+	assert_false(picker.visible, "返回关闭剧情选择")
+	(buttons["level_03"] as Button).pressed.emit()
+	assert_false(replay.visible, "一条都没看过则不显示")
 
 
 ## P6 章节节点切片：徽章按状态换图（已完成 / 可挑战 / 锁定 / 选中 / 首领），锁 / 勾角标只在对应状态显示；占位节点选中时换紧凑版式
@@ -296,3 +311,12 @@ func test_node_badges_follow_state() -> void:
 	assert_true((sel.find_child("Skin_ph_enter", true, false) as Control).visible, "占位节点：紧凑版式的「进入」")
 	assert_false((sel.find_child("EnterButton", true, false) as Control).visible, "占位节点：隐藏普通「进入」")
 	assert_false((sel.find_child("Skin_moon_orn", true, false) as Control).visible, "占位节点：隐藏框体纹饰")
+
+
+## 2026-10-21 用户：地图横向不够长，底部横向滚动条（滑轨 + 旋钮）删掉；拖动 / 滚轮横移照旧
+func test_no_horizontal_scroll_bar() -> void:
+	var sel: Control = await _open([])
+	assert_null(sel.find_child("Skin_scroll_line", true, false), "无滑轨")
+	assert_null(sel.find_child("Skin_scroll_thumb", true, false), "无旋钮")
+	await _open_panel(sel, "level_01")
+	assert_null(sel.find_child("Skin_scroll_thumb", true, false), "展开面板后也没有")

@@ -46,7 +46,7 @@
    "id": "btn_continue",
    "rect": [
     1640,
-    548,
+    482,
     250,
     52
    ],
@@ -88,6 +88,48 @@
    "id": "btn_start",
    "rect": [
     1640,
+    548,
+    250,
+    52
+   ],
+   "text_rect": [
+    24,
+    4,
+    202,
+    44
+   ],
+   "ninepatch": [
+    16,
+    0,
+    16,
+    0
+   ],
+   "states": {
+    "normal": "../gothic/hex_dark.png",
+    "hover": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#FFFFFF"
+    },
+    "pressed": {
+     "file": "../gothic/hex_gray.png",
+     "modulate": "#B8B0BA"
+    },
+    "disabled": {
+     "file": "../gothic/hex_dark.png",
+     "modulate": "#77707A"
+    }
+   },
+   "font": {
+    "family": "NotoSerifSC-Bold",
+    "size": 24,
+    "color": "#EEE8F0",
+    "disabled_color": "#7E7882"
+   }
+  },
+  {
+   "id": "btn_story",
+   "rect": [
+    1640,
     614,
     250,
     52
@@ -124,6 +166,13 @@
     "size": 24,
     "color": "#EEE8F0",
     "disabled_color": "#7E7882"
+   },
+   "kind": "button",
+   "key": "ui.menu_story",
+   "align": "center",
+   "_after": "btn_start",
+   "data": {
+    "_note": "2026-10-21（用户 04.zip）：剧情回顾图鉴入口；继续 / 新游戏随之上移一格，设置 / 退出不动"
    }
   },
   {

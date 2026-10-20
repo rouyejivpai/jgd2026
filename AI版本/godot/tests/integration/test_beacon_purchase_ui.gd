@@ -95,7 +95,7 @@ func test_beacon_mode_buys_and_refunds_packs() -> void:
 	assert_eq(budget.text, "4 / 4", "放第 1 个信标：自动买一包，预算即时刷新")
 	assert_string_contains(_title(hud), "信标 1/5")
 	assert_eq(_toasts.size(), 1, "提示已购买")
-	assert_string_contains(_toasts[0], "−1 Cost")
+	assert_string_contains(_toasts[0], "−1 灵魂")
 	assert_string_contains(budget.tooltip_text, "信标 1 包")
 
 	for x: int in [8, 9, 10, 11]:
@@ -105,7 +105,7 @@ func test_beacon_mode_buys_and_refunds_packs() -> void:
 	_click(root, Vector2i(12, 3), MOUSE_BUTTON_LEFT)
 	assert_eq(c.beacon_total(), 5, "预算不够买第二包：不放置")
 	assert_eq(_bubbles.size(), 1, "弹出预算不足气泡")
-	assert_string_contains(_bubbles[0], "预算不足")
+	assert_string_contains(_bubbles[0], "灵魂不足")
 
 	for i: int in 4:
 		_click(root, Vector2i(1, 1), MOUSE_BUTTON_RIGHT)       # 信标模式右键 = 撤销最后一个
@@ -114,4 +114,4 @@ func test_beacon_mode_buys_and_refunds_packs() -> void:
 	_click(root, Vector2i(1, 1), MOUSE_BUTTON_RIGHT)
 	assert_eq(c.beacon_total(), 0)
 	assert_eq(budget.text, "3 / 4", "删光：退包")
-	assert_string_contains(_toasts.back(), "退回 1 Cost")
+	assert_string_contains(_toasts.back(), "退回 1 点灵魂")

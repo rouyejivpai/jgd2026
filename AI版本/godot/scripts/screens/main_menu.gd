@@ -7,17 +7,27 @@ extends Control
 ## 节点名沿用：btn_start / StartButton 现为「新游戏」，其上新增 btn_continue / ContinueButton「继续游戏」。
 ## P8（10 §1.5）：菜单按钮挂菜单大按钮档的动效（data/ui_motion.json 的 button_menu；总闸关闭时不挂）；
 ## 该档悬停即取焦点（焦点跟随鼠标，Q-072），同一时刻只有一个按钮亮起。
+## 2026-10-20 挂机播开场动画：没有点按任何东西（键盘按键 / 鼠标按键 / 手柄按键；只移动鼠标不算操作）累计 GameState.opening_idle_wait 秒
+## （1 分钟；挂机触发的那次播完后为 5 分钟）→ SceneRouter.goto_opening()；任何点按把计时清零、等待时间复位为 1 分钟。
+## 设置浮窗 / 确认框打开、转场中、动效总闸关闭时不计时。
+## 2026-10-21（用户 04.zip）：「剧情」→ 剧情回顾图鉴（StorySelect）：第一页按主线章节关卡顺序列出看过至少一段剧情的关卡，
+## 点关卡进第二页「开头剧情 / 结尾剧情」（没看过的锁定），点卡用 StoryPlayer 播放（不改 stories_seen），播完回到图鉴；
+## 一段都没看过时按钮禁用。图鉴 / 剧情打开时挂机不计时。
 
 const SCREEN: String = "main_menu"
 const MENU_BGM: String = "menu_main"
-const MOTION_BUTTONS: Array[String] = ["btn_continue", "btn_start", "btn_settings", "btn_quit"]
+const MOTION_BUTTONS: Array[String] = ["btn_continue", "btn_start", "btn_story", "btn_settings", "btn_quit"]
 const LevelSelectScript := preload("res://scripts/screens/level_select.gd")
+const STORY_PLAYER_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
+const BACKDROP_SHADER: Shader = preload("res://assets/shaders/magenta_backdrop.gdshader")
+const Opening := preload("res://scripts/screens/opening.gd")
 const KEY_NAV_ACTIONS: Array[String] = ["ui_up", "ui_down", "ui_focus_next", "ui_focus_prev"]
 const MOTION_PROFILE: String = "button_menu"      ## ui_motion.json 的菜单大按钮档（含焦点跟随鼠标）
+const QUIT_DELAY: float = 0.15                    ## 退出前留给点击音的时间
 ## 元素 id → 节点名（保持第二阶段的节点名，供测试与工具查找）
 const NODE_NAMES: Dictionary = {
 	"bg": "Background", "game_title_art": "Title", "subtitle": "Subtitle",
-	"btn_continue": "ContinueButton", "btn_start": "StartButton", "btn_settings": "SettingsButton", "btn_quit": "QuitButton",
+	"btn_continue": "ContinueButton", "btn_start": "StartButton", "btn_story": "StoryButton", "btn_settings": "SettingsButton", "btn_quit": "QuitButton",
 	"error_bar": "ErrorBar", "error_text": "ErrorLabel",
 }
 
@@ -25,6 +35,10 @@ var nodes: Dictionary = {}               ## 元素 id → Control
 static var _opened_editor_once: bool = false   ## 命令行 --config-editor 只在启动时跳转一次
 var save_path: String = SaveManager.SAVE_PATH    ## 新游戏清档写入的存档路径（测试可改为临时路径）
 var _confirm: ConfirmDialog
+var story_select: StorySelect = null     ## 剧情回顾图鉴
+var _story: StoryPlayer = null
+var _replaying: bool = false
+var idle_seconds: float = 0.0            ## 已挂机的秒数
 
 
 func _ready() -> void:
@@ -39,6 +53,9 @@ func _ready() -> void:
 	var start: Button = nodes["btn_start"] as Button
 	start.disabled = DataRegistry.has_errors
 	start.pressed.connect(_on_start_pressed)
+	var story: Button = nodes["btn_story"] as Button
+	story.disabled = DataRegistry.has_errors or gallery_entries().is_empty()
+	story.pressed.connect(open_gallery)
 	(nodes["btn_settings"] as Button).pressed.connect(_on_settings_pressed)
 	(nodes["btn_quit"] as Button).pressed.connect(_on_quit_pressed)
 	resized.connect(_layout)
@@ -51,9 +68,45 @@ func _ready() -> void:
 	_confirm.name = "NewGameConfirm"
 	add_child(_confirm)
 	_confirm.confirmed.connect(_start_new_game)
+	story_select = StorySelect.new()
+	story_select.name = "StorySelect"
+	add_child(story_select)
+	story_select.entry_chosen.connect(_on_gallery_chosen)
+	_story = STORY_PLAYER_SCENE.instantiate() as StoryPlayer
+	add_child(_story)
+	var bm := ShaderMaterial.new()           # 与选关回放相同：剧情背景下垫暗品红底光，不透出主界面
+	bm.shader = BACKDROP_SHADER
+	_story.set_base_material(bm)
+	_story.finished.connect(_on_story_finished)
 	if OS.get_cmdline_user_args().has("--config-editor") and ResourceLoader.exists(SceneRouter.CONFIG_EDITOR_SCENE) and not _opened_editor_once:
 		_opened_editor_once = true
 		SceneRouter.goto_config_editor.call_deferred()
+
+
+## 挂机计时：返回 true = 到点该播开场动画（计时随即清零）
+func idle_step(dt: float) -> bool:
+	idle_seconds += dt
+	if idle_seconds >= GameState.opening_idle_wait:
+		idle_seconds = 0.0
+		return true
+	return false
+
+
+func _process(delta: float) -> void:
+	var blocked: bool = SceneRouter.is_settings_open() or bool(SceneRouter.get("_busy")) or (_confirm != null and _confirm.is_open()) 		or (story_select != null and story_select.visible) or _replaying
+	if not UiKit.motion_enabled or blocked:
+		idle_seconds = 0.0
+		return
+	if idle_step(delta):
+		GameState.opening_from_idle = true
+		SceneRouter.goto_opening()
+
+
+## 任何点按：挂机计时清零、等待复位为 1 分钟（不拦截输入；鼠标移动 / 摇杆不算）
+func _input(event: InputEvent) -> void:
+	if Opening.is_any_press(event):
+		idle_seconds = 0.0
+		GameState.opening_idle_wait = Opening.IDLE_FIRST_SECONDS
 
 
 func first_enabled_button() -> Button:
@@ -79,6 +132,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var b: Button = _confirm.nodes["btn_cancel"] as Button if _confirm.is_open() else first_enabled_button()
 			if b != null:
 				b.grab_focus()
+				AudioManager.play_ui("ui_hover")
 				get_viewport().set_input_as_handled()
 			return
 
@@ -95,6 +149,7 @@ func _build_error_state() -> void:
 		c.name = str(NODE_NAMES.get(id, id))
 		add_child(c)
 		nodes[id] = c
+	AudioManager.play_ui("ui_error")
 
 
 func _layout() -> void:
@@ -119,9 +174,51 @@ func _start_new_game() -> void:
 	SceneRouter.goto_world_map()          # 2026-10-18：先选区域
 
 
+## 图鉴第一页：主线章节（没有一级地图时取第一章）按关卡顺序，看过至少一段（开头 / 结尾）的关卡各一卡
+func gallery_entries() -> Array:
+	var out: Array = []
+	var ch: ChapterDef = DataRegistry.world_chapter()
+	if ch == null and not DataRegistry.get_chapters().is_empty():
+		ch = DataRegistry.get_chapters()[0]
+	if ch == null:
+		return out
+	for lid: String in ch.level_ids():
+		var level: LevelDefinition = DataRegistry.get_level(lid)
+		if level == null:
+			continue
+		var seen: bool = false
+		for e: Dictionary in LevelSelectScript.replay_entries(lid):
+			seen = seen or not bool(e["locked"])
+		if seen:
+			out.append({ "title": "%s %s" % [RuleText.level_no(level), level.title], "short_title": level.title,
+				"heading": "%s  %s" % [RuleText.level_no(level), level.title], "level": lid })
+	return out
+
+
+func open_gallery() -> void:
+	story_select.open(DataRegistry.get_string("ui.story_gallery_title"), gallery_entries())
+
+
+func _on_gallery_chosen(entry: Dictionary) -> void:
+	if entry.has("level"):
+		story_select.push(str(entry["heading"]), LevelSelectScript.replay_entries(str(entry["level"])))
+		return
+	_replaying = true
+	story_select.suspend()
+	if not _story.play_story(str(entry.get("story", ""))):      # 回放不改 stories_seen
+		_on_story_finished()
+
+
+func _on_story_finished() -> void:
+	if _replaying:
+		_replaying = false
+		story_select.resume()
+
+
 func _on_settings_pressed() -> void:
 	SceneRouter.open_settings()
 
 
+## 退出：稍等 0.15 s 让点击音播出来
 func _on_quit_pressed() -> void:
-	get_tree().quit()
+	get_tree().create_timer(QUIT_DELAY).timeout.connect(get_tree().quit)

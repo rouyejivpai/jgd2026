@@ -1,0 +1,45 @@
+{
+  "id": "level_c29_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "最后一车东西停在门内。车上堆着遗物：骨器、灯、碎掉的名字牌，还有几具没拆完的人偶。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她低头看自己的胸口。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "那块缺口里的蓝光只剩一点了。很小，缩在最里面，像一盏快到底的灯。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她伸手进去碰了一下。碰的时候，那一点光往后退了一下——它认得她的手。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "还剩最后一点。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch",
+      "text": "够你走一条路，不够你回来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把手抽出来。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "手上什么都没有。"
+    }
+  ]
+}

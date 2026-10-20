@@ -1,0 +1,35 @@
+{
+  "id": "level_c13_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "记号画上去，两下就拆完了。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "破甲人偶站在原地，还保持着画记号的姿势。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她走过去，伸手在它肩膀上碰了一下。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "没有反应。"
+    },
+    {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你很轻。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有等回答，把手收了回来。"
+    }
+  ]
+}

@@ -40,7 +40,7 @@
         8,
         4
       ],
-      "display_name": "前排守卫",
+      "display_name": "前排愤怒魔女",
       "rules": [
         {
           "conditions": [
@@ -63,10 +63,16 @@
           }
         }
       ],
-      "public_rule_text": "原地守着，攻击射程内首个看见的分裂体，不追。",
+      "public_rule_text": "原地守着，攻击射程内首个看见的人偶，不追。",
       "overrides": {
         "max_hp": 130
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/raider.png",
+        "portrait": "res://assets/sprites/portraits/raider.png",
+        "scale": 1.0
+      },
+      "description": "觉醒魔女力量时感情为「愤怒」的魔女。失控后再也控制不住自身血肉，术法一直开着，骨骼全部长到体外，异化成一身覆体铠甲。"
     },
     {
       "id": "P1",
@@ -76,7 +82,7 @@
         11,
         4
       ],
-      "display_name": "后排祭司",
+      "display_name": "后排恐惧魔女",
       "overrides": {
         "attack": 28,
         "range": 5
@@ -103,7 +109,13 @@
           }
         }
       ],
-      "public_rule_text": "站在守卫身后，用 5 格射程攻击最近的分裂体。很脆，但打得疼。"
+      "public_rule_text": "站在愤怒魔女身后，用 5 格射程攻击最近的人偶。很脆，但打得疼。",
+      "visuals": {
+        "sprite": "res://assets/sprites/units/hex_priest.png",
+        "portrait": "res://assets/sprites/portraits/hex_priest.png",
+        "scale": 1.05
+      },
+      "description": "觉醒魔女力量时感情为「恐惧」的魔女。失控后，她寄生、吸收过的灵魂一齐反噬，外显为无数面具，轮流掌控这具身体。"
     }
   ],
   "routes": {},
@@ -191,7 +203,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "守卫挡在前面，祭司躲在后面放冷箭。先打远的那个。",
+    "objective_text": "愤怒魔女挡在前面，恐惧魔女躲在后面放冷箭。先打远的那个。",
     "win": [
       {
         "id": "win_kill_order",
@@ -231,11 +243,11 @@
     "mechanic_hint": "默认打最近。但有时候该先打最远的——顺序是你决定的。"
   },
   "region": "bone_workshop",
-  "region_cn": "织骸工坊",
+  "region_cn": "人偶工坊",
   "id": "level_c05",
   "index": 105,
-  "title": "远的先死",
-  "subtitle": "选敌：先打最远的",
+  "title": "危险等级",
+  "subtitle": "先杀会疼的那个，别先杀挡路的。",
   "biome": "bone_farm",
   "rewards": {
     "unlock_forms": [],
@@ -249,7 +261,7 @@
     "守卫 130 血、原地不追；后排改为高伤低血的低语祭司（原为两名相同守卫，后者看不到部署区、永远不动，关卡无法结束）；信标计费。"
   ],
   "display_index": 5,
-  "summary": "选敌：先打最远的",
+  "summary": "先杀会疼的那个，别先杀挡路的。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -276,13 +288,13 @@
   ],
   "hints": [
     "默认打最近。但有时候该先打最远的——顺序是你决定的。",
-    "守卫挡在前面，祭司躲在后面放冷箭。先打远的那个。",
-    "两名基础形态都改两处：攻击的优先级改成「最远」；移动策略把「沿信标移动」换成「追击」，目标也选「最远」。它们会直奔祭司，祭司一进射程就先点掉它（50 血），再回头收拾守卫。只派一个人，或者换成快速形态，都扛不住。",
+    "愤怒魔女挡在前面，恐惧魔女躲在后面放冷箭。先打远的那个。",
+    "两名基础形态都改两处：攻击的优先级改成「最远」；移动策略把「沿信标移动」换成「追击」，目标也选「最远」。它们会直奔恐惧魔女，恐惧魔女一进射程就先点掉它（50 血），再回头收拾愤怒魔女。只派一个人，或者换成快速形态，都扛不住。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {
     "lose_all_dead": "全员倒下了。默认打最近。但有时候该先打最远的——顺序是你决定的。",
-    "default": "默认打最近。但有时候该先打最远的——两名基础形态都把攻击和追击的目标改成「最远」，直奔后排的祭司。"
+    "default": "默认打最近。但有时候该先打最远的——两名基础形态都把攻击和追击的目标改成「最远」，直奔后排的恐惧魔女。"
   },
   "bgm": "region_bone_workshop",
   "rules_format": "dual"

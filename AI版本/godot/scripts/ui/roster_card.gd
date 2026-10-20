@@ -9,6 +9,7 @@ extends Button
 ## 切片只有一态，按下 / 禁用用同一张贴图调色（布局 card_* 的 data.tint）；名称超出时自动滚动（ScrollText）。
 ## 2026-10-19 哥特换皮（布局有 card_back 时）：条纹后片 card_back → Q 版立绘 card_portrait → 徽记前片 card_front（遮住下半身，
 ## 悬停时上移 rest_dy 露出徽记）→ 名称 card_g_name / Cost card_g_cost；位置相对第 1 卡位 card_slot_1。
+## 音效：拖起 ui_drag_pick，拖出后没被接收 drag_cancel；fixed 槽位卡点按已放置的 = unit_select_ally（自动点击音静音）；禁用卡点按由 AudioManager 播 ui_error。
 
 const CARD_SIZE: Vector2 = Vector2(168.0, 96.0)
 const ICON_PX: int = 64
@@ -32,6 +33,7 @@ var slot_id: String = ""                 ## fixed 关
 var controller: BattleController = null
 var locked: bool = false                 ## 补足五个卡位的「未解锁」卡（不可交互）
 var _base_tip: String = ""               ## 哥特卡面不放文字时的悬停提示（名称 · Cost），refresh 在其后接不可用原因
+var _dragging: bool = false              ## 从这张卡拖起的 GUI 拖拽进行中
 
 
 ## 拖拽虚影：形态精灵 60% 透明，高度 = cell_px × 1.6，脚底对准鼠标；无精灵时退回半透明方块
@@ -141,6 +143,7 @@ func setup_slot(p_slot_id: String, p_controller: BattleController) -> void:
 	form = controller.form_of(slot_id)
 	text = controller.label_of(slot_id)
 	pressed.connect(_on_pressed)
+	set_meta(&"sfx_press", "")               # 按下音由 _on_pressed 按是否已放置决定
 	_common()
 
 
@@ -337,7 +340,15 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 		return null
 	set_drag_preview(make_preview(form, _cell_px()))
 	AudioManager.play_sfx("ui_drag_pick", "UI")
+	_dragging = true
 	return payload
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and _dragging:
+		_dragging = false
+		if not get_viewport().gui_is_drag_successful():
+			AudioManager.play_sfx("drag_cancel", "UI")
 
 
 ## 当前关卡每格像素（BattleRoot.cell_px；控制器挂在 BattleRoot 下）
@@ -359,4 +370,7 @@ func drag_payload() -> Dictionary:
 
 func _on_pressed() -> void:
 	if controller != null and controller.placements.has(slot_id):
+		AudioManager.play_sfx("unit_select_ally", "UI")
 		EventBus.unit_selected.emit(controller.unit_id_of_slot(slot_id))
+	else:
+		AudioManager.play_sfx("ui_click", "UI")

@@ -1,0 +1,40 @@
+{
+  "id": "level_c06_intro",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸的手臂上有一道裂缝，从手背一直裂到肘弯。裂缝里没有血，开着花。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "两朵，很小，骨质，惨白。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "witch_shadow",
+      "text": "织骸捏住一朵，拧下来，像拧掉一根倒刺。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "这东西叫骨花。长在活物身上的时候，会一点一点把那个活物变成自己的骨头。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "一具身体换一具，等价。"
+    },
+    {
+      "speaker": "witch",
+      "illustration": "witch_shadow",
+      "text": "手臂可以扔，头不行，记住这个。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶没有点头，也没有问。"
+    }
+  ]
+}

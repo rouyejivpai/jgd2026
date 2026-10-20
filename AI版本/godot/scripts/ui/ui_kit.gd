@@ -139,7 +139,48 @@ static func ui_theme(screen: String) -> Theme:
 	if t != null and not t.has_meta(&"plates_fitted"):
 		_fit_plate_styles(t)
 		t.set_meta(&"plates_fitted", true)
+	if t != null:
+		_ui_themes[screen] = t     # 持有引用：主题常驻缓存，字体缩放改的是同一份
+		scale_theme_fonts(t, GameState.setting_float("font_scale", 1.0))
 	return t
+
+
+# ---- 字体大小（设置项 font_scale）----
+const FONT_BASE_META: StringName = &"font_base_sizes"
+const FONT_SCALE_META: StringName = &"font_scale"
+
+static var _ui_themes: Dictionary = {}     ## screen → 已加载的换皮主题
+
+
+## 按倍率缩放主题里的全部字号（default_font_size 与各类型变体）；原始字号首次调用时记在主题 meta 里作基准，倍率不变则跳过
+static func scale_theme_fonts(t: Theme, scale: float) -> void:
+	if t == null or (t.has_meta(FONT_SCALE_META) and is_equal_approx(float(t.get_meta(FONT_SCALE_META)), scale)):
+		return
+	if not t.has_meta(FONT_BASE_META):
+		var base: Dictionary = {}
+		if t.has_default_font_size():
+			base[""] = { "": t.default_font_size }
+		for type_name: StringName in t.get_font_size_type_list():
+			var sizes: Dictionary = {}
+			for size_name: StringName in t.get_font_size_list(type_name):
+				sizes[size_name] = t.get_font_size(size_name, type_name)
+			base[type_name] = sizes
+		t.set_meta(FONT_BASE_META, base)
+	var base_sizes: Dictionary = t.get_meta(FONT_BASE_META) as Dictionary
+	for type_name: Variant in base_sizes.keys():
+		var sizes: Dictionary = base_sizes[type_name] as Dictionary
+		for size_name: Variant in sizes.keys():
+			var v: int = maxi(roundi(float(int(sizes[size_name])) * scale), 1)
+			if str(type_name) == "":
+				t.default_font_size = v
+			else:
+				t.set_font_size(size_name, type_name, v)
+	t.set_meta(FONT_SCALE_META, scale)
+
+
+static func scale_loaded_ui_themes(scale: float) -> void:
+	for t: Theme in _ui_themes.values():
+		scale_theme_fonts(t, scale)
 
 
 ## 简洁按钮底板（2026-10-20）：原 detail/plate*.png 烟纹铭牌拉伸必变形，主题里用到它的按钮样式一律换成无描边的纯色底板
@@ -217,12 +258,19 @@ static func ease_to(node: Node, prop: NodePath, value: Variant, profile: String 
 ## 不铺满但贴着某条屏幕边（≤ touch_px）时，从贴着的边滑入（几条都贴时取与窗口长边平行的那条）；
 ## 上下左右都不沾的浮窗：从下方短距离（float_px）缓动滑入并淡入。
 ## nodes 一起平移（同一偏移），ref 为判定用的窗口矩形（缺省 = 第一个节点）；fades 只淡入不平移（遮罩、压暗层）。
-## 父节点是容器的节点不能改位置（会被重排）：改为淡入 + 轻微放大。动效总闸关闭时什么都不做。
-static func slide_in(nodes: Array, ref: Rect2 = Rect2(), fades: Array = [], profile: String = "slide_in") -> void:
-	if not motion_enabled or nodes.is_empty() or not is_instance_valid(nodes[0]):
+## 父节点是容器的节点不能改位置（会被重排）：改为淡入 + 轻微放大。动效总闸关闭时什么都不做（音效照响）。
+## sfx：出现音效，默认不响（用户 2026-10-20：面板 / 界面切换由触发它的按钮出声，不再叠一声）；
+## 不是玩家点出来的弹窗（如新手引导每一步）才传提示音。
+static func slide_in(nodes: Array, ref: Rect2 = Rect2(), fades: Array = [], profile: String = "slide_in",
+		sfx: String = "") -> void:
+	if nodes.is_empty() or not is_instance_valid(nodes[0]):
 		return
 	var first: Control = nodes[0] as Control
 	if first == null or not first.is_inside_tree():
+		return
+	if sfx != "":
+		AudioManager.play_ui(sfx)
+	if not motion_enabled:
 		return
 	if ref.size == Vector2.ZERO:
 		ref = first.get_global_rect()
@@ -306,8 +354,13 @@ static func slide_offset(ref: Rect2, vp: Rect2, p: Dictionary) -> Vector2:
 
 
 ## 旧名：等同 slide_in（单个节点，矩形取其自身）
-static func pop_in(c: Control, _profile: String = "panel_in") -> void:
-	slide_in([c])
+static func pop_in(c: Control, _profile: String = "panel_in", sfx: String = "") -> void:
+	slide_in([c], Rect2(), [], "slide_in", sfx)
+
+
+## 面板关闭音（各关闭处调用）
+static func close_sfx() -> void:
+	AudioManager.play_ui("ui_panel_close")
 
 
 ## 元素列表（manifest 绘制顺序，从后往前）

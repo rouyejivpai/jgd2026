@@ -1,0 +1,35 @@
+{
+  "id": "level_c24_win",
+  "scenes": [
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她先挡住了左边。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "左边的残响撞在她身上，散了。灯掉在地上，滚了两圈，还亮着。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她转身往右边跑。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "右边的那个停在出口前。它手里的灯照着门框上刻的一行字。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她把两盏灯都捡起来。捡第二盏的时候，灯罩里那团蓝光往她手心里靠了靠。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "她没有说话，把灯收进胸口。"
+    }
+  ]
+}

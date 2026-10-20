@@ -52,7 +52,7 @@ func _finish(level_id: String, won: bool) -> Control:
 	if won:
 		assert_eq(c.world.result, SimTypes.BattleResult.WIN, "%s 推荐阵型胜利" % level_id)
 	root.find_child("HUD", true, false).call("show_result", SimTypes.BattleResult.WIN if won else SimTypes.BattleResult.LOSE, 0.0)
-	(root.find_child("DialogueOverlay", true, false) as CanvasItem).visible = false
+	(root.find_child("DialogueOverlay", true, false) as StoryPlayer).close()      # 结束剧情播完才弹结算
 	await wait_process_frames(3)
 	return root.find_child("ResultPanel", true, false) as Control
 

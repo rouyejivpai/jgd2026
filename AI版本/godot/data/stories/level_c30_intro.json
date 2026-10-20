@@ -4,17 +4,57 @@
     {
       "speaker": "narrator",
       "illustration": "",
-      "text": "骨花温室最深处。她把整片温室的根都连在自己身上。"
+      "text": "母体是一朵花。"
     },
     {
-      "speaker": "doll",
-      "illustration": "doll",
-      "text": "她每隔几秒会亮起一种颜色，两秒后放招。红：离她太近会被花粉环炸到；黄：离她太远会被钟声定住。"
+      "speaker": "narrator",
+      "illustration": "",
+      "text": "不是长出来的——是拼出来的。花瓣是一片一片的肋骨和脊椎，一层压一层，从地面堆到穹顶。"
     },
     {
-      "speaker": "doll",
+      "speaker": "narrator",
+      "illustration": "bone_witch",
+      "text": "花心处坐着一个魔女。她的身体和花长在一起了。左半身是骨头，右眼是瞎的。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "bone_witch",
+      "text": "她睁开眼。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "……她成功了。"
+    },
+    {
+      "speaker": "narrator",
       "illustration": "doll",
-      "text": "用「Boss 信号为 红 / 黄 时」写好应对。她的血过半时，战斗会停下来——到时候再看新的规矩。"
+      "text": "人偶站着，没有动。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "你身上有我的骨刃。有骨者的徽章。你去了灰棘林。"
+    },
+    {
+      "speaker": "narrator",
+      "illustration": "doll",
+      "text": "人偶点头。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "你知道我为什么在这里吗？"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "因为我是第一个。织骸的第一个导师。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "也是第一个被她吞掉的魔女。"
     }
   ]
 }

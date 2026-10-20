@@ -63,11 +63,23 @@
         14,
         2
       ],
-      "display_name": "核心·下",
+      "display_name": "“失败品”·下",
       "overrides": {
         "vision": 15,
         "max_hp": 100
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/failed_doll.png",
+        "portrait": "res://assets/sprites/portraits/failed_doll.png",
+        "scale": 1.0,
+        "projectile_shape": "cone",
+        "skill_color": "#4f9dff"
+      },
+      "description": "早先造出的人偶，失控了。和她一样的脸、一样的白头发，胸口的缺口却是暗的——吞下的灵魂太多，已经不知道自己是谁。",
+      "traits": [
+        "failed_soul_spill"
+      ],
+      "public_rule_text": "嵌在石壁里不动。开战 3 秒后，每 5 秒把溢出来的灵魂投向视野内最远的人偶当时所在的位置，2.5 秒后炸开（半径 2 格，35 伤害）。"
     },
     {
       "id": "C2",
@@ -77,11 +89,23 @@
         15,
         5
       ],
-      "display_name": "核心·中",
+      "display_name": "“失败品”·中",
       "overrides": {
         "vision": 15,
         "max_hp": 100
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/failed_doll.png",
+        "portrait": "res://assets/sprites/portraits/failed_doll.png",
+        "scale": 1.0,
+        "projectile_shape": "cone",
+        "skill_color": "#4f9dff"
+      },
+      "description": "早先造出的人偶，失控了。和她一样的脸、一样的白头发，胸口的缺口却是暗的——吞下的灵魂太多，已经不知道自己是谁。",
+      "traits": [
+        "failed_soul_spill"
+      ],
+      "public_rule_text": "嵌在石壁里不动。开战 3 秒后，每 5 秒把溢出来的灵魂投向视野内最远的人偶当时所在的位置，2.5 秒后炸开（半径 2 格，35 伤害）。"
     },
     {
       "id": "C3",
@@ -91,11 +115,23 @@
         14,
         8
       ],
-      "display_name": "核心·上",
+      "display_name": "“失败品”·上",
       "overrides": {
         "vision": 15,
         "max_hp": 100
-      }
+      },
+      "visuals": {
+        "sprite": "res://assets/sprites/units/failed_doll.png",
+        "portrait": "res://assets/sprites/portraits/failed_doll.png",
+        "scale": 1.0,
+        "projectile_shape": "cone",
+        "skill_color": "#4f9dff"
+      },
+      "description": "早先造出的人偶，失控了。和她一样的脸、一样的白头发，胸口的缺口却是暗的——吞下的灵魂太多，已经不知道自己是谁。",
+      "traits": [
+        "failed_soul_spill"
+      ],
+      "public_rule_text": "嵌在石壁里不动。开战 3 秒后，每 5 秒把溢出来的灵魂投向视野内最远的人偶当时所在的位置，2.5 秒后炸开（半径 2 格，35 伤害）。"
     },
     {
       "id": "G1",
@@ -111,7 +147,7 @@
         "attack": 10,
         "max_hp": 150
       },
-      "public_rule_text": "锁定首个进入 6 格视野的分裂体并追击。"
+      "public_rule_text": "锁定首个进入 6 格视野的人偶并追击。"
     },
     {
       "id": "G2",
@@ -331,7 +367,7 @@
     ]
   },
   "objectives": {
-    "objective_text": "拆掉三个骨花核心就赢，两名护卫不必杀。核心的花粉只砸最远的人。",
+    "objective_text": "拆掉三个“失败品”就赢，两名护卫不必杀。“失败品”的花粉只砸最远的人。",
     "win": [
       {
         "id": "win_cores",
@@ -379,8 +415,8 @@
   "region_cn": "畸变回廊",
   "id": "level_c26",
   "index": 126,
-  "title": "转运点",
-  "subtitle": "收束：最紧的账",
+  "title": "人偶失败品「一」",
+  "subtitle": "它学你，学得很像。别让它学会下一步。",
   "biome": "transit_node",
   "rewards": {
     "unlock_forms": [],
@@ -394,7 +430,7 @@
     "重做：胜利条件全歼→拆三核心；去掉骨喉；护卫视野 6、150 血、攻击 10；核心视野 15；引雷路线放在进场路线之外；预算 14→16（4 人 14 + 2 包信标）；信标计费。"
   ],
   "display_index": 26,
-  "summary": "收束：最紧的账",
+  "summary": "它学你，学得很像。别让它学会下一步。",
   "chapter": "chapter_02",
   "modifiers": [
     {
@@ -442,8 +478,8 @@
   ],
   "hints": [
     "引雷的人别绕在大家进场的路上——雷落在那里，砸的是自己人。让扛得住的人先进场被护卫锁定，输出再跟进。",
-    "拆掉三个骨花核心就赢，两名护卫不必杀。核心的花粉只砸最远的人。",
-    "承伤形态先进场，两名护卫先看见它、锁定它；快速形态在左半场绕大圈，一直是最远者，花粉全落在那里；远射和基础形态紧跟承伤进场，到位后才开火（「到达信标 1 + 射程内敌人 → 攻击」），拆三个核心。",
+    "拆掉三个“失败品”就赢，两名护卫不必杀。“失败品”的花粉只砸最远的人。",
+    "承伤形态先进场，两名护卫先看见它、锁定它；快速形态在左半场绕大圈，一直是最远者，花粉全落在那里；远射和基础形态紧跟承伤进场，到位后才开火（「到达信标 1 + 射程内敌人 → 攻击」），拆三个“失败品”。",
     "实在过不去时，可以先摆放推荐阵型看看思路。"
   ],
   "fail_feedback": {

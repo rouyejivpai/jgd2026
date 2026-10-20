@@ -1,36 +1,49 @@
 class_name StoryPlayer
 extends Control
 ## 剧情播放器（07 §10.2，由 01 §9 dialogue_overlay 升级）：播放 data/stories/<story_id>.json 的场景列表
-## （说话人、立绘、背景、文本逐字显示、点击继续），可在剧情后接一张机制提示卡。
+## （说话人、立绘、背景、文本逐字显示、点击继续）。2026-10-20：剧情后不再接机制提示卡（本关提示仍在「机制说明」弹窗里）。
 ## 触发约定【用户已定】：每关开始 <level_id>_intro、胜利 <level_id>_win、失败 <level_id>_lose；章节节点 story_on_unlock。
 ## 配置不存在 = 不触发：文件缺失或 scenes 为空时直接返回 false，不弹任何界面、不告警（只有 --verbose 下打印一行）。
 ## 立绘：场景 illustration 指定（assets/sprites/illustrations/<名>.png），为空则不显示；文件尚未生成时显示占位色块。
+## 2026-10-20 旁白立绘：无人说话（speaker 为 narrator / system / 空）但在描写某个角色时，该句也可写 illustration，立绘压暗显示；
+## 场景 dim 可显式覆盖（true 压暗 / false 不压暗）。
 ## 2026-10-19 哥特换皮：版式取 data/ui_layout/dialogue.json（assets/ui/dialogue/manifest.json → apply_ui_manifest.py）：
 ## 底部对话框切图 + 名牌（说话人）+ 正文 + 右下继续提示；立绘画在对话框之下、底对齐。布局缺失时退回旧的程序化版式。
+## 2026-10-20 CG：场景 cg 指定（assets/cg/<名>.png 或 .jpg），铺满全屏、压在压暗层之上、对话框之下，期间不显示立绘；
+## 连续几句写同一个 cg 即停留，下一句不写 cg 则淡出。写了 cg 而 text 为空 = 纯 CG 句：隐藏对话框，只看图，点击继续。
 
 signal finished()
 
 const CHARS_PER_SECOND: float = 40.0
 const ILLUSTRATION_DIR: String = "res://assets/sprites/illustrations/"
+const CG_DIR: String = "res://assets/cg/"
+const CG_FADE: float = 0.5
 const WITCH: String = "witch"
 const SKIN: String = "dialogue"
+const SILENT_SPEAKERS: Array[String] = ["narrator", "system", ""]      ## 无人说话：此时的立绘是被描写的对象，压暗
+const DIM_MODULATE: Color = Color(0.42, 0.42, 0.48)
+const BLIP_EVERY: int = 2                        ## 逐字音：每显示 N 个字响一声 text_blip
 
 var story_dir: String = ""                       ## 空 = 使用 DataRegistry.story_dir
 var current_story: String = ""                   ## 正在播放的 story_id（无则 ""）
 var _lines: Array = []
-var _mechanic_hint: String = ""
 var _index: int = -1
-var _showing_hint: bool = false
+var _base: ColorRect = null                     ## 底层背景（set_base_material 设置后才有），压在 backdrop 之下
 var _backdrop: TextureRect
+var _cg: TextureRect
+var _cg_name: String = ""
+var _cg_tween: Tween
+var _box_nodes: Array = []                       ## 对话框各部件；纯 CG 句（无 text）时整体隐藏
 var _portrait_rect: ColorRect
 var _portrait_tex: TextureRect
 var _speaker: Label
 var _text: Label
 var _continue: Control                   ## 继续提示（旧版为「继续 ▸」文字，哥特版为切图 F01）
+var _blip_chars: int = 0                 ## 上次响逐字音时已显示的字数
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)      # 连偏移一起铺满：选关里由代码实例化时尺寸为 0，只设锚点会一直是 0 × 0、收不到点击（卡在第一句）
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_backdrop = TextureRect.new()
 	_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -47,6 +60,7 @@ func _ready() -> void:
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(dim)
+	_add_cg_layer(true)
 	_portrait_rect = ColorRect.new()
 	_portrait_rect.position = Vector2(120.0, 180.0)
 	_portrait_rect.size = Vector2(420.0, 640.0)
@@ -77,6 +91,7 @@ func _ready() -> void:
 	_continue = UiKit.label(DataRegistry.get_string("ui.continue") + " ▸", "SmallLabel")
 	_continue.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	col.add_child(_continue)
+	_box_nodes = [box]
 	visible = false
 
 
@@ -90,6 +105,7 @@ func _build_skinned() -> void:
 		c.name = "Skin_" + id
 		nodes[id] = c
 	add_child(nodes["dim"] as Control)
+	_add_cg_layer(false)
 	_portrait_rect = ColorRect.new()
 	_portrait_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_portrait_rect)
@@ -100,6 +116,7 @@ func _build_skinned() -> void:
 	add_child(_portrait_tex)
 	for id: String in ["box", "next", "speaker", "text"]:
 		add_child(nodes[id] as Control)
+		_box_nodes.append(nodes[id])
 	_speaker = nodes["speaker"] as Label
 	_speaker.clip_text = true
 	_text = nodes["text"] as Label
@@ -121,11 +138,33 @@ func _layout_skinned() -> void:
 		var r: Rect2 = UiKit.layout_text_rect(SKIN, id, vp) if text else UiKit.layout_rect(SKIN, id, vp)
 		(nodes[id] as Control).position = r.position
 		(nodes[id] as Control).size = r.size
+	_cg.position = (nodes["dim"] as Control).position      # 本节点自身尺寸可能为 0，CG 跟压暗层一样铺满视口
+	_cg.size = (nodes["dim"] as Control).size
+	if _base != null:
+		_base.position = _cg.position
+		_base.size = _cg.size
 	var art: Array = (UiKit.layout_element(SKIN, "portrait").get("data", {}) as Dictionary).get("art_size", []) as Array
 	if art.size() == 2:                           # 立绘按原尺寸、下沿超出屏幕（布局 rect 只是可见部分）
 		_portrait_tex.size = Vector2(float(art[0]), float(art[1]))
 	_portrait_rect.position = _portrait_tex.position
 	_portrait_rect.size = _portrait_tex.size
+
+
+## 2026-10-20 底层背景：铺满视口、在剧情 backdrop / 压暗层之下的 ColorRect，用给定材质绘制
+## （选关界面回放剧情时传入其最后方的品红底光，剧情背景不再透出地图）
+func set_base_material(mat: Material) -> void:
+	if _base == null:
+		_base = ColorRect.new()
+		_base.name = "Base"
+		_base.color = Color.WHITE
+		_base.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_base)
+		move_child(_base, 0)
+		if has_meta(&"skin"):          # 哥特版不用锚点，由 _layout_skinned 按压暗层定尺寸（同 CG 层）
+			_layout_skinned()
+		else:
+			_base.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_base.material = mat
 
 
 ## 是否存在可播放的剧情（文件存在且 scenes 非空）
@@ -137,18 +176,18 @@ func _dir() -> String:
 	return story_dir if story_dir != "" else DataRegistry.story_dir
 
 
-## 播放剧情；mechanic_hint 非空时在剧情结束后接一张机制提示卡。剧情不存在 → 不显示、返回 false（07 §10.2）
-func play_story(story_id: String, mechanic_hint: String = "") -> bool:
+## 播放剧情。剧情不存在 → 不显示、返回 false（07 §10.2）
+func play_story(story_id: String) -> bool:
 	var story: Dictionary = DataRegistry.load_story(story_id, _dir())
 	if story.is_empty():
 		print_verbose("[StoryPlayer] no story, skipped: %s" % story_id)
 		return false
 	current_story = story_id
 	_lines = story["scenes"] as Array
-	_mechanic_hint = mechanic_hint
 	_index = -1
-	_showing_hint = false
 	var was_open: bool = visible
+	if not was_open:
+		_set_cg_now("")
 	visible = true
 	_next()
 	if not was_open:
@@ -166,7 +205,10 @@ func _slide_in() -> void:
 	for id: String in nodes.keys():
 		if id != "dim":
 			group.append(nodes[id])
-	UiKit.slide_in(group, (nodes["box"] as Control).get_global_rect(), [nodes["dim"], _backdrop])
+	var fades: Array = [nodes["dim"], _backdrop]
+	if _base != null:
+		fades.append(_base)
+	UiKit.slide_in(group, (nodes["box"] as Control).get_global_rect(), fades)
 
 
 ## 是否正在播放
@@ -178,6 +220,10 @@ func _process(delta: float) -> void:
 	if visible and _text.visible_ratio < 1.0:
 		var total: int = maxi(_text.get_total_character_count(), 1)
 		_text.visible_ratio = minf(1.0, _text.visible_ratio + delta * CHARS_PER_SECOND / float(total))
+		var shown: int = int(_text.visible_ratio * float(total))
+		if shown - _blip_chars >= BLIP_EVERY and _text.visible_ratio < 1.0:
+			_blip_chars = shown
+			AudioManager.play_sfx("text_blip", "UI", -6.0, 1.0, 0.08, 30)
 	_continue.modulate.a = 1.0 if _text.visible_ratio >= 1.0 else 0.3
 
 
@@ -192,6 +238,7 @@ func _gui_input(event: InputEvent) -> void:
 func advance() -> void:
 	if _text.visible_ratio < 1.0:
 		_text.visible_ratio = 1.0
+		AudioManager.play_ui("ui_skip", -6.0)
 	else:
 		AudioManager.play_sfx("dialogue_advance", "UI")
 		_next()
@@ -204,31 +251,117 @@ func _next() -> void:
 		var speaker: String = str(line.get("speaker", ""))
 		_speaker.text = DataRegistry.get_string("speakers." + speaker)
 		_show_text(str(line.get("text", "")))
-		_show_portrait(str(line.get("illustration", "")))
+		_show_cg(str(line.get("cg", "")))
+		_set_box_visible(_cg_name == "" or _text.text != "")
+		_show_portrait("" if _cg_name != "" else str(line.get("illustration", "")), bool(line.get("dim", speaker in SILENT_SPEAKERS)))
 		_show_backdrop(str(line.get("backdrop", "")))
-	elif not _showing_hint and _mechanic_hint != "":
-		_showing_hint = true
-		_speaker.text = DataRegistry.get_string("ui.mechanics")
-		_show_text(_mechanic_hint)
-		_show_portrait("")
 	else:
-		visible = false
-		current_story = ""
-		finished.emit()
+		close()
+
+
+## 结束当前剧情（隐藏并发出 finished）；未在播放时不做事
+func close() -> void:
+	if not visible:
+		return
+	visible = false
+	current_story = ""
+	_set_cg_now("")
+	_set_box_visible(true)
+	finished.emit()
 
 
 func _show_text(t: String) -> void:
 	_text.text = t
-	_text.visible_ratio = 0.0
+	_text.visible_ratio = 0.0 if t != "" else 1.0       # 空句（纯 CG）一次点击即继续
+	_blip_chars = 0
 
 
-## illustration 为空时不显示立绘
-func _show_portrait(who: String) -> void:
+func _set_box_visible(v: bool) -> void:
+	for c: Control in _box_nodes:
+		c.visible = v
+
+
+## 对话框是否显示（纯 CG 句时为 false）
+func is_box_visible() -> bool:
+	return _box_nodes.is_empty() or (_box_nodes[0] as Control).visible
+
+
+## illustration 为空时不显示立绘；dimmed = 被描写而非说话的角色，压暗
+func _show_portrait(who: String, dimmed: bool = false) -> void:
 	var path: String = ILLUSTRATION_DIR + who + ".png"
 	var has_tex: bool = who != "" and ResourceLoader.exists(path)
 	_portrait_tex.texture = load(path) as Texture2D if has_tex else null
 	_portrait_rect.visible = not has_tex and who != ""
 	_portrait_rect.color = Color(Palette.DIVINE_VIOLET if who == WITCH else Palette.BONE_DIM, 0.25)
+	var tint: Color = DIM_MODULATE if dimmed else Color.WHITE
+	_portrait_tex.self_modulate = tint
+	_portrait_rect.self_modulate = tint
+
+
+## 当前立绘是否压暗
+func is_portrait_dimmed() -> bool:
+	return _portrait_tex.self_modulate != Color.WHITE
+
+
+## CG 层：铺满视口、保持比例裁边（同 backdrop），初始隐藏；哥特版不用锚点，由 _layout_skinned 按压暗层定尺寸
+func _add_cg_layer(anchored: bool) -> void:
+	_cg = TextureRect.new()
+	_cg.name = "Cg"
+	if anchored:
+		_cg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_cg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_cg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_cg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cg.visible = false
+	add_child(_cg)
+
+
+## <名> → assets/cg/<名>.png，没有则 .jpg；都没有返回 ""
+static func cg_path(cg_name: String) -> String:
+	for ext: String in [".png", ".jpg"]:
+		if ResourceLoader.exists(CG_DIR + cg_name + ext):
+			return CG_DIR + cg_name + ext
+	return ""
+
+
+## 换 CG：同名保持；新 CG 淡入，空则淡出（关闭动效时立即切换）；文件缺失按无 CG 处理
+func _show_cg(cg_name: String) -> void:
+	if cg_name != "" and cg_path(cg_name) == "":
+		push_warning("[StoryPlayer] CG 不存在: %s" % cg_name)
+		cg_name = ""
+	if cg_name == _cg_name:
+		return
+	if not UiKit.motion_enabled:
+		_set_cg_now(cg_name)
+		return
+	if _cg_tween != null:
+		_cg_tween.kill()
+	_cg_name = cg_name
+	_cg_tween = create_tween()
+	if cg_name != "":
+		_cg.texture = load(cg_path(cg_name)) as Texture2D
+		if not _cg.visible:
+			_cg.modulate.a = 0.0
+		_cg.visible = true
+		_cg_tween.tween_property(_cg, "modulate:a", 1.0, CG_FADE)
+	else:
+		_cg_tween.tween_property(_cg, "modulate:a", 0.0, CG_FADE)
+		_cg_tween.tween_callback(_cg.hide)
+
+
+func _set_cg_now(cg_name: String) -> void:
+	if _cg_tween != null:
+		_cg_tween.kill()
+		_cg_tween = null
+	_cg_name = cg_name
+	_cg.texture = load(cg_path(cg_name)) as Texture2D if cg_name != "" else null
+	_cg.visible = cg_name != ""
+	_cg.modulate.a = 1.0
+
+
+## 当前显示的 CG 名（无则 ""）
+func current_cg() -> String:
+	return _cg_name
 
 
 ## backdrop 为空时保持上一张（首句为空则不显示）
