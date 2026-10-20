@@ -16,8 +16,11 @@ const OBJECT_DIR: String = "tile_objects/%s.png"    ## 与 GridOverlay.TILE_OBJE
 const CLUMPS: Dictionary = {
 	"hazard": { "count": [3, 4], "height": [0.58, 0.84], "tilt_deg": 11.0 },
 	"mire": { "count": [2, 3], "height": [0.5, 0.7], "tilt_deg": 9.0 },
-	"shrine": { "count": [1, 1], "height": [1.0, 1.0], "tilt_deg": 0.0 },
+	"shrine": { "count": [1, 1], "height": [1.0, 1.0], "tilt_deg": 0.0, "centered": true },
 }
+## centered（用户 2026-10-21）：祭坛这种单件大物件画在格子正中——图中满宽的方形底座（footprint_rect）上下居中于格中心，
+## 伸出底座上沿的柱子不计入，不再整体落在格子后半；
+## y 排序锚点仍取 SLOTS 落点（格中心之后），站在该格上的角色照样压在祭坛前面
 ## 每格 n 件时的基准落点（格，相对格中心；y 负 = 靠后）。全部在格中心之后，两侧铺到格边（件宽再越出格线一点），
 ## 后排居中、两侧略靠前，看上去是一丛而不是一排
 const SLOTS: Array = [
@@ -53,6 +56,8 @@ const SHADOW_FLATTEN: float = 0.34       ## 椭圆纵横比
 const SHADOW_WIDTH: float = 0.4          ## 阴影半宽 = 件宽 × 该值
 
 static var _content_cache: Dictionary = {}   ## Texture2D → Rect2i（不透明像素外接框，画布像素）
+static var _footprint_cache: Dictionary = {} ## Texture2D → Rect2（满宽底座的范围，画布像素）
+const FOOTPRINT_WIDTH: float = 0.9          ## 不透明宽度达到最宽行该比例的行算作底座
 
 var level: LevelDefinition = null
 var _items: Array[Dictionary] = []
@@ -69,8 +74,10 @@ func setup(p_level: LevelDefinition) -> void:
 		var tex: Texture2D = it["tex"] as Texture2D
 		var s := Sprite2D.new()
 		s.texture = tex
-		s.offset = Vector2(0.0, tex.get_size().y * 0.5 - float(content_rect(tex).end.y))    # 节点原点 = 脚底（不透明像素的下沿）
-		s.position = it["foot"] as Vector2
+		var k: float = float(it["scale"])
+		var shift: Vector2 = ((it["foot"] as Vector2) - (it["anchor"] as Vector2)).rotated(-float(it["tilt"])) / k
+		s.offset = Vector2(0.0, tex.get_size().y * 0.5 - float(content_rect(tex).end.y)) + shift    # 画面脚底（不透明像素的下沿）= foot
+		s.position = it["anchor"] as Vector2    # 节点原点 = y 排序锚点
 		s.scale = Vector2(float(it["scale"]), float(it["scale"]))
 		s.flip_h = bool(it["flip"])
 		s.rotation = float(it["tilt"])
@@ -97,7 +104,7 @@ static func upright_textures(style: String) -> Array[Texture2D]:
 	return out
 
 
-## 全部竖立件：{ kind, cell, tex, foot（本层局部）, scale, flip, tilt（弧度）, tint, shadow_rx }，按脚底 y 升序；
+## 全部竖立件：{ kind, cell, tex, foot（画面脚底，本层局部）, anchor（y 排序锚点，一般 = foot）, scale, flip, tilt（弧度）, tint, shadow_rx }，按锚点 y 升序；
 ## kind = 地形效果格种类，或障碍格的 "obstacle:<样式>"
 static func layout(p_level: LevelDefinition) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
@@ -117,21 +124,24 @@ static func layout(p_level: LevelDefinition) -> Array[Dictionary]:
 			var n: int = clampi(rng.randi_range(int(count[0]), int(count[1])), 1, SLOTS.size() - 1)
 			var center: Vector2 = SimTypes.sim_to_screen(SimTypes.cell_center(cell), p_level.height)
 			for i: int in n:
-				var k: float = rng.randf_range(float(height[0]), float(height[1])) * t / maxf(float(used.size.y), 1.0)
+				var h: float = rng.randf_range(float(height[0]), float(height[1]))
+				var k: float = h * t / maxf(float(used.size.y), 1.0)
 				var jitter := Vector2(rng.randf_range(-JITTER.x, JITTER.x), rng.randf_range(-JITTER.y, 0.0))
 				var shade: float = rng.randf_range(SHADE_RANGE.x, SHADE_RANGE.y)
+				var anchor: Vector2 = center + ((SLOTS[n] as Array)[i] as Vector2 + jitter) * t
 				out.append({
 					"kind": kind,
 					"cell": cell,
 					"tex": tex,
-					"foot": center + ((SLOTS[n] as Array)[i] as Vector2 + jitter) * t,
+					"foot": center + Vector2(0.0, (float(used.end.y) - footprint_rect(tex).get_center().y) * k) if bool(cd.get("centered", false)) else anchor,
+					"anchor": anchor,
 					"scale": k,
 					"flip": n > 1 and rng.randf() < 0.5,
 					"tilt": deg_to_rad(rng.randf_range(-float(cd["tilt_deg"]), float(cd["tilt_deg"]))),
 					"tint": Color(TINT.r * shade, TINT.g * shade, TINT.b * shade, 1.0),
 					"shadow_rx": float(used.size.x) * k * SHADOW_WIDTH,
 				})
-	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return (a["foot"] as Vector2).y < (b["foot"] as Vector2).y)
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return (a["anchor"] as Vector2).y < (b["anchor"] as Vector2).y)
 	return out
 
 
@@ -158,11 +168,13 @@ static func _layout_obstacles(p_level: LevelDefinition, out: Array[Dictionary]) 
 				var k: float = rng.randf_range(float(size[0]), float(size[1])) * t / maxf(float(maxi(used.size.x, used.size.y)), 1.0)
 				var jitter := Vector2(rng.randf_range(-BLOCK_JITTER.x, BLOCK_JITTER.x), rng.randf_range(-BLOCK_JITTER.y, BLOCK_JITTER.y))
 				var shade: float = rng.randf_range(SHADE_RANGE.x, SHADE_RANGE.y)
+				var foot: Vector2 = center + ((BLOCK_SLOTS[n] as Array)[i] as Vector2 + jitter) * t
 				out.append({
 					"kind": "obstacle:" + style,
 					"cell": cell,
 					"tex": tex,
-					"foot": center + ((BLOCK_SLOTS[n] as Array)[i] as Vector2 + jitter) * t,
+					"foot": foot,
+					"anchor": foot,
 					"scale": k,
 					"flip": rng.randf() < 0.5,
 					"tilt": deg_to_rad(rng.randf_range(-float(sd["tilt_deg"]), float(sd["tilt_deg"]))),
@@ -193,4 +205,37 @@ static func content_rect(tex: Texture2D) -> Rect2i:
 			img.decompress()
 		r = img.get_used_rect()
 	_content_cache[tex] = r
+	return r
+
+
+## 贴图里满宽的底座部分（画布像素）：不透明宽度 ≥ 最宽行 × FOOTPRINT_WIDTH 的行所覆盖的上下范围，宽度同 content_rect；
+## 读不到图像时等于 content_rect
+static func footprint_rect(tex: Texture2D) -> Rect2:
+	if _footprint_cache.has(tex):
+		return _footprint_cache[tex] as Rect2
+	var used: Rect2i = content_rect(tex)
+	var r := Rect2(used)
+	var img: Image = tex.get_image()
+	if img != null:
+		if img.is_compressed():
+			img.decompress()
+		var widths: PackedInt32Array = PackedInt32Array()
+		var widest: int = 0
+		for y: int in range(used.position.y, used.end.y):
+			var n: int = 0
+			for x: int in range(used.position.x, used.end.x):
+				if img.get_pixel(x, y).a > 0.1:
+					n += 1
+			widths.append(n)
+			widest = maxi(widest, n)
+		var top: int = -1
+		var bottom: int = -1
+		for i: int in widths.size():
+			if float(widths[i]) >= float(widest) * FOOTPRINT_WIDTH:
+				if top < 0:
+					top = i
+				bottom = i
+		if top >= 0:
+			r = Rect2(used.position.x, used.position.y + top, used.size.x, bottom - top + 1)
+	_footprint_cache[tex] = r
 	return r

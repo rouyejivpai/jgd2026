@@ -9,7 +9,8 @@ extends Control
 ## - 部署阶段按下已放置的己方单位不立即打开详情：松开且没拖动 = 选中（打开侧栏）；拖动 = 移动，虚影吸附到最近的地块显示预览，
 ##   原位置的单位变淡；放下后不弹出详情。
 ## - 信标模式（HUD 底部信标边栏，数字键 / 「信标」按钮进入）：左键点地块 = 给该单位追加信标，右键 = 撤销最后一个；按住已有信标仍可拖动。
-## - Ctrl + 左键拖动 = 平移镜头，Ctrl + 滚轮 = 缩放（BattleRoot.pan_by / zoom_at），不当作点击。
+## 镜头（用户 2026-10-21）：滚轮 = 以鼠标处缩放（BattleRoot.zoom_at）；按住中键拖动，或左键在空地 / 非可拖物上按下后拖动 = 平移
+## （BattleRoot.begin_cam_drag / cam_drag_to / end_cam_drag，出范围橡皮筋、松手弹回，同选关）。左键点选因此改为松开时生效（拖过就不算点击）。
 ## 遗物（2026-10-19）：遗物栏点按后进入点选（HUD.relic_armed）——地块遗物左键点落点放下，骨刃 / 徽章左键点目标生效，右键取消；
 ## 地块遗物也可从遗物栏直接拖到地图上（同放置人偶：吸附预览、非法格红闪 + 原因气泡）；部署阶段按住已放下的地块可拖动挪位，
 ## 拖出战场 / 拖回底栏 = 撤回，未选中单位时右键地块也可撤回。
@@ -21,7 +22,11 @@ var _controller: BattleController = null
 var _drag_beacon: String = ""            ## 正在拖动的信标编号
 var _drag_slot: String = ""
 var _press_unit: int = -1                ## 部署阶段按下的己方单位（松开未拖动 = 选中）
-var _cam_drag: bool = false              ## Ctrl + 左键拖动镜头中
+var _cam_drag: bool = false              ## 拖动镜头中（中键或左键）
+var _cam_button: int = MOUSE_BUTTON_NONE  ## 拖镜头的那个键（松开它才结束）
+const NO_CLICK: int = -2
+var _press_click: int = NO_CLICK         ## 左键按下待定的点选（单位 id / −1 空地）：松开且没拖动才选中，拖动超阈值 = 拖镜头
+var _press_pos: Vector2 = Vector2.ZERO
 var _snap_cell: Vector2i = Vector2i(-1, -1)   ## 上次吸附预览的格（换格才响 drag_snap）
 var _hover_target: int = -1              ## 骨刃 / 徽章点选中悬停的合法目标
 var _drag_source: bool = false           ## 当前 GUI 拖拽从这里拖起（结束时未被接收 = drag_cancel）
@@ -38,7 +43,13 @@ func _gui_input(event: InputEvent) -> void:
 	var mm: InputEventMouseMotion = event as InputEventMouseMotion
 	if mm != null:
 		if _cam_drag:
-			_root.call("pan_by", mm.relative)
+			_root.call("cam_drag_to", mm.global_position)
+			accept_event()
+			return
+		if _press_click != NO_CLICK and mm.global_position.distance_to(_press_pos) > UiKit.CHAPTER_DRAG_THRESHOLD:
+			_press_click = NO_CLICK
+			_begin_cam_drag(MOUSE_BUTTON_LEFT, _press_pos)
+			_root.call("cam_drag_to", mm.global_position)
 			accept_event()
 			return
 		if _drag_beacon != "":
@@ -55,13 +66,19 @@ func _gui_input(event: InputEvent) -> void:
 		_update_tooltip(mm.global_position)
 		return
 	var mb: InputEventMouseButton = event as InputEventMouseButton
-	if mb != null and mb.ctrl_pressed and mb.pressed and mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+	if mb != null and mb.pressed and mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
 		_root.call("zoom_at", mb.global_position, 1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else -1)
 		accept_event()
 		return
-	if mb != null and mb.button_index == MOUSE_BUTTON_LEFT and (mb.ctrl_pressed and mb.pressed or _cam_drag and not mb.pressed):
-		_cam_drag = mb.pressed
-		_press_unit = -1
+	if mb != null and _cam_drag:           # 拖镜头中：松开那个键结束，其他按键吞掉
+		if not mb.pressed and mb.button_index == _cam_button:
+			_cam_drag = false
+			_cam_button = MOUSE_BUTTON_NONE
+			_root.call("end_cam_drag")
+		accept_event()
+		return
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_MIDDLE:
+		_begin_cam_drag(MOUSE_BUTTON_MIDDLE, mb.global_position)
 		accept_event()
 		return
 	if mb != null and relic_armed() != "" and mb.pressed and mb.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
@@ -95,11 +112,22 @@ func _gui_input(event: InputEvent) -> void:
 		return
 	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
 		var id: int = int(_root.call("unit_at_screen", mb.global_position))   # 矩形外恒为 -1
-		if _controller != null and _controller.phase == SimTypes.Phase.DEPLOY and _controller.slot_of_unit(id) != "":
-			_press_unit = id               # 部署阶段的己方单位：松开时（未拖动）才选中
-		else:
-			_select_sound(id)
+		var deploy: bool = _controller != null and _controller.phase == SimTypes.Phase.DEPLOY
+		if _controller != null and _controller.can_move(_controller.slot_of_unit(id)):
+			_press_unit = id               # 部署阶段的己方单位（换阶段暂停：本次放下的增援）：松开时（未拖动）才选中，拖动 = 挪位
+		elif deploy and id < 0 and str(_root.call("relic_tile_at_screen", mb.global_position)) != "":
+			_select_sound(id)              # 按住已放下的遗物地块 = 拖动挪位，不拖镜头
 			EventBus.unit_selected.emit(id)
+		else:
+			_press_click = id              # 其余：松开且没拖动 = 点选，拖动 = 平移镜头
+			_press_pos = mb.global_position
+		accept_event()
+		return
+	if mb != null and not mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _press_click != NO_CLICK:
+		var id: int = _press_click
+		_press_click = NO_CLICK
+		_select_sound(id)
+		EventBus.unit_selected.emit(id)
 		accept_event()
 		return
 	if mb != null and not mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _press_unit >= 0:
@@ -109,14 +137,28 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 
 
+## 开始拖镜头：取消待定的点选 / 选中
+func _begin_cam_drag(button: int, screen_pos: Vector2) -> void:
+	_cam_drag = true
+	_cam_button = button
+	_press_unit = -1
+	_press_click = NO_CLICK
+	if get_parent() != null and get_parent().has_method("hide_tooltip"):
+		get_parent().call("hide_tooltip")
+	_root.call("begin_cam_drag", screen_pos)
+
+
 func _get_drag_data(at_position: Vector2) -> Variant:
-	if _controller == null or _controller.phase != SimTypes.Phase.DEPLOY or _drag_beacon != "":
+	if _controller == null or not _controller.editing() or _drag_beacon != "":
 		return null
 	if not bool(_root.call("in_playfield", get_global_transform() * at_position)):
 		return null
 	var cell: Vector2i = _root.call("screen_to_cell", get_global_transform() * at_position) as Vector2i
 	var sid: String = _controller.slot_at(cell)
-	if sid == "" and not _cam_drag and beacon_mode_slot() == "" and relic_armed() == "":
+	if _controller.boss_pending:           # 换阶段暂停：placements 里存活单位还记着部署格，按当前位置找本次放下的增援
+		var uid: String = _controller.slot_of_unit(int(_root.call("unit_at_screen", get_global_transform() * at_position)))
+		sid = uid if _controller.can_move(uid) else ""
+	if sid == "" and _controller.phase == SimTypes.Phase.DEPLOY and not _cam_drag and beacon_mode_slot() == "" and relic_armed() == "":
 		var rid: String = str(_root.call("relic_tile_at_screen", get_global_transform() * at_position))
 		if rid != "":                          # 按住已放下的遗物地块拖动 = 挪位 / 拖出战场撤回
 			_press_unit = -1
@@ -182,6 +224,9 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	if problem != "":                                  # 含增援超预算（BUDGET_EXCEEDED）等
 		AudioManager.play_sfx("ui_error", "UI")
 		_root.call("flash_illegal", cell)
+		if problem == DeploymentValidator.BUDGET_EXCEEDED:     # 灵魂不够：HUD 铭牌闪红 + 震动、右侧提示「灵魂储量不足！」
+			EventBus.budget_short.emit()
+			return
 		EventBus.toast.emit(cannot_place_text(problem))
 		if bool(_root.call("in_playfield", screen)) and _root.has_method("cell_top_screen"):
 			EventBus.toast_at.emit(cannot_place_text(problem), _root.call("cell_top_screen", cell) as Vector2)
@@ -260,9 +305,9 @@ func _place_beacon_at(screen_pos: Vector2) -> void:
 		if str(_root.call("beacon_at_screen", sid, screen_pos)) == "":
 			AudioManager.play_sfx("ui_error", "UI")
 			EventBus.toast_at.emit(DataRegistry.get_string("ui.beacon_blocked"), _root.call("cell_top_screen", cell) as Vector2)
-	elif not _controller.can_afford_beacon():
+	elif not _controller.can_afford_beacon():         # 买不起新一包信标：灵魂储量不足反馈
 		AudioManager.play_sfx("ui_error", "UI")
-		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
+		EventBus.budget_short.emit()
 	else:
 		_add_beacon(sid, cell)
 
@@ -292,9 +337,9 @@ func _on_right_click(screen_pos: Vector2) -> void:
 	elif not _controller.can_place_beacon(sid, cell):
 		AudioManager.play_sfx("ui_error", "UI")
 		EventBus.toast.emit(DataRegistry.get_string("ui.beacon_blocked"))
-	elif not _controller.can_afford_beacon():
+	elif not _controller.can_afford_beacon():         # 买不起新一包信标：灵魂储量不足反馈
 		AudioManager.play_sfx("ui_error", "UI")
-		EventBus.toast_at.emit(beacon_budget_text(_controller), _root.call("cell_top_screen", cell) as Vector2)
+		EventBus.budget_short.emit()
 	else:
 		_add_beacon(sid, cell)
 
@@ -321,11 +366,6 @@ func _remove_beacon(sid: String, beacon_id: String) -> void:
 	if _controller.beacon_stock() < stock:
 		AudioManager.play_sfx("soul_refund", "UI")
 		EventBus.toast.emit(beacon_pack_text(_controller, "ui.beacon_pack_refunded"))
-
-
-## 「预算不足：再买一包信标需要 N Cost」
-static func beacon_budget_text(c: BattleController) -> String:
-	return DataRegistry.get_string("ui.beacon_pack_unaffordable").format({ "cost": c.level.beacon_cost, "bundle": c.level.beacon_bundle })
 
 
 static func beacon_pack_text(c: BattleController, key: String) -> String:

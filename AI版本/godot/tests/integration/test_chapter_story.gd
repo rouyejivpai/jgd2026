@@ -24,6 +24,7 @@ var _saved_progress: Dictionary
 
 func before_each() -> void:
 	_saved_data = SaveManager.data.duplicate(true)
+	SaveManager.data["stories_seen"] = {}  # 2026-10-21：看过的剧情不再自动播放，测试从「都没看过」开始（不受真实存档影响）
 	SaveManager.autosave = false          # 2026-10-20：选关 / 一级地图会记解锁动画的揭开记录，测试里不写盘
 	_saved_level_id = GameState.current_level_id
 	_saved_unlocks = GameState.unlocks
@@ -50,6 +51,8 @@ func after_each() -> void:
 func _story_dir_with(ids: Array[String]) -> void:
 	for sid: String in ids:
 		var src: String = DataRegistry.STORY_DIR.path_join("%s.json" % sid)
+		if not FileAccess.file_exists(src):          # 第一章剧情在测试夹具里
+			src = DataRegistry.FIXTURE_ROOT.path_join("stories/%s.json" % sid)
 		var f: FileAccess = FileAccess.open(TMP_DIR.path_join("%s.json" % sid), FileAccess.WRITE)
 		f.store_string(FileAccess.get_file_as_string(src))
 		f.close()
@@ -173,6 +176,40 @@ func test_story_player_plays_and_finishes() -> void:
 	assert_signal_emitted(sp, "finished")
 
 
+func test_story_player_skip_ends_whole_story() -> void:
+	var sp: StoryPlayer = STORY_SCENE.instantiate() as StoryPlayer
+	add_child_autofree(sp)
+	watch_signals(sp)
+	assert_true(sp.play_story("level_01_intro"))
+	var skip: Button = sp.find_child("Skip", true, false) as Button
+	assert_not_null(skip, "右上角有跳过按钮")
+	assert_eq(skip.text, "Skip >>")
+	await wait_process_frames(1)
+	var vp: Vector2 = sp.get_viewport_rect().size
+	var r: Rect2 = skip.get_global_rect()
+	assert_true(r.end.x > vp.x * 0.8 and r.position.y < vp.y * 0.2, "按钮在右上角：%s" % r)
+	skip.pressed.emit()
+	var dlg: ConfirmDialog = sp.find_child("SkipConfirm", true, false) as ConfirmDialog
+	assert_true(dlg.is_open(), "点击跳过先弹确认窗")
+	assert_eq((dlg.nodes["body"] as Label).text, "确定要结束剧情吗？")
+	assert_eq((dlg.nodes["btn_ok"] as Button).text, "确定")
+	assert_eq((dlg.nodes["btn_cancel"] as Button).text, "取消")
+	assert_lt((dlg.nodes["btn_cancel"] as Control).position.x, (dlg.nodes["btn_ok"] as Control).position.x, "取消在左、确定在右")
+	await wait_process_frames(1)
+	assert_eq(dlg.get_global_rect(), Rect2(Vector2.ZERO, vp), "确认窗铺满视口")
+	assert_true(sp.visible, "确认前剧情仍在")
+	(dlg.nodes["btn_cancel"] as Button).pressed.emit()
+	assert_false(dlg.is_open())
+	assert_true(sp.visible, "取消 = 继续看剧情")
+	assert_eq(sp.current_story, "level_01_intro")
+	assert_signal_not_emitted(sp, "finished")
+	skip.pressed.emit()
+	(dlg.nodes["btn_ok"] as Button).pressed.emit()
+	assert_false(sp.visible, "确定 = 直接结束整段剧情")
+	assert_eq(sp.current_story, "")
+	assert_signal_emitted(sp, "finished")
+
+
 func test_story_player_dims_described_portrait() -> void:
 	var sp: StoryPlayer = STORY_SCENE.instantiate() as StoryPlayer
 	add_child_autofree(sp)
@@ -257,7 +294,7 @@ func test_all_24_story_files_exist_and_follow_convention() -> void:
 
 
 func test_deprecated_briefing_dialogue_and_story_id() -> void:
-	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/level_01.json")) as Dictionary
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter1/levels/level_01.json")) as Dictionary
 	(d["briefing"] as Dictionary)["dialogue"] = []
 	(d["rewards"] as Dictionary)["story_id"] = "x"
 	var before: int = DataReader.messages.size()
@@ -309,6 +346,36 @@ func test_intro_and_win_stories_play() -> void:
 	sp.close()
 	await wait_process_frames(2)
 	assert_true(panel.visible, "剧情播完再弹结算")
+
+
+func test_seen_story_does_not_autoplay_again() -> void:
+	var root: Node2D = _battle("level_01")
+	await wait_process_frames(2)
+	var sp: StoryPlayer = _story_player(root)
+	assert_eq(sp.current_story, "level_01_intro", "第一次进关播放开始剧情")
+	sp.skip()
+	(sp.find_child("SkipConfirm", true, false) as ConfirmDialog).call("_on_ok")
+	assert_false(sp.visible)
+	assert_true(SaveManager.is_story_seen("level_01_intro"), "跳过也算看过")
+	root.free()
+	var again: Node2D = _battle("level_01")
+	await wait_process_frames(2)
+	var sp2: StoryPlayer = _story_player(again)
+	assert_false(sp2.visible, "再进同一关不再自动播放")
+	var c: BattleController = again.get_node("BattleController") as BattleController
+	assert_true(c.apply_recommended())
+	assert_true(c.start())
+	_run_to_end(c)
+	assert_eq(sp2.current_story, "level_01_win", "没看过的结束剧情照常播放")
+	sp2.close()
+	await wait_process_frames(2)
+	c.reset()
+	assert_true(c.apply_recommended())
+	assert_true(c.start())
+	_run_to_end(c)
+	assert_false(sp2.visible, "再次胜利不再播放 _win")
+	await wait_process_frames(2)
+	assert_true((again.find_child("ResultPanel", true, false) as Control).visible, "直接弹结算")
 
 
 func test_lose_story_plays() -> void:

@@ -176,7 +176,7 @@ func test_free_cards_and_budget() -> void:
 	assert_eq(root.find_children("*", "RosterCard", true, false).filter(func(n: Node) -> bool: return (n as RosterCard).locked).size(), 3,
 		"其余三个卡位为「未解锁」卡（P6：五个卡位）")
 	var budget: Label = root.find_child("BudgetLabel", true, false) as Label
-	assert_eq(budget.text, "0 / 10")
+	assert_eq(budget.text, "10 / 10", "倒数显示：开局满储量")
 	var bulwark_card: RosterCard = null
 	for n: Node in cards:
 		if (n as RosterCard).form == "bulwark":
@@ -189,14 +189,23 @@ func test_free_cards_and_budget() -> void:
 	assert_true(bool(map_input.call("_can_drop_data", at, payload)), "出场卡可拖到部署区")
 	map_input.call("_drop_data", at, payload)
 	assert_eq(c.placements.size(), 1)
-	assert_eq(budget.text, "4 / 10", "放置扣费")
+	assert_eq(budget.text, "6 / 10", "放置扣费")
 	c.add_unit("bulwark", Vector2i(3, 2))
 	await wait_process_frames(1)
 	assert_true(bulwark_card.disabled, "8 + 4 > 10：预算不足时卡片禁用")
+	var shorts: Array[int] = [0]
+	var on_short: Callable = func() -> void: shorts[0] += 1
+	EventBus.budget_short.connect(on_short)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	bulwark_card.call("_gui_input", press)
+	EventBus.budget_short.disconnect(on_short)
+	assert_eq(shorts[0], 1, "按下灵魂不够的卡：灵魂储量不足反馈")
 	c.remove_unit("u2")
 	await wait_process_frames(1)
 	assert_false(bulwark_card.disabled, "收回返还 Cost")
-	assert_eq(budget.text, "4 / 10")
+	assert_eq(budget.text, "6 / 10")
 
 
 func test_fixed_level_shows_slot_cards_without_budget() -> void:

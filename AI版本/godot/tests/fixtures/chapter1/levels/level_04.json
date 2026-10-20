@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "id": "level_04",
+  "index": 4,
+  "title": "围栏",
+  "subtitle": "追击与多单位围堵高速敌人",
+  "biome": "hound_den",
+  "scene": { "backdrop": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/level_04_base.png", "obstacles": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/obstacles/level_04/obstacles.json", "ground": "res://assets/grounds/hound_den_a.png", "ground_tint": "#ffffff", "playfield_rect": null },
+  "bgm": "battle_02",
+  "seed": 4,
+  "grid": {
+    "width": 12, "height": 12,
+    "blocked": [[3, 3], [8, 3], [3, 8], [8, 8]]
+  },
+  "deploy_zone": { "rect": [0, 4, 1, 7] },
+  "roster": { "mode": "free", "budget": 9, "available_forms": ["striker", "swift"], "max_units": 3, "min_units": 1, "fixed_slots": [] },
+  "initial_units": [
+    { "id": "HOUND", "unit": "hound", "faction": "enemy", "pos": [9, 6], "counts_for_annihilate": true }
+  ],
+  "routes": {
+    "north": { "name": "北侧绕行", "points": [[1, 9], [5, 10], [10, 10]] },
+    "south": { "name": "南侧绕行", "points": [[1, 2], [5, 1], [10, 1]] },
+    "center": { "name": "正面推进", "points": [[5, 6], [8, 6]] }
+  },
+  "allowed": {
+    "conditions": ["always", "enemy_visible", "enemy_in_range", "target_distance"],
+    "selectors": ["nearest", "farthest", "lowest_hp"],
+    "actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"]
+  },
+  "objectives": {
+    "objective_text": "击杀围栏里的骸猎犬",
+    "win": [ { "id": "win_kill_hound", "type": "destroy", "targets": ["HOUND"] } ],
+    "lose": [ { "id": "lose_all_dead", "type": "all_allies_dead" } ]
+  },
+  "briefing": {
+    "mechanic_hint": "骸猎犬在 4 格内有人偶且存在退路时撤离，撤离方向远离附近的所有威胁，而不只是最近的那个。无路可退时它才会反咬。"
+  },
+  "hints": [
+    "点开骸猎犬的面板。它移速 4，比基础攻击形态快；只有把它堵在没有退路的地方才能打到它。",
+    "注意它「远离所有威胁」。一个单位从一侧追，它永远跑向另一侧；三个单位从三个方向压过去，它的退路会越来越少。",
+    "用「沿路线」先把两名基础攻击形态分别送到北、南两侧，再让快速形态从正面逼近，把它赶进东侧角落。",
+    "推荐部署：基础攻击形态 (1,7)→北线、基础攻击形态 (1,4)→南线、快速形态 (1,6) 正面。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "人偶全部倒下——这很少见；更常见的是追不上。检查三个单位是否真的从不同方向逼近，还是排成一列追。",
+    "default": "战斗失败。"
+  },
+  "recommended": {
+    "units": [
+      { "slot": "slot_striker_a", "form": "striker", "pos": [1, 7], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "follow_route", "route_id": "north", "loop": false } }
+        ] },
+      { "slot": "slot_striker_b", "form": "striker", "pos": [1, 4], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "follow_route", "route_id": "south", "loop": false } }
+        ] },
+      { "slot": "slot_swift", "form": "swift", "pos": [1, 6], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": ["preset.retreat_low_hp"],
+    "unlock_conditions": ["self_hp_below"],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_05"
+  },
+  "verification": {
+    "expected_win": "两名基础攻击形态沿北/南线前进时猎犬被 4 格内威胁驱向东侧；快速形态正面逼近后猎犬在东墙附近失去退路，三单位合计 30 伤害/秒，猎犬 70 生命约 2.5 秒。",
+    "expected_fail": "三单位全部正面追击：猎犬在开阔地持续撤离，战斗不会结束（无隐藏倒计时，玩家需手动重置）。",
+    "alternatives": "两名攻击形态守住东侧两角、快速形态驱赶，也可形成围堵。",
+    "risks": "【待验证算法】撤离的 BFS 最大最小距离算法在角落、方向抵消、绕障碍三种情形下必须单独试玩；若出现抖动或永远无法接近，先调障碍布局与 threat_radius，不得引入随机。"
+  }
+}

@@ -37,3 +37,5 @@ signal relic_armed(relic_id: String)                ## 遗物进入「点选目�
 signal toast(text: String)
 @warning_ignore("unused_signal")
 signal toast_at(text: String, screen_pos: Vector2)   ## P6 ui_21：锚在某格上方的警示气泡（不可放置）；screen_pos = 格子上沿中点
+@warning_ignore("unused_signal")
+signal budget_short()                               ## 任一操作因灵魂（Cost）不够而失败：HUD 灵魂储量铭牌闪红 + 震动，右侧提示栏「灵魂储量不足！」

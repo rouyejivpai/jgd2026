@@ -119,6 +119,10 @@ SPEC = {
     "spitter_charge": (fs(403705, "pabloperez", "HUM 12"), {"db": -9.0, "dur": 1.6, "fade": 0.4}),
     "core_pulse": (fs(209943, "Logicogonist", "bass 16b"), {"db": -7.0}),
     "witch_attack": (fs(442774, "qubodup", "Magic Spell"), {"db": -10.0}),
+    # 2026-10-21 Boss 放招：女鬼尖啸——幽灵哀嚎（颤音 + 长混响尾）打底，叠一层真人女声尖叫做刺耳的起音
+    "boss_scream": (fs(469141, "onderwish", "Ghost Scream"),
+                    {"db": -6.0, "dur": 2.8, "fade": 1.1, "lp": 7500.0, "hp": 180.0,
+                     "layer": [(fs(844114, "perspektywa_tn", "scream_female_reverb"), 0.0, 0.5, {"lp": 7000.0, "hp": 200.0})]}),
     "blast_detonate": (fs(431174, "Blankened", "Fireball Explosion"), {"db": -5.0}),
     "blast_land": (k("impact-sounds/Audio/impactSoft_heavy_001.ogg"), {"db": -14.0}),
     "attack_fizzle": (fs(619803, "Teh_Bucket", "Error fizzle"), {"db": -13.0}),
@@ -272,7 +276,7 @@ _TIERS = {
             "protect_alert", "unlock_reveal"],
     -28.0: ["death_core", "unit_summon", "objective_clear", "battle_resume", "result_record", "tutorial_done"],
     -27.0: ["boss_warn", "logo_heart"],
-    -26.0: ["blast_detonate", "result_stamp"],
+    -26.0: ["blast_detonate", "result_stamp", "boss_scream"],
     -25.0: ["unlock_open"],
     -24.0: ["battle_start", "boss_phase", "boss_death"],
 }

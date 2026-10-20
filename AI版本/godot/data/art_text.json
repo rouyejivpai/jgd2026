@@ -4,14 +4,6 @@
   "main_menu.game_title_art": "res://assets/ui/main_menu/art_text/title"
  },
  "texts": {
-  "田埂": "res://assets/ui/chapter/art_text/level_01_tian_geng",
-  "谷仓前": "res://assets/ui/chapter/art_text/level_02_gu_cang_qian",
-  "墙缝": "res://assets/ui/chapter/art_text/level_03_qiang_feng",
-  "围栏": "res://assets/ui/chapter/art_text/level_04_wei_lan",
-  "骨喉坡": "res://assets/ui/chapter/art_text/level_05_gu_hou_po",
-  "祭司行列": "res://assets/ui/chapter/art_text/level_06_ji_si_xing_lie",
-  "守住归途": "res://assets/ui/chapter/art_text/level_07_shou_zhu_gui_tu",
-  "骨花母体": "res://assets/ui/chapter/art_text/level_08_gu_hua_mu_ti",
   "战斗胜利": "res://assets/ui/battle_fx/art_text/victory_title",
   "战斗失败": "res://assets/ui/battle_fx/art_text/defeat_title",
   "战斗开始": "res://assets/ui/battle_fx/art_text/battle_start"

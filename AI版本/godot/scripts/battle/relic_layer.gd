@@ -10,6 +10,17 @@ enum Mode { GROUND, TOP }
 const FX_SECONDS: float = 1.2
 const TILE_ICON_CELLS: float = 0.9      ## 地块中心图标边长（格）
 const GHOST_ALPHA: float = 0.75
+## 伤害数字弹跳（bounce = true，用户 2026-10-21）：弹出放大回落 → 跳两下（第二下矮）落地压扁 → 缓缓上飘渐隐
+const POP_SECONDS: float = 0.16          ## 弹出：0.35 倍放大到 1 倍（带回冲）
+const POP_OVERSHOOT: float = 2.2
+const HOP_SECONDS: Vector2 = Vector2(0.30, 0.16)   ## 第一下 / 第二下的腾空时长
+const HOP_PX: float = 34.0               ## 第一下高度（像素），第二下 × HOP2_RATIO
+const HOP2_RATIO: float = 0.35
+const SQUASH: float = 0.18               ## 落地压扁幅度（横向放大、纵向压低同一比例）
+const SQUASH_SECONDS: float = 0.07
+const DRIFT_PX: float = 14.0             ## 弹跳期间沿偏移方向横移的距离
+const RISE_CELLS: float = 0.35           ## 落地后到消失时再上飘的高度（格）
+const FADE_FROM: float = 0.6             ## 寿命过了这一比例开始渐隐
 
 var mode: int = Mode.GROUND
 var controller: BattleController = null
@@ -51,9 +62,11 @@ func set_armed(relic_id: String, unit_id: int) -> void:
 	queue_redraw()
 
 
-## 生效特效：扩散圈 + 飘字（sim 坐标）
-func spawn_fx(sim_pos: Vector2, color: Color, text: String) -> void:
-	_fx.append({ "pos": SimTypes.sim_to_screen(sim_pos, grid_height), "color": color, "text": text, "t": 0.0 })
+## 生效特效：扩散圈 + 飘字（sim 坐标）。ring = false 只飘字（普通伤害数字，BattleRoot._show_hit），fs = 字号，shift = 屏幕偏移，
+## bounce = 飘字走弹跳动画（关闭动效时退回直线上飘）
+func spawn_fx(sim_pos: Vector2, color: Color, text: String, ring: bool = true, fs: int = 64, shift: Vector2 = Vector2.ZERO, bounce: bool = false) -> void:
+	_fx.append({ "pos": SimTypes.sim_to_screen(sim_pos, grid_height) + shift, "color": color, "text": text, "t": 0.0, "ring": ring, "fs": fs,
+		"bounce": bounce and UiKit.motion_enabled, "dir": signf(shift.x) })
 
 
 func _process(delta: float) -> void:
@@ -169,11 +182,45 @@ func _draw_fx() -> void:
 		var k: float = float(f["t"]) / FX_SECONDS
 		var col: Color = f["color"] as Color
 		var p: Vector2 = f["pos"] as Vector2
-		draw_arc(p, tile * (0.3 + 0.9 * k), 0.0, TAU, 40, Color(col.lightened(0.3), 1.0 - k), 8.0 * (1.0 - k) + 1.0)
+		if bool(f.get("ring", true)):
+			draw_arc(p, tile * (0.3 + 0.9 * k), 0.0, TAU, 40, Color(col.lightened(0.3), 1.0 - k), 8.0 * (1.0 - k) + 1.0)
 		var text: String = str(f["text"])
-		var fs: int = 64
+		var fs: int = int(f.get("fs", 64))
 		var sz: Vector2 = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs)
+		if bool(f.get("bounce", false)):
+			_draw_bouncing(font, f, p + Vector2(0.0, -tile * 1.2), text, fs, sz.x, col)
+			continue
 		var at: Vector2 = p + Vector2(-sz.x * 0.5, -tile * (1.2 + 0.6 * k))
 		var a: float = 1.0 - k * k
 		draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs, 14, Color(Palette.BG_DEEP, a))
 		draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs, Color(col.lightened(0.45), a))
+
+
+## 弹跳飘字：以文字底边中点为轴缩放（落地压扁贴着"地面"），base = 起跳点
+func _draw_bouncing(font: Font, f: Dictionary, base: Vector2, text: String, fs: int, w: float, col: Color) -> void:
+	var t: float = float(f["t"])
+	var k: float = t / FX_SECONDS
+	var land1: float = HOP_SECONDS.x
+	var land2: float = HOP_SECONDS.x + HOP_SECONDS.y
+	var s: float = 1.0
+	if t < POP_SECONDS:
+		var u: float = t / POP_SECONDS - 1.0
+		s = lerpf(0.35, 1.0, 1.0 + (POP_OVERSHOOT + 1.0) * u * u * u + POP_OVERSHOOT * u * u)
+	var y: float = 0.0
+	if t < land1:
+		y = -HOP_PX * sin(PI * t / HOP_SECONDS.x)
+	elif t < land2:
+		y = -HOP_PX * HOP2_RATIO * sin(PI * (t - land1) / HOP_SECONDS.y)
+	else:
+		y = -float(SimTypes.TILE_SIZE) * RISE_CELLS * (t - land2) / maxf(FX_SECONDS - land2, 0.01)
+	var q: float = 0.0
+	for land: float in [land1, land2]:
+		if t >= land and t < land + SQUASH_SECONDS:
+			q = SQUASH * (1.0 - (t - land) / SQUASH_SECONDS) * (1.0 if land == land1 else HOP2_RATIO * 2.0)
+	var x: float = float(f.get("dir", 0.0)) * DRIFT_PX * minf(t / land2, 1.0)
+	var a: float = 1.0 - smoothstep(FADE_FROM, 1.0, k)
+	draw_set_transform(base + Vector2(x, y), 0.0, Vector2(s * (1.0 + q), s * (1.0 - q)))
+	var at := Vector2(-w * 0.5, 0.0)
+	draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs, 14, Color(Palette.BG_DEEP, a))
+	draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, fs, Color(col.lightened(0.45), a))
+	draw_set_transform(Vector2.ZERO)

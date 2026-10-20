@@ -21,7 +21,7 @@ const AURA_MIN_PX: float = 110.0
 
 const FORM_ICON_DIR: String = "form_icons/%s.png"            ## 带烘焙外发光（卡面、头像用）
 const FORM_ICON_SOLID_DIR: String = "form_icons/%s_solid.png" ## 实心剪影（战场环绕用：靠场景辉光发光，形状更清楚）
-## 图标颜色已烘焙：金色 → 形态标志色（避开红色）的斜向渐变，见 tools/make_form_icons.py FORM_COLORS
+## 图标颜色已烘焙：金色 → 形态标志色（= 人偶描边色）的斜向渐变，见 tools/make_form_icons.py FORM_COLORS
 const ORBIT_PERIOD: float = 3.4          ## 秒 / 圈
 const ORBIT_RX_RATIO: float = 0.8        ## 水平半径（相对人物可见宽度）
 const ORBIT_RX_MIN: float = 56.0

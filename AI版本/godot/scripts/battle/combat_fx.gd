@@ -757,3 +757,318 @@ class Pillar extends Node2D:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		if kind == "strike" and drop >= 1.0:
 			CombatFx.glint(self, Vector2(0.0, -40.0 * size), 0.0, (40.0 + 40.0 * k) * size, 6.0 * size * a, Color(_col["core"] as Color, a))
+
+
+# ---------------------------------------------------------------- Boss 放招 ----
+
+## 2026-10-21 Boss 放招特效（用户：范围内没有目标也要发动、展示特效；再要更华丽）。颜色 = 信号色，范围 = 本次招式的作用范围。
+## 共通：三道先后扩散的冲击环 + 作用区闪光 + 范围边缘旋转刻纹 + 中心爆发火花 / 星芒 + 作用区飘起的光点。
+## 按招式区分：
+## · area_damage（花粉）：Boss 脚下绽开一朵骨花，花瓣旋舞着撒满作用区，落定后飘散
+## · area_status（骨缚）：骨刺从 Boss 一侧向外依次破土、停顿后缩回，相邻骨刺之间窜过电弧
+## · summon（召唤）：脚下旋转的法阵（双圈 + 六芒星 + 刻纹）+ 冲天光柱
+## inside = 作用区是 radius 内；否则是 radius 外 OUTER_REACH 格宽的环带。radius = 0（无范围招式）按 SMALL_RADIUS 的圈内处理。
+class BossWave extends Node2D:
+	var radius: float = 0.0          ## 像素
+	var inside: bool = true
+	var kind: String = ""            ## area_damage / area_status / summon
+	var tint: Color = Color.WHITE
+	var _t: float = 0.0
+	var _col: Dictionary = {}
+	var _lo: float = 0.0             ## 作用区内径（像素）
+	var _hi: float = 0.0             ## 作用区外径
+	var _petals: Array[Dictionary] = []   ## { from, to, delay, dur, rot, spin, size, swirl }
+	var _spikes: Array[Dictionary] = []   ## { p, h, w, lean, at }
+	var _bolts: Array[Vector2i] = []      ## 电弧连接的两根骨刺下标
+	var _spin0: float = 0.0
+	const LIFE: float = 1.35
+	const RING_DELAYS: Array = [0.0, 0.12, 0.26]
+	const RING_TIME: float = 0.6
+	const OUTER_REACH: float = 3.0   ## outside：作用环带宽（格）
+	const SMALL_RADIUS: float = 1.6  ## 无范围招式的冲击波半径（格）
+	const WAVE_SPEED: float = 2400.0 ## 像素 / 秒：骨刺 / 花瓣按离 Boss 的远近依次出现
+	const SPIKE_RISE: float = 0.08
+	const SPIKE_HOLD: float = 0.4
+	const SPIKE_FALL: float = 0.22
+	const BLOOM_PETALS: int = 9
+	static var _leaf: PackedVector2Array = PackedVector2Array()
+
+	static func make(center: Vector2, p_radius: float, p_inside: bool, p_tint: Color, p_kind: String = "") -> BossWave:
+		var w := BossWave.new()
+		w.position = center
+		w.radius = p_radius if p_radius > 0.0 else SMALL_RADIUS * float(SimTypes.TILE_SIZE)
+		w.inside = p_inside or p_radius <= 0.0
+		w.tint = p_tint
+		w.kind = p_kind
+		return w
+
+	## 单位叶片（两头尖，x ∈ [-1, 1]）：花瓣 / 骨花共用
+	static func leaf() -> PackedVector2Array:
+		if _leaf.is_empty():
+			for i: int in 9:
+				var x: float = -1.0 + 2.0 * float(i) / 8.0
+				_leaf.append(Vector2(x, -0.42 * pow(sin(PI * (x + 1.0) * 0.5), 0.8)))
+			for i: int in range(7, 0, -1):
+				var x: float = -1.0 + 2.0 * float(i) / 8.0
+				_leaf.append(Vector2(x, 0.42 * pow(sin(PI * (x + 1.0) * 0.5), 0.8)))
+		return _leaf
+
+	func _ready() -> void:
+		_col = CombatFx.colors(true, tint)
+		material = CombatFx.material(true)            # 信号色都较亮，用叠加发光
+		var tile: float = float(SimTypes.TILE_SIZE)
+		_lo = 0.0 if inside else radius
+		_hi = radius if inside else radius + OUTER_REACH * tile
+		_spin0 = randf() * TAU
+		var area_cells: float = (_hi * _hi - _lo * _lo) * PI / (tile * tile)
+		match kind:
+			"area_damage":
+				_make_petals(tile, clampi(int(area_cells * 0.9), 30, 110))
+			"area_status":
+				_make_spikes(tile, clampi(int(area_cells * 0.42), 14, 56))
+		# 作用区光点
+		var n: int = clampi(int(area_cells * 0.7), 24, 140)
+		var pts := PackedVector2Array()
+		var normals := PackedVector2Array()
+		for i: int in n:
+			var p: Vector2 = _area_point()
+			pts.append(p)
+			normals.append(p.normalized() if p.length() > 0.01 else Vector2.UP)
+		var motes: CPUParticles2D = CombatFx.sparks(true, n, 1.0, Vector2.RIGHT, 20.0, Vector2(60.0, 240.0), Vector2(3.0, 8.0), true, tint)
+		motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_DIRECTED_POINTS
+		motes.emission_points = pts
+		motes.emission_normals = normals
+		motes.gravity = Vector2(0.0, -70.0)
+		motes.explosiveness = 0.7
+		add_child(motes)
+		# 中心爆发：四散火花 + 上冲火花
+		var burst: CPUParticles2D = CombatFx.sparks(true, 70, 0.8, Vector2.UP, 180.0, Vector2(260.0, 820.0), Vector2(3.5, 9.0), true, tint)
+		burst.position = Vector2(0.0, -tile * 0.6)
+		burst.gravity = Vector2(0.0, 380.0)
+		add_child(burst)
+		var jet: CPUParticles2D = CombatFx.sparks(true, 36, 0.9, Vector2.UP, 14.0, Vector2(500.0, 1100.0), Vector2(3.0, 7.0), true, tint)
+		jet.position = Vector2(0.0, -tile * 0.4)
+		add_child(jet)
+
+	## 作用区内面积均匀的随机点
+	func _area_point() -> Vector2:
+		return Vector2.from_angle(randf() * TAU) * sqrt(lerpf(_lo * _lo, _hi * _hi, randf()))
+
+	func _make_petals(tile: float, n: int) -> void:
+		for i: int in n:
+			var to: Vector2 = _area_point()
+			var from: Vector2 = Vector2(0.0, -tile * 0.5) if inside else to.normalized() * radius
+			_petals.append({ "from": from, "to": to, "delay": from.distance_to(to) / WAVE_SPEED * 0.35 + randf() * 0.12,
+				"dur": randf_range(0.42, 0.7), "rot": randf() * TAU, "spin": randf_range(-9.0, 9.0),
+				"size": randf_range(20.0, 40.0), "swirl": randf_range(-0.45, 0.45) })
+
+	func _make_spikes(tile: float, n: int) -> void:
+		for i: int in n:
+			var p: Vector2 = _area_point()
+			var d: float = p.length() if inside else p.length() - radius
+			_spikes.append({ "p": p, "h": randf_range(1.1, 2.0) * tile, "w": randf_range(0.22, 0.36) * tile,
+				"lean": randf_range(-0.35, 0.35), "at": d / WAVE_SPEED + randf() * 0.06 })
+		# 电弧：每根骨刺连最近的一根（不重复）
+		for i: int in _spikes.size():
+			var best: int = -1
+			var best_d: float = 3.2 * tile
+			for j: int in _spikes.size():
+				if j == i:
+					continue
+				var dd: float = (_spikes[i]["p"] as Vector2).distance_to(_spikes[j]["p"] as Vector2)
+				if dd < best_d:
+					best_d = dd
+					best = j
+			if best >= 0 and not _bolts.has(Vector2i(best, i)):
+				_bolts.append(Vector2i(i, best))
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if _t >= LIFE:
+			set_process(false)
+			queue_redraw()
+			CombatFx.free_after(self, 1.2)
+			return
+		queue_redraw()
+
+	func _draw() -> void:
+		if _t >= LIFE:
+			return
+		var tile: float = float(SimTypes.TILE_SIZE)
+		var main: Color = _col["main"] as Color
+		var core: Color = _col["core"] as Color
+		var glow: Color = _col["glow"] as Color
+		var fade: float = clampf((LIFE - _t) / 0.35, 0.0, 1.0)      # 整体收尾
+		# 1. 作用区闪光
+		var fk: float = clampf(_t / 0.55, 0.0, 1.0)
+		var flash: float = (1.0 - fk) * (1.0 - fk)
+		if inside:
+			draw_circle(Vector2.ZERO, radius, Color(glow, 0.55 * flash))
+		else:
+			draw_arc(Vector2.ZERO, (_lo + _hi) * 0.5, 0.0, TAU, 128, Color(glow, 0.45 * flash), _hi - _lo)
+		# 2. 三道冲击环
+		for ri: int in RING_DELAYS.size():
+			var k: float = (_t - float(RING_DELAYS[ri])) / RING_TIME
+			if k < 0.0 or k > 1.0:
+				continue
+			var e: float = 1.0 - pow(1.0 - k, 3.0)
+			var rr: float = lerpf(tile * 0.3, radius, e) if inside else lerpf(_lo, _hi, e)
+			var a: float = (1.0 - k) * (1.0 if ri == 0 else 0.65)
+			var wk: float = 1.0 if ri == 0 else 0.6
+			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 128, Color(glow, 0.7 * a), (tile * 0.6 * (1.0 - k) + 3.0) * wk)
+			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 128, Color(main, a), (tile * 0.2 * (1.0 - k) + 3.0) * wk)
+			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 128, Color(core, a), 4.0 * wk)
+		# 3. 范围边缘：描亮 + 旋转刻纹（刻纹朝作用区一侧）
+		var edge_a: float = (0.55 + 0.45 * flash) * fade
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 128, Color(main, edge_a), 6.0)
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 128, Color(core, edge_a * 0.8), 2.5)
+		var ticks: int = 48
+		var spin: float = _spin0 + _t * (0.9 if inside else -0.9)
+		var side: float = -1.0 if inside else 1.0
+		for i: int in ticks:
+			var dir := Vector2.from_angle(spin + TAU * float(i) / float(ticks))
+			var long: bool = i % 4 == 0
+			var l0: float = radius + side * tile * 0.12
+			var l1: float = l0 + side * tile * (0.42 if long else 0.2)
+			draw_line(dir * l0, dir * l1, Color(main if long else glow, edge_a), 5.0 if long else 3.0)
+		# 4. 中心闪光 + 旋转星芒（短促，招式专属画在其上）
+		var ck: float = clampf(_t / 0.35, 0.0, 1.0)
+		var ca: float = 1.0 - ck
+		var c: Vector2 = Vector2(0.0, -tile * 0.6)
+		draw_texture_rect(StatusParticles.dot_texture(), Rect2(c - Vector2.ONE * tile * 1.0, Vector2.ONE * tile * 2.0), false, Color(glow, ca))
+		draw_texture_rect(StatusParticles.dot_texture(), Rect2(c - Vector2.ONE * tile * 0.4, Vector2.ONE * tile * 0.8), false, Color(core, ca * ca))
+		CombatFx.glint(self, c, _t * 2.5, tile * (1.0 + 1.6 * ck), 9.0 * ca + 1.0, Color(core, ca))
+		CombatFx.glint(self, c, _t * 2.5 + PI * 0.25, tile * (0.6 + 1.0 * ck), 6.0 * ca + 1.0, Color(main, ca))
+		# 5. 招式专属
+		match kind:
+			"area_damage":
+				_draw_bloom(tile, main, core, glow)
+				_draw_petals(main, core, glow)
+			"area_status":
+				_draw_spikes(main, core, glow)
+			"summon":
+				_draw_sigil(tile, main, core, glow)
+
+	## 骨花：两层长瓣从脚下绽开（略回弹）并缓慢旋转，停留后连同花心淡出
+	func _draw_bloom(tile: float, main: Color, core: Color, glow: Color) -> void:
+		var a: float = clampf((1.15 - _t) / 0.45, 0.0, 1.0)
+		if a <= 0.0:
+			return
+		var k: float = clampf(_t / 0.22, 0.0, 1.0) - 1.0
+		var open: float = 1.0 + 2.2 * k * k * k + 1.2 * k * k      # ease-out-back
+		var shape: PackedVector2Array = leaf()
+		for layer: int in 2:
+			var n: int = BLOOM_PETALS
+			var len: float = tile * (2.4 if layer == 0 else 1.5) * open
+			var rot: float = _spin0 + _t * 0.8 + (PI / float(n) if layer == 1 else 0.0)
+			for i: int in n:
+				var ang: float = rot + TAU * float(i) / float(n)
+				var at: Vector2 = Vector2.from_angle(ang) * len * 0.55
+				draw_set_transform(at, ang, Vector2(len * 0.55, len * 0.5))
+				draw_colored_polygon(shape, Color(glow if layer == 0 else main, (0.75 if layer == 0 else 0.9) * a))
+				draw_set_transform(at, ang, Vector2(len * 0.5, len * 0.12))
+				draw_colored_polygon(shape, Color(core, 0.8 * a))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		draw_circle(Vector2.ZERO, tile * 0.28 * maxf(open, 0.0), Color(core, a))
+
+	func _draw_petals(main: Color, core: Color, glow: Color) -> void:
+		var shape: PackedVector2Array = leaf()
+		for p: Dictionary in _petals:
+			var lt: float = _t - float(p["delay"])
+			if lt < 0.0:
+				continue
+			var dur: float = float(p["dur"])
+			var k: float = clampf(lt / dur, 0.0, 1.0)
+			var e: float = 1.0 - pow(1.0 - k, 2.4)
+			var from: Vector2 = p["from"] as Vector2
+			var to: Vector2 = p["to"] as Vector2
+			var pos: Vector2 = from.lerp(to, e) + (to - from).orthogonal() * sin(e * PI) * float(p["swirl"])
+			pos.y += maxf(0.0, lt - dur) * 60.0                      # 落定后缓缓下飘
+			var a: float = clampf(lt / 0.06, 0.0, 1.0) * clampf((dur + 0.45 - lt) / 0.3, 0.0, 1.0)
+			if a <= 0.0:
+				continue
+			var s: float = float(p["size"])
+			var rot: float = float(p["rot"]) + float(p["spin"]) * lt
+			var flutter: float = 0.35 + 0.65 * absf(cos(lt * 7.0 + float(p["rot"])))   # 翻飞
+			draw_set_transform(pos, rot, Vector2(s, s * flutter * 1.3))
+			draw_colored_polygon(shape, Color(glow, 0.5 * a))
+			draw_set_transform(pos, rot, Vector2(s * 0.8, s * flutter))
+			draw_colored_polygon(shape, Color(main, a))
+			draw_set_transform(pos, rot, Vector2(s * 0.6, s * flutter * 0.25))
+			draw_colored_polygon(shape, Color(core, a))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+	## 骨刺高度比例：破土（回弹）→ 停留 → 缩回地下
+	func _spike_height(sp: Dictionary) -> float:
+		var lt: float = _t - float(sp["at"])
+		if lt < 0.0:
+			return 0.0
+		if lt < SPIKE_RISE:
+			var k: float = lt / SPIKE_RISE - 1.0
+			return 1.0 + 2.6 * k * k * k + 1.6 * k * k
+		if lt < SPIKE_RISE + SPIKE_HOLD:
+			return 1.0
+		return clampf(1.0 - (lt - SPIKE_RISE - SPIKE_HOLD) / SPIKE_FALL, 0.0, 1.0)
+
+	## 骨刺 + 脚下光斑；骨刺立起期间相邻骨刺之间闪电弧（每帧重新抖动、随机缺帧 = 噼啪闪烁）
+	func _draw_spikes(main: Color, core: Color, glow: Color) -> void:
+		for b: Vector2i in _bolts:
+			var s0: Dictionary = _spikes[b.x]
+			var s1: Dictionary = _spikes[b.y]
+			if minf(_spike_height(s0), _spike_height(s1)) < 0.85 or randf() < 0.3:
+				continue
+			var p0: Vector2 = (s0["p"] as Vector2) + Vector2(0.0, -float(s0["h"]) * 0.45)
+			var p1: Vector2 = (s1["p"] as Vector2) + Vector2(0.0, -float(s1["h"]) * 0.45)
+			var nrm: Vector2 = (p1 - p0).orthogonal().normalized()
+			var pts := PackedVector2Array([p0])
+			for i: int in range(1, 7):
+				pts.append(p0.lerp(p1, float(i) / 7.0) + nrm * randf_range(-22.0, 22.0))
+			pts.append(p1)
+			draw_polyline(pts, Color(glow, 0.8), 12.0)
+			draw_polyline(pts, Color(main, 0.95), 5.0)
+			draw_polyline(pts, Color(core, 1.0), 2.0)
+		for sp: Dictionary in _spikes:
+			var hk: float = _spike_height(sp)
+			if hk <= 0.0:
+				continue
+			var p: Vector2 = sp["p"] as Vector2
+			var h: float = float(sp["h"]) * hk
+			var w: float = float(sp["w"])
+			var tip: Vector2 = p + Vector2(float(sp["lean"]) * h, -h)
+			var ga: float = clampf(hk, 0.0, 1.0)
+			draw_set_transform(p, 0.0, Vector2(1.0, 0.42))
+			draw_circle(Vector2.ZERO, w * 1.6, Color(glow, 0.7 * ga))
+			draw_arc(Vector2.ZERO, w * 1.6, 0.0, TAU, 24, Color(main, 0.9 * ga), 3.0)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-w * 0.9, 0.0), tip + Vector2(0.0, -6.0), p + Vector2(w * 0.9, 0.0)]), Color(glow, 0.6 * ga))
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-w * 0.5, 0.0), tip, p + Vector2(w * 0.5, 0.0)]), Color(main, 0.95 * ga))
+			draw_line(p + Vector2(-w * 0.1, -2.0), tip, Color(core, ga), 3.0)
+			var mid: Vector2 = p + (tip - p) * 0.4                     # 侧生小刺
+			draw_colored_polygon(PackedVector2Array([mid + Vector2(-w * 0.18, 0.0), mid + Vector2(w * 0.7, -h * 0.28), mid + Vector2(w * 0.12, w * 0.3)]), Color(main, 0.85 * ga))
+
+	## 召唤法阵：双圈 + 正反旋转的两个三角（六芒星）+ 刻纹，展开后旋转、收尾淡出；中心一道冲天光柱
+	func _draw_sigil(tile: float, main: Color, core: Color, glow: Color) -> void:
+		var open: float = 1.0 - pow(1.0 - clampf(_t / 0.25, 0.0, 1.0), 3.0)
+		var a: float = clampf((LIFE - _t) / 0.5, 0.0, 1.0)
+		var r: float = radius * 1.15 * open
+		var rot: float = _spin0 + _t * 1.6
+		draw_arc(Vector2.ZERO, r, 0.0, TAU, 96, Color(main, a), 6.0)
+		draw_arc(Vector2.ZERO, r * 0.82, 0.0, TAU, 96, Color(glow, a), 10.0)
+		draw_arc(Vector2.ZERO, r * 0.82, 0.0, TAU, 96, Color(core, a), 2.5)
+		for tri: int in 2:
+			var pts := PackedVector2Array()
+			for i: int in 4:
+				pts.append(Vector2.from_angle(rot * (1.0 if tri == 0 else -1.0) + TAU * float(i) / 3.0 + PI * float(tri)) * r * 0.8)
+			draw_polyline(pts, Color(main, a), 5.0)
+			draw_polyline(pts, Color(core, a), 2.0)
+		for i: int in 24:
+			var d := Vector2.from_angle(-rot * 0.6 + TAU * float(i) / 24.0)
+			draw_line(d * r * 0.86, d * r * (0.96 if i % 3 == 0 else 0.91), Color(core if i % 3 == 0 else main, a), 4.0)
+		var bh: float = tile * 6.0 * clampf(_t / 0.12, 0.0, 1.0)
+		var ba: float = a * clampf((0.9 - _t) / 0.5, 0.0, 1.0)
+		for layer: Array in [[2.4, glow, 0.45], [1.0, main, 0.8], [0.35, core, 1.0]]:
+			var bw: float = tile * 0.5 * float(layer[0])
+			var cc: Color = layer[1] as Color
+			var cb := Color(cc, float(layer[2]) * ba)
+			draw_polygon(PackedVector2Array([Vector2(-bw * 0.5, -bh), Vector2(bw * 0.5, -bh), Vector2(bw * 0.5, 0.0), Vector2(-bw * 0.5, 0.0)]),
+				PackedColorArray([Color(cc, 0.0), Color(cc, 0.0), cb, cb]))

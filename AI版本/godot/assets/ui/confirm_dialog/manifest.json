@@ -45,7 +45,7 @@
     {
       "id": "btn_ok",
       "kind": "button",
-      "rect": [690, 640, 240, 64],
+      "rect": [990, 640, 240, 64],
       "states": {
         "normal": "../settings_overlay/slices/btn_close_normal.png",
         "hover": "../settings_overlay/slices/btn_close_hover.png",
@@ -60,7 +60,7 @@
     {
       "id": "btn_cancel",
       "kind": "button",
-      "rect": [990, 640, 240, 64],
+      "rect": [690, 640, 240, 64],
       "states": {
         "normal": "../settings_overlay/slices/btn_close_normal.png",
         "hover": "../settings_overlay/slices/btn_close_hover.png",

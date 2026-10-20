@@ -6,7 +6,7 @@
   "title": "测试：护送",
   "subtitle": "P4 机制测试",
   "biome": "bone_farm",
-  "scene": { "backdrop": "res://assets/backgrounds/level_01.png", "ground": "", "ground_tint": "#3e3631", "playfield_rect": null },
+  "scene": { "backdrop": "res://tests/fixtures/chapter1/assets/backgrounds/level_01.png", "ground": "", "ground_tint": "#3e3631", "playfield_rect": null },
   "bgm": "battle_01",
   "seed": 99,
   "grid": { "width": 10, "height": 6, "blocked": [] },

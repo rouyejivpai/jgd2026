@@ -31,7 +31,7 @@
       "tutorial": {
         "steps": [
           { "title": "部署", "text": "和上一关一样，把单位卡拖进可部署区。", "targets": [{ "kind": "ui", "node": "Card_striker", "zoom": 1.15 }, { "kind": "deploy_zone" }], "advance": "event", "event": "deployed" },
-          { "title": "购买信标", "text": "信标要用灵魂购买：1 点灵魂 1包（5 个），放下第一个信标时自动买下，灵魂储量会占据 1。点「信标」开始放置。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }], "advance": "event", "event": "beacon_mode" },
+          { "title": "购买信标", "text": "信标要用灵魂购买：1 点灵魂 1包（5 个），放下第一个信标时自动买下，灵魂储量会减少 1。点「信标」开始放置。", "targets": [{ "kind": "ui", "node": "BeaconModeButton" }], "advance": "event", "event": "beacon_mode" },
           { "title": "障碍物", "text": "暗红色的格子是障碍物：单位走不过去，信标也放不上去。", "targets": [{ "kind": "blocked" }], "advance": "tap" },
           { "title": "放置信标", "text": "左键点击亮起的地块，放下第 1 个信标。", "targets": [{ "kind": "cell", "cell": [4, 0] }], "advance": "event", "event": "beacon_placed", "count": 1 },
           { "title": "放置信标", "text": "再点这里，放下第 2 个信标。", "targets": [{ "kind": "cell", "cell": [6, 6] }], "advance": "event", "event": "beacon_placed", "count": 2 },

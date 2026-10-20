@@ -217,11 +217,11 @@ func _refresh_cost() -> void:
 		"form": controller.cost_of(controller.form_of(slot_id)), "commands": controller.command_cost(slot_id) })
 
 
-## 「移除」只在部署阶段、该单位已放置时可见
+## 「移除」只在部署阶段、该单位已放置时可见（Boss 换阶段暂停：本次放下的增援）
 func _refresh_remove() -> void:
 	if _remove_button == null:
 		return
-	var can: bool = slot_id != "" and controller.phase == SimTypes.Phase.DEPLOY and controller.placements.has(slot_id)
+	var can: bool = slot_id != "" and controller.can_move(slot_id)
 	_remove_button.visible = can
 	_refresh_footer()
 

@@ -109,6 +109,16 @@
     "trans": "cubic",
     "ease": "out"
   },
+  "budget_short": {
+    "_note": "灵魂储量不足：铭牌闪红（flash_count 次，每次 flash_s）+ 震动（shake_px 幅度、shake_s 时长）；同一提示 toast_gap_s 内不重复进提示栏",
+    "flash_count": 2,
+    "flash_s": 0.16,
+    "shake_px": 7.0,
+    "shake_s": 0.32,
+    "toast_gap_s": 0.6,
+    "plate_rect": [24, 880, 320, 128],
+    "_plate_note": "铭牌底框在整屏框体 hud_frame.png 上的设计坐标（演出时切出这一块叠在原位上抖动泛红，边缘羽化）"
+  },
   "result": {
     "panel_in_s": 0.25,
     "count_s": 0.9,

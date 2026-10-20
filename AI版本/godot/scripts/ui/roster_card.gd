@@ -329,9 +329,24 @@ func refresh() -> void:
 	disabled = not controller.can_add_form(form)
 	tooltip_text = _base_tip
 	if deploy and disabled:
-		var why: String = DataRegistry.get_string("ui.roster_full").format({ "n": controller.level.max_units }) if controller.placements.size() >= controller.level.max_units else DataRegistry.get_string("ui.budget_short")
+		var why: String = DataRegistry.get_string("ui.budget_short") if controller.form_short_of_budget(form) else DataRegistry.get_string("ui.roster_full").format({ "n": controller.level.max_units })
 		tooltip_text = why if _base_tip == "" else _base_tip + "
 " + why
+
+
+## 不可用的形态卡被按下（想拖出一名）：灵魂不够 → 灵魂储量不足反馈（HUD 铭牌闪红 + 震动、右侧提示）；人数已满 → 提示人数上限
+func _gui_input(event: InputEvent) -> void:
+	var mb: InputEventMouseButton = event as InputEventMouseButton
+	if mb == null or not mb.pressed or mb.button_index != MOUSE_BUTTON_LEFT or not disabled or locked or slot_id != "" or controller == null:
+		return
+	if controller.phase != SimTypes.Phase.DEPLOY and not controller.boss_pending:
+		return
+	if controller.form_short_of_budget(form):
+		AudioManager.play_sfx("ui_error", "UI")
+		EventBus.budget_short.emit()
+	elif not controller.boss_pending and controller.placements.size() >= controller.level.max_units:
+		AudioManager.play_sfx("ui_error", "UI")
+		EventBus.toast.emit(DataRegistry.get_string("ui.roster_full").format({ "n": controller.level.max_units }))
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:

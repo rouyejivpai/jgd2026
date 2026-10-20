@@ -10,6 +10,7 @@ extends Control
 ## - 点已解锁区域（图标或名牌）直接进入；点未解锁的，锁晃一下。下一个要去的区域名牌后有一团缓慢呼吸的微光。
 ## - 解锁动画：区域已解锁但还没揭开过（存档 regions_revealed 没有它）时，进场后先按锁住的样子显示，然后锁颤抖 → 炸成白色粒子 →
 ##   整块名牌闪白、白里换上区域名 → 渐变回原样。揭开记录在动画开始时写入存档，每个区域只播一次。
+##   一次解锁多个区域（连点「下一关」跳过好几关）时只给最后一个播，其余直接显示为已解锁。
 ##   调试版按 F9 重播最近解锁的区域（只是表现，不改存档）。
 
 signal region_entered(region_id: String)
@@ -415,12 +416,14 @@ func _process(delta: float) -> void:
 
 
 
-## 进场时把待揭开的区域记进存档，然后（有动效时）依次播放解锁动画；无动效直接显示结果
+## 进场时把待揭开的区域全部记进存档，然后（有动效时）只给最后一个播解锁动画（一口气连跳几关解锁多个区域时，前面的直接显示为已解锁）；
+## 无动效直接显示结果
 func _queue_reveals() -> void:
 	revealing = pending_reveals()
 	if revealing.is_empty():
 		return
 	SaveManager.mark_regions_revealed(revealing)
+	revealing = [str(revealing.back())]
 	if not UiKit.motion_enabled:
 		revealing.clear()
 		return

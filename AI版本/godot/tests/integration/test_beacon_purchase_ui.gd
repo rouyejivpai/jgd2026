@@ -17,6 +17,7 @@ var _saved_level_id: String
 var _saved_unlocks: Dictionary
 var _toasts: Array[String] = []
 var _bubbles: Array[String] = []
+var _shorts: int = 0
 
 
 func before_each() -> void:
@@ -26,13 +27,16 @@ func before_each() -> void:
 	GameState.unlocks = ALL_UNLOCKED
 	_toasts.clear()
 	_bubbles.clear()
+	_shorts = 0
 	EventBus.toast.connect(_on_toast)
 	EventBus.toast_at.connect(_on_bubble)
+	EventBus.budget_short.connect(_on_budget_short)
 
 
 func after_each() -> void:
 	EventBus.toast.disconnect(_on_toast)
 	EventBus.toast_at.disconnect(_on_bubble)
+	EventBus.budget_short.disconnect(_on_budget_short)
 	SaveManager.data = _saved_data
 	GameState.current_level_id = _saved_level_id
 	GameState.unlocks = _saved_unlocks
@@ -44,6 +48,10 @@ func _on_toast(text: String) -> void:
 
 func _on_bubble(text: String, _anchor: Vector2) -> void:
 	_bubbles.append(text)
+
+
+func _on_budget_short() -> void:
+	_shorts += 1
 
 
 func _battle(level_id: String) -> Node2D:
@@ -87,12 +95,12 @@ func test_beacon_mode_buys_and_refunds_packs() -> void:
 	hud.call("enter_beacon_mode", uid)
 	await wait_process_frames(1)
 	var budget: Label = hud.find_child("BudgetLabel", true, false) as Label
-	assert_eq(budget.text, "3 / 4")
+	assert_eq(budget.text, "1 / 4", "倒数显示：剩余 / 总量")
 	assert_string_contains(_title(hud), "信标 0/0", "边栏标题显示全场信标池")
 
 	_click(root, Vector2i(7, 3), MOUSE_BUTTON_LEFT)
 	assert_eq(c.beacon_total(), 1)
-	assert_eq(budget.text, "4 / 4", "放第 1 个信标：自动买一包，预算即时刷新")
+	assert_eq(budget.text, "0 / 4", "放第 1 个信标：自动买一包，预算即时刷新")
 	assert_string_contains(_title(hud), "信标 1/5")
 	assert_eq(_toasts.size(), 1, "提示已购买")
 	assert_string_contains(_toasts[0], "−1 灵魂")
@@ -104,14 +112,26 @@ func test_beacon_mode_buys_and_refunds_packs() -> void:
 	assert_eq(_toasts.size(), 1, "同一包内不再提示")
 	_click(root, Vector2i(12, 3), MOUSE_BUTTON_LEFT)
 	assert_eq(c.beacon_total(), 5, "预算不够买第二包：不放置")
-	assert_eq(_bubbles.size(), 1, "弹出预算不足气泡")
-	assert_string_contains(_bubbles[0], "灵魂不足")
+	assert_eq(_shorts, 1, "灵魂储量不足反馈（铭牌闪红震动 + 右侧提示）")
+	assert_true(_toast_stack_texts(hud).has("灵魂储量不足！"), "右侧提示栏：灵魂储量不足！")
 
 	for i: int in 4:
 		_click(root, Vector2i(1, 1), MOUSE_BUTTON_RIGHT)       # 信标模式右键 = 撤销最后一个
 	assert_eq(c.beacon_total(), 1)
-	assert_eq(budget.text, "4 / 4", "还剩 1 个：包不退")
+	assert_eq(budget.text, "0 / 4", "还剩 1 个：包不退")
 	_click(root, Vector2i(1, 1), MOUSE_BUTTON_RIGHT)
 	assert_eq(c.beacon_total(), 0)
-	assert_eq(budget.text, "3 / 4", "删光：退包")
+	assert_eq(budget.text, "1 / 4", "删光：退包")
 	assert_string_contains(_toasts.back(), "退回 1 点灵魂")
+
+
+## 右侧提示栏（ToastStack）里各条的文字
+func _toast_stack_texts(hud: Control) -> Array[String]:
+	var out: Array[String] = []
+	var stack: Node = hud.find_child("ToastStack", true, false)
+	if stack != null:
+		for item: Node in stack.get_children():
+			for l: Node in item.get_children():
+				if l is Label:
+					out.append((l as Label).text)
+	return out

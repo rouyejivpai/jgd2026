@@ -6,7 +6,7 @@ const DataRegistryScript: GDScript = preload("res://scripts/autoloads/data_regis
 
 ## 读取关卡原始 JSON（深拷贝，可随意修改）
 func _raw_level(level_id: String) -> Dictionary:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/%s.json" % level_id))
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(DataRegistry._level_path(DataRegistry.DATA_ROOT, level_id)))
 	return (parsed as Dictionary).duplicate(true)
 
 

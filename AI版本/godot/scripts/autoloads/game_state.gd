@@ -22,6 +22,8 @@ var tutorial_pick_result: Dictionary = {}
 ## 2026-10-20 开场动画挂机重播：主菜单无操作多久后播放（1 分钟；挂机触发的那次播完后为 5 分钟，任何操作复位），本次是否由挂机触发（不存档）
 var opening_idle_wait: float = 60.0
 var opening_from_idle: bool = false
+## 2026-10-21 剧情回顾图鉴的「原初 / 致谢」：从图鉴进开场动画 / 片尾名单，回到主菜单时重新打开图鉴（开场动画据此在动效总闸关闭时也照播；不存档）
+var story_gallery_return: bool = false
 ## 配置器的未保存编辑（预览 / 拾取往返战斗场景时保留）
 var config_editor_state: Dictionary = {}
 

@@ -1,0 +1,13 @@
+{
+ "_comment": "第一章关卡名艺术字（测试用叠加层，见 progression.json 注释）",
+ "texts": {
+  "田埂": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_01_tian_geng",
+  "谷仓前": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_02_gu_cang_qian",
+  "墙缝": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_03_qiang_feng",
+  "围栏": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_04_wei_lan",
+  "骨喉坡": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_05_gu_hou_po",
+  "祭司行列": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_06_ji_si_xing_lie",
+  "守住归途": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_07_shou_zhu_gui_tu",
+  "骨花母体": "res://tests/fixtures/chapter1/assets/ui/chapter/art_text/level_08_gu_hua_mu_ti"
+ }
+}

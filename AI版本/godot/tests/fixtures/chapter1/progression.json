@@ -1,0 +1,6 @@
+{
+ "_comment": "第一章测试关卡（2026-10-21 移出正式数据，只在测试 / 工具脚本运行时由 DataRegistry 叠加）：追加到 data/progression.json 的 initial_levels。",
+ "initial_levels": [
+  "level_01"
+ ]
+}

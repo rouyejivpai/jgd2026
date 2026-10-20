@@ -185,6 +185,18 @@ func test_newly_unlocked_level_reveals() -> void:
 	assert_eq(sel2.call("pending_reveals") as Array, ["level_03"] as Array[String], "旧存档没有揭开记录：可挑战未通关的补播一次")
 
 
+## 连跳几关、一次解锁多关：全部记入揭开记录，只给最后一关播动画，其余直接显示为已解锁
+func test_multiple_unlocks_reveal_only_last() -> void:
+	var sel: Control = await _open(["level_01", "level_02"], ["level_01"])
+	var seen: Array = SaveManager.revealed("levels_revealed") as Array
+	assert_true(seen.has("level_02") and seen.has("level_03"), "两关都记入揭开记录")
+	var b2: Button = (sel.get("node_buttons") as Dictionary)["level_02"] as Button
+	assert_eq((b2.get_node("Nameplate") as Label).text, "02 · " + DataRegistry.get_level("level_02").title, "前面的关直接解锁")
+	assert_false((b2.get_node("PlateBg/Lock") as Control).visible)
+	assert_eq(sel.get("revealing") as Array, ["level_03"] as Array[String] if UiKit.motion_enabled else [] as Array[String], "只给最后一关播")
+	sel.call("skip_reveals")
+
+
 func test_can_scroll_to_node_25() -> void:
 	var sel: Control = await _open([])
 	var viewport: Control = sel.find_child("MapViewport", true, false) as Control

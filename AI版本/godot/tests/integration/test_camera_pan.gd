@@ -2,7 +2,8 @@ extends GutTest
 ## 10 §6.4 鼠标触边横向移动：无选中不平移；有选中且侧栏可见时触边 pan_x 单调增长到上限（PAN_MAX = 侧栏宽）；
 ## 只有横向；取消选中回 0；开始战斗回 0；backdrop 绘制宽 = 视口宽 + 2·PAN_MAX，偏移到上限也不露底（P7 起有 R4 对齐底图的关卡改为 1:1 同步平移）。
 ## 第四阶段：详情改为停靠一侧的侧栏，鼠标在侧栏上不触边平移（单位在左 → 侧栏在右 → 只有左边缘触发）；
-## Ctrl + 滚轮以鼠标处为中心缩放（鼠标下的地图点不动）、Ctrl + 拖动两个方向平移，用过 Ctrl 镜头后取消选中不自动回正。
+## 滚轮以鼠标处为中心缩放（鼠标下的地图点不动）、中键 / 左键拖空地两个方向平移，动过镜头后取消选中不自动回正；
+## 拖出平移范围走橡皮筋（渐近视口 1/8）、松手弹回范围内（同选关）；左键点选松开才生效、拖过不算点击。
 ## （镜头不碰模拟由 run_playtests -- --check 哈希全等证明。）
 
 const BATTLE_SCENE: PackedScene = preload("res://scenes/battle/battle_root.tscn")
@@ -115,7 +116,7 @@ func test_edge_pan_grows_to_limit_then_recenters() -> void:
 	assert_eq(_pan(root), 0.0, "取消选中回 0")
 
 
-func test_ctrl_zoom_keeps_point_under_cursor_and_ctrl_drag_pans() -> void:
+func test_wheel_zoom_keeps_point_under_cursor_and_drag_pans() -> void:
 	var root: Node2D = _battle("level_03")
 	await wait_process_frames(2)
 	var rect: Rect2 = root.get("playfield_rect") as Rect2
@@ -131,8 +132,8 @@ func test_ctrl_zoom_keeps_point_under_cursor_and_ctrl_drag_pans() -> void:
 	assert_almost_eq((root.get_node("UnitLayer") as Node2D).scale.x, map_layer.scale.x, 0.0001, "单位层同步缩放")
 	var p0: Vector2 = map_layer.position
 	root.call("pan_by", Vector2(40.0, -25.0))
-	assert_almost_eq(map_layer.position.x - p0.x, 40.0, 0.01, "Ctrl 拖动：地图跟手（横）")
-	assert_almost_eq(map_layer.position.y - p0.y, -25.0, 0.01, "Ctrl 拖动：地图跟手（纵）")
+	assert_almost_eq(map_layer.position.x - p0.x, 40.0, 0.01, "拖动：地图跟手（横）")
+	assert_almost_eq(map_layer.position.y - p0.y, -25.0, 0.01, "拖动：地图跟手（纵）")
 	var sim: Vector2 = root.call("screen_to_sim", m) as Vector2
 	var cell: Vector2i = root.call("screen_to_cell", m) as Vector2i
 	assert_eq(cell, SimTypes.pos_to_cell(sim), "屏幕 → 格 与缩放一致")
@@ -142,7 +143,71 @@ func test_ctrl_zoom_keeps_point_under_cursor_and_ctrl_drag_pans() -> void:
 	assert_almost_eq(float(root.get("cam_zoom")), UiKit.ZOOM_MIN, 0.0001, "缩小到下限")
 	EventBus.unit_selected.emit(-1)
 	await wait_process_frames(20)
-	assert_almost_eq(float(root.get("cam_zoom")), UiKit.ZOOM_MIN, 0.0001, "用过 Ctrl 镜头：取消选中不回正")
+	assert_almost_eq(float(root.get("cam_zoom")), UiKit.ZOOM_MIN, 0.0001, "动过镜头：取消选中不回正")
+
+
+func _mouse(mi: Control, button: int, pressed: bool, pos: Vector2) -> void:
+	var e := InputEventMouseButton.new()
+	e.button_index = button
+	e.pressed = pressed
+	e.global_position = pos
+	e.position = mi.get_global_transform().affine_inverse() * pos
+	mi.call("_gui_input", e)
+
+
+func _move(mi: Control, pos: Vector2) -> void:
+	var e := InputEventMouseMotion.new()
+	e.global_position = pos
+	e.position = mi.get_global_transform().affine_inverse() * pos
+	mi.call("_gui_input", e)
+
+
+func test_drag_overscroll_rubbers_then_springs_back() -> void:
+	var root: Node2D = _battle("level_03")
+	await wait_process_frames(2)
+	var lim: Vector2 = root.call("pan_limit") as Vector2
+	var over: float = root.get_viewport_rect().size.x * 0.125
+	root.call("begin_cam_drag", Vector2(500.0, 400.0))
+	root.call("cam_drag_to", Vector2(400.0, 400.0))
+	assert_almost_eq(_pan(root), 100.0, 0.01, "范围内一比一跟手")
+	root.call("cam_drag_to", Vector2(500.0 - lim.x - 5000.0, 400.0))
+	assert_gt(_pan(root), lim.x + over * 0.9, "拖出很远：接近 上限 + 视口 1/8")
+	assert_lt(_pan(root), lim.x + over, "橡皮筋不超过 视口 1/8")
+	root.call("end_cam_drag")
+	for i: int in 60:
+		await wait_process_frames(1)
+	assert_almost_eq(_pan(root), lim.x, 0.5, "松手弹回上限")
+	assert_false(bool(root.call("cam_dragging")))
+
+
+func test_middle_and_left_drag_pan_and_wheel_zooms_via_input() -> void:
+	var root: Node2D = _battle("level_03")
+	await wait_process_frames(2)
+	var mi: Control = root.find_child("MapInput", true, false) as Control
+	assert_not_null(mi)
+	var rect: Rect2 = root.get("playfield_rect") as Rect2
+	var m: Vector2 = rect.get_center()
+	_mouse(mi, MOUSE_BUTTON_WHEEL_UP, true, m)
+	assert_gt(float(root.get("cam_zoom")), 1.0, "滚轮（无修饰键）放大")
+	var y0: float = float(root.get("pan_y"))
+	_mouse(mi, MOUSE_BUTTON_MIDDLE, true, m)
+	_move(mi, m + Vector2(-30.0, -20.0))
+	assert_almost_eq(_pan(root), 30.0, 0.01, "中键拖动：横")
+	assert_almost_eq(float(root.get("pan_y")) - y0, 20.0, 0.01, "中键拖动：纵")
+	_mouse(mi, MOUSE_BUTTON_MIDDLE, false, m + Vector2(-30.0, -20.0))
+	assert_false(bool(root.call("cam_dragging")), "松开中键结束")
+	watch_signals(EventBus)
+	var empty: Vector2 = Vector2(rect.end.x - 4.0, rect.position.y + 4.0)
+	_mouse(mi, MOUSE_BUTTON_LEFT, true, empty)
+	_move(mi, empty + Vector2(40.0, 0.0))
+	assert_true(bool(root.call("cam_dragging")), "左键拖空地超过阈值 = 拖镜头")
+	assert_almost_eq(_pan(root), -10.0, 0.01, "左键拖动跟手")
+	_mouse(mi, MOUSE_BUTTON_LEFT, false, empty + Vector2(40.0, 0.0))
+	assert_false(bool(root.call("cam_dragging")))
+	assert_signal_not_emitted(EventBus, "unit_selected", "拖过不算点击")
+	_mouse(mi, MOUSE_BUTTON_LEFT, true, empty)
+	_mouse(mi, MOUSE_BUTTON_LEFT, false, empty)
+	assert_signal_emitted(EventBus, "unit_selected", "没拖动 = 点击")
 
 
 func test_left_edge_and_start_battle_recenters() -> void:

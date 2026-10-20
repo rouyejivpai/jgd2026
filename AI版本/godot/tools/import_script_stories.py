@@ -4,9 +4,10 @@
 剧本格式：幕标题行（「序幕 · 工坊」「第一幕 · 农田」…）→ 关卡标题行「<序号> <关名>」→「开头：」段 →「结尾：」段；
 最后的「尾声」段（「放在30关结尾：」）接在第 30 关 _win 末尾。
 行格式「说话人：台词」按 SPEAKERS 映射说话人与立绘，其余行为旁白（narrator，无立绘）。
-「【…】」导演备注（如【放cg！】）不入剧情，导入时打印出来。
+「【…】」导演备注不入剧情，导入时打印出来；其中 CG_NOTES 里登记的 CG 标记（剧本里紧跟着嵌了图）导入为纯 CG 句。
 织骸在第 27 关之前只是「体内的声音」，用笼罩在阴影里的 witch_shadow 立绘；第 27 关起本人登场，显示 witch 立绘。
-注意：重新导入会覆盖手工加进剧情的句子（如第 18 关开头的 CG 句 {"cg": "doll_tears"}），导入后需补回。
+注意：重新导入会覆盖手工加进剧情的改动（如旁白句的立绘），导入后需补回。
+2026-10-21：CG 图不从 docx 里抽，已手工放进 assets/cg/（剧本第 18 关的钟楼图 → bell_tower.jpg，第 27 关的流泪图 → doll_tears.jpg）。
 已有剧情文件会被覆盖（仅 level_cNN_intro / _win；_phase2 等其它文件不动）。
 用法（godot/ 目录）：python tools/import_script_stories.py <剧本.docx> [--dry-run]
 """
@@ -22,6 +23,8 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 GODOT = Path(__file__).resolve().parent.parent
 STORIES = GODOT / "data/stories"
 WITCH_SHOWN_FROM = 27            # 织骸本人登场的关卡（之前只是声音）
+# 剧本里的 CG 标记 → assets/cg/<名>（(关卡, intro/win)：CG 名）
+CG_NOTES = {(18, "intro"): "bell_tower", (27, "win"): "doll_tears"}
 
 # 剧本里的说话人 → (strings.json speakers 键, 立绘)
 SPEAKERS = {
@@ -89,6 +92,11 @@ def parse(lines: list) -> tuple:
             part = {"开头：": "intro", "结尾：": "win"}.get(line, "win")
             continue
         if line.startswith("【") and line.endswith("】"):
+            if (level, part) in CG_NOTES:
+                cg = CG_NOTES[(level, part)]
+                stories.setdefault(f"level_c{level:02d}_{part}", []).append({"speaker": "narrator", "illustration": "", "cg": cg, "text": ""})
+                notes.append(f"第 {level} 关 {part}：{line} → CG {cg}")
+                continue
             notes.append(f"第 {level} 关 {part}：{line}（未导入）")
             continue
         if level == 0 or part == "":

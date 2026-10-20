@@ -32,6 +32,11 @@ var _frames: Array[Texture2D] = []
 static func config() -> Dictionary:
 	if _config.is_empty() and FileAccess.file_exists(CONFIG):
 		_config = JSON.parse_string(FileAccess.get_file_as_string(CONFIG)) as Dictionary
+		var fx: String = DataRegistry.FIXTURE_ROOT.path_join("art_text.json")     # 第一章关卡名艺术字（只在测试 / 工具运行时叠加）
+		if DataRegistry.fixtures_enabled() and FileAccess.file_exists(fx):
+			var texts: Dictionary = (_config.get("texts", {}) as Dictionary).duplicate()
+			texts.merge((JSON.parse_string(FileAccess.get_file_as_string(fx)) as Dictionary).get("texts", {}) as Dictionary)
+			_config["texts"] = texts
 	return _config
 
 

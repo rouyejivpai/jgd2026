@@ -3,7 +3,7 @@ extends Control
 ## 分层提示与「推荐阵型」（01 §9 hint_panel、07 §2）：
 ## - 每次按提示按钮多显示一层（已看层数存档）；
 ## - 第 4 层看过之后按钮变为「推荐阵型」，按下后列出全部提示并请求确认，确认后由 BattleController
-##   用 recommended.units 覆盖部署与指令并校验；"已使用"记入存档，重置不清除。仅部署阶段可确认。
+##   用 recommended.units 覆盖部署与指令并校验；"已使用"记入存档，重置不清除。部署阶段与 Boss 换阶段暂停（recommended.phase2）可确认。
 ## 连点保护（A02）：两次揭示新层之间至少间隔 REVEAL_GUARD_MS，避免一次双击消耗两层提示。
 ## 第三阶段 P6 按批准整图 ui_08（提示）/ ui_09（推荐阵型确认）换皮：modal_panel 框体、标题、描边「关闭」、分隔线；
 ## 提示逐条换行、段距取自整图；提示态下方为已看层数圆点（金 = 已看、紫 = 未看）；确认态为分隔线 + 金色确认句 + 「摆放」「取消」。
@@ -206,7 +206,7 @@ func close_panel() -> void:
 func _refresh_confirm() -> void:
 	if _confirm_box == null or not _confirm_box.visible:
 		return
-	var deploy: bool = controller != null and controller.phase == SimTypes.Phase.DEPLOY
+	var deploy: bool = controller != null and controller.editing()      # 含 Boss 换阶段暂停（摆第二阶段推荐）
 	_apply_button.disabled = not deploy
 	_confirm_label.text = DataRegistry.get_string("ui.recommend_confirm" if deploy else "ui.recommend_deploy_only")
 	if deploy:

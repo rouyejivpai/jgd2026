@@ -92,7 +92,7 @@
       "id": "btn_ok",
       "kind": "button",
       "rect": [
-        690,
+        990,
         640,
         240,
         64
@@ -128,7 +128,7 @@
       "id": "btn_cancel",
       "kind": "button",
       "rect": [
-        990,
+        690,
         640,
         240,
         64

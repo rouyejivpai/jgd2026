@@ -22,12 +22,12 @@ extends Control
 ##   · 点地图空白处（按下后移动 ≤ 6 px）收起右侧详情面板（向右滑出），地图可见宽随之铺满窗口；点任一节点再滑回并选中。
 ##   · 未解锁关卡名牌是空的，锁压在名牌上，详情标题显示「？？？」、不显示特征与任务；关卡新解锁（存档 levels_revealed 没有它）时，
 ##     进场后播与一级地图相同的解锁动画（UnlockBurst：锁颤抖 → 白色粒子 → 名牌闪白换名 → 渐回）；有解锁剧情时等剧情播完。调试版 F9 重播选中关。
+##     一次解锁多关（连点「下一关」跳过好几关）时只给最后一关播，其余直接显示为已解锁。
 
 signal enter_requested(level_id: String)
 
 const MENU_BGM: String = "menu_main"
 const NODE_ART_DIR: String = "res://assets/ui/chapter/nodes/"
-const REPLAY_KINDS: Array[String] = ["intro", "win"]      ## 回放按钮：开头剧情 / 结尾剧情
 const STORY_PLAYER_SCENE: PackedScene = preload("res://scenes/ui/dialogue_overlay.tscn")
 const SKIN: String = "chapter"
 const ELITE_DISC_TINT: Color = Color(1.0, 0.55, 0.6)   ## 精英关节点徽章（首领青底徽章染暗红）
@@ -148,6 +148,7 @@ func _ready() -> void:
 	if not revealing.is_empty():
 		var lids: Array = revealing.map(func(nid: String) -> String: return str(chapter.node_of(nid)["level"]))
 		SaveManager.mark_revealed("levels_revealed", lids)
+		revealing = [str(revealing.back())]      # 连跳几关一次解锁多关时，只给最后一关播动画，其余直接显示为已解锁
 		if not UiKit.motion_enabled:
 			revealing.clear()
 	_build_nodes()
@@ -964,20 +965,31 @@ func _fill_replay(level: LevelDefinition) -> void:
 	_replay_button.visible = level != null and not ph and not replay_ids().is_empty()
 
 
-## 当前选中关卡可回放的剧情 id（按显示顺序：开头 / 结尾）
+## 当前选中关卡可回放的剧情 id（按显示顺序：开头 / 战中 / 结尾，只列看过的）
 func replay_ids() -> Array[String]:
 	var out: Array[String] = []
 	var n: Dictionary = chapter.node_of(selected_id) if chapter != null else {}
 	var level: LevelDefinition = DataRegistry.get_level(str(n.get("level", "")))
 	if level == null or bool(n.get("placeholder", false)):
 		return out
-	for kind: String in REPLAY_KINDS:
-		if SaveManager.is_story_seen("%s_%s" % [level.id, kind]):
-			out.append("%s_%s" % [level.id, kind])
+	for sid: String in replay_story_ids(level.id):
+		if SaveManager.is_story_seen(sid):
+			out.append(sid)
 	return out
 
 
-## 打开剧情选择：开头 / 结尾两卡，没看过的锁定
+## 某关可回放的全部剧情 id：开头、Boss 换阶段的战中剧情（<id>_phase2 起，有文件才列）、结尾
+static func replay_story_ids(level_id: String) -> Array[String]:
+	var out: Array[String] = ["%s_intro" % level_id]
+	var phase: int = 2
+	while not DataRegistry.load_story("%s_phase%d" % [level_id, phase]).is_empty():
+		out.append("%s_phase%d" % [level_id, phase])
+		phase += 1
+	out.append("%s_win" % level_id)
+	return out
+
+
+## 打开剧情选择：开头 /（战中）/ 结尾，没看过的锁定
 func _on_replay_pressed() -> void:
 	var level: LevelDefinition = DataRegistry.get_level(str(chapter.node_of(selected_id).get("level", "")))
 	if level == null:
@@ -985,13 +997,17 @@ func _on_replay_pressed() -> void:
 	story_select.open("%s  %s" % [RuleText.level_no(level), level.title], replay_entries(level.id))
 
 
-## 某关的回放卡（主界面图鉴共用）：开头剧情 / 结尾剧情，未看过 = 锁定
+## 某关的回放卡（主界面图鉴共用）：开头剧情 /（战中剧情）/ 结尾剧情，未看过 = 锁定
 static func replay_entries(level_id: String) -> Array:
 	var out: Array = []
-	for kind: String in REPLAY_KINDS:
-		var sid: String = "%s_%s" % [level_id, kind]
-		out.append({ "title": DataRegistry.get_string("ui.replay_intro" if kind == "intro" else "ui.replay_end"),
-			"story": sid, "locked": not SaveManager.is_story_seen(sid) })
+	var ids: Array[String] = replay_story_ids(level_id)
+	var phases: int = ids.size() - 2
+	for sid: String in ids:
+		var key: String = "ui.replay_intro" if sid.ends_with("_intro") else "ui.replay_end" if sid.ends_with("_win") else "ui.replay_phase"
+		var title: String = DataRegistry.get_string(key)
+		if key == "ui.replay_phase" and phases > 1:          # 多段战中剧情才标序号
+			title = "%s %d" % [title, ids.find(sid)]
+		out.append({ "title": title, "story": sid, "locked": not SaveManager.is_story_seen(sid) })
 	return out
 
 

@@ -11,6 +11,7 @@ extends Control
 ## 底部对话框切图 + 名牌（说话人）+ 正文 + 右下继续提示；立绘画在对话框之下、底对齐。布局缺失时退回旧的程序化版式。
 ## 2026-10-20 CG：场景 cg 指定（assets/cg/<名>.png 或 .jpg），铺满全屏、压在压暗层之上、对话框之下，期间不显示立绘；
 ## 连续几句写同一个 cg 即停留，下一句不写 cg 则淡出。写了 cg 而 text 为空 = 纯 CG 句：隐藏对话框，只看图，点击继续。
+## 2026-10-21 跳过：右上角「Skip >>」（衬一块四边羽化的黑色矩形），点击弹出确认窗（复用 ConfirmDialog 素材），「确定」才结束整段剧情（同播完，发出 finished）。
 
 signal finished()
 
@@ -22,7 +23,25 @@ const WITCH: String = "witch"
 const SKIN: String = "dialogue"
 const SILENT_SPEAKERS: Array[String] = ["narrator", "system", ""]      ## 无人说话：此时的立绘是被描写的对象，压暗
 const DIM_MODULATE: Color = Color(0.42, 0.42, 0.48)
+## 2026-10-21 个别立绘额外放大（默认 1）：以画布内 PORTRAIT_ZOOM_PIVOT（比例坐标）为中心缩放。
+## 敲钟魔女是坐姿横构图，画布里只占一条，脚落在画布 60% 高处（正好没入对话框），以脚为中心放大，脚仍压在对话框里
+const PORTRAIT_ZOOM: Dictionary = {"bell_witch": 1.2}
+const PORTRAIT_ZOOM_PIVOT: Vector2 = Vector2(0.5, 0.6)
 const BLIP_EVERY: int = 2                        ## 逐字音：每显示 N 个字响一声 text_blip
+const SKIP_MARGIN: Vector2 = Vector2(40.0, 32.0)  ## 跳过按钮距视口右上角
+const SKIP_FONT_SIZE: int = 28
+const SKIP_BACKING_PAD: Vector2 = Vector2(56.0, 18.0)   ## 黑色衬底比按钮外扩（含羽化带）
+const SKIP_BACKING_HEIGHT: float = 0.5                  ## 衬底高度 = （按钮高 + 上下外扩）× 此值，垂直居中于按钮
+const SKIP_BACKING_SHADER: String = """
+shader_type canvas_item;
+uniform vec2 feather = vec2(0.32, 0.42);   // 四边羽化带占宽 / 高的比例
+uniform float strength = 0.7;
+void fragment() {
+	vec2 d = min(UV, vec2(1.0) - UV) / (feather * 0.5);
+	float m = smoothstep(0.0, 1.0, clamp(d.x, 0.0, 1.0)) * smoothstep(0.0, 1.0, clamp(d.y, 0.0, 1.0));
+	COLOR = vec4(0.0, 0.0, 0.0, strength * m);
+}
+"""
 
 var story_dir: String = ""                       ## 空 = 使用 DataRegistry.story_dir
 var current_story: String = ""                   ## 正在播放的 story_id（无则 ""）
@@ -40,6 +59,8 @@ var _speaker: Label
 var _text: Label
 var _continue: Control                   ## 继续提示（旧版为「继续 ▸」文字，哥特版为切图 F01）
 var _blip_chars: int = 0                 ## 上次响逐字音时已显示的字数
+var _skip: Button                        ## 右上角「Skip >>」
+var _skip_confirm: ConfirmDialog         ## 「确定要结束剧情吗」确认窗
 
 
 func _ready() -> void:
@@ -92,6 +113,9 @@ func _ready() -> void:
 	_continue.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	col.add_child(_continue)
 	_box_nodes = [box]
+	_add_skip_button()
+	_skip.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE)
+	_skip.position += Vector2(-SKIP_MARGIN.x, SKIP_MARGIN.y)
 	visible = false
 
 
@@ -126,6 +150,7 @@ func _build_skinned() -> void:
 	_continue = nodes["next"] as Control
 	nodes["portrait"] = _portrait_tex
 	set_meta(&"skin", nodes)
+	_add_skip_button()
 	resized.connect(_layout_skinned)
 	_layout_skinned()
 
@@ -146,8 +171,74 @@ func _layout_skinned() -> void:
 	var art: Array = (UiKit.layout_element(SKIN, "portrait").get("data", {}) as Dictionary).get("art_size", []) as Array
 	if art.size() == 2:                           # 立绘按原尺寸、下沿超出屏幕（布局 rect 只是可见部分）
 		_portrait_tex.size = Vector2(float(art[0]), float(art[1]))
+	_portrait_tex.pivot_offset = _portrait_tex.size * PORTRAIT_ZOOM_PIVOT
 	_portrait_rect.position = _portrait_tex.position
 	_portrait_rect.size = _portrait_tex.size
+	_skip.size = _skip.get_combined_minimum_size()       # 同 CG 层：按压暗层（= 视口）右上角摆放
+	var top_right: Vector2 = (nodes["dim"] as Control).position + Vector2((nodes["dim"] as Control).size.x, 0.0)
+	_skip.position = top_right + Vector2(-SKIP_MARGIN.x - _skip.size.x, SKIP_MARGIN.y)
+
+
+## 右上角「Skip >>」：无底板的文字按钮（骨白，悬停金色），点击结束整段剧情；自身拦截点击，不会同时触发「下一句」
+func _add_skip_button() -> void:
+	_skip = Button.new()
+	_skip.name = "Skip"
+	_skip.text = DataRegistry.get_string("ui.story_skip")
+	_skip.flat = true
+	_skip.focus_mode = Control.FOCUS_NONE
+	_skip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_skip.add_theme_font_size_override("font_size", SKIP_FONT_SIZE)
+	var empty := StyleBoxEmpty.new()
+	for st: String in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+		_skip.add_theme_stylebox_override(st, empty)
+	for c: String in ["font_color", "font_focus_color"]:
+		_skip.add_theme_color_override(c, Color(Palette.BONE_DIM, 0.9))
+	for c: String in ["font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
+		_skip.add_theme_color_override(c, Palette.ALCHEMY_GOLD)
+	_skip.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.85))
+	_skip.add_theme_constant_override("outline_size", 6)
+	_skip.pressed.connect(skip)
+	add_child(_skip)
+	var backing := ColorRect.new()
+	backing.name = "Backing"
+	backing.show_behind_parent = true        # 画在按钮文字之下
+	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = Shader.new()
+	mat.shader.code = SKIP_BACKING_SHADER
+	backing.material = mat
+	_skip.add_child(backing)
+	var fit: Callable = func() -> void:
+		var full: Vector2 = _skip.size + SKIP_BACKING_PAD * 2.0
+		backing.size = Vector2(full.x, full.y * SKIP_BACKING_HEIGHT)
+		backing.position = Vector2(-SKIP_BACKING_PAD.x, (_skip.size.y - backing.size.y) * 0.5)
+	_skip.resized.connect(fit)
+	fit.call()
+	_skip_confirm = ConfirmDialog.new()
+	_skip_confirm.name = "SkipConfirm"
+	_skip_confirm.top_level = true          # 按视口铺满：本节点自身尺寸可能为 0（哥特版靠 _layout_skinned 摆放各部件）
+	_skip_confirm.z_as_relative = false     # top_level 不再继承剧情层的 z_index，单独压到最上（否则画在立绘之下）
+	_skip_confirm.z_index = RenderingServer.CANVAS_ITEM_Z_MAX
+	add_child(_skip_confirm)
+	_skip_confirm.confirmed.connect(_on_skip_confirmed)
+
+
+## 点击「Skip >>」：弹出确认窗；遮罩挡住下层点击，剧情暂停在当前句
+func skip() -> void:
+	if not visible or _skip_confirm.is_open():
+		return
+	_skip_confirm.open("ui.story_skip_confirm_title", "ui.story_skip_confirm_body", "ui.story_skip_confirm_ok", "ui.story_skip_confirm_cancel")
+
+
+## 确认窗是否打开
+func is_skip_confirm_open() -> bool:
+	return _skip_confirm.is_open()
+
+
+## 确认跳过：直接结束当前剧情（CG、对话框一并收起），与播完相同地发出 finished
+func _on_skip_confirmed() -> void:
+	if visible:
+		close()
 
 
 ## 2026-10-20 底层背景：铺满视口、在剧情 backdrop / 压暗层之下的 ColorRect，用给定材质绘制
@@ -217,7 +308,7 @@ func is_playing() -> bool:
 
 
 func _process(delta: float) -> void:
-	if visible and _text.visible_ratio < 1.0:
+	if visible and _text.visible_ratio < 1.0 and not _skip_confirm.is_open():      # 确认窗打开期间逐字暂停
 		var total: int = maxi(_text.get_total_character_count(), 1)
 		_text.visible_ratio = minf(1.0, _text.visible_ratio + delta * CHARS_PER_SECOND / float(total))
 		var shown: int = int(_text.visible_ratio * float(total))
@@ -265,6 +356,7 @@ func close() -> void:
 		return
 	visible = false
 	current_story = ""
+	_skip_confirm.visible = false
 	_set_cg_now("")
 	_set_box_visible(true)
 	finished.emit()
@@ -291,6 +383,8 @@ func _show_portrait(who: String, dimmed: bool = false) -> void:
 	var path: String = ILLUSTRATION_DIR + who + ".png"
 	var has_tex: bool = who != "" and ResourceLoader.exists(path)
 	_portrait_tex.texture = load(path) as Texture2D if has_tex else null
+	_portrait_tex.pivot_offset = _portrait_tex.size * PORTRAIT_ZOOM_PIVOT
+	_portrait_tex.scale = Vector2.ONE * float(PORTRAIT_ZOOM.get(who, 1.0))
 	_portrait_rect.visible = not has_tex and who != ""
 	_portrait_rect.color = Color(Palette.DIVINE_VIOLET if who == WITCH else Palette.BONE_DIM, 0.25)
 	var tint: Color = DIM_MODULATE if dimmed else Color.WHITE

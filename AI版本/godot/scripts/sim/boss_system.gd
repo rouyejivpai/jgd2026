@@ -54,7 +54,11 @@ static func tick(world: SimWorld) -> void:
 		st["fire_at"] = now + float(ph.get("warn", 2.0))
 		st["next_cycle"] = now + float(ph.get("cycle", 8.0))
 	if float(st["fire_at"]) >= 0.0 and now >= float(st["fire_at"]) - SimTypes.TIME_EPS:
-		_fire(world, b, (ph.get("effects", {}) as Dictionary).get(world.boss_signal, {}) as Dictionary)
+		var e: Dictionary = (ph.get("effects", {}) as Dictionary).get(world.boss_signal, {}) as Dictionary
+		# 2026-10-21 用户：范围内没人也要照常放招、播特效——放招事件先于效果发出，与命中与否无关
+		world.emit_event(SimTypes.EventType.BOSS_SKILL, { "source": b.id, "signal": world.boss_signal, "effect": str(e.get("type", "")),
+			"side": str(e.get("side", "inside")), "radius": float(e.get("radius", 0.0)), "pos": b.pos })
+		_fire(world, b, e)
 		st["fire_at"] = -1.0
 		st["clear_at"] = now + SIGNAL_HOLD
 	if float(st["clear_at"]) >= 0.0 and now >= float(st["clear_at"]) - SimTypes.TIME_EPS:

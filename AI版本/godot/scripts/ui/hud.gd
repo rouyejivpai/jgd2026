@@ -71,6 +71,12 @@ var _soul_armed: bool = false              ## 灵魂储量消耗演出（SoulBur
 var _soul_mode: String = ""                ## 上次显示的是哪种储量（"roster" 出场预算 / "reinforce" 增援预算）
 var _soul_used: int = -1                   ## 上次显示的已用量
 var _soul_burst: SoulBurst = null
+var _soul_left: int = 0                    ## 上次显示的剩余量（铭牌倒数显示 剩余 / 总量）
+var _short_t: float = -1.0                 ## 灵魂储量不足演出已进行的时间（< 0 = 没在演）；_process 推进，单帧封顶免得卡顿时整段跳过
+var _short_plate: TextureRect = null
+var _short_parts: Array[Control] = []
+var _budget_plate_tex: Texture2D = null    ## 从整屏框体切出的铭牌（开局切好缓存）
+var _short_toast_ms: int = -1000000        ## 上次「灵魂储量不足！」进提示栏的时刻（连点不刷屏）
 var _resume_label: Label = null            ## Boss 换阶段暂停：「开始战斗」按钮换成空框 + 金色呼吸光的「继续战斗」
 var _resume_tween: Tween = null
 var _retry_hint: Label = null              ## 战斗中「重试」右侧的白字「点击以重置」（贴字形边缘的辉光闪烁）
@@ -206,6 +212,7 @@ func setup(root: Node2D) -> void:
 	EventBus.unit_selected.connect(_on_unit_selected)
 	EventBus.toast.connect(show_toast)
 	EventBus.toast_at.connect(show_bubble)
+	EventBus.budget_short.connect(_on_budget_short)
 	EventBus.relics_changed.connect(_refresh_relics)
 	_on_speed_changed(1)
 	_update_hint_button()
@@ -219,6 +226,8 @@ func begin() -> void:
 	_build_cards()
 	_update_budget()
 	_soul_armed = true
+	if _level.is_free():
+		_budget_plate_texture()                 # 先切好铭牌（灵魂储量不足演出用）
 	_refresh_relics()
 	# 07 §10.2：开始剧情 <level_id>_intro；剧情不存在则不弹出。本关机制提示只在"机制说明"中查看（2026-10-20 起剧情后不再接提示卡）
 	_mechanics_popup.call("set_level_hint", str(_level.briefing.get("mechanic_hint", "")))
@@ -554,28 +563,30 @@ func _place_cards() -> void:
 
 
 func _update_budget() -> void:
-	_clear_button.disabled = _controller.phase != SimTypes.Phase.DEPLOY or _controller.placements.is_empty()
+	_clear_button.disabled = not _controller.editing() or (_controller.reinforce_uids.is_empty() if _controller.boss_pending else _controller.placements.is_empty())
 	var old_text: String = _budget_label.text
 	var mode: String = ""
 	var used: int = -1
 	if _controller.boss_pending:                                     # Boss 换阶段暂停：显示增援预算
 		mode = "reinforce"
 		used = _controller.reinforce_cost()
+		_soul_left = _controller.reinforce_budget - used
 		_budget_title.text = DataRegistry.get_string("ui.reinforce_budget")
-		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": used, "budget": _controller.reinforce_budget })
+		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "left": _soul_left, "used": used, "budget": _controller.reinforce_budget })
 		_budget_label.remove_theme_color_override("font_color")
 	elif _level.is_free():
 		mode = "roster"
 		used = _controller.budget_used()
+		_soul_left = _level.roster_budget - used
 		_budget_title.text = DataRegistry.get_string("ui.budget")
-		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "used": used, "budget": _level.roster_budget })
+		_budget_label.text = DataRegistry.get_string("ui.budget_value").format({ "left": _soul_left, "used": used, "budget": _level.roster_budget })   # 倒数：剩余 / 总量（用户 2026-10-21）
 		_budget_label.tooltip_text = _budget_breakdown()
 		var over: bool = used > _level.roster_budget
 		if over and not _over_budget and _soul_armed:
 			AudioManager.play_sfx("budget_over", "UI")
 		_over_budget = over
-		if over:                                 # 超出预算：批准整图 ui_05 的红色
-			_budget_label.add_theme_color_override("font_color", Color(str((UiKit.layout_element(SKIN, "budget_value").get("data", {}) as Dictionary).get("over_color", "#FF0000"))))
+		if over:                                 # 超出预算（剩余为负）：批准整图 ui_05 的红色
+			_budget_label.add_theme_color_override("font_color", _budget_red())
 		else:
 			_budget_label.remove_theme_color_override("font_color")
 	_soul_burst_check(mode, used, old_text)
@@ -592,13 +603,156 @@ func _soul_burst_check(mode: String, used: int, old_text: String) -> void:
 		AudioManager.play_sfx("soul_spend" if used > _soul_used else "soul_refund", "UI")
 	var consumed: bool = _soul_armed and mode != "" and mode == _soul_mode and used > _soul_used and old_text != _budget_label.text
 	_soul_mode = mode
-	var prev: int = _soul_used
+	var prev_left: int = _soul_left + (used - _soul_used)        # 同一种储量：总量不变，剩余的变化 = −已用的变化
 	_soul_used = used
 	if not consumed or not UiKit.motion_enabled or not _budget_label.is_visible_in_tree():
 		return
 	if is_instance_valid(_soul_burst):
 		_soul_burst.release()
-	_soul_burst = SoulBurst.play(self, _budget_label, old_text, _budget_label.text, str(prev), str(used))
+	_soul_burst = SoulBurst.play(self, _budget_label, old_text, _budget_label.text, str(prev_left), str(_soul_left))
+
+
+func _budget_red() -> Color:
+	return Color(str((UiKit.layout_element(SKIN, "budget_value").get("data", {}) as Dictionary).get("over_color", "#FF0000")))
+
+
+## 任一操作因灵魂不够而失败（EventBus.budget_short）：灵魂储量铭牌闪红 + 震动，右侧提示栏「灵魂储量不足！」（用户 2026-10-21）。
+## 铭牌底框画在整屏框体 E01 上，不能单独动：演出期间从框体图切出铭牌一块（ui_motion.json budget_short.plate_rect，设计坐标，边缘羽化）
+## 叠在原位上，与数值一起抖、一起泛红，结束后移除。音效由触发方播（ui_error）。连点时演出重来，提示 toast_gap_s 内不重复进栏。
+func _on_budget_short() -> void:
+	var mp: Dictionary = UiKit.motion_params("budget_short")
+	var now: int = Time.get_ticks_msec()
+	if now - _short_toast_ms >= int(float(mp.get("toast_gap_s", 0.6)) * 1000.0):
+		_short_toast_ms = now
+		var text: String = DataRegistry.get_string("ui.budget_insufficient")
+		if not _push_toast(text, true):
+			show_toast(text)
+	var box: Control = get_node_or_null("BottomBar/Row/BudgetBox") as Control     # 铭牌（数值可能包在 ScrollText 里）
+	if box == null or not box.is_visible_in_tree() or not UiKit.motion_enabled:
+		return
+	_end_budget_short()
+	if is_instance_valid(_soul_burst):          # 扣费演出还在画数字：收掉，数字交还 Label 好跟着变红
+		_soul_burst.release()
+		_budget_label.self_modulate.a = 1.0
+	_short_plate = _budget_plate_overlay(box)
+	_short_parts.clear()
+	for n: Node in box.get_children():
+		if n is Control:
+			_short_parts.append(n as Control)
+			n.set_meta(&"shake_base", (n as Control).position)
+	_short_t = 0.0
+	_tick_budget_short(0.0)
+
+
+## 推进灵魂储量不足演出：前 flash_count × flash_s 秒闪红（每段前 60% 红），shake_s 秒内震动衰减到 0
+func _tick_budget_short(delta: float) -> void:
+	if _short_t < 0.0:
+		return
+	_short_t += minf(delta, 1.0 / 30.0)
+	var mp: Dictionary = UiKit.motion_params("budget_short")
+	var flash_s: float = maxf(float(mp.get("flash_s", 0.16)), 0.01)
+	var flash_end: float = flash_s * int(mp.get("flash_count", 2))
+	var shake_s: float = maxf(float(mp.get("shake_s", 0.32)), 0.01)
+	if _short_t >= maxf(flash_end, shake_s):
+		_end_budget_short()
+		return
+	var red_on: bool = _short_t < flash_end and fmod(_short_t, flash_s) < flash_s * 0.6
+	if red_on:
+		_budget_label.add_theme_color_override("font_color", _budget_red())
+	else:
+		_restore_budget_color()
+	if is_instance_valid(_short_plate):
+		_short_plate.material.set("shader_parameter/flash", 1.0 if red_on else 0.0)
+	var k: float = maxf(1.0 - _short_t / shake_s, 0.0)
+	var px: float = float(mp.get("shake_px", 7.0))
+	var off := Vector2(sin(_short_t * 70.0) * px, cos(_short_t * 53.0) * px * 0.3) * k
+	for c: Control in _short_parts:
+		if is_instance_valid(c):
+			c.position = (c.get_meta(&"shake_base", c.position) as Vector2) + off
+
+
+const BUDGET_PLATE_SHADER: String = """
+shader_type canvas_item;
+uniform vec4 red : source_color = vec4(0.92, 0.27, 0.24, 1.0);
+uniform float flash = 0.0;
+uniform vec2 feather = vec2(0.1, 0.16);
+void fragment() {
+	vec4 c = texture(TEXTURE, UV);
+	vec2 d = min(UV, vec2(1.0) - UV) / feather;
+	float m = clamp(min(d.x, d.y), 0.0, 1.0);
+	COLOR = vec4(mix(c.rgb, red.rgb, flash * 0.7), c.a * m);
+}
+"""
+
+
+## 铭牌在框体图上的设计矩形（ui_motion.json budget_short.plate_rect）
+func _budget_plate_rect() -> Rect2:
+	var r: Array = UiKit.motion_params("budget_short").get("plate_rect", [24, 880, 320, 128]) as Array
+	return Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+
+
+## 从整屏框体 hud_frame 切出铭牌一块（缓存；begin() 时先切好，免得第一次反馈卡一下）
+func _budget_plate_texture() -> Texture2D:
+	if _budget_plate_tex != null:
+		return _budget_plate_tex
+	var src: Texture2D = Art.texture(str(UiKit.layout_element(SKIN, "frame").get("file", "")))
+	var img: Image = src.get_image() if src != null else null
+	if img == null:
+		return null
+	if img.is_compressed():
+		img.decompress()
+	var design: Rect2 = _budget_plate_rect()
+	var scale: Vector2 = Vector2(img.get_size()) / UiKit.design_size(SKIN)        # 框体图按设计画布 1:1 画
+	_budget_plate_tex = ImageTexture.create_from_image(img.get_region(Rect2i(Vector2i((design.position * scale).round()), Vector2i((design.size * scale).round()))))
+	return _budget_plate_tex
+
+
+## 切出的铭牌放成 BudgetBox 的子节点（标题 / 数值之下），位置与框体上的原画重合
+func _budget_plate_overlay(box: Control) -> TextureRect:
+	var tex: Texture2D = _budget_plate_texture()
+	if tex == null:
+		return null
+	var plate := TextureRect.new()
+	plate.name = "BudgetShortPlate"
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plate.texture = tex
+	plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	plate.stretch_mode = TextureRect.STRETCH_SCALE
+	var mat := ShaderMaterial.new()
+	var sh := Shader.new()
+	sh.code = BUDGET_PLATE_SHADER
+	mat.shader = sh
+	mat.set_shader_parameter("red", _budget_red())
+	plate.material = mat
+	box.add_child(plate)
+	box.move_child(plate, 0)
+	var design: Rect2 = _budget_plate_rect()
+	var frame_e: Dictionary = UiKit.layout_element(SKIN, "frame")
+	var origin: Vector2 = UiKit.layout_rect(SKIN, "frame", get_viewport_rect().size).position if not frame_e.is_empty() else Vector2.ZERO
+	UiKit.place(plate, Rect2(origin + design.position, design.size))
+	return plate
+
+
+## 结束 / 打断演出：部件回原位、移除切出的铭牌、颜色按当前是否超预算还原
+func _end_budget_short() -> void:
+	_short_t = -1.0
+	for c: Control in _short_parts:
+		if is_instance_valid(c) and c.has_meta(&"shake_base"):
+			c.position = c.get_meta(&"shake_base") as Vector2
+			c.remove_meta(&"shake_base")
+	_short_parts.clear()
+	if is_instance_valid(_short_plate):
+		_short_plate.get_parent().remove_child(_short_plate)
+		_short_plate.queue_free()
+	_short_plate = null
+	_restore_budget_color()
+
+
+func _restore_budget_color() -> void:
+	if _over_budget and not _controller.boss_pending:
+		_budget_label.add_theme_color_override("font_color", _budget_red())
+	else:
+		_budget_label.remove_theme_color_override("font_color")
 
 
 ## 预算悬停明细（信标收费的关卡）：单位与指令 + 信标包
@@ -719,6 +873,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
+	_tick_budget_short(_delta)
 	if _controller == null or _controller.world == null:
 		return
 	var w: SimWorld = _controller.world
@@ -898,6 +1053,8 @@ func _on_config_changed() -> void:
 func _on_validation_failed(problems: Array) -> void:
 	var list: Array[Dictionary] = []
 	list.assign(problems)
+	if list.any(func(q: Dictionary) -> bool: return str(q.get("code", "")) == DeploymentValidator.BUDGET_EXCEEDED):
+		EventBus.budget_short.emit()             # 超预算开不了战：同样闪红 + 提示
 	_show_problems(DataRegistry.get_string("ui.problems_title"), list)
 
 
@@ -1427,7 +1584,10 @@ func show_result(result: int, delay: float) -> void:
 
 
 ## 播放剧情；真的播放了就记入 stories_seen（10 §3.2：章节地图「回放剧情」只列已看过的条目；随下次存档写盘）
+## 2026-10-21：已看过的剧情（含中途 Skip 跳过的）再打同一关不再自动播放，只能从「剧情回放」看
 func _play_and_mark(sid: String) -> bool:
+	if SaveManager.is_story_seen(sid):
+		return false
 	if _dialogue.play_story(sid):
 		SaveManager.mark_story_seen(sid)
 		return true

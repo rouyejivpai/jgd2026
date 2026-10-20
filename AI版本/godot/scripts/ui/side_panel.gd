@@ -7,9 +7,12 @@ var controller: BattleController = null
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	if controller == null or controller.phase != SimTypes.Phase.DEPLOY or not data is Dictionary:
+	if controller == null or not controller.editing() or not data is Dictionary:
 		return false
-	return bool((data as Dictionary).get("from_map", false))
+	var d: Dictionary = data as Dictionary
+	if d.has("relic"):
+		return controller.phase == SimTypes.Phase.DEPLOY and bool(d.get("from_map", false))
+	return bool(d.get("from_map", false)) and controller.can_move(str(d.get("slot_id", "")))
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:

@@ -138,6 +138,18 @@ func test_world_map_reveal_seeds_old_save() -> void:
 		assert_eq(w.get("revealing") as Array, ["grey_thorn"] as Array[String], "只播最新的灰棘林")
 	w.call("skip_reveals")
 
+
+## 连跳几关、一次解锁多个区域：全部记入揭开记录，只给最后一个播动画，其余直接显示为已解锁
+func test_world_map_multiple_unlocks_reveal_only_last() -> void:
+	var w: Control = _world(_levels(1, 10), [])
+	await wait_process_frames(2)
+	var seen: Array = SaveManager.revealed_regions() as Array
+	assert_true(seen.has("withered_farm") and seen.has("grey_thorn"), "两个区域都记入揭开记录")
+	assert_string_contains(_plate(w, "withered_farm").text, "枯骨农田", "前面的区域直接解锁")
+	assert_false((w.find_child("Lock_withered_farm", true, false) as Control).visible)
+	assert_eq(w.get("revealing") as Array, ["grey_thorn"] as Array[String] if UiKit.motion_enabled else [] as Array[String], "只给最后一个播")
+	w.call("skip_reveals")
+
 func test_level_select_shows_only_current_region() -> void:
 	GameState.progress = { "completed": _levels(1, 7), "unlocked_levels": [] }
 	GameState.current_level_id = ""

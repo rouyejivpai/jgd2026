@@ -130,6 +130,17 @@ func add_unit(u: SimUnit) -> SimUnit:
 	return u
 
 
+## 移除单位（只用于 Boss 换阶段暂停中收回刚放下、尚未参战的增援）
+func remove_unit(id: int) -> void:
+	var u: SimUnit = get_unit(id)
+	if u == null:
+		return
+	units.erase(u)
+	_by_id.erase(id)
+	if u.spawn_id != "" and int(_spawn_index.get(u.spawn_id, -1)) == id:
+		_spawn_index.erase(u.spawn_id)
+
+
 func tile_at(c: Vector2i) -> String:
 	return str(tiles.get(c, ""))
 

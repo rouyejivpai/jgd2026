@@ -12,7 +12,10 @@ extends Control
 ## 设置浮窗 / 确认框打开、转场中、动效总闸关闭时不计时。
 ## 2026-10-21（用户 04.zip）：「剧情」→ 剧情回顾图鉴（StorySelect）：第一页按主线章节关卡顺序列出看过至少一段剧情的关卡，
 ## 点关卡进第二页「开头剧情 / 结尾剧情」（没看过的锁定），点卡用 StoryPlayer 播放（不改 stories_seen），播完回到图鉴；
-## 一段都没看过时按钮禁用。图鉴 / 剧情打开时挂机不计时。
+## 图鉴 / 剧情打开时挂机不计时。
+## 2026-10-21：第一页最前加「原初」（播开场动画，初始解锁），最后加「致谢」（播片尾开发者名单，片尾名单的触发关 trigger_level 通关后解锁）；
+## 两者都要换场景，播完回到主菜单时重开图鉴（GameState.story_gallery_return）。因「原初」常驻，「剧情」按钮只在数据有错误时禁用。
+## 2026-10-21：通关最终关（同上 trigger_level）后主界面背景换成 bg 元素 data.cleared_file 的通关图。
 
 const SCREEN: String = "main_menu"
 const MENU_BGM: String = "menu_main"
@@ -45,6 +48,7 @@ func _ready() -> void:
 	AudioManager.play_bgm(MENU_BGM)
 	AudioManager.stop_ambient()
 	nodes = UiKit.build_from_layout(self, SCREEN, NODE_NAMES)
+	_apply_cleared_background()
 	_build_error_state()
 	(nodes["subtitle"] as Label).text = DataRegistry.get_string("ui.game_subtitle")
 	var cont: Button = nodes["btn_continue"] as Button
@@ -78,9 +82,27 @@ func _ready() -> void:
 	bm.shader = BACKDROP_SHADER
 	_story.set_base_material(bm)
 	_story.finished.connect(_on_story_finished)
+	if GameState.story_gallery_return:       # 从图鉴的「原初 / 致谢」回来：图鉴原样打开
+		GameState.story_gallery_return = false
+		if not story.disabled:
+			open_gallery.call_deferred()
 	if OS.get_cmdline_user_args().has("--config-editor") and ResourceLoader.exists(SceneRouter.CONFIG_EDITOR_SCENE) and not _opened_editor_once:
 		_opened_editor_once = true
 		SceneRouter.goto_config_editor.call_deferred()
+
+
+## 是否已通关最终关（片尾名单的触发关 trigger_level）
+static func is_game_cleared() -> bool:
+	var lid: String = str(CreditsRoll.load_data().get("trigger_level", ""))
+	return lid != "" and GameState.is_level_completed(lid)
+
+
+## 通关后主界面换图：bg 元素 data.cleared_file（缺省或贴图不存在时保持原图）
+func _apply_cleared_background() -> void:
+	var file: String = str((UiKit.layout_element(SCREEN, "bg").get("data", {}) as Dictionary).get("cleared_file", ""))
+	if file == "" or not is_game_cleared() or not ResourceLoader.exists(file):
+		return
+	(nodes["bg"] as TextureRect).texture = load(file) as Texture2D
 
 
 ## 挂机计时：返回 true = 到点该播开场动画（计时随即清零）
@@ -174,13 +196,16 @@ func _start_new_game() -> void:
 	SceneRouter.goto_world_map()          # 2026-10-18：先选区域
 
 
-## 图鉴第一页：主线章节（没有一级地图时取第一章）按关卡顺序，看过至少一段（开头 / 结尾）的关卡各一卡
+## 图鉴第一页：「原初」（开场动画）+ 主线章节（没有一级地图时取第一章）按关卡顺序，看过至少一段（开头 / 结尾）的关卡各一卡 + 「致谢」（片尾名单，通关后解锁）
 func gallery_entries() -> Array:
-	var out: Array = []
+	var out: Array = [{ "title": "00 " + DataRegistry.get_string("ui.story_gallery_opening"), "scene": "opening" }]
+	var credits: Dictionary = { "title": "99 " + DataRegistry.get_string("ui.story_gallery_credits"), "scene": "credits",
+		"locked": not is_game_cleared() }
 	var ch: ChapterDef = DataRegistry.world_chapter()
 	if ch == null and not DataRegistry.get_chapters().is_empty():
 		ch = DataRegistry.get_chapters()[0]
 	if ch == null:
+		out.append(credits)
 		return out
 	for lid: String in ch.level_ids():
 		var level: LevelDefinition = DataRegistry.get_level(lid)
@@ -192,6 +217,7 @@ func gallery_entries() -> Array:
 		if seen:
 			out.append({ "title": "%s %s" % [RuleText.level_no(level), level.title], "short_title": level.title,
 				"heading": "%s  %s" % [RuleText.level_no(level), level.title], "level": lid })
+	out.append(credits)
 	return out
 
 
@@ -202,6 +228,15 @@ func open_gallery() -> void:
 func _on_gallery_chosen(entry: Dictionary) -> void:
 	if entry.has("level"):
 		story_select.push(str(entry["heading"]), LevelSelectScript.replay_entries(str(entry["level"])))
+		return
+	if entry.has("scene"):                  # 原初 / 致谢：换场景播放，播完回主菜单重开图鉴
+		if bool(SceneRouter.get("_busy")):
+			return
+		GameState.story_gallery_return = true
+		if str(entry["scene"]) == "opening":
+			SceneRouter.goto_opening()
+		else:
+			SceneRouter.goto_credits()
 		return
 	_replaying = true
 	story_select.suspend()

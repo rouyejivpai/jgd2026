@@ -2,24 +2,54 @@
   "id": "level_c30_phase2",
   "scenes": [
     {
+      "speaker": "doll",
+      "illustration": "doll",
+      "text": "你恨她吗？"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "她把我的灵魂碎片放在这儿，让我跟这个失控的东西长在一起。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "只是为了试她的灵魂禁锢术法。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "我教她造物。我教她灵魂禁锢。我教她一切。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "然后她吞了我。她说：导师，对不起。但我要造一个没有情绪的东西。"
+    },
+    {
+      "speaker": "bone_witch",
+      "illustration": "bone_witch",
+      "text": "她没有错，她只是想终结这一切。"
+    },
+    {
       "speaker": "narrator",
       "illustration": "bone_witch",
-      "text": "魔女的根须扎进地里。战斗暂停了。"
+      "text": "伴随着难听的咯吱声响，她身上的骨刺张开闭合，"
     },
     {
-      "speaker": "doll",
-      "illustration": "doll",
-      "text": "第二阶段，信号的意思反过来了：红 = 外圈花粉，离她 4 格以外的人挨炸——该靠近；黄 = 近身骨缚，4 格以内的人被定住——该退开。"
+      "speaker": "narrator",
+      "illustration": "bone_witch",
+      "text": "她似乎将体内的灵魂搅碎了一部分用以恢复自身"
     },
     {
-      "speaker": "doll",
+      "speaker": "narrator",
       "illustration": "doll",
-      "text": "蓝 = 她会召出两名骨花守卫。左侧亮起的是增援区，还有 10 点灵魂可以补人。"
+      "text": "那些被随手抛弃的残片被人偶胸前的灵魂海吸纳"
     },
     {
-      "speaker": "doll",
+      "speaker": "narrator",
       "illustration": "doll",
-      "text": "改好每个人的指令，补好增援，再按「继续战斗」。"
+      "text": "战斗还未结束"
     }
   ]
 }

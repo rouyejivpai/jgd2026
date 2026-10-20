@@ -78,6 +78,7 @@ enum EventType {
 	OBJECTIVE_PROGRESS,
 	BATTLE_ENDED,
 	RELIC_USED,         ## 遗物生效（骨刃伤害 / 徽章治疗）：{ relic, kind, target, amount }
+	BOSS_SKILL,         ## 2026-10-21 Boss 放招（不论范围内有没有目标）：{ source, signal, effect, side, radius, pos }
 }
 
 const _FACTION := { "ally": Faction.ALLY, "enemy": Faction.ENEMY, "neutral": Faction.NEUTRAL }

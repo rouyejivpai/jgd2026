@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "level_06",
+  "index": 6,
+  "title": "祭司行列",
+  "subtitle": "前排锁定与后排筛选集火",
+  "biome": "wailing_wall",
+  "scene": { "backdrop": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/level_06_base.png", "obstacles": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/obstacles/level_06/obstacles.json", "ground": "res://assets/grounds/wailing_wall_a.png", "ground_tint": "#ffffff", "playfield_rect": null },
+  "bgm": "battle_02",
+  "seed": 6,
+  "grid": {
+    "width": 16, "height": 9,
+    "blocked": [[8, 4], [9, 4], [10, 4], [11, 4], [8, 5], [9, 5], [10, 5], [11, 5]]
+  },
+  "deploy_zone": { "rect": [2, 0, 7, 8] },
+  "roster": { "mode": "free", "budget": 11, "available_forms": ["bulwark", "striker", "lancer"], "max_units": 3, "min_units": 1, "fixed_slots": [] },
+  "initial_units": [
+    { "id": "H1", "unit": "husk", "faction": "enemy", "pos": [14, 8], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
+    { "id": "H2", "unit": "husk", "faction": "enemy", "pos": [15, 7], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
+    { "id": "H3", "unit": "husk", "faction": "enemy", "pos": [14, 6], "overrides": { "vision": 4 }, "counts_for_annihilate": true },
+    { "id": "PRIEST", "unit": "priest", "faction": "enemy", "pos": [15, 1], "counts_for_annihilate": true }
+  ],
+  "routes": {
+    "husk_lane": { "name": "行列路线", "points": [[14, 8], [8, 8], [1, 8]] },
+    "priest_lane": { "name": "低语路线", "points": [[15, 1], [9, 1], [5, 1], [0, 1]] }
+  },
+  "allowed": {
+    "conditions": ["always", "enemy_visible", "enemy_in_range", "target_distance", "self_hp_below"],
+    "selectors": ["nearest", "farthest", "lowest_hp", "first_seen"],
+    "actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"]
+  },
+  "objectives": {
+    "objective_text": "在低语祭司逃离哭墙前击杀它",
+    "win": [ { "id": "win_kill_priest", "type": "destroy", "targets": ["PRIEST"] } ],
+    "lose": [
+      { "id": "lose_all_dead", "type": "all_allies_dead" },
+      { "id": "lose_priest_escaped", "type": "reach_zone", "target": "PRIEST", "cells": [[0, 0], [0, 1], [0, 2]] }
+    ]
+  },
+  "briefing": {
+    "mechanic_hint": "残骸行者锁定首个进入视野的人偶并追击。远射形态攻击射程内最近者——前排把残骸留在远处，祭司就会成为最近的目标。"
+  },
+  "hints": [
+    "先点开残骸行者和祭司：残骸「锁定首个进入视野者」，祭司沿底部路线走向左侧出口，途中会攻击 5 格内的单位。",
+    "承伤形态放在上方行列路线的前方（如 (7,8)），它会第一个进入残骸视野，把三具残骸留在上方。",
+    "远射形态放在底部左侧。祭司经过时与它的距离要小于任何残骸与它的距离，这样「最近」选中的就是祭司。基础攻击形态放在中间补刀。",
+    "推荐部署：承伤 (7,8)、基础攻击形态 (4,2)、远射形态 (3,0)。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "人偶全部倒下。看残骸锁定了谁：如果它们最先看见的是后排，前排就没能把它们留住。",
+    "lose_priest_escaped": "祭司逃离了。分三种情况检查：前排没留住残骸（远射被迫打残骸）、祭司没进入远射射程、或最近筛选选中了别的敌人。",
+    "lose_priest_escaped:front_not_held": "祭司逃离了。前排没留住残骸：残骸咬住了后排，远射被迫去打残骸。",
+    "lose_priest_escaped:out_of_range": "祭司逃离了。祭司始终没有进入任何会出手的人偶的射程。",
+    "lose_priest_escaped:wrong_target": "祭司逃离了。祭司进入过射程，但「最近」筛选选中了别的敌人，火力没落在祭司身上。",
+    "default": "战斗失败。"
+  },
+  "recommended": {
+    "units": [
+      { "slot": "slot_bulwark", "form": "bulwark", "pos": [7, 8], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "enabled": false, "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_striker", "form": "striker", "pos": [4, 2], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "enabled": false, "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase_attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_lancer", "form": "lancer", "pos": [3, 0], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "attack" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": [],
+    "unlock_conditions": [],
+    "unlock_selectors": [],
+    "unlock_actions": [],
+    "unlock_level": "level_07"
+  },
+  "verification": {
+    "expected_win": "残骸视野 4（关卡覆盖），沿行列路线西行到 x≈11 时承伤 (7,8) 第一个进入视野，三具残骸锁定承伤。祭司 1 格/秒沿 y=1 西行，约 5 秒后进入远射 8 格射程且为最近者（残骸在 (8,8) 附近，与远射距离 9.4，超出射程）。远射 10 伤害/秒 + 基础攻击形态 12 伤害/秒，祭司 50 生命约 11 秒内倒下，位置约 x=5。",
+    "expected_fail": "承伤不前置：残骸首先看见后排并涌向远射；或远射放得太靠上，残骸成为最近者。",
+    "alternatives": "全员正面集火、或改由基础攻击形态追击祭司，均为合法解。",
+    "risks": "前排锁定不应频繁换敌；需验证改变承伤攻速/位置确实改变拦截窗口；锁定目标死亡后残骸继续按规则选下一目标。",
+    "_note_20261018_wall": "移动改为直线（不寻路）后，残骸（视野 10）在出生点和行列路线上方隔着石块 (8..11,4..5) 看见下半场的单位就直线追过去，撞上石块卡死（逐格探针约 24/92 格）。行列路线经过石块正上方 y=8，在那里看得见又不被石块挡住的距离只有约 4.2 格，故三具残骸视野覆盖为 4；探针 0 卡墙，推荐解 8.1s 胜，三类失败归因不变。全员放在下半场（不前置承伤）也能胜，这在改动前同样成立（残骸当时卡在石块上）。"
+  }
+}

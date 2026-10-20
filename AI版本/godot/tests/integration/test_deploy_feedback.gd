@@ -172,14 +172,14 @@ func test_clear_units_empties_and_resets_budget() -> void:
 	await wait_process_frames(1)
 	var clear: Button = root.find_child("ClearButton", true, false) as Button
 	var budget: Label = root.find_child("BudgetLabel", true, false) as Label
-	assert_eq(budget.text, "10 / 10")
+	assert_eq(budget.text, "0 / 10", "倒数显示：用满剩 0")
 	assert_false(clear.disabled)
 	_selected.clear()
 	clear.pressed.emit()
 	assert_true(c.placements.is_empty(), "清空后 placements 为空")
 	assert_true(c.uids().is_empty(), "free 关单位连同指令与信标一并删除")
 	assert_eq(c.budget_used(), 0)
-	assert_eq(budget.text, "0 / 10", "预算归零显示")
+	assert_eq(budget.text, "10 / 10", "清空后储量回满")
 	assert_has(_selected, -1, "清空后收起侧栏")
 	assert_false((root.find_child("SidePanel", true, false) as Control).visible)
 	var toast: Label = root.find_child("Toast", true, false) as Label

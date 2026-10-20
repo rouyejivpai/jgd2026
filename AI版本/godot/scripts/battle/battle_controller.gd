@@ -12,6 +12,7 @@ var level: LevelDefinition = null
 var world: SimWorld = null
 var phase: int = SimTypes.Phase.DEPLOY
 var speed: int = 1
+const SPEED_KEY := "battle_speed"        ## GameState.settings 里记住的倍速（1 / 2），下一关沿用
 ## 07 §4.2：己方单位以 uid 为键。fixed 关 uid = 槽位 id（每个槽位常驻，可未部署）；free 关 uid = u1、u2…（部署阶段分配、递增不复用，
 ## 收回 = 删除该单位并返还 Cost）。己方模拟 id = ALLY_ID_BASE + 序号（fixed = 槽位序号；free = uid 编号 - 1）。
 var placements: Dictionary = {}          ## uid -> Vector2i（已部署）
@@ -73,7 +74,8 @@ func setup(p_level: LevelDefinition, saved_raw: Dictionary = {}) -> void:
 			var code: String = str(p["code"])
 			if code != DeploymentValidator.SLOT_NOT_PLACED and code != DeploymentValidator.TOO_FEW_UNITS and bool(p["blocking"]):
 				load_problems.append(p)
-	speed = 1
+	speed = 2 if persist and int(GameState.settings.get(SPEED_KEY, 1)) >= 2 else 1     # 倍速跨关继承（战斗场景；测试恒为 1×）
+	EventBus.battle_speed_changed.emit(speed)
 	_rebuild_world()
 	_set_phase(SimTypes.Phase.DEPLOY)
 	EventBus.level_loaded.emit(level.id)
@@ -178,7 +180,7 @@ func config_to_raw() -> Dictionary:
 
 
 func save_config() -> void:
-	if not persist or level == null:
+	if not persist or level == null or boss_pending:      # 换阶段暂停中的编程 / 增援不进存档（存档只保存第一阶段）
 		return
 	SaveManager.set_level_config(level.id, config_to_raw())
 	SaveManager.save()
@@ -194,6 +196,18 @@ func slot_of_unit(unit_id: int) -> String:
 		if SimTypes.ALLY_ID_BASE + int(unit_index[uid]) == unit_id:
 			return str(uid)
 	return ""
+
+
+## 正在编辑配置：部署阶段，或 Boss 换阶段暂停（2026-10-21 用户：暂停里除「重置」= 整关重来外，其余功能与部署阶段一致）
+func editing() -> bool:
+	return phase == SimTypes.Phase.DEPLOY or boss_pending
+
+
+## 能否挪动 / 收回该单位：部署阶段已放置的单位；换阶段暂停中只有本次放下的增援（存活单位在战场上，不能挪）
+func can_move(uid: String) -> bool:
+	if boss_pending:
+		return reinforce_uids.has(uid)
+	return phase == SimTypes.Phase.DEPLOY and placements.has(uid)
 
 
 func can_edit_rules(uid: String) -> bool:
@@ -243,6 +257,8 @@ func _cell_free_for(uid: String, cell: Vector2i) -> bool:
 
 
 func place_unit(uid: String, cell: Vector2i) -> bool:
+	if boss_pending:
+		return _move_reinforcement(uid, cell)
 	if phase != SimTypes.Phase.DEPLOY or not can_place(uid, cell):
 		return false
 	placements[uid] = cell
@@ -253,6 +269,12 @@ func place_unit(uid: String, cell: Vector2i) -> bool:
 
 ## 收回：fixed 关 = 取消部署（保留指令）；free 关 = 删除该单位（返还 Cost）
 func remove_unit(uid: String) -> bool:
+	if boss_pending:
+		if not reinforce_uids.has(uid):
+			return false
+		_remove_reinforcement(uid)
+		EventBus.deployment_changed.emit()
+		return true
 	if phase != SimTypes.Phase.DEPLOY or not placements.has(uid):
 		return false
 	if level.is_free():
@@ -266,6 +288,13 @@ func remove_unit(uid: String) -> bool:
 
 ## 10 §6.1「清空」：一次移除全部已放置的己方单位（含其指令与信标）；fixed 关槽位保留但清空指令与信标。返回移除人数（仅部署阶段）
 func clear_units() -> int:
+	if boss_pending:                       # 换阶段暂停：收回本次放下的全部增援（存活单位留在战场上）
+		var n: int = reinforce_uids.size()
+		for uid: String in reinforce_uids.duplicate():
+			_remove_reinforcement(uid)
+		if n > 0:
+			EventBus.deployment_changed.emit()
+		return n
 	if phase != SimTypes.Phase.DEPLOY or level == null:
 		return 0
 	var removed: Array[String] = []
@@ -395,6 +424,15 @@ func can_add_form(form: String) -> bool:
 		return card_forms().has(form) and reinforce_uids.size() < reinforce_max and reinforce_cost() + cost_of(form) <= reinforce_budget
 	return phase == SimTypes.Phase.DEPLOY and card_forms().has(form) and placements.size() < level.max_units \
 		and budget_used() + cost_of(form) <= level.roster_budget
+
+
+## 再放一名该形态是否因灵魂（Cost）不够而不行（部署阶段 / Boss 增援；形态本关不可用时为 false）
+func form_short_of_budget(form: String) -> bool:
+	if level == null or not card_forms().has(form):
+		return false
+	if boss_pending:
+		return reinforce_cost() + cost_of(form) > reinforce_budget
+	return phase == SimTypes.Phase.DEPLOY and budget_used() + cost_of(form) > level.roster_budget
 
 
 ## free 关：新单位能否放到 cell（部署区、非障碍/初始单位、无其他己方单位）
@@ -651,6 +689,10 @@ func pause() -> void:
 func resume() -> void:
 	if phase == SimTypes.Phase.PAUSED:
 		if boss_pending:
+			last_problems = boss_pause_problems()       # 同「开始战斗」：有阻塞问题时不继续，弹问题面板
+			if DeploymentValidator.has_blocking(last_problems):
+				EventBus.validation_failed.emit(last_problems)
+				return
 			_finish_boss_pause()
 		_set_phase(SimTypes.Phase.RUNNING)
 
@@ -660,6 +702,8 @@ func set_speed(multiplier: int) -> void:
 	if m == speed:
 		return
 	speed = m
+	if persist:
+		GameState.settings[SPEED_KEY] = m       # 随下次存档写盘（退出 / 结算 / 配置变化都会存）
 	EventBus.battle_speed_changed.emit(speed)
 
 
@@ -784,21 +828,74 @@ func reinforce_cells() -> Array[Vector2i]:
 
 
 func _reinforce_problem(form: String, cell: Vector2i) -> String:
-	if unit_index.has(form):
-		return DeploymentValidator.OUT_OF_ZONE      # 暂停时不能挪动已有单位
+	if unit_index.has(form):                     # 已有单位：只有本次放下的增援能挪（存活单位不能挪）
+		if not reinforce_uids.has(form):
+			return DeploymentValidator.OUT_OF_ZONE
+		return _reinforce_cell_problem(cell, unit_id_of_slot(form))
 	if not card_forms().has(form):
 		return DeploymentValidator.FORM_NOT_AVAILABLE
 	if reinforce_uids.size() >= reinforce_max:
 		return DeploymentValidator.ROSTER_FULL
 	if reinforce_cost() + cost_of(form) > reinforce_budget:
 		return DeploymentValidator.BUDGET_EXCEEDED
+	return _reinforce_cell_problem(cell, -1)
+
+
+## 增援格：增援区内、非障碍、没有其他存活单位（ignore_id = 正在挪动的那名增援）
+func _reinforce_cell_problem(cell: Vector2i, ignore_id: int) -> String:
 	if not reinforce_zone.has_point(cell):
 		return DeploymentValidator.OUT_OF_ZONE
 	if level.is_blocked(cell):
 		return DeploymentValidator.CELL_BLOCKED
 	for u: SimUnit in world.units:
-		if u.alive and u.cell() == cell:
+		if u.alive and u.id != ignore_id and u.cell() == cell:
 			return DeploymentValidator.CELL_OCCUPIED
+	return ""
+
+
+## 换阶段暂停中「继续」前的校验：只看存活单位与增援的指令 / 信标。出场人数、预算、部署区、格子另有增援规则
+##（放置时已由 _reinforce_problem 把关；存活单位早已离开部署格），这几类码不在这里报。
+const _BOSS_SKIP_CODES: Array[String] = [DeploymentValidator.OUT_OF_ZONE, DeploymentValidator.CELL_OCCUPIED, DeploymentValidator.CELL_BLOCKED,
+	DeploymentValidator.BUDGET_EXCEEDED, DeploymentValidator.TOO_FEW_UNITS, DeploymentValidator.ROSTER_FULL, DeploymentValidator.SLOT_NOT_PLACED]
+
+func boss_pause_problems() -> Array[Dictionary]:
+	var config: Dictionary = {}
+	var all: Dictionary = build_config()
+	for uid: String in all.keys():
+		if _alive_in_world(uid):
+			config[uid] = all[uid]
+	var out: Array[Dictionary] = []
+	for p: Dictionary in DeploymentValidator.validate(level, config, GameState.unlocks, DataRegistry.get_units(), DataRegistry.get_commands()):
+		if not _BOSS_SKIP_CODES.has(str(p["code"])):
+			out.append(p)
+	return out
+
+
+## 暂停中挪动本次放下的增援（同部署阶段拖动挪位）
+func _move_reinforcement(uid: String, cell: Vector2i) -> bool:
+	if not reinforce_uids.has(uid) or _reinforce_problem(uid, cell) != "":
+		return false
+	placements[uid] = cell
+	var u: SimUnit = world.get_unit(unit_id_of_slot(uid))
+	if u != null:
+		u.pos = SimTypes.cell_center(cell)
+	EventBus.deployment_changed.emit()
+	return true
+
+
+## 收回增援：从世界与配置里删掉（返还增援预算）
+func _remove_reinforcement(uid: String) -> void:
+	if world != null:
+		world.remove_unit(unit_id_of_slot(uid))
+	reinforce_uids.erase(uid)
+	recommended_uids.erase(_recommended_entry_of(uid))
+	_unregister(uid)
+
+
+func _recommended_entry_of(uid: String) -> String:
+	for k: Variant in recommended_uids.keys():
+		if str(recommended_uids[k]) == uid:
+			return str(k)
 	return ""
 
 
@@ -829,17 +926,35 @@ func _rules_from(arr: Array) -> Array[RuleDef]:
 	return level.player_rules(out)
 
 
-## 暂停时的「推荐」：按关卡 recommended.phase2 重新编程存活单位并放置增援
+## 暂停时的「推荐」：按关卡 recommended.phase2 重新编程存活单位并放置增援。同部署阶段的推荐阵型：先收回已放的增援再按推荐摆放，
+## 摆完校验一次（结果存于 last_problems）。存活单位按推荐条目名对应；第一阶段不是用推荐摆的（条目名没有记录）时按形态对应，
+## 并换上推荐的第一阶段信标（第二阶段推荐指令沿用这些信标）。
 func apply_recommended_phase2() -> bool:
 	if not boss_pending or level == null:
 		return false
 	var p2: Dictionary = level.recommended_phase2
 	var rules_map: Dictionary = p2.get("rules", {}) as Dictionary
+	for uid: String in reinforce_uids.duplicate():
+		_remove_reinforcement(uid)
+	var rec_by_entry: Dictionary = {}
+	for ru: RecommendedUnitDef in level.recommended_units:
+		rec_by_entry[ru.slot_id] = ru
+	var taken: Array[String] = []
 	for entry: String in rules_map.keys():
-		var uid: String = recommended_uid(entry)
-		if _alive_in_world(uid):
-			slot_rules[uid] = _rules_from(rules_map[entry] as Array)
-			EventBus.rules_changed.emit(unit_id_of_slot(uid))
+		var ru: RecommendedUnitDef = rec_by_entry.get(entry, null) as RecommendedUnitDef
+		var uid: String = _phase2_survivor(entry, ru.form if ru != null else "", taken)
+		if uid == "":
+			continue
+		taken.append(uid)
+		recommended_uids[entry] = uid
+		slot_rules[uid] = _rules_from(rules_map[entry] as Array)
+		if ru != null:
+			var bs: Array[Dictionary] = []
+			for b: Dictionary in ru.beacons:
+				bs.append({ "id": str(b["id"]), "cell": b["cell"] as Vector2i })
+			slot_beacons[uid] = bs
+		EventBus.rules_changed.emit(unit_id_of_slot(uid))
+		EventBus.beacons_changed.emit(unit_id_of_slot(uid))
 	for raw: Variant in p2.get("reinforcements", []) as Array:
 		var r: Dictionary = raw as Dictionary
 		var pos: Array = r.get("pos", [0, 0]) as Array
@@ -856,7 +971,24 @@ func apply_recommended_phase2() -> bool:
 		slot_beacons[uid] = bs
 		EventBus.rules_changed.emit(unit_id_of_slot(uid))
 		EventBus.beacons_changed.emit(unit_id_of_slot(uid))
+	last_problems = boss_pause_problems()
+	EventBus.deployment_changed.emit()
 	return true
+
+
+## 第二阶段推荐条目 entry 对应的存活单位：先按记录的条目名，否则取同形态、尚未对应的第一名存活单位（不含增援）
+func _phase2_survivor(entry: String, form: String, taken: Array[String]) -> String:
+	var uid: String = str(recommended_uids.get(entry, ""))
+	if uid != "" and not taken.has(uid) and _alive_in_world(uid) and not reinforce_uids.has(uid):
+		return uid
+	for other: String in uids():
+		if form_of(other) == form and not taken.has(other) and not reinforce_uids.has(other) and _alive_in_world(other) \
+				and not recommended_uids.values().has(other):
+			return other
+	for other: String in uids():       # 名字记录都对不上（如同形态的第一名已阵亡）：放宽到任一同形态存活单位
+		if form_of(other) == form and not taken.has(other) and not reinforce_uids.has(other) and _alive_in_world(other):
+			return other
+	return ""
 
 
 ## 「继续」：把暂停期间的指令 / 信标写进存活单位（游标重置），进入下一阶段

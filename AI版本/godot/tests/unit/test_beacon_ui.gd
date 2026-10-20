@@ -129,7 +129,7 @@ func test_editing_only_in_deploy_and_save_roundtrip() -> void:
 
 
 func test_recommended_formation_places_beacons() -> void:
-	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/level_03.json")) as Dictionary
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter1/levels/level_03.json")) as Dictionary
 	var ru: Dictionary = ((d["recommended"] as Dictionary)["units"] as Array)[1] as Dictionary
 	ru["beacons"] = [{ "id": "1", "cell": [2, 1] }, { "id": "2", "cell": [13, 1] }, { "id": "3", "cell": [14, 1] }]
 	(ru["rules"] as Array)[1] = { "conditions": [], "action": { "type": "follow_beacons", "mode": "once", "from": "1" } }

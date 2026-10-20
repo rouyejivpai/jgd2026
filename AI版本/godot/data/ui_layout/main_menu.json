@@ -16,7 +16,8 @@
         1080
       ],
       "data": {
-        "_note": "用户 2026-10-19 主界面图（标题「人偶补完计划」与下方白条画在图上），2560×1440，铺满视口"
+        "_note": "用户 2026-10-19 主界面图（标题「人偶补完计划」与下方白条画在图上），2560×1440，铺满视口；cleared_file：通关最终关（credits.json trigger_level）后换用的主界面图（用户 2026-10-21，2000×1125，标题与白条位置同原图）",
+        "cleared_file": "res://assets/ui/gothic/menu_bg_cleared.png"
       },
       "file": "res://assets/ui/gothic/menu_bg.png"
     },

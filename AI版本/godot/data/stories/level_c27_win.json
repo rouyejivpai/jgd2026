@@ -2,6 +2,12 @@
   "id": "level_c27_win",
   "scenes": [
     {
+      "speaker": "narrator",
+      "illustration": "",
+      "cg": "doll_tears",
+      "text": ""
+    },
+    {
       "speaker": "doll",
       "illustration": "doll",
       "text": "为什么是考场？你为什么会在这里？"

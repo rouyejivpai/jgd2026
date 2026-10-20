@@ -51,6 +51,11 @@ var _views: Dictionary = {}     ## unit id -> UnitView
 const FIRST_FAIL_HIGHLIGHT_LEVEL: String = "level_02"
 const FIRST_FAIL_HIGHLIGHT_SECONDS: float = 2.0
 const DRAG_SOURCE_ALPHA: float = 0.35     ## 第四阶段：部署拖动时原位置单位的透明度
+const CAM_OVERSCROLL_FRAC: float = 0.125  ## 拖动镜头最多拖出平移范围 = 视口宽 / 高 × 1/8（同选关 OVERSCROLL_FRAC）
+const CAM_SPRING_TIME: float = 0.45       ## 拖出范围松手后弹回的时长（同选关 SPRING_TIME）
+const DMG_NUMBER_FS: int = 44              ## 普通伤害飘字字号（遗物飘字为 64）；易伤 / 重击加大到 DMG_NUMBER_FS_HEAVY
+const DMG_NUMBER_FS_HEAVY: int = 56
+const DMG_NUMBER_JITTER: Vector2 = Vector2(22.0, 10.0)   ## 飘字随机偏移（像素），连击时不完全叠在一起
 
 var _last_phase: int = SimTypes.Phase.DEPLOY
 ## 07 §1.2：玩法矩形（视口像素）与每格像素，每关、每次视口尺寸变化时计算。地图类节点以局部坐标（每格 TILE_SIZE）绘制，
@@ -61,10 +66,13 @@ var cell_px: int = SimTypes.TILE_SIZE
 ## 屏幕 → 模拟的换算统一减去偏移（playfield_rect 本身不含偏移）。只碰表现，不碰模拟。
 var pan_x: float = 0.0
 var _pan_tween: Tween = null
-## 第四阶段（用户 2026-10-08）：Ctrl + 滚轮缩放（以鼠标处为中心）、Ctrl + 左键拖动平移（两个方向）。
+## 用户 2026-10-21：滚轮缩放（以鼠标处为中心）；按住中键或左键拖动空地平移（两个方向），拖出平移范围时橡皮筋、松手弹回（同选关）。
 ## 视图变换：未缩放时的屏幕点 p → c + (p − c)·cam_zoom − (pan_x, pan_y)，c = 玩法矩形中心；地图类各层与 Backdrop 同一变换，只碰表现。
 var pan_y: float = 0.0
 var cam_zoom: float = 1.0
+var _cam_dragging: bool = false
+var _cam_press_pos: Vector2 = Vector2.ZERO   ## 拖动镜头的按下点（屏幕）与当时的偏移，橡皮筋按总位移算
+var _cam_press_pan: Vector2 = Vector2.ZERO
 var _drag_source: int = -1               ## 部署拖动中的单位（原位置变淡）
 var _status_overlay: Node2D = null       ## 30 关战役：异常状态 / Boss 信号 / 增援区提示（status_overlay.gd）
 var _relic_ground: Node2D = null         ## 遗物地块 / 放置预览（单位之下，relic_layer.gd GROUND）
@@ -268,21 +276,88 @@ func set_pan(x: float) -> void:
 	_apply_pan()
 
 
-## Ctrl + 左键拖动：地图跟手移动（relative = 鼠标位移，屏幕像素）
+## 直接平移（relative = 鼠标位移，屏幕像素；clamp 到上限，不回弹）
 func pan_by(relative: Vector2) -> void:
-	if _pan_tween != null and _pan_tween.is_valid():
-		_pan_tween.kill()
+	_kill_pan_tween()
 	var lim: Vector2 = pan_limit()
 	pan_x = clampf(pan_x - relative.x, -lim.x, lim.x)
 	pan_y = clampf(pan_y - relative.y, -lim.y, lim.y)
 	_apply_pan()
 
 
-## Ctrl + 滚轮：以鼠标处为中心缩放一档（dir = +1 放大 / −1 缩小），鼠标下的地图点保持不动
+## 拖动镜头开始（中键 / 左键拖空地）：打断回弹 / 回正，记下按下点
+func begin_cam_drag(screen_pos: Vector2) -> void:
+	_kill_pan_tween()
+	_cam_dragging = true
+	_cam_press_pos = screen_pos
+	_cam_press_pan = Vector2(pan_x, pan_y)
+
+
+## 拖动中：地图跟手；超出平移范围的部分走橡皮筋（同选关 _rubber）
+func cam_drag_to(screen_pos: Vector2) -> void:
+	if not _cam_dragging:
+		return
+	var raw: Vector2 = _cam_press_pan - (screen_pos - _cam_press_pos)
+	var lim: Vector2 = pan_limit()
+	var over: Vector2 = get_viewport_rect().size * CAM_OVERSCROLL_FRAC
+	pan_x = _rubber(raw.x, -lim.x, lim.x, _cam_press_pan.x, over.x)
+	pan_y = _rubber(raw.y, -lim.y, lim.y, _cam_press_pan.y, over.y)
+	_apply_pan()
+
+
+## 松手：出框则弹回范围内（TRANS_BACK，同选关 _spring_back）
+func end_cam_drag() -> void:
+	if not _cam_dragging:
+		return
+	_cam_dragging = false
+	var lim: Vector2 = pan_limit()
+	var to := Vector2(clampf(pan_x, -lim.x, lim.x), clampf(pan_y, -lim.y, lim.y))
+	if to.distance_to(Vector2(pan_x, pan_y)) <= 0.01:
+		return
+	_kill_pan_tween()
+	if not UiKit.motion_enabled or not is_inside_tree():
+		_set_pan_vec(to)
+		return
+	_pan_tween = create_tween()
+	_pan_tween.tween_method(_set_pan_vec, Vector2(pan_x, pan_y), to, CAM_SPRING_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func cam_dragging() -> bool:
+	return _cam_dragging
+
+
+## 橡皮筋：[lo, hi] 内一比一，出框部分越拉越紧、渐近 lim；按下时已出框则范围扩到按下位置，起步不跳
+static func _rubber(x: float, lo: float, hi: float, press: float, lim: float) -> float:
+	lo = minf(lo, press)
+	hi = maxf(hi, press)
+	if lim <= 0.0:
+		return clampf(x, lo, hi)
+	if x < lo:
+		return lo - lim * (1.0 - exp(-(lo - x) / lim))
+	if x > hi:
+		return hi + lim * (1.0 - exp(-(x - hi) / lim))
+	return x
+
+
+## 不限制范围地摆放（橡皮筋 / 回弹动画用）
+func _set_pan_vec(v: Vector2) -> void:
+	pan_x = v.x
+	pan_y = v.y
+	_apply_pan()
+
+
+func _kill_pan_tween() -> void:
+	if _pan_tween != null and _pan_tween.is_valid():
+		_pan_tween.kill()
+	_pan_tween = null
+
+
+## 滚轮：以鼠标处为中心缩放一档（dir = +1 放大 / −1 缩小），鼠标下的地图点保持不动
 func zoom_at(screen_pos: Vector2, dir: int) -> void:
 	var z: float = clampf(cam_zoom * pow(UiKit.ZOOM_STEP, dir), UiKit.ZOOM_MIN, UiKit.ZOOM_MAX)
 	if is_equal_approx(z, cam_zoom):
 		return
+	_kill_pan_tween()
 	var c: Vector2 = playfield_rect.get_center()
 	var origin: Vector2 = c + (playfield_rect.position - c) * cam_zoom - Vector2(pan_x, pan_y)
 	var origin2: Vector2 = screen_pos - (screen_pos - origin) * (z / cam_zoom)
@@ -292,9 +367,12 @@ func zoom_at(screen_pos: Vector2, dir: int) -> void:
 	pan_x = clampf(pan.x, -lim.x, lim.x)
 	pan_y = clampf(pan.y, -lim.y, lim.y)
 	_apply_pan()
+	if _cam_dragging:                      # 拖动中缩放：以当前位置重新起算，地图不跳
+		_cam_press_pos = screen_pos
+		_cam_press_pan = Vector2(pan_x, pan_y)
 
 
-## 用户用过 Ctrl 镜头（缩放或纵向平移）时不自动回正
+## 用户动过镜头（缩放或纵向平移）时不自动回正
 func user_camera() -> bool:
 	return not is_equal_approx(cam_zoom, 1.0) or not is_zero_approx(pan_y)
 
@@ -311,7 +389,7 @@ func pan_enabled() -> bool:
 
 ## 一帧的触边横移：鼠标 x < PAN_EDGE_PX → 向左，> 窗口宽 − PAN_EDGE_PX → 向右，速度 PAN_SPEED；只有横向
 func edge_pan_step(mouse_pos: Vector2, delta: float) -> void:
-	if not pan_enabled() or (_pan_tween != null and _pan_tween.is_running()):
+	if not pan_enabled() or _cam_dragging or (_pan_tween != null and _pan_tween.is_running()):
 		return
 	if bool(_hud.call("mouse_over_side", mouse_pos)):      # 第四阶段：鼠标在侧栏上不触边平移
 		return
@@ -327,8 +405,9 @@ func edge_pan_step(mouse_pos: Vector2, delta: float) -> void:
 
 ## 取消选中或开始战斗时 PAN_RECENTER_SECONDS 内回正
 func recenter_pan() -> void:
-	if _pan_tween != null and _pan_tween.is_valid():
-		_pan_tween.kill()
+	if _cam_dragging:
+		return
+	_kill_pan_tween()
 	if is_zero_approx(pan_x) or user_camera():
 		return
 	_pan_tween = create_tween()
@@ -566,6 +645,24 @@ func _sync_views() -> void:
 				AudioManager.play_sfx("unit_summon", "SFX", 0.0, 1.0, 0.04)
 
 
+## Boss 换阶段暂停中增援变化（同部署阶段）：收回的增援删视图，挪位的增援对齐新格并播落位光柱；选中的增援被收回则收起侧栏
+func _sync_boss_views() -> void:
+	for id: Variant in _views.keys():
+		if controller.world.get_unit(int(id)) == null:
+			var gone: UnitView = _view(int(id))
+			if gone != null:
+				gone.queue_free()
+			_views.erase(id)
+	for uid: String in controller.reinforce_uids:
+		var v: UnitView = _view(controller.unit_id_of_slot(uid))
+		if v != null and v.cur_pos != v.unit.pos:
+			v.snap()
+			_fx.call("spawn_pillar", v.position, true, 1.0, "place")
+	_sync_views()
+	if selected_id >= 0 and controller.world.get_unit(selected_id) == null:
+		EventBus.unit_selected.emit(-1)
+
+
 ## 多阶段 Boss 到达切换阈值：战斗已暂停。播放该阶段说明（data/stories/<level>_phase<N>.json），提示玩家改指令 / 补增援后「继续」
 func _on_boss_phase_paused(next_phase: int) -> void:
 	_sync_views()
@@ -577,7 +674,7 @@ func _on_boss_phase_paused(next_phase: int) -> void:
 
 func _on_deployment_changed() -> void:
 	if controller.boss_pending:
-		_sync_views()
+		_sync_boss_views()
 		return
 	# 音效由各玩家操作处自己播（放置 / 移除 / 清空 / 推荐阵容 / 遗物 / 信标）；引导开场的自动清空、读档恢复不出声
 	# 部署落位（新放下或挪到新格）：金色小光柱
@@ -647,6 +744,8 @@ func _on_sim_event(e: Dictionary) -> void:
 			var center: Vector2 = SimTypes.sim_to_screen(e["pos"] as Vector2, level.height)
 			for hid: int in e.get("hits", []) as Array:
 				_blast_from[hid] = center
+		SimTypes.EventType.BOSS_SKILL:
+			_on_boss_skill(e)
 		SimTypes.EventType.RELIC_USED:
 			_on_relic_used(e)
 		SimTypes.EventType.UNIT_DIED:
@@ -659,6 +758,22 @@ func _on_sim_event(e: Dictionary) -> void:
 				_show_death(e, _blast_from[int(e["unit"])])
 			else:
 				_show_death(e, _source_pos(int(e.get("killer", -1))))
+
+
+## 2026-10-21 Boss 放招：不论范围内有没有目标，都播施法动作 + 招式特效（信号色，见 CombatFx.BossWave）+ 震屏 + 女鬼尖啸。
+## 命中的伤害 / 状态另有各自的受击表现；放招的低频冲击（core_pulse）由 StatusOverlay 在信号放招时播放
+func _on_boss_skill(e: Dictionary) -> void:
+	var center: Vector2 = SimTypes.sim_to_screen(e["pos"] as Vector2, level.height)
+	var caster: UnitView = _view(int(e["source"]))
+	if caster != null:
+		caster.play_attack(caster.position + Vector2(0.0, -1.0))     # 向上一扬（不转向）
+	var consts: Dictionary = STATUS_OVERLAY_SCRIPT.get_script_constant_map()
+	var sig: String = str(e.get("signal", ""))
+	var col: Color = (consts.get("SIGNAL_COLOR", {}) as Dictionary).get(sig, Color(1.0, 0.36, 0.66)) as Color
+	AudioManager.play_sfx("boss_scream", "SFX", 0.0, float((consts.get("SIGNAL_PITCH", {}) as Dictionary).get(sig, 1.0)), 0.03)   # 女鬼尖啸，音高随信号色
+	var inside: bool = str(e.get("side", "inside")) == "inside"
+	_fx.call("spawn_boss_wave", center, float(e.get("radius", 0.0)) * float(SimTypes.TILE_SIZE), inside, col, str(e.get("effect", "")))
+	shake(BLAST_SHAKE_SECONDS)
 
 
 ## 普通攻击特效按出手时的敌我距离决定（用户 2026-10-19：取决于位置关系，而非角色本身）：
@@ -768,8 +883,22 @@ func _show_hit(e: Dictionary, from_pos: Variant, base: float = -1.0) -> void:
 	hit.play_hit(dir)
 	_hit_sfx(hit, e, base)
 	var amount: float = float(e.get("amount", 0.0))
+	_damage_number(hit, e, base)
 	var count: int = clampi(5 + int(amount / 12.0), 5, 11)
 	_fx.call("spawn_debris", hit.position, -hit.chest_offset().y, dir, count, 1.0)
+
+
+## 伤害飘字（沿用遗物飘字 RelicLayer.spawn_fx，不画扩散圈）：打敌人 = 金色、打己方 = 红色；易伤加成 / Boss 招式字号加大。
+## 遗物骨刃（source = −1）已由 _on_relic_used 飘过字，这里跳过
+func _damage_number(hit: UnitView, e: Dictionary, base: float) -> void:
+	var src: int = int(e.get("source", -1))
+	var amount: int = roundi(float(e.get("amount", 0.0)))
+	if src < 0 or amount <= 0:
+		return
+	var heavy: bool = float(amount) > base * 1.01 + 0.01 if base > 0.0 else (_is_boss(src) or hit.unit.has_status("vulnerable"))
+	var col: Color = Palette.WARN_RED if hit.unit.faction == SimTypes.Faction.ALLY else Palette.ALCHEMY_GOLD
+	var shift := Vector2(randf_range(-1.0, 1.0) * DMG_NUMBER_JITTER.x, randf_range(-1.0, 1.0) * DMG_NUMBER_JITTER.y)
+	_relic_top.call("spawn_fx", hit.unit.pos, col, "-%d" % amount, false, DMG_NUMBER_FS_HEAVY if heavy else DMG_NUMBER_FS, shift, true)
 
 
 ## 受击音：目标的 hit_sfx；遗物骨刃（source = −1）只播重击。另叠一声重击：普通攻击伤害大于出手面值（易伤加成）、

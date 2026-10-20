@@ -3,6 +3,7 @@ extends Control
 ## 通用确认弹窗（目前用于主菜单「新游戏」清档确认）：节点、位置、贴图、字体全部来自 data/ui_layout/confirm_dialog.json 与
 ## assets/themes/ui_confirm_dialog.tres（tools/apply_ui_manifest.py 由 assets/ui/confirm_dialog/manifest.json 生成），
 ## 本脚本只做文字绑定与接线。文字由调用方以 strings key 传入（open）。
+## 2026-10-21 按钮顺序：「取消」在左、「确定」在右（manifest 中两按钮 rect 互换）。
 ## 遮罩挡住下层点击，点击遮罩不关闭；Esc 或「取消」= 取消；打开时默认焦点在「取消」（防误触），焦点只在两个按钮间切换。
 
 signal confirmed()

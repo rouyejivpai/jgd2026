@@ -97,6 +97,7 @@ func test_new_game_confirm_cancel_then_ok() -> void:
 	await wait_process_frames(1)
 	assert_eq(dlg.size, menu.size, "确认框铺满界面（遮罩挡住下层）")
 	assert_eq((dlg.nodes["btn_ok"] as Button).get_rect(), UiKit.layout_rect("confirm_dialog", "btn_ok", dlg.size), "按钮位置 = 布局")
+	assert_lt((dlg.nodes["btn_cancel"] as Control).position.x, (dlg.nodes["btn_ok"] as Control).position.x, "取消在左、确定在右")
 	assert_eq((dlg.nodes["body"] as Label).get_rect(), UiKit.layout_text_rect("confirm_dialog", "body", dlg.size), "自动换行的正文不被撑高")
 	assert_true((dlg.nodes["btn_cancel"] as Button).has_focus(), "确认框默认焦点在「取消」")
 	assert_eq((dlg.nodes["title"] as Label).text, DataRegistry.get_string("ui.new_game_confirm_title"))
@@ -135,3 +136,21 @@ func test_esc_cancels_confirm() -> void:
 	dlg.call("_input", esc)
 	assert_false(dlg.visible, "Esc 关闭确认框")
 	assert_true(SaveManager.has_progress(), "Esc 等同取消")
+
+
+## 2026-10-21：通关最终关（credits.json trigger_level）后主界面背景换成通关图
+func test_background_switches_after_final_level() -> void:
+	SaveManager.data = _fresh()
+	GameState.sync_from_save()
+	var bg_data: Dictionary = UiKit.layout_element("main_menu", "bg").get("data", {}) as Dictionary
+	var cleared: String = str(bg_data.get("cleared_file", ""))
+	assert_true(ResourceLoader.exists(cleared), "通关图存在")
+	var bg: TextureRect = (_menu().get("nodes") as Dictionary)["bg"] as TextureRect
+	assert_ne(bg.texture.resource_path, cleared, "未通关用原图")
+	var d: Dictionary = _fresh()
+	var last: String = str(CreditsRoll.load_data().get("trigger_level", ""))
+	SaveManager.apply_rewards(d, last, DataRegistry.get_level(last).rewards)
+	SaveManager.data = d
+	GameState.sync_from_save()
+	bg = (_menu().get("nodes") as Dictionary)["bg"] as TextureRect
+	assert_eq(bg.texture.resource_path, cleared, "通关最终关后换成通关图")

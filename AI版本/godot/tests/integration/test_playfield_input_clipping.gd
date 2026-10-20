@@ -60,7 +60,7 @@ func test_three_window_ratios_keep_rect_centered() -> void:
 
 
 func test_manual_playfield_rect_override() -> void:
-	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/level_04.json")) as Dictionary
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter1/levels/level_04.json")) as Dictionary
 	(d["scene"] as Dictionary)["playfield_rect"] = [500, 100, 1400, 1000]
 	var L: LevelDefinition = LevelDefinition.from_dict(d, "test")
 	assert_true(L.has_playfield_rect)
@@ -70,8 +70,8 @@ func test_manual_playfield_rect_override() -> void:
 
 
 func test_deprecated_background_field_is_error() -> void:
-	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/level_01.json")) as Dictionary
-	d["background"] = "res://assets/backgrounds/level_01.png"
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter1/levels/level_01.json")) as Dictionary
+	d["background"] = "res://tests/fixtures/chapter1/assets/backgrounds/level_01.png"
 	var before: int = DataReader.messages.size()
 	LevelDefinition.from_dict(d, "test")
 	var found: bool = false
@@ -145,7 +145,7 @@ func test_clicks_outside_playfield_hit_nothing() -> void:
 	map_input.call("_drop_data", to_local * outside_points[1], from_map)
 	assert_false(c.placements.has(a), "拖出矩形 = 收回")
 	assert_true(c.placements.has(b), "另一名单位不受影响")
-	# 点击矩形外：发出"未选中"
+	# 点击矩形外（松开时生效）：发出"未选中"
 	watch_signals(EventBus)
 	var mb := InputEventMouseButton.new()
 	mb.button_index = MOUSE_BUTTON_LEFT
@@ -153,6 +153,9 @@ func test_clicks_outside_playfield_hit_nothing() -> void:
 	mb.global_position = outside_points[2]
 	mb.position = to_local * outside_points[2]
 	map_input.call("_gui_input", mb)
+	var up := mb.duplicate() as InputEventMouseButton
+	up.pressed = false
+	map_input.call("_gui_input", up)
 	assert_signal_emitted_with_parameters(EventBus, "unit_selected", [-1])
 
 

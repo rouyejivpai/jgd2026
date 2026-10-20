@@ -10,6 +10,7 @@ extends Control
 ##   每幅画：淡入 → 逐句「打字 → 停留 → 字淡出」→ 画面淡出 → 黑场停顿；句子开始时触发该句的 events（换图 / 闪光 / 震屏 / 碎裂 / 粒子）。
 ## 播完或长按 Esc（HOLD_TO_SKIP 秒，右下角圆环显示进度）→ 淡到全黑 → SceneRouter.reveal_scene 进主菜单。
 ## 动效总闸关闭（UiKit.motion_enabled = false）或命令行带 --skip-splash / --skip-opening / --config-editor 时直接进主菜单。
+## 2026-10-21：主菜单剧情回顾图鉴的「原初」也播本场景（GameState.story_gallery_return，此时上面几种跳过都不生效），播完回主菜单并重开图鉴。
 
 const DATA_PATH: String = "res://data/opening.json"
 const ART_DIR: String = "res://assets/cg/opening/"
@@ -105,8 +106,9 @@ func _ready() -> void:
 	_load_data()
 	_build()
 	var args: PackedStringArray = OS.get_cmdline_user_args()
-	if not UiKit.motion_enabled or panels.is_empty() or args.has("--skip-splash") or args.has("--skip-opening") \
-			or args.has("--config-editor"):
+	var replay: bool = GameState.story_gallery_return          # 剧情回顾图鉴点「原初」：玩家主动要看，动效总闸 / 命令行都不跳过
+	if panels.is_empty() or (not replay and (not UiKit.motion_enabled or args.has("--skip-splash") or args.has("--skip-opening") \
+			or args.has("--config-editor"))):
 		_finish.call_deferred()
 		return
 	if bgm != "":

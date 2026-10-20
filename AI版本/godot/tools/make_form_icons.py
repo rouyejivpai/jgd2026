@@ -5,7 +5,7 @@
 输出 assets/sprites/form_icons/（已烘焙颜色，游戏里只做亮度调制）：
   <form>_solid.png  实心剪影，金色 → 形态标志色 的斜向渐变（图标外框内：左上角金、主体标志色；混色保持亮度，金蓝之间不发灰），256×256；战场环绕用
   <form>.png        同一剪影 + 烘焙的柔和外发光（发光色 = 标志色）；头像 / 卡面用
-形态标志色（用户 2026-10-19：除红色以外各不相同，与金色渐变，玩家凭颜色区分形态）见 FORM_COLORS。
+形态标志色（用户 2026-10-19：各不相同，与金色渐变，玩家凭颜色区分形态；2026-10-21 改为与人偶差分的描边色一致）见 FORM_COLORS。
 顺序（左→右、上→下）：基础攻击 striker、承伤 bulwark、快速 swift、远射 lancer、咒术 hexer、缚锁 binder。
 用法（godot/ 目录）：python tools/make_form_icons.py
 """
@@ -22,13 +22,13 @@ SHEET = GODOT / "tools/_raw/form_icons/sheet.png"
 OUT = GODOT / "assets/sprites/form_icons"
 FORMS = ["striker", "bulwark", "swift", "lancer", "hexer", "binder"]
 GOLD = np.array([255, 200, 80], dtype=np.float32)
-FORM_COLORS = {                    # 标志色（避开红色）
-    "striker": (236, 242, 255),    # 基础攻击：银白
-    "bulwark": (70, 150, 255),     # 承伤：钢蓝
-    "swift": (40, 235, 200),       # 快速：青绿
-    "lancer": (120, 240, 80),      # 远射：翠绿
-    "hexer": (175, 105, 255),      # 咒术：紫
-    "binder": (255, 115, 215),     # 缚锁：粉
+FORM_COLORS = {                    # 标志色 = 人偶差分描边色（2026-10-21 用户：图标颜色与描边一致；取自描边像素中位数）
+    "striker": (255, 188, 109),    # 基础攻击：橙
+    "bulwark": (121, 178, 255),    # 承伤：蓝
+    "swift": (142, 255, 236),      # 快速：青
+    "lancer": (103, 186, 69),      # 远射：绿
+    "hexer": (151, 53, 255),       # 咒术：紫
+    "binder": (255, 41, 54),       # 缚锁：红
 }
 GRAD_START, GRAD_END = 0.15, 0.8   # 渐变区间（在图标自身外框内，沿左上 → 右下对角线的比例）：左上角金色，主体为标志色
 SIZE = 256

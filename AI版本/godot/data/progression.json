@@ -8,6 +8,6 @@
     "selectors": ["nearest", "highest_hp", "most_damage", "first_in_range"],
     "actions": ["attack", "chase_attack", "idle", "chase", "hold_fire"]
   },
-  "initial_levels": ["level_01", "level_c01"],
+  "initial_levels": ["level_c01"],
   "default_settings": { "master": 0.8, "music": 0.7, "sfx": 0.9, "fullscreen": true, "target_lines": true, "font_scale": 1.0, "sim_log": true }
 }

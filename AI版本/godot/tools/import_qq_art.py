@@ -3,7 +3,8 @@
 """2026-10-19：用美术交付的 Q 版人物（QQ人 / QQ人2）、人偶立绘、物件替换游戏图。敌我双方单位精灵都用 Q 版人物。
 源目录：AI版本/work/美术资源_20261019/（QQ人、QQ人2、人偶立绘、守火立绘、物件、精英战）。源图已是透明底。
 对应关系（按设定图标注与单位描述）：
-  己方六形态 ← QQ人2 三版 Q 版人偶（完好发饰 / 破损发饰 / 魔女帽）；美术尚未给每个形态单独出图，暂时三版轮用
+  己方六形态 ← 人偶差分/（2026-10-21 美术交付：完好发饰人偶 + 各形态标志色描边，按描边色对应形态：
+    橙 striker、蓝 bulwark、青 swift、绿 lancer、紫 hexer、红 binder；原 QQ人2 三版轮用）
   hound 骸猎犬 ← 坐姿红犬；brute 正面袭击者 ← 直立红色狼人（与精英关「猎犬头目」同一设定，届时可复用）
   raider 袭击者 ← 多爪畸形体（设定「愤怒」）；bone_weaver 织骨者 ← 骨足蜘蛛花
   husk 残骸行者 ← 蜷伏的苍白幽灵少女；priest 低语祭司 ← 手捧光球的高帽幽灵
@@ -20,7 +21,7 @@
 处理：去零星碎块 → 裁到不透明外框 → 朝左（含脸偏向画面左侧的 3/4 侧身）的角色水平翻转为默认朝右（游戏里向左走时再由程序翻转） → 等比放入 256 画布（脚底在底部 24 px 处）；
 头像 = 头部方形裁切 + 深紫径向底（512）；出场卡切片的头像圆窗换成新头像。
 原图备份到 tools/_work/char_backup_20261019/（不入库），可用 --restore 还原。
-用法（godot/ 目录）：python tools/import_qq_art.py [--preview 输出图] [--restore] [--portraits（只重生成六形态头像）]
+用法（godot/ 目录）：python tools/import_qq_art.py [--preview 输出图] [--restore] [--portraits（只重生成六形态头像）] [--forms（只重生成六形态精灵 / 头像 / 出场卡）]
 """
 import io
 import shutil
@@ -53,6 +54,13 @@ FIGURES = {
     "doll_intact": (DOLL_INTACT, True, [0.1, 0.1, 0.9, 0.6]),
     "doll_worn": (DOLL_WORN, True, [0.1, 0.1, 0.9, 0.6]),
     "doll_hat": (DOLL_HAT, True, [0.18, 0.12, 0.92, 0.62]),
+    # 2026-10-21 人偶差分：与完好发饰同姿势，外加形态标志色描边（源文件是透明 PNG）
+    "doll_striker": ("人偶差分/橙_striker.png", True, [0.1, 0.1, 0.9, 0.6]),
+    "doll_bulwark": ("人偶差分/蓝_bulwark.png", True, [0.1, 0.1, 0.9, 0.6]),
+    "doll_swift": ("人偶差分/青_swift.png", True, [0.1, 0.1, 0.9, 0.6]),
+    "doll_lancer": ("人偶差分/绿_lancer.png", True, [0.1, 0.1, 0.9, 0.6]),
+    "doll_hexer": ("人偶差分/紫_hexer.png", True, [0.1, 0.1, 0.9, 0.6]),
+    "doll_binder": ("人偶差分/红_binder.png", True, [0.1, 0.1, 0.9, 0.6]),
     "hound": ("QQ人/Image_1792131747943_380.png", True, [0.35, 0.0, 1.0, 0.6]),
     "werewolf": ("QQ人/Image_1792131745967_110.png", True, [0.4, 0.0, 1.0, 0.55]),
     "anger": ("QQ人/Image_1792131756928_471.png", False, [0.1, 0.0, 0.9, 0.6]),
@@ -76,10 +84,10 @@ DERIVED = {
     "anger_gray": ("anger", "grayscale"),
 }
 
-# 单位 id → 人物。己方：完好 / 破损 / 魔女帽三版轮用
+# 单位 id → 人物。己方六形态：人偶差分（各自描边色）
 UNITS = {
-    "striker": "doll_intact", "bulwark": "doll_worn", "swift": "doll_worn",
-    "lancer": "doll_hat", "hexer": "doll_hat", "binder": "doll_intact",
+    "striker": "doll_striker", "bulwark": "doll_bulwark", "swift": "doll_swift",
+    "lancer": "doll_lancer", "hexer": "doll_hexer", "binder": "doll_binder",
     "hound": "hound", "brute": "werewolf", "raider": "anger", "bone_weaver": "spider",
     "husk": "ghost_girl", "priest": "top_hat", "hex_priest": "masked", "spitter": "jar_robe",
     "warden": "old_witch", "bone_guard": "knight", "bone_core": "lily",
@@ -299,6 +307,16 @@ def main() -> int:
         for uid in sorted(FORM_ICON_FORMS):
             fname = UNITS[uid]
             save(portrait(figure(fname), FIGURES[fname][2], icon=uid), SPR / f"portraits/{uid}.png")
+        return 0
+    if "--forms" in sys.argv:                 # 只重生成己方六形态的单位精灵、头像与出场卡头像
+        for uid in sorted(FORM_ICON_FORMS):
+            fname = UNITS[uid]
+            fig = figure(fname)
+            save(unit_canvas(fig, UNIT_LAYOUT.get(uid, {})), SPR / f"units/{uid}.png")
+            save(portrait(fig, FIGURES[fname][2], icon=uid), SPR / f"portraits/{uid}.png")
+        for card, form in CARD_FORMS.items():
+            dst = CARDS / f"{card}.png"
+            save(card_with_portrait(original(dst), Image.open(SPR / f"portraits/{form}.png").convert("RGBA")), dst)
         return 0
     if "--preview" in sys.argv:
         preview(sys.argv[sys.argv.index("--preview") + 1])

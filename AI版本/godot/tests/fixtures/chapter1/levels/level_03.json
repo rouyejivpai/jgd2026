@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "level_03",
+  "index": 3,
+  "title": "墙缝",
+  "subtitle": "查看敌人规则，诱敌撤离，绕后破坏",
+  "biome": "wailing_wall",
+  "scene": { "backdrop": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/level_03_base.png", "obstacles": "res://tests/fixtures/chapter1/assets/backdrops/review_r4/obstacles/level_03/obstacles.json", "ground": "res://assets/grounds/wailing_wall_a.png", "ground_tint": "#ffffff", "playfield_rect": null },
+  "bgm": "battle_02",
+  "seed": 3,
+  "grid": {
+    "width": 16, "height": 10,
+    "blocked": [[4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [10, 2], [11, 2], [12, 2]]
+  },
+  "deploy_zone": { "rect": [1, 0, 2, 9] },
+  "roster": { "mode": "free", "budget": 8, "available_forms": ["swift", "striker"], "max_units": 2, "min_units": 1, "fixed_slots": [] },
+  "initial_units": [
+    { "id": "W1", "unit": "warden", "faction": "enemy", "pos": [9, 8], "counts_for_annihilate": true },
+    { "id": "W2", "unit": "warden", "faction": "enemy", "pos": [9, 7], "counts_for_annihilate": true },
+    { "id": "PILLAR", "unit": "echo_pillar", "faction": "enemy", "pos": [14, 5], "counts_for_annihilate": false }
+  ],
+  "routes": {
+    "corridor": { "name": "墙下通道", "points": [[2, 1], [13, 1], [14, 1]] },
+    "yard": { "name": "穿过庭院", "points": [[3, 5], [8, 5], [13, 5]] }
+  },
+  "allowed": {
+    "conditions": ["always", "enemy_visible", "enemy_in_range", "target_distance"],
+    "selectors": ["nearest"],
+    "actions": ["attack", "chase_attack", "chase", "retreat", "follow_route", "idle"]
+  },
+  "objectives": {
+    "objective_text": "摧毁哭墙后方的回响骸柱",
+    "win": [ { "id": "win_destroy_pillar", "type": "destroy", "targets": ["PILLAR"] } ],
+    "lose": [ { "id": "lose_all_dead", "type": "all_allies_dead" } ]
+  },
+  "briefing": {
+    "mechanic_hint": "先让它看见谁，会改变它接下来追谁。哭墙守卫锁定首个进入视野的人偶，直到它死亡或离开视野。"
+  },
+  "hints": [
+    "点开守卫的面板。注意它的视野只有 6 格，而且「锁定首个进入视野的人偶」。",
+    "快速形态移速 4.5，守卫只有 1.2。让快速形态先走进守卫视野，再在被追近时撤离——守卫会一直追它。",
+    "基础攻击形态走墙下通道。它的指令只攻击「建筑」，这样它不会停下来和守卫纠缠。骸柱 60 生命，大约 5 秒。",
+    "推荐部署：快速形态 (2,5) 面向庭院；基础攻击形态 (2,1) 走通道。"
+  ],
+  "fail_feedback": {
+    "lose_all_dead": "人偶全部倒下。回看守卫锁定了谁：如果快速形态离开了守卫视野，锁定会被清除，守卫会重新锁定下一个看见的单位。",
+    "default": "战斗失败。"
+  },
+  "recommended": {
+    "units": [
+      { "slot": "slot_swift", "form": "swift", "pos": [2, 5], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "target_distance", "op": "<", "value": 3 }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "retreat" } },
+          { "conditions": [{ "type": "enemy_visible" }], "target": { "selector": "nearest", "filter": "unit" }, "action": { "type": "chase" } },
+          { "conditions": [], "action": { "type": "idle" } }
+        ] },
+      { "slot": "slot_striker", "form": "striker", "pos": [2, 1], "beacons": [],
+        "rules": [
+          { "conditions": [{ "type": "enemy_in_range" }], "target": { "selector": "nearest", "filter": "structure" }, "action": { "type": "attack" } },
+          { "conditions": [], "action": { "type": "follow_route", "route_id": "corridor", "loop": false } }
+        ] }
+    ]
+  },
+  "rewards": {
+    "unlock_forms": [],
+    "unlock_presets": ["preset.attack_farthest_in_range", "preset.attack_lowest_hp_in_range"],
+    "unlock_conditions": [],
+    "unlock_selectors": ["farthest", "lowest_hp"],
+    "unlock_actions": [],
+    "unlock_level": "level_04"
+  },
+  "verification": {
+    "expected_win": "快速形态在庭院内以 3 格距离反复「靠近—撤离」牵制两名守卫；基础攻击形态沿 y=1 通道抵达 (14,1)，与骸柱 (14,5) 距离 4，攻击 5 秒摧毁。守卫被锁定在快速形态上，不换目标。",
+    "expected_fail": "两单位一起走庭院正面：守卫 90 生命×2、10 伤害，快速形态 60 生命约 4 秒倒下，基础攻击形态随后被追上。",
+    "alternatives": "两单位合力先击杀守卫（约 10 秒）再摧毁骸柱，为合法胜利，不得拒绝。",
+    "risks": "撤离算法是否会把快速形态推进角落；守卫视野 6 与快速形态牵制距离 3 的配合；守卫被快速形态拖进庭院后，基础攻击形态在通道 y=1 时仍可能处于守卫视野内，但守卫已锁定快速形态——必须实机验证锁定不被偷换。",
+    "_note_20261018_wall": "移动改为直线（不寻路）后，守卫 W1 原站 (9,4)，隔着哭墙 (4..12,2) 看见通道里的单位就直线追过去，撞墙卡死（逐格探针 15/103 格）。W1 挪到 (9,8)（与 W2 (9,7) 同在庭院上半），通道离它 ≥6 格，看得见的通道格都能隔墙打到；探针 0 卡墙，推荐解 8.0s 胜，正面硬冲仍失败。"
+  }
+}

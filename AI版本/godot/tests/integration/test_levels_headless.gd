@@ -581,7 +581,7 @@ func test_all_eight_levels_recommended_win() -> void:
 
 # ---- P7 大地图与障碍融合（10 §7）：scene.obstacles 校验与障碍块绘制位置 ----
 func _level_03_with_obstacles(manifest: String) -> LevelDefinition:
-	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/levels/level_03.json")) as Dictionary
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter1/levels/level_03.json")) as Dictionary
 	(d["scene"] as Dictionary)["obstacles"] = manifest
 	DataReader.silent = true
 	var L: LevelDefinition = LevelDefinition.from_dict(d, "test_obstacles")

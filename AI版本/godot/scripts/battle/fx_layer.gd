@@ -50,6 +50,11 @@ func spawn_pillar(feet: Vector2, ally: bool, size: float, kind: String) -> void:
 	add_child(CombatFx.Pillar.make(feet, ally, size, kind))
 
 
+## Boss 放招特效（center = Boss 脚下，radius 像素，0 = 无范围招式；kind = 招式类型 area_damage / area_status / summon）：见 CombatFx.BossWave
+func spawn_boss_wave(center: Vector2, radius: float, inside: bool, tint: Color, kind: String = "") -> void:
+	add_child(CombatFx.BossWave.make(center, radius, inside, tint, kind))
+
+
 ## 延迟爆炸落点预警（ally = 施放者为己方：金色，否则红色）
 func spawn_blast_marker(world: SimWorld, blast_id: int, screen_pos: Vector2, radius_cells: float, delay: float, ally: bool = false, tint: Color = Color(0, 0, 0, 0)) -> void:
 	var m := BlastMarker.new()

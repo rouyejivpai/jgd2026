@@ -24,10 +24,34 @@ const STATUS_IDS: Array[String] = ["vulnerable", "paralysis", "slow"]
 const TEACHING_FILE: String = "teaching.json"
 var _relics: Dictionary = {}      ## 遗物 id -> 定义（data/relics.json，原样字典）
 var _relic_order: Array[String] = []
+## 第一章测试关卡（2026-10-21 移出正式数据）：关卡 / 章节 / 剧情 / 初始解锁 / 关卡名艺术字放在这里，
+## 只在以脚本启动（GUT、tools/*.gd 截图与试玩工具）时叠加到 data/ 之上；正常游戏与导出包（排除 tests/*）都没有第一章。
+const FIXTURE_ROOT: String = "res://tests/fixtures/chapter1"
 
 
 func _ready() -> void:
 	load_all()
+
+
+## 是否叠加第一章测试数据：-s / --script 启动，或 GUT 编辑器面板（运行 addons/gut 的场景）
+func fixtures_enabled() -> bool:
+	if not DirAccess.dir_exists_absolute(FIXTURE_ROOT):
+		return false
+	var args: PackedStringArray = OS.get_cmdline_args()
+	if args.has("-s") or args.has("--script"):
+		return true
+	for a: String in args:
+		if a.contains("addons/gut"):
+			return true
+	return false
+
+
+## 关卡文件路径：data/levels 没有时到第一章测试数据里找
+func _level_path(root: String, level_id: String) -> String:
+	var path: String = root + "/levels/" + level_id + ".json"
+	if root == DATA_ROOT and not FileAccess.file_exists(path) and fixtures_enabled():
+		return FIXTURE_ROOT + "/levels/" + level_id + ".json"
+	return path
 
 
 ## 加载并校验全部数据；返回是否无错误。可重复调用（测试用）。
@@ -63,13 +87,20 @@ func load_all(root: String = DATA_ROOT) -> bool:
 	_validate_status_fx()
 	_teaching = TeachingDef.from_dict(_load_json(root + "/" + TEACHING_FILE) if FileAccess.file_exists(root + "/" + TEACHING_FILE) else {}, TEACHING_FILE)
 	var level_files: Array[String] = _list_level_files(root + "/levels")
+	var with_fixtures: bool = root == DATA_ROOT and fixtures_enabled()
+	if with_fixtures:
+		level_files.append_array(_list_level_files(FIXTURE_ROOT + "/levels"))
+		var fx_prog: Dictionary = _load_json(FIXTURE_ROOT + "/progression.json")
+		var initial: Array = (_progression.get("initial_levels", []) as Array).duplicate()
+		initial.append_array(fx_prog.get("initial_levels", []) as Array)
+		_progression["initial_levels"] = initial
 	var level_ids: Array[String] = []
 	for f: String in level_files:
 		level_ids.append(f.get_basename())
 	var levels: Array[LevelDefinition] = []
 	for f: String in level_files:
 		var ctx: String = f
-		var raw_level: Dictionary = TeachingDef.apply_overrides(_load_json(root + "/levels/" + f), _teaching.levels.get(f.get_basename(), {}) as Dictionary)
+		var raw_level: Dictionary = TeachingDef.apply_overrides(_load_json(_level_path(root, f.get_basename())), _teaching.levels.get(f.get_basename(), {}) as Dictionary)
 		var L: LevelDefinition = LevelDefinition.from_dict(raw_level, ctx)
 		if L.id != f.get_basename():
 			DataReader.report(ctx, "id '%s' 与文件名不一致" % L.id)
@@ -89,12 +120,13 @@ func load_all(root: String = DATA_ROOT) -> bool:
 	_validate_biomes(levels)
 	_validate_upright_obstacles(levels)
 	_chapters.clear()
-	if DirAccess.dir_exists_absolute(root + "/chapters"):
-		for f: String in DirAccess.get_files_at(root + "/chapters"):
-			if f.ends_with(".json"):
-				var ch: ChapterDef = ChapterDef.from_dict(_load_json(root + "/chapters/" + f), "chapters/" + f)
-				ch.validate(level_ids, "chapters/" + f)
-				_chapters.append(ch)
+	for dir: String in ([root, FIXTURE_ROOT] if with_fixtures else [root]):
+		if DirAccess.dir_exists_absolute(dir + "/chapters"):
+			for f: String in DirAccess.get_files_at(dir + "/chapters"):
+				if f.ends_with(".json"):
+					var ch: ChapterDef = ChapterDef.from_dict(_load_json(dir + "/chapters/" + f), "chapters/" + f)
+					ch.validate(level_ids, "chapters/" + f)
+					_chapters.append(ch)
 
 	has_errors = DataReader.error_count > errors_before
 	return not has_errors
@@ -113,7 +145,7 @@ func validate_teaching_doc(doc: Dictionary, root: String = DATA_ROOT) -> Array[S
 	var t: TeachingDef = TeachingDef.from_dict(doc, TEACHING_FILE)
 	var built: Dictionary = _levels.duplicate()
 	for lid: String in t.levels.keys():
-		var path: String = root + "/levels/" + lid + ".json"
+		var path: String = _level_path(root, lid)
 		if not FileAccess.file_exists(path):
 			continue
 		var L: LevelDefinition = LevelDefinition.from_dict(TeachingDef.apply_overrides(_load_json(path), t.levels[lid] as Dictionary), lid + ".json")
@@ -136,7 +168,7 @@ func preview_level(level_id: String, entry: Dictionary, root: String = DATA_ROOT
 		return msgs
 	var was: bool = DataReader.silent
 	DataReader.silent = true
-	_levels[level_id] = LevelDefinition.from_dict(TeachingDef.apply_overrides(_load_json(root + "/levels/" + level_id + ".json"), entry), level_id + ".json")
+	_levels[level_id] = LevelDefinition.from_dict(TeachingDef.apply_overrides(_load_json(_level_path(root, level_id)), entry), level_id + ".json")
 	DataReader.silent = was
 	preview_active = true
 	return msgs
@@ -284,6 +316,8 @@ func chapter_of(level_id: String) -> ChapterDef:
 ## 07 §10.2 剧情：读取 <dir>/<story_id>.json；文件缺失、无法解析或 scenes 为空时返回 {}（调用方据此不触发剧情，不报错）
 func load_story(story_id: String, dir: String = "") -> Dictionary:
 	var path: String = (dir if dir != "" else story_dir).path_join("%s.json" % story_id)
+	if story_id != "" and path.get_base_dir() == STORY_DIR and not FileAccess.file_exists(path) and fixtures_enabled():
+		path = FIXTURE_ROOT.path_join("stories/%s.json" % story_id)
 	if story_id == "" or not FileAccess.file_exists(path):
 		return {}
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
